@@ -10,7 +10,7 @@ namespace DataBase
             Console.WriteLine("DataBase Started");
 
             Console.WriteLine("Connection to the MariaDB Test-TVM-DB with wrong password");
-            using (MariaDB MDb = new(@"server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=WrongPassword"))
+            using (MariaDB MDb = new("server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=WrongPassword"))
             {
                 Console.WriteLine("Opening the connection to the MariaDB Test-TVM-DB with wrong password");
                 Console.WriteLine($"Connection to the MariaDB Test-TVM-DB with incorrect password and success code {MDb.success}");
@@ -21,7 +21,7 @@ namespace DataBase
                 Console.WriteLine("Closing the connection to the MariaDB Test-TVM-DB with wrong password");
             }
 
-            using (MariaDB MDb = new(@"server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=Sandy3942"))
+            using (MariaDB MDb = new())
             {
                 Console.WriteLine("Opening the connection to the MariaDB Test-TVM-DB with correct password");
                 if (!MDb.success)
@@ -46,7 +46,7 @@ namespace DataBase
                 }
             }
 
-            using (MariaDB MDb = new(@"server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=Sandy3942"))
+            using (MariaDB MDb = new("ProdDB"))
             {
                 Console.WriteLine("Executing a query via the overloaded ExecQuery method passing in the query directly");
                 MySqlConnector.MySqlDataReader records = MDb.ExecQuery("Select * from download_options");

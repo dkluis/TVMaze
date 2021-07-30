@@ -1,5 +1,6 @@
 ﻿using System;
 using MySqlConnector;
+using Common_Lib;
 
 namespace DB_Lib
 {
@@ -14,12 +15,23 @@ namespace DB_Lib
         public int rows;
         public Exception exception;
 
-        // The username password used here are for the test db.   For testing only right now.
-        //          This will be replaced with config settings soon.
+        // The username, password in the app.config xml file are used here for the testing only.
+        // 2 Test databases are setup TestDB and ProdDB.   They are identical except for their data.
+        // The TestDB is the default
 
-
-        public MariaDB(string CI = @"server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=Sandy3942")
+        public MariaDB(string CI = null)
         {
+            Common com = new();
+            if (CI == null || CI == "")
+            {
+                CI = com.ReadConfig("TestDB");
+                Console.WriteLine($"Configuration String is {CI} ");
+            }
+            else
+            {
+                CI = com.ReadConfig(CI);
+                Console.WriteLine($"Configuration String is {CI} ");
+            }
             success = false;
             exception = new Exception();
             try
