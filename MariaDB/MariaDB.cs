@@ -14,6 +14,10 @@ namespace DB_Lib
         public int rows;
         public Exception exception;
 
+        // The username password used here are for the test db.   For testing only right now.
+        //          This will be replaced with config settings soon.
+
+
         public MariaDB(string CI = @"server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=Sandy3942")
         {
             success = false;
