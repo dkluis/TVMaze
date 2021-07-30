@@ -1,6 +1,7 @@
 ﻿using System;
 using MySqlConnector;
 using Common_Lib;
+using Log_Lib;
 
 namespace DB_Lib
 {
@@ -19,24 +20,27 @@ namespace DB_Lib
         // 2 Test databases are setup TestDB and ProdDB.   They are identical except for their data.
         // The TestDB is the default
 
-        public MariaDB(string CI = null)
+        public MariaDB(string conninfo = null, Logger log = null)
         {
             Common com = new();
-            if (CI == null || CI == "")
+            if (conninfo == null || conninfo == "")
             {
-                CI = com.ReadConfig("TestDB");
-                Console.WriteLine($"Configuration String is {CI} ");
+                conninfo = com.ReadConfig("TestDB");
+                if (log != null)
+                {
+                    log.Write($"Configuration String is {conninfo} ");
+                }
             }
             else
             {
-                CI = com.ReadConfig(CI);
-                Console.WriteLine($"Configuration String is {CI} ");
+                conninfo = com.ReadConfig(conninfo);
+                Console.WriteLine($"Configuration String is {conninfo} ");
             }
             success = false;
             exception = new Exception();
             try
             {
-                conn = new MySqlConnection(CI);
+                conn = new MySqlConnection(conninfo);
                 success = true;
             }
             catch (Exception e)
