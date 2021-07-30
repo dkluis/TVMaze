@@ -100,24 +100,6 @@ namespace DB_Lib
             }
         }
 
-        public MySqlDataReader ExecNonQuery()
-        {
-            success = true;
-            exception = new Exception();
-            try
-            {
-                if (!connOpen) { Open(); };
-                rows = cmd.ExecuteNonQuery();
-                return rdr;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                success = false;
-                return rdr;
-            }
-        }
-
         public MySqlDataReader ExecQuery(string sql)
         {
             cmd = this.Command(sql);
@@ -134,6 +116,43 @@ namespace DB_Lib
                 exception = e;
                 success = false;
                 return rdr;
+            }
+        }
+
+        public int ExecNonQuery()
+        {
+            success = true;
+            exception = new Exception();
+            try
+            {
+                if (!connOpen) { Open(); };
+                rows = cmd.ExecuteNonQuery();
+                return rows;
+            }
+            catch (Exception e)
+            {
+                exception = e;
+                success = false;
+                return rows;
+            }
+        }
+
+        public int ExecNonQuery(string sql)
+        {
+            cmd = this.Command(sql);
+            success = true;
+            exception = new Exception();
+            try
+            {
+                if (!connOpen) { Open(); };
+                rows = cmd.ExecuteNonQuery();
+                return rows;
+            }
+            catch (Exception e)
+            {
+                exception = e;
+                success = false;
+                return rows;
             }
         }
 

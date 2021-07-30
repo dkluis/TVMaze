@@ -35,7 +35,7 @@ namespace DataBase
                 {
                     Console.WriteLine($"Command Exception is: {MDb.exception.Message}");
                 }
-                var records = MDb.ExecQuery();
+                MySqlConnector.MySqlDataReader records = MDb.ExecQuery();
                 if (!MDb.success)
                 {
                     Console.WriteLine($"ExecQuery Exception is: {MDb.exception.Message}");
@@ -49,7 +49,7 @@ namespace DataBase
             using (MariaDB MDb = new(@"server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=Sandy3942"))
             {
                 Console.WriteLine("Executing a query via the overloaded ExecQuery method passing in the query directly");
-                var records = MDb.ExecQuery("Select * from download_options");
+                MySqlConnector.MySqlDataReader records = MDb.ExecQuery("Select * from download_options");
                 if (!MDb.success)
                 {
                     Console.WriteLine($"ExecQuery Exception is: {MDb.exception.Message}");
