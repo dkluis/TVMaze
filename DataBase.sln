@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBase", "DataBase\DataBase.csproj", "{8D76AA06-603E-4D1B-9A89-8BA03F480133}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DB_Lib", "MariaDB\DB_Lib.csproj", "{079ECDE1-509C-4CE8-AE50-5788A4006756}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D76AA06-603E-4D1B-9A89-8BA03F480133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D76AA06-603E-4D1B-9A89-8BA03F480133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D76AA06-603E-4D1B-9A89-8BA03F480133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D76AA06-603E-4D1B-9A89-8BA03F480133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{079ECDE1-509C-4CE8-AE50-5788A4006756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{079ECDE1-509C-4CE8-AE50-5788A4006756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{079ECDE1-509C-4CE8-AE50-5788A4006756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{079ECDE1-509C-4CE8-AE50-5788A4006756}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {55AA4077-0AFF-49EB-AF91-E7F22F2EEF33}
+	EndGlobalSection
+EndGlobal
