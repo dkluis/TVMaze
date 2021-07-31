@@ -40,7 +40,9 @@ namespace DB_Lib
             {
                 conninfo = com.ReadConfig(conninfo);
             }
-            // mdblog.WriteAsync($"Configuration String is {conninfo} ", "MariaDB", 3);
+# if DEBUG   
+            mdblog.WriteAsync($"Configuration String is {conninfo} ", "MariaDB", 3);
+# endif
 
             success = false;
             exception = new Exception();
