@@ -1,4 +1,5 @@
 ﻿using Common_Lib;
+using HtmlAgilityPack;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -20,13 +21,14 @@ namespace Web_Lib
             log = logger;
         }
 
+        #region TVMaze APIs
 
         public string ShowSearchAPI(string showname)
         {
             client.BaseAddress = new Uri(tvmaze_url);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             string api = $"search/shows?q={showname}";
-            log.WriteAsync($"API String = {api}", "WebAPI SSP",3);
+            log.Write($"API String = {api}", "WebAPI SSP", 3);
             return api;
         }
 
@@ -47,9 +49,35 @@ namespace Web_Lib
             }
             catch (Exception e)
             {
-                log.WriteAsync($"Exception {e.Message}", "WebAPI GetShow", 0);
+                log.Write($"Exception {e.Message}", "WebAPI GetShow", 0);
             }
         }
+
+        #endregion
+
+        #region Web Scrapping
+
+        public void TestWebScrap()
+        {
+            string html = @"https://eztv.re/search/dcs-legends-of-tomorrow-s06e01";
+
+            HtmlWeb web = new HtmlWeb();
+
+            HtmlDocument htmlDoc = web.Load(html);
+            //log.Write($"HTML Doc: {htmlDoc.ParsedText}", "WebScrape", 0, false);
+
+            HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
+            foreach (var node in table)
+            {
+                if (node.Attributes["href"].Value.Contains("magnet:"))
+                {
+                    log.Write($"Attribute HREF " + node.Attributes["href"].Value);
+                }
+            }
+
+        }
+
+        #endregion
     }
 
 

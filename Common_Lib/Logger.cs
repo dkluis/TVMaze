@@ -45,31 +45,31 @@ namespace Common_Lib
         public void Start(string application)
         {
             app = application;
-            WriteAsync($"{app} Started  ##########################################", app, 0);
+            Write($"{app} Started  ##########################################", app, 0);
         }
 
         public void Stop()
         {
-            WriteAsync($"{app} Finished ##########################################", app, 0);
+            Write($"{app} Finished ##########################################", app, 0);
         }
 
-        public async void WriteAsync(string message, string function = "", int loglevel = 1, bool append = true)
+        public void Write(string message, string function = "", int loglevel = 1, bool append = true)
         {
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
-                await file.WriteLineAsync($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(3)} --> {message}");
+                file.WriteLine($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(3)} --> {message}");
             }
         }
 
-        public async void WriteAsync(string[] messages, string function = "", int loglevel = 1, bool append = true)
+        public void Write(string[] messages, string function = "", int loglevel = 1, bool append = true)
         {
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
                 foreach (string msg in messages)
                 {
-                    await file.WriteLineAsync($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(2)}--> {msg}");
+                    file.WriteLine($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(2)}--> {msg}");
                 }
             }
         }
