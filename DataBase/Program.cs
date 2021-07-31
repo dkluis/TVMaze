@@ -8,7 +8,7 @@ namespace DataBase
     {
         static void Main()
         {
-            Console.WriteLine("DataBase Started");
+            Console.WriteLine("TVMaze Test Console Started");
 
             Logger log = new();
             log.Write("Connection to the MariaDB Test-TVM-DB with wrong password", "Program", 3, false);
