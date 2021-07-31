@@ -8,7 +8,6 @@ namespace Common_Lib
     {
         public string ReadConfig(string key)
         {
-            Logger log = new();
             try
             {
                 var appSettings = ConfigurationManager.AppSettings;
@@ -17,7 +16,7 @@ namespace Common_Lib
             }
             catch (ConfigurationErrorsException e)
             {
-                log.Write($"Error reading app settings {e.Message}", "Common Lib", 0);
+                Console.WriteLine($"Error reading app settings {e.Message}");
                 return e.BareMessage;
             }
         }
