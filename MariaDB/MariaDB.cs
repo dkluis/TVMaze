@@ -40,7 +40,7 @@ namespace DB_Lib
             {
                 conninfo = com.ReadConfig(conninfo);
             }
-            // mdblog.Write($"Configuration String is {conninfo} ", "MariaDB", 3);
+            // mdblog.WriteAsync($"Configuration String is {conninfo} ", "MariaDB", 3);
 
             success = false;
             exception = new Exception();
@@ -52,7 +52,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class Connection Error: {e.Message}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class Connection Error: {e.Message}", "MariaDB", 0);
             }
         }
 
@@ -68,7 +68,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class Open Error: {e.Message}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class Open Error: {e.Message}", "MariaDB", 0);
                 success = false;
             }
         }
@@ -85,7 +85,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class Close Error: {e.Message}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class Close Error: {e.Message}", "MariaDB", 0);
                 success = false;
             }
         }
@@ -103,7 +103,7 @@ namespace DB_Lib
             catch(Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class Command Error: {e.Message} for {sql}", "MariaDB", 0);
                 success = false;
                 return cmd;
             }
@@ -122,7 +122,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class ExecQuery Error: {e.Message}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class ExecQuery Error: {e.Message}", "MariaDB", 0);
                 success = false;
                 return rdr;
             }
@@ -142,7 +142,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", "MariaDB", 0);
                 success = false;
                 return rdr;
             }
@@ -161,7 +161,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class ExecNonQuery Error: {e.Message}", "MariaDB", 0);
                 success = false;
                 return rows;
             }
@@ -181,7 +181,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", "MariaDB", 0);
+                mdblog.WriteAsync($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", "MariaDB", 0);
                 success = false;
                 return rows;
             }

@@ -1,5 +1,4 @@
-﻿using Common_Lib;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Common_Lib
@@ -10,6 +9,7 @@ namespace Common_Lib
         private string logpath;
         private string fulllogpath;
         private int level;
+        private string app;
 
         public Logger(string logname = null)
         {
@@ -42,13 +42,15 @@ namespace Common_Lib
             Console.WriteLine($"Logfile name is {fulllogpath} ");
         }
 
-        public void Write(string message, string function = "", int loglevel = 1, bool append = true)
+        public void Start(string application)
         {
-            if (loglevel <= level)
-            {
-                using StreamWriter file = new(fulllogpath, append);
-                file.WriteLine($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(3)} --> {message}");
-            }
+            app = application;
+            WriteAsync($"{app} Started  ##########################################", app, 0);
+        }
+
+        public void Stop()
+        {
+            WriteAsync($"{app} Finished ##########################################", app, 0);
         }
 
         public async void WriteAsync(string message, string function = "", int loglevel = 1, bool append = true)
@@ -60,14 +62,14 @@ namespace Common_Lib
             }
         }
 
-        public void Write(string[] messages, string function = "", int loglevel = 1, bool append = true)
+        public async void WriteAsync(string[] messages, string function = "", int loglevel = 1, bool append = true)
         {
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
                 foreach (string msg in messages)
                 {
-                    file.WriteLine($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(2)}--> {msg}");
+                    await file.WriteLineAsync($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(2)}--> {msg}");
                 }
             }
         }
