@@ -11,10 +11,12 @@ namespace DB_Lib
         private bool connOpen;
         private MySqlCommand cmd;
         private MySqlDataReader rdr;
-        // private MySqlDataAdapter da;
+        //private MySqlDataAdapter da;
         public bool success;
         public int rows;
         public Exception exception;
+
+        
 
         // The username, password in the app.config xml file are used here for the testing only.
         // 2 Test databases are setup TestDB and ProdDB.   They are identical except for their data.
@@ -178,9 +180,8 @@ namespace DB_Lib
 
         void IDisposable.Dispose()
         {
-            //throw new NotImplementedException();
-            Console.WriteLine("Here we need to implement the MariaDB Dispose Code, like Closing the connection");
             this.Close();
+            conn.Dispose();
         }
     }
 }

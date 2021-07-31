@@ -11,7 +11,7 @@ namespace DataBase
             Console.WriteLine("DataBase Started");
 
             Logger log = new();
-            log.Write("Connection to the MariaDB Test-TVM-DB with wrong password");
+            log.Write("Connection to the MariaDB Test-TVM-DB with wrong password", "Program", false);
 
             using (MariaDB MDb = new("server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=WrongPassword", log))
             {

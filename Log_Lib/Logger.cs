@@ -40,18 +40,18 @@ namespace Log_Lib
             Console.WriteLine($"Logfile name is {fulllogpath} ");
         }
 
-        public void Write(string message, bool append = true)
+        public void Write(string message, string function = "", bool append = true)
         {
             using StreamWriter file = new(fulllogpath, append);
-                file.WriteLine(message);
+                file.WriteLine($"{DateTime.Now}: {function.PadRight(20)} -->{message}");
         }
 
-        public void Write(string[] messages, bool append = true)
+        public void Write(string[] messages, string function = "", bool append = true)
         {
             using StreamWriter file = new(fulllogpath, append);
                 foreach (string msg in messages)
                 {
-                    file.WriteLine(msg);
+                    file.WriteLine($"{DateTime.Now}: {function.PadRight(15)} -->{msg}");
                 }
         }
     }
