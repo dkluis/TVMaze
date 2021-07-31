@@ -8,16 +8,16 @@ namespace Common_Lib
     {
         public string ReadConfig(string key)
         {
+            Logger log = new();
             try
             {
                 var appSettings = ConfigurationManager.AppSettings;
                 string result = appSettings[key] ?? "Not Found";
-                Console.WriteLine(result);
                 return result;
             }
             catch (ConfigurationErrorsException e)
             {
-                Console.WriteLine("Error reading app settings");
+                log.Write($"Error reading app settings {e.Message}", "Common Lib", 0);
                 return e.BareMessage;
             }
         }

@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataBase", "DataBase\DataBa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DB_Lib", "MariaDB\DB_Lib.csproj", "{079ECDE1-509C-4CE8-AE50-5788A4006756}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log_Lib", "Log_Lib\Log_Lib.csproj", "{CEB62195-7C66-4E81-9605-EF745A581804}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common_Lib", "Common_Lib\Common_Lib.csproj", "{F3991419-0142-45C0-94ED-E01649CCE3FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common_Lib", "Common_Lib\Common_Lib.csproj", "{F3991419-0142-45C0-94ED-E01649CCE3FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{079ECDE1-509C-4CE8-AE50-5788A4006756}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{079ECDE1-509C-4CE8-AE50-5788A4006756}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{079ECDE1-509C-4CE8-AE50-5788A4006756}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CEB62195-7C66-4E81-9605-EF745A581804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CEB62195-7C66-4E81-9605-EF745A581804}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CEB62195-7C66-4E81-9605-EF745A581804}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CEB62195-7C66-4E81-9605-EF745A581804}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3991419-0142-45C0-94ED-E01649CCE3FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3991419-0142-45C0-94ED-E01649CCE3FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3991419-0142-45C0-94ED-E01649CCE3FD}.Release|Any CPU.ActiveCfg = Release|Any CPU

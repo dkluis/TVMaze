@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Log_Lib
+namespace Common_Lib
 {
     public class Logger
     {

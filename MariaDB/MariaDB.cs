@@ -1,7 +1,6 @@
 ﻿using System;
 using MySqlConnector;
 using Common_Lib;
-using Log_Lib;
 
 namespace DB_Lib
 {
@@ -15,8 +14,7 @@ namespace DB_Lib
         public bool success;
         public int rows;
         public Exception exception;
-
-        
+        public Logger mdblog;
 
         // The username, password in the app.config xml file are used here for the testing only.
         // 2 Test databases are setup TestDB and ProdDB.   They are identical except for their data.
@@ -25,19 +23,25 @@ namespace DB_Lib
         public MariaDB(string conninfo = null, Logger log = null)
         {
             Common com = new();
+            if (log == null)
+            {
+                mdblog = new();
+            }
+            else
+            {
+                mdblog = log;
+            }
+
             if (conninfo == null || conninfo == "")
             {
                 conninfo = com.ReadConfig("TestDB");
-                if (log != null)
-                {
-                    log.Write($"Configuration String is {conninfo} ");
-                }
             }
             else
             {
                 conninfo = com.ReadConfig(conninfo);
-                Console.WriteLine($"Configuration String is {conninfo} ");
             }
+            // mdblog.Write($"Configuration String is {conninfo} ", "MariaDB", 3);
+
             success = false;
             exception = new Exception();
             try
@@ -48,7 +52,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                Console.WriteLine($"MariaDB Class Connection Error: {e.Message}");
+                mdblog.Write($"MariaDB Class Connection Error: {e.Message}", "MariaDB", 0);
             }
         }
 
@@ -64,7 +68,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                Console.WriteLine($"MariaDB Class Open Error: {e.Message}");
+                mdblog.Write($"MariaDB Class Open Error: {e.Message}", "MariaDB", 0);
                 success = false;
             }
         }
@@ -81,7 +85,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
-                Console.WriteLine($"MariaDB Class Close Error: {e.Message}");
+                mdblog.Write($"MariaDB Class Close Error: {e.Message}", "MariaDB", 0);
                 success = false;
             }
         }
@@ -99,6 +103,7 @@ namespace DB_Lib
             catch(Exception e)
             {
                 exception = e;
+                mdblog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", "MariaDB", 0);
                 success = false;
                 return cmd;
             }
@@ -117,6 +122,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
+                mdblog.Write($"MariaDB Class ExecQuery Error: {e.Message}", "MariaDB", 0);
                 success = false;
                 return rdr;
             }
@@ -136,6 +142,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
+                mdblog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", "MariaDB", 0);
                 success = false;
                 return rdr;
             }
@@ -154,6 +161,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
+                mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", "MariaDB", 0);
                 success = false;
                 return rows;
             }
@@ -173,6 +181,7 @@ namespace DB_Lib
             catch (Exception e)
             {
                 exception = e;
+                mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", "MariaDB", 0);
                 success = false;
                 return rows;
             }
