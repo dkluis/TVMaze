@@ -13,6 +13,7 @@ namespace Web_Lib
         string tvmaze_url = "https://api.tvmaze.com/";
         string tvm_user_url = "https://api.tvmaze.com/v1/";
         private Logger log;
+        private HttpResponseMessage _gsa_response;
 
         public WebAPI(Logger logger)
         {
@@ -29,21 +30,19 @@ namespace Web_Lib
             return api;
         }
 
-        public async Task GetShow(string showname)
+        public HttpResponseMessage GetShow(string showname)
+        {
+            Task t = GetShowAsync(showname);
+            t.Wait();
+            return _gsa_response;
+        }
+
+        private async Task GetShowAsync(string showname)
         {
             try
             {
                 HttpResponseMessage response = new();
-                response = await client.GetAsync(ShowSearchAPI(showname)).ConfigureAwait(false);
-                if (response.IsSuccessStatusCode)
-                {
-                    log.WriteAsync($"Response status code is {response.StatusCode}", "WebAPI", 3);
-                    log.WriteAsync($"Response content is {response.Content}", "WebAPI", 3);
-                }
-                else
-                {
-                    log.WriteAsync($"Reponse was unsuccessfull {response.StatusCode}", "WebAPI", 3);
-                }
+                _gsa_response = await client.GetAsync(ShowSearchAPI(showname)).ConfigureAwait(false);
             }
             catch (Exception e)
             {

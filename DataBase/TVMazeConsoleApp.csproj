@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MariaDB\DB_Lib.csproj" />
     <ProjectReference Include="..\Web_Lib\Web_Lib.csproj" />
   </ItemGroup>

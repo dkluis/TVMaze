@@ -3,7 +3,9 @@ using System;
 using Common_Lib;
 using System.Diagnostics;
 using Web_Lib;
-using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace DataBase
 {
@@ -69,13 +71,15 @@ namespace DataBase
 
             WebAPI tvmapi = new(log);
             log.WriteAsync("Start to API test", "Program", 0);
-            Task t = tvmapi.GetShow("DC's Legends of Tomorrow");
-            t.Wait();
-            t.Dispose();
+            HttpResponseMessage result = tvmapi.GetShow("DC's Legends of Tomorrow");
+            log.WriteAsync($"Result back from API call {result.StatusCode}", "Program WebAPI", 3);
+            log.WriteAsync($"Result headers are {result.Content.Headers}", "Program WebAPI", 3);
 
-            log.WriteAsync("Finished to API test", "Program", 0);
+            var content = result.Content.ReadAsStringAsync().Result;
+            dynamic jsoncontent = JsonConvert.DeserializeObject(content);
+            log.WriteAsync($"Content is {content}, Type is {content.GetType()}");
+            log.WriteAsync($"JSon is {jsoncontent}");
 
-            watch.Stop();
             log.WriteAsync($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);
             //Console.Read();
             log.Stop();
