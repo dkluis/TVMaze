@@ -2,6 +2,8 @@
 using System;
 using Common_Lib;
 using System.Diagnostics;
+using Web_Lib;
+using System.Threading.Tasks;
 
 namespace DataBase
 {
@@ -65,8 +67,17 @@ namespace DataBase
                 }
             }
 
+            WebAPI tvmapi = new(log);
+            log.WriteAsync("Start to API test", "Program", 0);
+            Task t = tvmapi.GetShow("DC's Legends of Tomorrow");
+            t.Wait();
+            t.Dispose();
+
+            log.WriteAsync("Finished to API test", "Program", 0);
+
             watch.Stop();
             log.WriteAsync($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);
+            //Console.Read();
             log.Stop();
             Console.WriteLine("Done");
         }
