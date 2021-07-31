@@ -51,6 +51,15 @@ namespace Common_Lib
             }
         }
 
+        public async void WriteAsync(string message, string function = "", int loglevel = 1, bool append = true)
+        {
+            if (loglevel <= level)
+            {
+                using StreamWriter file = new(fulllogpath, append);
+                await file.WriteLineAsync($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(3)} --> {message}");
+            }
+        }
+
         public void Write(string[] messages, string function = "", int loglevel = 1, bool append = true)
         {
             if (loglevel <= level)

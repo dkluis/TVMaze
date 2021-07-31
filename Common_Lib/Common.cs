@@ -16,8 +16,8 @@ namespace Common_Lib
             }
             catch (ConfigurationErrorsException e)
             {
-                Console.WriteLine($"Error reading app settings {e.Message}");
-                return e.BareMessage;
+                Console.WriteLine($"Error reading app settings in Common {e.Message}");
+                return $"Error Reading app.config: {e.BareMessage}";
             }
         }
 
