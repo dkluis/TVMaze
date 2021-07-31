@@ -19,6 +19,8 @@ namespace DataBase
 
             Logger log = new();
             log.Start("TVMaze Console App");
+            
+            /*
             log.WriteAsync("Connection to the MariaDB Test-TVM-DB with wrong password", "Program", 3);
             using (MariaDB MDb = new("server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=WrongPassword", log))
             {
@@ -68,6 +70,7 @@ namespace DataBase
                     log.WriteAsync($"Prov Name: {records["providername"].ToString().PadRight(30)}", "Read Output", 3);
                 }
             }
+            */
 
             WebAPI tvmapi = new(log);
             log.WriteAsync("Start to API test", "Program", 0);
@@ -77,7 +80,7 @@ namespace DataBase
 
             var content = result.Content.ReadAsStringAsync().Result;
             dynamic jsoncontent = JsonConvert.DeserializeObject(content);
-            log.WriteAsync($"Content is {content}, Type is {content.GetType()}");
+            //log.WriteAsync($"Content is {content}, Type is {content.GetType()}");
             log.WriteAsync($"JSon is {jsoncontent}");
 
             log.WriteAsync($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

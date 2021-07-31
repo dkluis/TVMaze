@@ -34,6 +34,7 @@ namespace Web_Lib
         {
             Task t = GetShowAsync(showname);
             t.Wait();
+            /// Add logic to check the result and turn to json before returning
             return _gsa_response;
         }
 
