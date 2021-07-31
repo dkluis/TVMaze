@@ -6,6 +6,7 @@ using Web_Lib;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace DataBase
 {
@@ -92,8 +93,8 @@ namespace DataBase
             #region WebScrap Example
 
             WebAPI scrap = new(log);
-            scrap.TestWebScrap();
-
+            List<string> magnets = scrap.TestWebScrap();
+            log.Write($"Number of Magnets found: {magnets.Count}");
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

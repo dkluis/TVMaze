@@ -1,6 +1,7 @@
 ﻿using Common_Lib;
 using HtmlAgilityPack;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -57,11 +58,11 @@ namespace Web_Lib
 
         #region Web Scrapping
 
-        public void TestWebScrap()
+        public List<string> TestWebScrap()
         {
             string html = @"https://eztv.re/search/dcs-legends-of-tomorrow-s06e01";
-
             HtmlWeb web = new HtmlWeb();
+            List<string> magnets = new();
 
             HtmlDocument htmlDoc = web.Load(html);
             //log.Write($"HTML Doc: {htmlDoc.ParsedText}", "WebScrape", 0, false);
@@ -71,10 +72,11 @@ namespace Web_Lib
             {
                 if (node.Attributes["href"].Value.Contains("magnet:"))
                 {
-                    log.Write($"Attribute HREF " + node.Attributes["href"].Value);
+                    magnets.Add(node.Attributes["href"].Value);
+                    log.Write($"Attribute HREF " + node.Attributes["href"].Value, "Test Web Scrap", 0);
                 }
             }
-
+            return magnets;
         }
 
         #endregion
