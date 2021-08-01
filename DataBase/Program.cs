@@ -91,10 +91,14 @@ namespace DataBase
             #endregion
 
             #region WebScrap Example
-
-            WebAPI scrap = new(log);
+            
+            WebScrape scrap = new(log);
+            /*
             List<string> magnets = scrap.TestWebScrap();
             log.Write($"Number of Magnets found: {magnets.Count}");
+            */
+            scrap.GetMagnetTVShowEpisode("Show", "S01E01");
+
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

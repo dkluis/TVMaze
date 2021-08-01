@@ -56,33 +56,5 @@ namespace Web_Lib
 
         #endregion
 
-        #region Web Scrapping
-
-        public List<string> TestWebScrap()
-        {
-            string html = @"https://eztv.re/search/dcs-legends-of-tomorrow-s06e01";
-            HtmlWeb web = new HtmlWeb();
-            List<string> magnets = new();
-
-            HtmlDocument htmlDoc = web.Load(html);
-            //log.Write($"HTML Doc: {htmlDoc.ParsedText}", "WebScrape", 0, false);
-
-            HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
-            foreach (var node in table)
-            {
-                if (node.Attributes["href"].Value.Contains("magnet:"))
-                {
-                    magnets.Add(node.Attributes["href"].Value);
-                    log.Write($"Attribute HREF " + node.Attributes["href"].Value, "Test Web Scrap", 0);
-                }
-            }
-            return magnets;
-        }
-
-        #endregion
     }
-
-
-
-
 }

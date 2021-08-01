@@ -6,6 +6,8 @@ namespace Common_Lib
 {
     public class Common
     {
+        #region Config
+
         public string ReadConfig(string key)
         {
             try
@@ -59,5 +61,21 @@ namespace Common_Lib
                 UserName = Environment.UserName;
             }
         }
+
+        #endregion
+
+        #region TVShows
+
+        public int ReturnSeason(string episode)
+        {
+            return 0;
+        }
+
+        public int ReturnEpisode(string episode)
+        {
+            return 1;
+        }
+
+        #endregion
     }
 }
