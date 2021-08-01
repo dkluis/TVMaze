@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Web_Lib
 {
 
-    public class WebAPI
+    public class WebAPI : IDisposable
     {
         static HttpClient client = new();
         string tvmaze_url = "https://api.tvmaze.com/";
@@ -55,6 +55,13 @@ namespace Web_Lib
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            this.Dispose();
+        }
+
+
 
     }
 }
