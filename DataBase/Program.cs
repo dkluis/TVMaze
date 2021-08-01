@@ -87,18 +87,20 @@ namespace DataBase
             dynamic jsoncontent = JsonConvert.DeserializeObject(content);
             //log.Write($"Content is {content}, Type is {content.GetType()}");
             log.Write($"JSon is {jsoncontent}");
+
+            WebAPI.Dispose();
             */
             #endregion
 
             #region WebScrap Example
             
-            WebScrape scrap = new(log);
+            WebScrape scrape = new(log);
             /*
-            List<string> magnets = scrap.TestWebScrap();
+            List<string> magnets = scrape.TestWebScrap();
             log.Write($"Number of Magnets found: {magnets.Count}");
             */
-            scrap.GetMagnetTVShowEpisode("Show", "S01E01");
-
+            scrape.GetMagnetTVShowEpisode("Show", "S01E01");
+            scrape.Dispose();
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

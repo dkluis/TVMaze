@@ -34,10 +34,15 @@ namespace Web_Lib
             if (common.ReturnEpisode(episode) == 1)
             {
                 string season = "S" + common.ReturnEpisode(episode).ToString().PadLeft(2, '0');
-                Console.WriteLine($"Season is {season}");
+                log.Write($"Season is {season}", "Get Magnets", 3);
                 magnets = GetMagnetTVShowSeason(showname, season);
+                if (magnets.Count > 0)
+                {
+                    return magnets;
+                }
             }
-            
+            // Process the season/episode
+
             return magnets;
         }
 
