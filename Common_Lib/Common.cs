@@ -66,6 +66,15 @@ namespace Common_Lib
 
         #region TVShows
 
+        public string RemoveSpecialCharsInShowname(string showname)
+        {
+            showname = showname.Replace("   ", " ")
+                               .Replace("  ", " ")
+                               .Replace("'", "")
+                               .Replace("\"", "");
+            return showname;
+        }
+
         public int ReturnSeason(string episode)
         {
             return 0;

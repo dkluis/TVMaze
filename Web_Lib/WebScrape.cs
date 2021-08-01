@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common_Lib;
+﻿using Common_Lib;
 using HtmlAgilityPack;
+using System;
+using System.Collections.Generic;
 
 namespace Web_Lib
 {
@@ -26,29 +23,55 @@ namespace Web_Lib
 
         #region Getters
 
-        public List<string> GetMagnetTVShowEpisode(string showname, string episode)
+        public List<string> GetMagnetTVShowEpisode(string showname, int seas_num, int epi_num)
         {
             magnets = new();
-            // Figure out if the episode is the first one of a season, then process TVShowSeason -> if nothing found process the episode
-            if (common.ReturnEpisode(episode) == 1)
+            //EZTV 
+            if (epi_num == 1)
             {
-                string season = "S" + common.ReturnEpisode(episode).ToString().PadLeft(2, '0');
-                log.Write($"Season is {season}", "Get Magnets", 3);
-                magnets = GetMagnetTVShowSeason(showname, season);
+                // Process the whole season
+                GetEZTVMagnets(showname, seas_num, epi_num, true);
+                // Get all other website magnets for whole season
                 if (magnets.Count > 0)
                 {
                     return magnets;
                 }
             }
             // Process the season/episode
-
+            GetEZTVMagnets(showname, seas_num, epi_num, false);
+            // Get all other website magnets by episode
             return magnets;
         }
 
-        public List<string> GetMagnetTVShowSeason(string showname, string season)
+        private void GetEZTVMagnets(string showname, int seas_num, int epi_num, bool season_only)
         {
+            string html_base = "https://eztv.re/search/";
+            string html = html_base + BuildEztvURL(showname, seas_num, epi_num, season_only);
 
-            return magnets;
+            HtmlWeb web = new HtmlWeb();
+            HtmlDocument htmlDoc = web.Load(html);
+            HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
+            foreach (HtmlNode node in table)
+            {
+                if (node.Attributes["href"].Value.Contains("magnet:"))
+                {
+                    magnets.Add(node.Attributes["href"].Value);
+                    log.Write($"Attribute HREF " + node.Attributes["href"].Value, "Test Web Scrap", 0);
+                }
+            }
+        }
+
+        private string BuildEztvURL(string showname, int seas_num, int epi_num, bool season_only = false)
+        {
+            string eztv_url = "https://eztv.re/search/";
+            showname = common.RemoveSpecialCharsInShowname(showname);
+            showname = showname.Replace(" ", "-");  //eztv seach char.
+            showname = showname + "S" + seas_num.ToString().PadLeft(2, '0');
+            if (!season_only)
+            {
+                showname = showname + "E" + epi_num.ToString().PadLeft(2, '0');
+            }
+            return eztv_url;
         }
 
         #endregion

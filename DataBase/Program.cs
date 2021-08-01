@@ -76,20 +76,19 @@ namespace DataBase
             #endregion
 
             #region WebAPI Example
-            /*
+
             WebAPI tvmapi = new(log);
             log.Write("Start to API test", "Program", 0);
             HttpResponseMessage result = tvmapi.GetShow("DC's Legends of Tomorrow");
             log.Write($"Result back from API call {result.StatusCode}", "Program WebAPI", 3);
-            log.Write($"Result headers are {result.Content.Headers}", "Program WebAPI", 3);
 
             var content = result.Content.ReadAsStringAsync().Result;
             dynamic jsoncontent = JsonConvert.DeserializeObject(content);
-            //log.Write($"Content is {content}, Type is {content.GetType()}");
+
             log.Write($"JSon is {jsoncontent}");
 
-            WebAPI.Dispose();
-            */
+            tvmapi.Dispose();
+
             #endregion
 
             #region WebScrap Example
@@ -99,7 +98,7 @@ namespace DataBase
             List<string> magnets = scrape.TestWebScrap();
             log.Write($"Number of Magnets found: {magnets.Count}");
             */
-            scrape.GetMagnetTVShowEpisode("Show", "S01E01");
+            scrape.GetMagnetTVShowEpisode("Show", 2, 1);
             scrape.Dispose();
             #endregion
 

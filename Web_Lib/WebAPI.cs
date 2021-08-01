@@ -41,12 +41,12 @@ namespace Web_Lib
             return _gsa_response;
         }
 
-        private async Task GetShowAsync(string showname)
+        private async Task GetShowAsync(string show_episode)
         {
             try
             {
                 HttpResponseMessage response = new();
-                _gsa_response = await client.GetAsync(ShowSearchAPI(showname)).ConfigureAwait(false);
+                _gsa_response = await client.GetAsync(ShowSearchAPI(show_episode)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -58,7 +58,7 @@ namespace Web_Lib
 
         public void Dispose()
         {
-            this.Dispose();
+ 
         }
 
 
