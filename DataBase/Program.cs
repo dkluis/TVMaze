@@ -1,12 +1,8 @@
-﻿using DB_Lib;
+﻿using Common_Lib;
 using System;
-using Common_Lib;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Web_Lib;
-using System.Net.Http;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace DataBase
 {
@@ -86,13 +82,13 @@ namespace DataBase
             dynamic jsoncontent = JsonConvert.DeserializeObject(content);
 
             log.Write($"JSon is {jsoncontent}");
-
+          
             tvmapi.Dispose();
             */
             #endregion
 
-            #region WebScrap Example
-            
+            #region WebScrap Examples
+            /*
             WebScrape scrape = new(log);
             List<string> magnets = scrape.GetMagnetTVShowEpisode("The White Lotus", 1, 1);
             log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
@@ -102,6 +98,21 @@ namespace DataBase
                 log.Write($"Matching magnets found: {magnet}", "Program", 3);
             }
             scrape.Dispose();
+            */
+
+            WebScrape scrapetest = new(log);
+            List<string> sortedmagnets = scrapetest.TestWebScrap();
+            foreach (string magnet in sortedmagnets)
+            {
+                log.Write($"Sorted and Prioritized magnets found: {magnet}", "Program", 3);
+            }
+
+            string[] split= { "#$# " };
+            string[] selected = sortedmagnets[0].Split(split, StringSplitOptions.RemoveEmptyEntries);
+            log.Write($"Selected is magnet: {selected[1]}", "Program", 3);
+
+            scrapetest.Dispose();
+
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

@@ -112,13 +112,58 @@ namespace Web_Lib
             return eztv_url;
         }
 
+        private int PrioritizeMagnet(string magnet, string provider)
+        {
+            int prio;
+            switch (provider)
+            {
+                case "Eztv":
+                    prio = 100;
+                    break;
+                default:
+                    prio = 0;
+                    break;
+            }
+
+            if (magnet.ToLower().Contains("x264") || magnet.ToLower().Contains("h264"))
+            {
+                prio += 60;
+            }
+            if (magnet.ToLower().Contains("xvid"))
+            {
+                prio += 50;
+            }
+            if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
+            {
+                prio += 30;
+            }
+
+            if (magnet.ToLower().Contains("1080p"))
+            {
+                prio += 15;
+            }
+            if (magnet.ToLower().Contains("hdtv"))
+            {
+                prio += 14;
+            }
+            if (magnet.ToLower().Contains("720p"))
+            {
+                prio += 10;
+            }
+            if (magnet.ToLower().Contains("480p"))
+            {
+                prio += 5;
+            }
+            return prio;
+        }
+
         #endregion
 
         #region Web Scrapping Test
 
         public List<string> TestWebScrap()
         {
-            string html = "https://eztv.re/search/dcs-legends-of-tomorrow-s06e01";
+            string html = "https://eztv.re/search/the-white-lotus";
             HtmlWeb web = new HtmlWeb();
             List<string> magnets = new();
 
@@ -126,13 +171,27 @@ namespace Web_Lib
             //log.Write($"HTML Doc: {htmlDoc.ParsedText}", "WebScrape", 0, false);
 
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
+            int priority;
+            string prioritizedmagnet;
             foreach (HtmlNode node in table)
             {
-                if (node.Attributes["href"].Value.Contains("magnet:"))
+                if (node.Attributes["href"].Value.Contains("magnet:") &&
+                    node.Attributes["href"].Value.ToLower().Contains("s01e04"))
                 {
-                    magnets.Add(node.Attributes["href"].Value);
+                    //ToDo add prio value to magnet info//
+                    priority = PrioritizeMagnet(node.Attributes["href"].Value, "Eztv");
+                    if (priority > 100)
+                    {
+                        prioritizedmagnet = priority.ToString() + "#$# " + node.Attributes["href"].Value;
+                        if (priority > 130)
+                        {
+                            magnets.Add(prioritizedmagnet);
+                        }
+                    }
                 }
             }
+            magnets.Sort();
+            magnets.Reverse();
             return magnets;
         }
 

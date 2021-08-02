@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Common_Lib;
 using MySqlConnector;
-using Common_Lib;
+using System;
 
 namespace DB_Lib
 {
@@ -100,9 +100,9 @@ namespace DB_Lib
             {
                 if (!connOpen) { Open(); };
                 cmd = new MySqlCommand(sql, conn);
-                return(cmd);
+                return (cmd);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 exception = e;
                 mdblog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", "MariaDB", 0);
