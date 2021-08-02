@@ -108,8 +108,11 @@ namespace DataBase
             }
 
             string[] split= { "#$# " };
-            string[] selected = sortedmagnets[0].Split(split, StringSplitOptions.RemoveEmptyEntries);
-            log.Write($"Selected is magnet: {selected[1]}", "Program", 3);
+            if (sortedmagnets.Count != 0)
+            {
+                string[] selected = sortedmagnets[0].Split(split, StringSplitOptions.RemoveEmptyEntries);
+                log.Write($"Selected is magnet: {selected[1]}", "Program", 3);
+            }
 
             scrapetest.Dispose();
 

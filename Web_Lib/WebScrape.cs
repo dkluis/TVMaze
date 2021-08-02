@@ -124,7 +124,7 @@ namespace Web_Lib
                     prio = 0;
                     break;
             }
-
+            // Codex values
             if (magnet.ToLower().Contains("x264") || magnet.ToLower().Contains("h264"))
             {
                 prio += 60;
@@ -135,9 +135,9 @@ namespace Web_Lib
             }
             if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
             {
-                prio += 30;
+                prio += 20;
             }
-
+            // Resolution values
             if (magnet.ToLower().Contains("1080p"))
             {
                 prio += 15;
@@ -152,8 +152,22 @@ namespace Web_Lib
             }
             if (magnet.ToLower().Contains("480p"))
             {
+                prio += 3;
+            }
+            // Container values
+            if (magnet.ToLower().Contains(".mkv"))
+            {
+                prio += 10;
+            }
+            if (magnet.ToLower().Contains(".mp3"))
+            {
                 prio += 5;
             }
+            if (magnet.ToLower().Contains(".avi"))
+            {
+                prio += 3;
+            }
+
             return prio;
         }
 
