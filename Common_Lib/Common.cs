@@ -71,8 +71,20 @@ namespace Common_Lib
             showname = showname.Replace("   ", " ")
                                .Replace("  ", " ")
                                .Replace("'", "")
-                               .Replace("\"", "");
+                               .Replace("\"", "")
+                               .Trim()
+                               .ToLower();
             return showname;
+        }
+
+        public string BuildSeasonEpisodeString(int seas_num, int epi_num)
+        {
+            return "s" + seas_num.ToString().PadLeft(2, '0') + "e" + epi_num.ToString().PadLeft(2, '0') + ".";
+        }
+
+        public string BuildSeasonOnly(int seas_num)
+        {
+            return "s" + seas_num.ToString().PadLeft(2, '0') + ".";
         }
 
         public int ReturnSeason(string episode)

@@ -76,7 +76,7 @@ namespace DataBase
             #endregion
 
             #region WebAPI Example
-
+            /*
             WebAPI tvmapi = new(log);
             log.Write("Start to API test", "Program", 0);
             HttpResponseMessage result = tvmapi.GetShow("DC's Legends of Tomorrow");
@@ -88,17 +88,19 @@ namespace DataBase
             log.Write($"JSon is {jsoncontent}");
 
             tvmapi.Dispose();
-
+            */
             #endregion
 
             #region WebScrap Example
             
             WebScrape scrape = new(log);
-            /*
-            List<string> magnets = scrape.TestWebScrap();
-            log.Write($"Number of Magnets found: {magnets.Count}");
-            */
-            scrape.GetMagnetTVShowEpisode("Show", 2, 1);
+            List<string> magnets = scrape.GetMagnetTVShowEpisode("The White Lotus", 1, 1);
+            log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
+            log.Write($"Number of Magnets found: {magnets.Count}", "Program", 3);
+            foreach (string magnet in magnets)
+            {
+                log.Write($"Matching magnets found: {magnet}", "Program", 3);
+            }
             scrape.Dispose();
             #endregion
 
