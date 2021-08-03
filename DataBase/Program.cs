@@ -115,6 +115,7 @@ namespace DataBase
             #endregion
 
             #region Getters
+
             MariaDB getterMdb = new(null, log);
             getterMdb.Command("select showname, imdb from shows where `showname` = 'Deadliest Catch'");
             MySqlConnector.MySqlDataReader records = getterMdb.ExecQuery();
@@ -134,7 +135,7 @@ namespace DataBase
             getterMdb.Close();
 
             WebScrape scrape = new(log);
-            string magnet = scrape.GetMagnetTVShowEpisode(showname, 17, 15, imdb);
+            string magnet = scrape.GetMagnetTVShowEpisode(showname, 17, 16, imdb);
             log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
             if (magnet != "")
             {
@@ -142,7 +143,7 @@ namespace DataBase
             }
             else
             {
-                log.Write($"No matching magnet found");
+                log.Write($"No matching magnet found", "Program", 3);
             }
             scrape.Dispose();
 
