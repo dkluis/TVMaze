@@ -90,10 +90,10 @@ namespace DataBase
             #endregion
 
             #region Testing Rarbg
-
+            /*
             WebAPI tvmapi = new(log);
             log.Write("Start to Rarbg API test", "Program", 0);
-            HttpResponseMessage result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet");
+            HttpResponseMessage result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet s01e02");
 
             log.Write($"Result back from API call {result.StatusCode}", "Program RarbgAPI", 3);
 
@@ -104,15 +104,20 @@ namespace DataBase
             
             var content = result.Content.ReadAsStringAsync().Result;
             dynamic jsoncontent = JsonConvert.DeserializeObject(content);
+            // log.Write($"JSon is {jsoncontent}");
 
-            log.Write($"JSon is {jsoncontent}");
+            foreach (var show in jsoncontent["torrent_results"])
+            {
+                string magnet = show["download"];
+                log.Write($"magnet found: {magnet}");
+            }
 
             tvmapi.Dispose();
-
+            */
             #endregion
 
             #region Getters
-            /*
+            
             WebScrape scrape = new(log);
             string magnet = scrape.GetMagnetTVShowEpisode("Eden: Untamed Planet", 1, 2);
             log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
@@ -125,7 +130,7 @@ namespace DataBase
                 log.Write($"No matching magnet found");
             }
             scrape.Dispose();
-            */
+            
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

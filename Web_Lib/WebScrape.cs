@@ -3,7 +3,6 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 
 namespace Web_Lib
@@ -32,7 +31,7 @@ namespace Web_Lib
             magnets = new();
             GetEZTVMagnets(showname, seas_num, epi_num);
             GetMagnetDLMagnets(showname, seas_num, epi_num);
-            // GetRarbgMagments(showname, seas_num, epi_num);
+            GetRarbgMagnets(showname, seas_num, epi_num);
             // Get MagnetDL
             // Eztv API
             // 
@@ -218,9 +217,54 @@ namespace Web_Lib
             string url = "https://www.magnetdl.com/";
             showname = common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //MagnetDL seach char.
-            url = url + "/" + showname[0].ToString().ToLower() + "/" +showname + "/";
+            url = url + "/" + showname[0].ToString().ToLower() + "/" + showname + "/";
             log.Write($"URL MagnetDL is {url}", "MagnetDL", 3);
             return url;
+        }
+
+        #endregion
+
+        #region Rarbg
+
+        private void GetRarbgMagnets(string showname, int seas_num, int epi_num)
+        {
+            int prio;
+            WebAPI tvmapi = new(log);
+            log.Write("Start to Rarbg API test", "Program", 0);
+            HttpResponseMessage result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet s01e02");
+
+            log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 3);
+            if (!result.IsSuccessStatusCode)
+            {
+                Environment.Exit(99);
+            }
+
+            var content = result.Content.ReadAsStringAsync().Result;
+            //Console.WriteLine(content.ToString());
+            if (content == "{\"error\":\"No results found\",\"error_code\":20}")
+            {
+                // Try to get the result again.   Sometimes gives this error eventhough there are result
+                Console.WriteLine("Error Occured");
+                return;
+            }
+
+            dynamic jsoncontent = JsonConvert.DeserializeObject(content);
+            // log.Write($"JSon is {jsoncontent}");
+
+            foreach (var show in jsoncontent["torrent_results"])
+            {
+                string magnet = show["download"];
+                prio = PrioritizeMagnet(magnet, "RarbgAPI");
+                if (prio > 130)
+                {
+                    //To Do still need the compara string check
+                    magnets.Add(prio + "#$# " + magnet);
+                    log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 3);
+                }
+            }
+
+            magnets.Sort();
+            magnets.Reverse();
         }
 
         #endregion
@@ -237,6 +281,9 @@ namespace Web_Lib
                     break;
                 case "MagnetDL":
                     prio = 110;    // Does not have container info so +10 by default
+                    break;
+                case "RarbgAPI":
+                    prio = 130;    // Typically has the better so +30 by default
                     break;
                 default:
                     prio = 100;
