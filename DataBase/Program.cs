@@ -1,6 +1,9 @@
 ﻿using Common_Lib;
+using DB_Lib;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 using Web_Lib;
 
 namespace DataBase
@@ -70,11 +73,11 @@ namespace DataBase
             */
             #endregion
 
-            #region WebAPI Example
+            #region TVMaze API
             /*
             WebAPI tvmapi = new(log);
             log.Write("Start to API test", "Program", 0);
-            HttpResponseMessage result = tvmapi.GetShow("DC's Legends of Tomorrow");
+            HttpResponseMessage result = tvmapi.GetShow("Eden: Untamed Planet");
             log.Write($"Result back from API call {result.StatusCode}", "Program WebAPI", 3);
 
             var content = result.Content.ReadAsStringAsync().Result;
@@ -86,8 +89,30 @@ namespace DataBase
             */
             #endregion
 
-            #region WebScrap Examples
+            #region Testing Rarbg
 
+            WebAPI tvmapi = new(log);
+            log.Write("Start to Rarbg API test", "Program", 0);
+            HttpResponseMessage result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet");
+
+            log.Write($"Result back from API call {result.StatusCode}", "Program RarbgAPI", 3);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                Environment.Exit(99);
+            }
+            
+            var content = result.Content.ReadAsStringAsync().Result;
+            dynamic jsoncontent = JsonConvert.DeserializeObject(content);
+
+            log.Write($"JSon is {jsoncontent}");
+
+            tvmapi.Dispose();
+
+            #endregion
+
+            #region Getters
+            /*
             WebScrape scrape = new(log);
             string magnet = scrape.GetMagnetTVShowEpisode("Eden: Untamed Planet", 1, 2);
             log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
@@ -100,24 +125,7 @@ namespace DataBase
                 log.Write($"No matching magnet found");
             }
             scrape.Dispose();
-
-            /*
-            WebScrape scrapetest = new(log);
-            List<string> sortedmagnets = scrapetest.TestWebScrap();
-            foreach (string magnet in sortedmagnets)
-            {
-                log.Write($"Sorted and Prioritized magnets found: {magnet}", "Program", 3);
-            }
-
-            string[] split = { "#$# " };
-            if (sortedmagnets.Count != 0)
-            {
-                string[] selected = sortedmagnets[0].Split(split, StringSplitOptions.RemoveEmptyEntries);
-                log.Write($"Selected is magnet: {selected[1]}", "Program", 3);
-            }
-            scrapetest.Dispose();
             */
-
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

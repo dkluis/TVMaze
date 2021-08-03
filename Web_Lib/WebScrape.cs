@@ -225,87 +225,6 @@ namespace Web_Lib
 
         #endregion
 
-        #region RARBG
-        /*
-        private void GetRarbgMagnets(string showname, int seas_num, int epi_num)
-        {
-            string html = BuildRarbgURL(showname);
-            string compareshowname = common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".");
-            string validatestring;
-            int magnetcount = magnets.Count;
-
-            int priority;
-            string prioritizedmagnet;
-
-            if (epi_num == 1)
-            {
-                validatestring = common.BuildSeasonOnly(seas_num);
-            }
-            else
-            {
-                validatestring = common.BuildSeasonEpisodeString(seas_num, epi_num);
-            }
-            string comparewithmagnet = compareshowname + "." + validatestring;
-            log.Write($"Compare string = {comparewithmagnet}", "PirateBay", 2);
-
-            WebAPI tvmapi = new(log);
-            HttpResponseMessage result = tvmapi.GetRarbgInfo(html);
-            log.Write($"Result back from API call {result.StatusCode}", "Program WebAPI", 3);
-            if (!result.IsSuccessStatusCode)
-            {
-                Environment.Exit(99);
-            }
-            var content = result.Content.ReadAsStringAsync().Result;
-            dynamic jsoncontent = JsonConvert.DeserializeObject(content);
-
-            log.Write($"JSon is {jsoncontent}");
-
-            tvmapi.Dispose();
-            /*
-            if (magnets.Count == magnetcount)
-            {
-                WholeSeasonFound = false;
-                validatestring = common.BuildSeasonEpisodeString(seas_num, epi_num);
-                comparewithmagnet = compareshowname + "." + validatestring;
-                log.Write($"Did not find a whole season now running with ----> Compare string = {comparewithmagnet}", "PirateBay", 2);
-                foreach (HtmlNode node in table)
-                {
-                    if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
-                        node.Attributes["href"].Value.ToLower().Contains(compareshowname) &&
-                        node.Attributes["href"].Value.ToLower().Contains(validatestring))
-                    {
-                        priority = PrioritizeMagnet(node.Attributes["href"].Value, "PirateBay");
-                        if (priority > 130)
-                        {
-                            prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                            log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "PirateBay", 3);
-                            magnets.Add(prioritizedmagnet);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                WholeSeasonFound = true;
-            }
-        
-            magnets.Sort();
-            magnets.Reverse();
-        }
-
-        private string BuildRarbgURL(string showname)
-        {
-            string url = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string=";
-            showname = common.RemoveSpecialCharsInShowname(showname);
-            showname = showname.Replace(" ", "%20");  //piratebay seach char.
-            url = url + showname;
-            url = url + "'&token=lnjzy73ucv&format=json_extended&app_id=lol";
-            log.Write($"URL Piratebay is {url}", "PirateBay", 3);
-            return url;
-        }
-        */
-        #endregion
-
         #region Priorities
 
         private int PrioritizeMagnet(string magnet, string provider)
@@ -368,44 +287,6 @@ namespace Web_Lib
             }
 
             return prio;
-        }
-
-        #endregion
-
-        #region Web Scrapping Test
-
-        public List<string> TestWebScrap()
-        {
-            string html = "https://eztv.re/search/the-white-lotus";
-            HtmlWeb web = new HtmlWeb();
-            List<string> magnets = new();
-
-            HtmlDocument htmlDoc = web.Load(html);
-            //log.Write($"HTML Doc: {htmlDoc.ParsedText}", "WebScrape", 0, false);
-
-            HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
-            int priority;
-            string prioritizedmagnet;
-            foreach (HtmlNode node in table)
-            {
-                if (node.Attributes["href"].Value.Contains("magnet:") &&
-                    node.Attributes["href"].Value.ToLower().Contains("s01e04"))
-                {
-                    //ToDo add prio value to magnet info//
-                    priority = PrioritizeMagnet(node.Attributes["href"].Value, "Eztv");
-                    if (priority > 100)
-                    {
-                        prioritizedmagnet = priority.ToString() + "#$# " + node.Attributes["href"].Value;
-                        if (priority > 130)
-                        {
-                            magnets.Add(prioritizedmagnet);
-                        }
-                    }
-                }
-            }
-            magnets.Sort();
-            magnets.Reverse();
-            return magnets;
         }
 
         #endregion
