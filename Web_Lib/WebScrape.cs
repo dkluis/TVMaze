@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
+using System.Timers;
 
 namespace Web_Lib
 {
@@ -13,6 +15,7 @@ namespace Web_Lib
         private List<string> magnets = new();
         private Common common = new();
         public bool WholeSeasonFound;
+        public bool rarbgError;
 
         public WebScrape(Logger logger)
         {
@@ -29,12 +32,17 @@ namespace Web_Lib
         public string GetMagnetTVShowEpisode(string showname, int seas_num, int epi_num)
         {
             magnets = new();
+            GetRarbgMagnets(showname, seas_num, epi_num);
             GetEZTVMagnets(showname, seas_num, epi_num);
             GetMagnetDLMagnets(showname, seas_num, epi_num);
-            GetRarbgMagnets(showname, seas_num, epi_num);
-            // Get MagnetDL
             // Eztv API
-            // 
+            /*
+            if (rarbgError)
+            {
+                Thread.Sleep(1000);
+                GetRarbgMagnets(showname, seas_num, epi_num);
+            }
+            */
             if (magnets.Count > 0)
             {
                 log.Write($"Total Magnets found {magnets.Count}", "Getters", 1);
@@ -231,6 +239,7 @@ namespace Web_Lib
             int prio;
             WebAPI tvmapi = new(log);
             log.Write("Start to Rarbg API test", "Program", 0);
+            //HttpResponseMessage result = new();
             HttpResponseMessage result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet s01e02");
 
             log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 3);
@@ -245,6 +254,7 @@ namespace Web_Lib
             {
                 // Try to get the result again.   Sometimes gives this error eventhough there are result
                 Console.WriteLine("Error Occured");
+                rarbgError = true;
                 return;
             }
 
@@ -277,6 +287,7 @@ namespace Web_Lib
             switch (provider)
             {
                 case "Eztv":
+                case "EztvAPI":
                     prio = 100;
                     break;
                 case "MagnetDL":
