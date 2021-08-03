@@ -88,16 +88,7 @@ namespace Common_Lib
             return "s" + seas_num.ToString().PadLeft(2, '0') + ".";
         }
 
-        public int ReturnSeason(string episode)
-        {
-            return 0;
-        }
-
-        public int ReturnEpisode(string episode)
-        {
-            return 1;
-        }
-
         #endregion
+
     }
 }

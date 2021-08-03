@@ -29,13 +29,14 @@ namespace Web_Lib
 
         #region Getters
 
-        public string GetMagnetTVShowEpisode(string showname, int seas_num, int epi_num)
+        public string GetMagnetTVShowEpisode(string showname, int seas_num, int epi_num, string imdb = "")
         {
             magnets = new();
             GetRarbgMagnets(showname, seas_num, epi_num);
             GetEZTVMagnets(showname, seas_num, epi_num);
             GetMagnetDLMagnets(showname, seas_num, epi_num);
-            // Eztv API
+            // Eztv API only for imdb known shows
+            // GetMagnetsEztvAPI(imdb);
             /*
             if (rarbgError)
             {
@@ -239,8 +240,8 @@ namespace Web_Lib
             int prio;
             WebAPI tvmapi = new(log);
             log.Write("Start to Rarbg API test", "Program", 0);
-            //HttpResponseMessage result = new();
-            HttpResponseMessage result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet s01e02");
+
+            HttpResponseMessage result = tvmapi.GetRarbgMagnets(showname);
 
             log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 3);
             if (!result.IsSuccessStatusCode)
@@ -265,7 +266,7 @@ namespace Web_Lib
             {
                 string magnet = show["download"];
                 prio = PrioritizeMagnet(magnet, "RarbgAPI");
-                if (prio > 130)
+                if (prio > 130 && magnet.ToLower().Contains("deadliest.catch.s17e15"))
                 {
                     //To Do still need the compara string check
                     magnets.Add(prio + "#$# " + magnet);
@@ -276,6 +277,11 @@ namespace Web_Lib
             magnets.Sort();
             magnets.Reverse();
         }
+
+        #endregion
+
+        #region EztvAPI IMDB
+
 
         #endregion
 

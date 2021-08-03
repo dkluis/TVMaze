@@ -91,7 +91,7 @@ namespace Web_Lib
             var productvalue = new ProductInfoHeaderValue("Safari", "13.0");
             client.DefaultRequestHeaders.UserAgent.Add(productvalue);
             string api = $"{RarbgAPI_url_pre}{comm.RemoveSpecialCharsInShowname(showname)}{RarbgAPI_url_suf}";
-            log.Write($"API String = {api}", "WebAPI Rarbg", 3);
+            log.Write($"API String = {api}", "RarbgAPI", 3);
             return api;
         }
 

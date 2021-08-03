@@ -1,9 +1,7 @@
 ﻿using Common_Lib;
 using DB_Lib;
-using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
-using System.Net.Http;
 using Web_Lib;
 
 namespace DataBase
@@ -117,9 +115,26 @@ namespace DataBase
             #endregion
 
             #region Getters
+            MariaDB getterMdb = new(null, log);
+            getterMdb.Command("select showname, imdb from shows where `showname` = 'Deadliest Catch'");
+            MySqlConnector.MySqlDataReader records = getterMdb.ExecQuery();
+            string showname = "";
+            string imdb = "";
+            if (!getterMdb.success)
+            {
+                Environment.Exit(99);
+            }
             
+            while (records.Read())
+            {
+                showname = records["showname"].ToString();
+                imdb = records["imdb"].ToString();
+                log.Write($"Found {showname} with {imdb} info", "Program", 3);
+            }
+            getterMdb.Close();
+
             WebScrape scrape = new(log);
-            string magnet = scrape.GetMagnetTVShowEpisode("Eden: Untamed Planet", 1, 2);
+            string magnet = scrape.GetMagnetTVShowEpisode(showname, 17, 15, imdb);
             log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
             if (magnet != "")
             {
@@ -130,7 +145,7 @@ namespace DataBase
                 log.Write($"No matching magnet found");
             }
             scrape.Dispose();
-            
+
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);

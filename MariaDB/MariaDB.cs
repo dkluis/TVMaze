@@ -75,7 +75,7 @@ namespace DB_Lib
             }
         }
 
-        private void Close()
+        public void Close()
         {
             success = true;
             exception = new Exception();
