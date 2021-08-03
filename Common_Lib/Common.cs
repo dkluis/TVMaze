@@ -72,6 +72,7 @@ namespace Common_Lib
                                .Replace("  ", " ")
                                .Replace("'", "")
                                .Replace("\"", "")
+                               .Replace(":", "")
                                .Trim()
                                .ToLower();
             return showname;

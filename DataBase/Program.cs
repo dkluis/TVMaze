@@ -1,6 +1,5 @@
 ﻿using Common_Lib;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Web_Lib;
 
@@ -88,18 +87,21 @@ namespace DataBase
             #endregion
 
             #region WebScrap Examples
-            /*
+
             WebScrape scrape = new(log);
-            List<string> magnets = scrape.GetMagnetTVShowEpisode("The White Lotus", 1, 1);
+            string magnet = scrape.GetMagnetTVShowEpisode("Eden: Untamed Planet", 1, 2);
             log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
-            log.Write($"Number of Magnets found: {magnets.Count}", "Program", 3);
-            foreach (string magnet in magnets)
+            if (magnet != "")
             {
-                log.Write($"Matching magnets found: {magnet}", "Program", 3);
+                log.Write($"Matching magnet found: {magnet}", "Program", 3);
+            }
+            else
+            {
+                log.Write($"No matching magnet found");
             }
             scrape.Dispose();
-            */
 
+            /*
             WebScrape scrapetest = new(log);
             List<string> sortedmagnets = scrapetest.TestWebScrap();
             foreach (string magnet in sortedmagnets)
@@ -107,19 +109,18 @@ namespace DataBase
                 log.Write($"Sorted and Prioritized magnets found: {magnet}", "Program", 3);
             }
 
-            string[] split= { "#$# " };
+            string[] split = { "#$# " };
             if (sortedmagnets.Count != 0)
             {
                 string[] selected = sortedmagnets[0].Split(split, StringSplitOptions.RemoveEmptyEntries);
                 log.Write($"Selected is magnet: {selected[1]}", "Program", 3);
             }
-
             scrapetest.Dispose();
+            */
 
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);
-            //Console.Read();
             log.Stop();
             Console.WriteLine("Done");
         }
