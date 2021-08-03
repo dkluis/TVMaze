@@ -233,7 +233,7 @@ namespace Web_Lib
 
         #endregion
 
-        #region Rarbg
+        #region RarbgAPI
 
         private void GetRarbgMagnets(string showname, int seas_num, int epi_num)
         {
@@ -241,7 +241,20 @@ namespace Web_Lib
             WebAPI tvmapi = new(log);
             log.Write("Start to Rarbg API test", "Program", 0);
 
+            string compareshowname = common.RemoveSpecialCharsInShowname(showname);
+            string compareseason;
+            if (epi_num == 1)
+            {
+                compareseason = common.BuildSeasonOnly(seas_num);
+            }
+            else
+            {
+                compareseason = common.BuildSeasonEpisodeString(seas_num, epi_num);
+            }
+            string comparewithmagnet = compareshowname.Replace(" ", ".") + "." + compareseason;
+
             HttpResponseMessage result = tvmapi.GetRarbgMagnets(showname);
+            log.Write($"Compare string = {comparewithmagnet}", "RarbgAPI", 3);
 
             log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 3);
             if (!result.IsSuccessStatusCode)
@@ -266,7 +279,8 @@ namespace Web_Lib
             {
                 string magnet = show["download"];
                 prio = PrioritizeMagnet(magnet, "RarbgAPI");
-                if (prio > 130 && magnet.ToLower().Contains("deadliest.catch.s17e15"))
+
+                if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
                     //To Do still need the compara string check
                     magnets.Add(prio + "#$# " + magnet);
