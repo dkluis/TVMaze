@@ -10,16 +10,17 @@ namespace Web_Lib
 
     public class WebAPI : IDisposable
     {
-        static HttpClient client = new();
+        static readonly HttpClient client = new();
+        static HttpClient rarbgclient = new();
         private HttpResponseMessage _http_response;
+        readonly string tvmaze_url = "https://api.tvmaze.com/";
+        // readonly string tvm_user_url = "https://api.tvmaze.com/v1/";
 
-        string tvmaze_url = "https://api.tvmaze.com/";
-        string tvm_user_url = "https://api.tvmaze.com/v1/";
+        readonly string RarbgAPI_url_pre = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string='";
+        readonly string RarbgAPI_url_suf = "'&token=lnjzy73ucv&format=json_extended&app_id=lol";
 
-        string RarbgAPI_url_pre = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string='";
-        string RarbgAPI_url_suf = "'&token=lnjzy73ucv&format=json_extended&app_id=lol";
-
-        private Logger log;
+        private readonly Logger log;
+        // private readonly Common common = new();
 
         public WebAPI(Logger logger)
         {
@@ -62,20 +63,25 @@ namespace Web_Lib
 
         #region RarbgAPI
 
-        public HttpResponseMessage GetRarbgMagnets(string searchURL)
+        public HttpResponseMessage GetRarbgMagnets(string searchfor)
         {
-            Task t = GetShowRarbg(searchURL);
+            rarbgclient = new();
+            rarbgclient.BaseAddress = new Uri(RarbgAPI_url_pre);
+            rarbgclient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var productvalue = new ProductInfoHeaderValue("Safari", "13.0");
+            rarbgclient.DefaultRequestHeaders.UserAgent.Add(productvalue);
+            Task t = GetShowRarbg(searchfor);
             t.Wait();
             return _http_response;
         }
 
-        public async Task GetShowRarbg(string showname)
+        public async Task GetShowRarbg(string searchfor)
         {
             try
             {
                 HttpResponseMessage response = new();
-                string url = GetRarbgMagnetsAPI(showname);
-                _http_response = await client.GetAsync(url).ConfigureAwait(false);
+                string url = GetRarbgMagnetsAPI(searchfor);
+                _http_response = await rarbgclient.GetAsync(url).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -85,12 +91,7 @@ namespace Web_Lib
 
         private string GetRarbgMagnetsAPI(string showname)
         {
-            Common comm = new();
-            client.BaseAddress = new Uri(RarbgAPI_url_pre);
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var productvalue = new ProductInfoHeaderValue("Safari", "13.0");
-            client.DefaultRequestHeaders.UserAgent.Add(productvalue);
-            string api = $"{RarbgAPI_url_pre}{comm.RemoveSpecialCharsInShowname(showname)}{RarbgAPI_url_suf}";
+            string api = $"{RarbgAPI_url_pre}{Common.RemoveSpecialCharsInShowname(showname)}{RarbgAPI_url_suf}";
             log.Write($"API String = {api}", "RarbgAPI", 3);
             return api;
         }
@@ -99,12 +100,7 @@ namespace Web_Lib
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize(this);
         }
-
-
-
-
-
     }
 }

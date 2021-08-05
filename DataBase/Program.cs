@@ -129,14 +129,14 @@ namespace DataBase
             while (records.Read())
             {
                 showname = records["showname"].ToString();
-                imdb = records["imdb"].ToString();
+                // imdb = records["imdb"].ToString();
                 log.Write($"Found {showname} with {imdb} info", "Program", 3);
             }
             getterMdb.Close();
 
-            WebScrape scrape = new(log);
-            string magnet = scrape.GetMagnetTVShowEpisode(showname, 17, 16, imdb);
-            log.Write($"Whole season found = {scrape.WholeSeasonFound}", "Program", 3);
+            Magnets search = new();
+            string magnet = search.PerformShowEpisodeMagnetsSearch(showname, 17, 1, log);
+
             if (magnet != "")
             {
                 log.Write($"Matching magnet found: {magnet}", "Program", 3);
@@ -145,7 +145,6 @@ namespace DataBase
             {
                 log.Write($"No matching magnet found", "Program", 3);
             }
-            scrape.Dispose();
 
             #endregion
 

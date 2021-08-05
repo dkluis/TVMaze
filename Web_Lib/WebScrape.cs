@@ -4,16 +4,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading;
-using System.Timers;
 
 namespace Web_Lib
 {
     public class WebScrape : IDisposable
     {
-        Logger log;
-        private List<string> magnets = new();
-        private Common common = new();
+        private readonly Logger log;
+        public List<string> magnets = new();
+        // private Common common = new();
         public bool WholeSeasonFound;
         public bool rarbgError;
 
@@ -24,62 +22,22 @@ namespace Web_Lib
 
         public void Dispose()
         {
-            // throw new NotImplementedException();
+            GC.SuppressFinalize(this);
         }
-
-        #region Getters
-
-        public string GetMagnetTVShowEpisode(string showname, int seas_num, int epi_num, string imdb = "")
-        {
-            magnets = new();
-            GetRarbgMagnets(showname, seas_num, epi_num);
-            GetEZTVMagnets(showname, seas_num, epi_num);
-            GetMagnetDLMagnets(showname, seas_num, epi_num);
-            // Eztv API only for imdb known shows
-            // GetMagnetsEztvAPI(imdb);
-            /*
-            if (rarbgError)
-            {
-                Thread.Sleep(1000);
-                GetRarbgMagnets(showname, seas_num, epi_num);
-            }
-            */
-            if (magnets.Count > 0)
-            {
-                log.Write($"Total Magnets found {magnets.Count}", "Getters", 1);
-                return magnets[0];
-            }
-            else
-            {
-                return "";
-            }
-        }
-
-        #endregion
 
         #region EZTV
 
-        private void GetEZTVMagnets(string showname, int seas_num, int epi_num)
+        public void GetEZTVMagnets(string showname, string seasepi)
         {
             string html = BuildEztvURL(showname);
-            string compareshowname = common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".");
-            string compareseason;
+
+            string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
+            log.Write($"Compare string = {comparewithmagnet}", "Eztv", 2);
 
             int priority;
             string prioritizedmagnet;
 
-            if (epi_num == 1)
-            {
-                compareseason = common.BuildSeasonOnly(seas_num);
-            }
-            else
-            {
-                compareseason = common.BuildSeasonEpisodeString(seas_num, epi_num);
-            }
-            string comparewithmagnet = compareshowname + "." + compareseason;
-            log.Write($"Compare string = {comparewithmagnet}", "Eztv", 2);
-
-            HtmlWeb web = new HtmlWeb();
+            HtmlWeb web = new();
             HtmlDocument htmlDoc = web.Load(html);
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
 
@@ -98,32 +56,6 @@ namespace Web_Lib
                 }
             }
 
-            if (magnets.Count == 0)
-            {
-                WholeSeasonFound = false;
-                compareseason = common.BuildSeasonEpisodeString(seas_num, epi_num);
-                comparewithmagnet = compareshowname + "." + compareseason;
-                log.Write($"Did not find a whole season now running with ----> Compare string = {comparewithmagnet}", "Eztv", 2);
-                foreach (HtmlNode node in table)
-                {
-                    if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
-                        node.Attributes["href"].Value.ToLower().Contains(compareshowname) &&
-                        node.Attributes["href"].Value.ToLower().Contains(compareseason))
-                    {
-                        priority = PrioritizeMagnet(node.Attributes["href"].Value, "Eztv");
-                        if (priority > 130)
-                        {
-                            prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                            log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "Eztv", 3);
-                            magnets.Add(prioritizedmagnet);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                WholeSeasonFound = true;
-            }
             magnets.Sort();
             magnets.Reverse();
         }
@@ -131,9 +63,9 @@ namespace Web_Lib
         private string BuildEztvURL(string showname)
         {
             string eztv_url = "https://eztv.re/search/";
-            showname = common.RemoveSpecialCharsInShowname(showname);
+            showname = Common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //eztv seach char.
-            eztv_url = eztv_url + showname;
+            eztv_url += showname;
             log.Write($"URL MagnetDL is {eztv_url}", "Eztv", 3);
             return eztv_url;
         }
@@ -142,29 +74,18 @@ namespace Web_Lib
 
         #region MagnetDL
 
-        private void GetMagnetDLMagnets(string showname, int seas_num, int epi_num)
+        public void GetMagnetDLMagnets(string showname, string seasepi)
         {
             string html = BuildMagnetDLURL(showname);
 
-            string compareshowname = common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".");
-            string compareseason;
-            int magnetcount = magnets.Count;
+            string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
+            log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 2);
 
             int priority;
             string prioritizedmagnet;
 
-            if (epi_num == 1)
-            {
-                compareseason = common.BuildSeasonOnly(seas_num);
-            }
-            else
-            {
-                compareseason = common.BuildSeasonEpisodeString(seas_num, epi_num);
-            }
-            string comparewithmagnet = compareshowname + "." + compareseason;
-            log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 2);
 
-            HtmlWeb web = new HtmlWeb();
+            HtmlWeb web = new();
             HtmlDocument htmlDoc = web.Load(html);
 
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
@@ -188,36 +109,6 @@ namespace Web_Lib
                 }
             }
 
-            if (magnets.Count == magnetcount)
-            {
-                if (table is null)
-                {
-                    Environment.Exit(99);
-                }
-                WholeSeasonFound = false;
-                compareseason = common.BuildSeasonEpisodeString(seas_num, epi_num);
-                comparewithmagnet = compareshowname + "." + compareseason;
-                log.Write($"Did not find a whole season now running with ----> Compare string = {comparewithmagnet}", "MagnetDL", 2);
-                foreach (HtmlNode node in table)
-                {
-                    if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
-                        node.Attributes["href"].Value.ToLower().Contains(compareshowname) &&
-                        node.Attributes["href"].Value.ToLower().Contains(compareseason))
-                    {
-                        priority = PrioritizeMagnet(node.Attributes["href"].Value, "MagnetDL");
-                        if (priority > 130)
-                        {
-                            prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                            log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "MagnetDL", 3);
-                            magnets.Add(prioritizedmagnet);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                WholeSeasonFound = true;
-            }
             magnets.Sort();
             magnets.Reverse();
         }
@@ -225,7 +116,7 @@ namespace Web_Lib
         private string BuildMagnetDLURL(string showname)
         {
             string url = "https://www.magnetdl.com/";
-            showname = common.RemoveSpecialCharsInShowname(showname);
+            showname = Common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //MagnetDL seach char.
             url = url + "/" + showname[0].ToString().ToLower() + "/" + showname + "/";
             log.Write($"URL MagnetDL is {url}", "MagnetDL", 3);
@@ -236,25 +127,15 @@ namespace Web_Lib
 
         #region RarbgAPI
 
-        private void GetRarbgMagnets(string showname, int seas_num, int epi_num)
+        public void GetRarbgMagnets(string showname, string seasepi)
         {
             int prio;
             WebAPI tvmapi = new(log);
             log.Write("Start to Rarbg API test", "Program", 0);
 
-            string compareshowname = common.RemoveSpecialCharsInShowname(showname);
-            string compareseason;
-            if (epi_num == 1)
-            {
-                compareseason = common.BuildSeasonOnly(seas_num);
-            }
-            else
-            {
-                compareseason = common.BuildSeasonEpisodeString(seas_num, epi_num);
-            }
-            string comparewithmagnet = compareshowname.Replace(" ", ".") + "." + compareseason;
+            string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
 
-            HttpResponseMessage result = tvmapi.GetRarbgMagnets(showname);
+            HttpResponseMessage result = tvmapi.GetRarbgMagnets(showname + " " + seasepi);
             log.Write($"Compare string = {comparewithmagnet}", "RarbgAPI", 3);
 
             log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 3);
@@ -265,11 +146,10 @@ namespace Web_Lib
             }
 
             var content = result.Content.ReadAsStringAsync().Result;
-            //Console.WriteLine(content.ToString());
             if (content == "{\"error\":\"No results found\",\"error_code\":20}")
             {
-                // Try to get the result again.   Sometimes gives this error eventhough there are result
-                Console.WriteLine("Error Occured");
+                // Try to get the result again.   Sometimes gives this error eventhough there are magnets to be found
+                log.Write("Status OK, Error Occured Not Found", "Rarbg", 1);
                 rarbgError = true;
                 return;
             }
@@ -281,7 +161,7 @@ namespace Web_Lib
             {
                 string magnet = show["download"];
                 prio = PrioritizeMagnet(magnet, "RarbgAPI");
-
+                log.Write($"Magnet found: {magnet}");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
                     //To Do still need the compara string check
@@ -303,25 +183,15 @@ namespace Web_Lib
 
         #region Priorities
 
-        private int PrioritizeMagnet(string magnet, string provider)
+        private static int PrioritizeMagnet(string magnet, string provider)
         {
-            int prio;
-            switch (provider)
+            var prio = provider switch
             {
-                case "Eztv":
-                case "EztvAPI":
-                    prio = 100;
-                    break;
-                case "MagnetDL":
-                    prio = 110;    // Does not have container info so +10 by default
-                    break;
-                case "RarbgAPI":
-                    prio = 130;    // Typically has the better so +30 by default
-                    break;
-                default:
-                    prio = 100;
-                    break;
-            }
+                "Eztv" or "EztvAPI" => 100,
+                "MagnetDL" => 110,   // Does not have container info so +10 by default
+                "RarbgAPI" => 130,   // Typically has the better so +30 by default
+                _ => 100,
+            };
             // Codex values
             if (magnet.ToLower().Contains("x264") || magnet.ToLower().Contains("h264"))
             {
@@ -367,6 +237,73 @@ namespace Web_Lib
             }
 
             return prio;
+        }
+
+        #endregion
+
+    }
+
+    public class Magnets
+    {
+
+        #region Get Prioritized Magnet
+
+        public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, Logger logger)
+        {
+            Logger log = logger;
+            string seasepi;
+            if (epi_num == 1)
+            {
+                //Search for whole season first
+                seasepi = Common.BuildSeasonOnly(seas_num);
+            }
+            else
+            {
+                seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
+            }
+
+            using WebScrape seasonscrape = new(log);
+            {
+                seasonscrape.magnets = new();
+                seasonscrape.GetRarbgMagnets(showname, seasepi);
+                seasonscrape.GetEZTVMagnets(showname, seasepi);
+                seasonscrape.GetMagnetDLMagnets(showname, seasepi);
+                // Eztv API only for imdb known shows
+                // GetMagnetsEztvAPI(imdb);
+
+                if (seasonscrape.magnets.Count > 0)
+                {
+                    return seasonscrape.magnets[0];
+                }
+            }
+
+            if (epi_num == 1) // Nothing found while search for the Season
+            {
+                using WebScrape episodescrape = new(log);
+                {
+                    episodescrape.magnets = new();
+                    seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
+                    episodescrape.GetRarbgMagnets(showname, seasepi);
+                    episodescrape.GetEZTVMagnets(showname, seasepi);
+                    episodescrape.GetMagnetDLMagnets(showname, seasepi);
+
+                    if (episodescrape.magnets.Count > 0)
+                    {
+                        log.Write($"Total Magnets found {episodescrape.magnets.Count}", "Getters", 1);
+                        return episodescrape.magnets[0];
+                    }
+                    else
+                    {
+
+                        log.Write("No Magnets found", "Getters", 1);
+                        return "";
+                    }
+                }
+            }
+            else
+            {
+                return "";  // Nothing found
+            }
         }
 
         #endregion

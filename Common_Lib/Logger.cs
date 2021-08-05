@@ -5,10 +5,10 @@ namespace Common_Lib
 {
     public class Logger
     {
-        private string logfile;
-        private string logpath;
-        private string fulllogpath;
-        private int level;
+        private readonly string logfile;
+        private readonly string logpath;
+        private readonly string fulllogpath;
+        private readonly int level;
         private string app;
 
         public Logger(string logname = null)
@@ -23,15 +23,15 @@ namespace Common_Lib
             }
 
             Common.EnvInfo env = new();
-            Common com = new();
-            level = Int16.Parse(com.ReadConfig("LogLevel"));
+            // Common com = new();
+            level = Int16.Parse(Common.ReadConfig("LogLevel"));
             if (env.OS == "Windows")
             {
-                logpath = com.ReadConfig("PCLogPath");
+                logpath = Common.ReadConfig("PCLogPath");
             }
             else
             {
-                logpath = com.ReadConfig("MacLogPath");
+                logpath = Common.ReadConfig("MacLogPath");
             }
             fulllogpath = Path.Combine(logpath, logfile);
 
@@ -58,7 +58,7 @@ namespace Common_Lib
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
-                file.WriteLine($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(3)} --> {message}");
+                file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2} --> {message}");
             }
         }
 
@@ -69,7 +69,7 @@ namespace Common_Lib
                 using StreamWriter file = new(fulllogpath, append);
                 foreach (string msg in messages)
                 {
-                    file.WriteLine($"{DateTime.Now}: {function.PadRight(20)}: {loglevel.ToString().PadRight(2)}--> {msg}");
+                    file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2}--> {msg}");
                 }
             }
         }

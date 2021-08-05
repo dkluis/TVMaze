@@ -15,6 +15,7 @@ namespace DB_Lib
         public int rows;
         public Exception exception;
         public Logger mdblog;
+        // private readonly Common common = new();
 
         // The username, password in the app.config xml file are used here for the testing only.
         // 2 Test databases are setup TestDB and ProdDB.   They are identical except for their data.
@@ -22,7 +23,6 @@ namespace DB_Lib
 
         public MariaDB(string conninfo = null, Logger log = null)
         {
-            Common com = new();
             if (log == null)
             {
                 mdblog = new();
@@ -34,11 +34,11 @@ namespace DB_Lib
 
             if (conninfo == null || conninfo == "")
             {
-                conninfo = com.ReadConfig("TestDB");
+                conninfo = Common.ReadConfig("TestDB");
             }
             else
             {
-                conninfo = com.ReadConfig(conninfo);
+                conninfo = Common.ReadConfig(conninfo);
             }
 # if DEBUG   
             mdblog.Write($"Configuration String is {conninfo} ", "MariaDB", 3);
@@ -193,6 +193,7 @@ namespace DB_Lib
         {
             this.Close();
             conn.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

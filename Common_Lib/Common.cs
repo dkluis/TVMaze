@@ -8,7 +8,7 @@ namespace Common_Lib
     {
         #region Config
 
-        public string ReadConfig(string key)
+        public static string ReadConfig(string key)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace Common_Lib
 
         #region TVShows
 
-        public string RemoveSpecialCharsInShowname(string showname)
+        public static string RemoveSpecialCharsInShowname(string showname)
         {
             showname = showname.Replace("   ", " ")
                                .Replace("  ", " ")
@@ -78,14 +78,14 @@ namespace Common_Lib
             return showname;
         }
 
-        public string BuildSeasonEpisodeString(int seas_num, int epi_num)
+        public static string BuildSeasonEpisodeString(int seas_num, int epi_num)
         {
-            return "s" + seas_num.ToString().PadLeft(2, '0') + "e" + epi_num.ToString().PadLeft(2, '0') + ".";
+            return "s" + seas_num.ToString().PadLeft(2, '0') + "e" + epi_num.ToString().PadLeft(2, '0');
         }
 
-        public string BuildSeasonOnly(int seas_num)
+        public static string BuildSeasonOnly(int seas_num)
         {
-            return "s" + seas_num.ToString().PadLeft(2, '0') + ".";
+            return "s" + seas_num.ToString().PadLeft(2, '0');
         }
 
         #endregion
