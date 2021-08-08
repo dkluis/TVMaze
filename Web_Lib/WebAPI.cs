@@ -89,9 +89,9 @@ namespace Web_Lib
             }
         }
 
-        private string GetRarbgMagnetsAPI(string showname)
+        private string GetRarbgMagnetsAPI(string searchfor)
         {
-            string api = $"{RarbgAPI_url_pre}{Common.RemoveSpecialCharsInShowname(showname)}{RarbgAPI_url_suf}";
+            string api = $"{RarbgAPI_url_pre}{Common.RemoveSpecialCharsInShowname(searchfor)}{RarbgAPI_url_suf}";
             log.Write($"API String = {api}", "RarbgAPI", 3);
             return api;
         }

@@ -18,7 +18,7 @@ namespace DataBase
             log.Start("TVMaze Console App");
 
             #region DB Example
-            /*
+            
             log.Write("Connection to the MariaDB Test-TVM-DB with wrong password", "Program", 3);
             using (MariaDB MDb = new("server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=WrongPassword", log))
             {
@@ -27,6 +27,8 @@ namespace DataBase
                     log.Write($"Exception is: {MDb.exception.Message}", "Wrong Password", 0);
                 }
             }
+
+            MySqlConnector.MySqlDataReader records;
 
             using (MariaDB MDb = new("", log))
             {
@@ -40,7 +42,7 @@ namespace DataBase
                 {
                     log.Write($"Command Exception is: {MDb.exception.Message}", "Correct Password", 0);
                 }
-                MySqlConnector.MySqlDataReader records = MDb.ExecQuery();
+                records = MDb.ExecQuery();
                 if (!MDb.success)
                 {
                     log.Write($"ExecQuery Exception is: {MDb.exception.Message}", "Correct Password", 0);
@@ -54,7 +56,7 @@ namespace DataBase
             using (MariaDB MDb = new("ProdDB", log))
             {
                 log.Write("Executing a query via the overloaded ExecQuery method passing in the query directly", "Program", 3);
-                MySqlConnector.MySqlDataReader records = MDb.ExecQuery("Select * from download_options");
+                records = MDb.ExecQuery("Select * from download_options");
                 if (!MDb.success)
                 {
                     log.Write($"ExecQuery Exception is: {MDb.exception.Message}", "Read Output", 0);
@@ -68,7 +70,7 @@ namespace DataBase
                     log.Write($"Prov Name: {records["providername"].ToString().PadRight(30)}", "Read Output", 3);
                 }
             }
-            */
+            
             #endregion
 
             #region TVMaze API
@@ -115,9 +117,9 @@ namespace DataBase
             #endregion
 
             #region Getters
-
+            /*
             MariaDB getterMdb = new(null, log);
-            getterMdb.Command("select showname, imdb from shows where `showname` = 'Deadliest Catch'");
+            getterMdb.Command("select showname, imdb from shows where `showname` = 'Hit & Run'");
             MySqlConnector.MySqlDataReader records = getterMdb.ExecQuery();
             string showname = "";
             string imdb = "";
@@ -135,7 +137,7 @@ namespace DataBase
             getterMdb.Close();
 
             Magnets search = new();
-            string magnet = search.PerformShowEpisodeMagnetsSearch(showname, 17, 1, log);
+            string magnet = search.PerformShowEpisodeMagnetsSearch(showname, 1, 2, log);
 
             if (magnet != "")
             {
@@ -145,7 +147,7 @@ namespace DataBase
             {
                 log.Write($"No matching magnet found", "Program", 3);
             }
-
+            */
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec", "Program", 1);
