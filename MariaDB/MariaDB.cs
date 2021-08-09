@@ -21,6 +21,7 @@ namespace DB_Lib
         // 2 Test databases are setup TestDB and ProdDB.   They are identical except for their data.
         // The TestDB is the default
 
+
         public MariaDB(string conninfo = null, Logger log = null)
         {
             if (log == null)

@@ -18,7 +18,7 @@ namespace DataBase
             log.Start("TVMaze Console App");
 
             #region DB Example
-            
+            /*
             log.Write("Connection to the MariaDB Test-TVM-DB with wrong password", "Program", 3);
             using (MariaDB MDb = new("server=ca-server.local; database=Test-TVM-DB; uid=dick; pwd=WrongPassword", log))
             {
@@ -70,7 +70,7 @@ namespace DataBase
                     log.Write($"Prov Name: {records["providername"].ToString().PadRight(30)}", "Read Output", 3);
                 }
             }
-            
+            */
             #endregion
 
             #region TVMaze API

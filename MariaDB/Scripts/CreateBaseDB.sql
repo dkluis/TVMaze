@@ -84,7 +84,7 @@ INSERT INTO TvmStatuses (TvmStatus) VALUES
 	 ('Skipping'),
 	 ('Undecided');
 
-   CREATE TABLE `TvmShowUpdates` (
+CREATE TABLE `TvmShowUpdates` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `TvmShowId` int(11) NOT NULL,
   `TvmUpdateEpoch` int(11) NOT NULL,

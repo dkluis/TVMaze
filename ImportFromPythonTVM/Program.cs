@@ -6,7 +6,7 @@ namespace ImportFromPythonTVM
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
 
             Logger log = new("ImportFromPythonTVM.log");
@@ -67,7 +67,7 @@ namespace ImportFromPythonTVM
             #endregion
 
             #region Migrate Episodes
-
+            /*
             using (MariaDB PythonDB = new("ProdDB", log))
             {
                 MariaDB TvmazeDB = new("New-Test-DB", log);
@@ -151,6 +151,7 @@ namespace ImportFromPythonTVM
                     }
                 }
             }
+            */
             #endregion
 
             log.Stop();
