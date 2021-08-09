@@ -248,7 +248,7 @@ namespace Web_Lib
 
         #region Get Prioritized Magnet
 
-        public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, Logger logger)
+        public static string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, Logger logger)
         {
             Logger log = logger;
             string seasepi;

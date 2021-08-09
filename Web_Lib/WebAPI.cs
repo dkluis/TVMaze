@@ -15,7 +15,7 @@ namespace Web_Lib
         private HttpResponseMessage _http_response;
         readonly string tvmaze_url = "https://api.tvmaze.com/";
         private bool _tvmaze_url_initialized;
-        readonly string tvmaze_user_url = "https://api.tvmaze.com/v1/";
+        readonly string tvmaze_user_url = "https://api.tvmaze.com/v1/user/";
         private bool _tvmaze_user_url_initialized;
 
         readonly string RarbgAPI_url_pre = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string='";
@@ -59,12 +59,10 @@ namespace Web_Lib
             {
                 client.BaseAddress = new Uri(tvmaze_user_url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("Authorization", "Basic RGlja0tsdWlzOkVpb1dWRVJpZDdHekpteUlQTEVCR09mUHExTm40SFdM");
                 _tvmaze_user_url_initialized = true;
             }
         }
-
-
-        #region Get Show Info
 
         public HttpResponseMessage GetShow(string showname)
         {
@@ -94,7 +92,18 @@ namespace Web_Lib
             return _http_response;
         }
 
-        #endregion
+        public HttpResponseMessage GetEpisodesByShow(int showid)
+        {
+            SetTvmaze();
+
+            string api = $"shows/{showid}/episodes";
+            log.Write($"API String = {api}", "WebAPI GS", 3);
+
+            Task t = PerformTvmApiAsync(api);
+            t.Wait();
+
+            return _http_response;
+        }
 
         public HttpResponseMessage GetShowUpdateEpochs(string period)
         {
@@ -103,6 +112,19 @@ namespace Web_Lib
             string api = $"updates/shows?since={period}";
             log.Write($"API String = {api}", "WebAPI GSUE", 3);
             
+            Task t = PerformTvmApiAsync(api);
+            t.Wait();
+
+            return _http_response;
+        }
+
+        public HttpResponseMessage GetFollowedShows()
+        {
+            SetTvmazeUser();
+
+            string api = $"follows/shows";
+            log.Write($"API String = {api}", "WebAPI GFS", 3);
+
             Task t = PerformTvmApiAsync(api);
             t.Wait();
 
