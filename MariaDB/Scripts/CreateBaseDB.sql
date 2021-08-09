@@ -2,23 +2,24 @@
 drop table PlexStatuses;
 drop table TvmStatuses;
 drop table ShowStatuses;
-drop table Shows;
 drop table Episodes;
+drop table Shows;
+
 
 CREATE TABLE `PlexStatuses` (
   `PlexStatus` varchar(10) NOT NULL,
   PRIMARY KEY (`PlexStatus`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `TvmStatuses` (
   `TvmStatus` varchar(20) NOT NULL DEFAULT ' ',
   PRIMARY KEY (`TvmStatus`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `ShowStatuses` (
   `ShowStatus` varchar(20) NOT NULL DEFAULT ' ',
   PRIMARY KEY (`ShowStatus`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Shows` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -40,7 +41,7 @@ CREATE TABLE `Shows` (
   KEY `Shows_FK_1` (`ShowStatus`),
   CONSTRAINT `Shows_FK` FOREIGN KEY (`TvmStatus`) REFERENCES `TvmStatuses` (`TvmStatus`),
   CONSTRAINT `Shows_FK_1` FOREIGN KEY (`ShowStatus`) REFERENCES `ShowStatuses` (`ShowStatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=1549 DEFAULT CHARSET=utf8mb4 COMMENT='ASP.NET EF Tables'
+) ENGINE=InnoDB AUTO_INCREMENT=1549 DEFAULT CHARSET=utf8mb4 COMMENT='ASP.NET EF Tables';
 
 CREATE TABLE `Episodes` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -59,7 +60,7 @@ CREATE TABLE `Episodes` (
   KEY `Episodes_FK_1` (`PlexStatus`),
   CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`),
   CONSTRAINT `Episodes_FK_1` FOREIGN KEY (`PlexStatus`) REFERENCES `PlexStatuses` (`PlexStatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=2674 DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB AUTO_INCREMENT=2674 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO PlexStatuses (PlexStatus) VALUES
 	 (' '),
