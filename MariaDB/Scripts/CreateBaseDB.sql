@@ -2,6 +2,7 @@
 drop table PlexStatuses;
 drop table TvmStatuses;
 drop table ShowStatuses;
+drop table TvmShowUpdates;
 drop table Episodes;
 drop table Shows;
 
@@ -82,3 +83,12 @@ INSERT INTO TvmStatuses (TvmStatus) VALUES
 	 ('New'),
 	 ('Skipping'),
 	 ('Undecided');
+
+   CREATE TABLE `TvmShowUpdates` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `TvmShowId` int(11) NOT NULL,
+  `TvmUpdateEpoch` int(11) NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `TvmShowUpdates_UN` (`TvmShowId`),
+  CONSTRAINT `TvmShowUpdates_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
