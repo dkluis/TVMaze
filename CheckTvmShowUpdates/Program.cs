@@ -3,7 +3,6 @@ using DB_Lib;
 using MySqlConnector;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Net.Http;
 using Web_Lib;
 
 namespace CheckTvmShowUpdates
@@ -119,6 +118,18 @@ namespace CheckTvmShowUpdates
             MariaDB Mdbw = new("New-Test-DB", log);
             MySqlDataReader rdr;
 
+            //Get Last inserted Show ID
+            Int32 LastShowInserted = 999999999;
+            MariaDB lastShow = new("New-Test-DB", log);
+            MySqlDataReader rlastshow;
+            rlastshow = lastShow.ExecQuery($"select TvmShowId from `TvmDB-Test`.TvmShowUpdates order by TvmShowId desc limit 1;");
+            while (rlastshow.Read())
+            {
+                LastShowInserted = Int32.Parse(rlastshow["TvmShowid"].ToString());
+            }
+            log.Write($"Last Show Inserted was {LastShowInserted}");
+            lastShow.Close();
+
             bool InEpochTable;
             int idx = 1;
 
@@ -158,7 +169,7 @@ namespace CheckTvmShowUpdates
                 {
                     Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {kvp.Key}, {kvp.Value}, '{DateTime.Now.ToString("yyyy-MM-dd")}')");
                     Mdbw.Close();
-                    if (Int32.Parse(kvp.Key) > 56792)
+                    if (Int32.Parse(kvp.Key) > LastShowInserted)
                     {
                         log.Write($"Record {idx} Inserted Epoch Record for {kvp.Key}", "Looping Json", 1);
                         //Show should be inserted with New status for review assuming it fits the selection rules
