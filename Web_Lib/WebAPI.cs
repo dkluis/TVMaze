@@ -1,5 +1,8 @@
 ﻿using Common_Lib;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,7 +13,7 @@ namespace Web_Lib
 
     public class WebAPI : IDisposable
     {
-        static readonly HttpClient client = new();
+        private HttpClient client = new();
         static HttpClient rarbgclient = new();
         private HttpResponseMessage _http_response;
         readonly string tvmaze_url = "https://api.tvmaze.com/";
@@ -28,7 +31,66 @@ namespace Web_Lib
             log = logger;
         }
 
+        public dynamic ConvertHttpToJson(HttpResponseMessage message)
+        {
+            var jsoncontent = JsonConvert.DeserializeObject("");
+            if (message is null)
+            {
+                return jsoncontent;
+            }
+            string content = message.Content.ReadAsStringAsync().Result;
+            jsoncontent = JsonConvert.DeserializeObject(content);
+            return jsoncontent;
+        }
+
+        public JObject ConvertHttpToJObject(HttpResponseMessage message)
+        {
+            string content = message.Content.ReadAsStringAsync().Result;
+            if (content == "")
+            {
+                JObject empty = new JObject();
+                return empty;
+            }
+            JObject jobject = JObject.Parse(content);
+            return jobject;
+        }
+
+        public JArray ConvertHttpToJArray(HttpResponseMessage messsage)
+        {
+            string content = messsage.Content.ReadAsStringAsync().Result;
+            if (content == "")
+            {
+                JArray empty = new JArray();
+                return empty;
+            }
+            JArray epiarray = JArray.Parse(content);
+            return epiarray;
+        }
+
         #region TVMaze APIs
+
+        private void PerformWaitTvmApi(string api)
+        {
+            var exectime = new System.Diagnostics.Stopwatch();
+            exectime.Start();
+
+            Task t = PerformTvmApiAsync(api);
+            t.Wait();
+
+            exectime.Stop();
+            log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.");
+
+            if (_http_response is null)
+            {
+                _http_response = new HttpResponseMessage();
+            }
+
+            if (!_http_response.IsSuccessStatusCode)
+            {
+                log.Write($"Http Response Code is: {_http_response.StatusCode}", "WebAPI Exec", 0);
+                _http_response = new HttpResponseMessage();
+            }
+        }
 
         private async Task PerformTvmApiAsync(string api)
         {
@@ -39,7 +101,7 @@ namespace Web_Lib
             }
             catch (Exception e)
             {
-                log.Write($"Exception {e.Message}", "WebAPI Async", 0);
+                log.Write($"Exception: {e.Message}", "WebAPI Async", 0);
             }
         }
 
@@ -49,6 +111,8 @@ namespace Web_Lib
             {
                 client.BaseAddress = new Uri(tvmaze_url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
+                client.Timeout = TimeSpan.FromSeconds(50);
                 _tvmaze_url_initialized = true;
             }
         }
@@ -60,6 +124,8 @@ namespace Web_Lib
                 client.BaseAddress = new Uri(tvmaze_user_url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("Authorization", "Basic RGlja0tsdWlzOkVpb1dWRVJpZDdHekpteUlQTEVCR09mUHExTm40SFdM");
+                client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
+                client.Timeout = TimeSpan.FromSeconds(50);
                 _tvmaze_user_url_initialized = true;
             }
         }
@@ -69,25 +135,31 @@ namespace Web_Lib
             SetTvmaze();
 
             string api = $"search/shows?q={showname}";
-            log.Write($"API String = {api}", "WebAPI GS", 3);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 3);
 
+            PerformWaitTvmApi(api);
+ 
+            /*
             Task t = PerformTvmApiAsync(api);
             t.Wait();
-
-            client.CancelPendingRequests();
+            //client.CancelPendingRequests();
             
+            if (!_http_response.IsSuccessStatusCode)
+            {
+                log.Write($"Http Response Code is: {_http_response.StatusCode}");
+                _http_response = new HttpResponseMessage();
+            }
+            */
+
             return _http_response;
         }
 
         public HttpResponseMessage GetShow(int showid)
         {
             SetTvmaze();
-
             string api = $"shows/{showid}";
-            log.Write($"API String = {api}", "WebAPI GS", 3);
-
-            Task t = PerformTvmApiAsync(api);
-            t.Wait();
+            PerformWaitTvmApi(api);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 3);
 
             return _http_response;
         }
@@ -95,12 +167,9 @@ namespace Web_Lib
         public HttpResponseMessage GetEpisodesByShow(int showid)
         {
             SetTvmaze();
-
             string api = $"shows/{showid}/episodes";
-            log.Write($"API String = {api}", "WebAPI GS", 3);
-
-            Task t = PerformTvmApiAsync(api);
-            t.Wait();
+            PerformWaitTvmApi(api);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GEBS", 3);
 
             return _http_response;
         }
@@ -108,12 +177,9 @@ namespace Web_Lib
         public HttpResponseMessage GetShowUpdateEpochs(string period)
         {
             SetTvmaze();
-
             string api = $"updates/shows?since={period}";
-            log.Write($"API String = {api}", "WebAPI GSUE", 3);
-            
-            Task t = PerformTvmApiAsync(api);
-            t.Wait();
+            PerformWaitTvmApi(api);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GSUE", 3);
 
             return _http_response;
         }
@@ -121,12 +187,9 @@ namespace Web_Lib
         public HttpResponseMessage GetFollowedShows()
         {
             SetTvmazeUser();
-
             string api = $"follows/shows";
-            log.Write($"API String = {api}", "WebAPI GFS", 3);
-
-            Task t = PerformTvmApiAsync(api);
-            t.Wait();
+            PerformWaitTvmApi(api);
+            log.Write($"API String = {tvmaze_user_url}{api}", "WebAPI GFS", 3);
 
             return _http_response;
         }
