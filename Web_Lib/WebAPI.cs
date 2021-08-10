@@ -13,7 +13,7 @@ namespace Web_Lib
 
     public class WebAPI : IDisposable
     {
-        private HttpClient client = new();
+        private readonly HttpClient client = new();
         static HttpClient rarbgclient = new();
         private HttpResponseMessage _http_response;
         readonly string tvmaze_url = "https://api.tvmaze.com/";
@@ -31,6 +31,7 @@ namespace Web_Lib
             log = logger;
         }
 
+        /*
         public dynamic ConvertHttpToJson(HttpResponseMessage message)
         {
             var jsoncontent = JsonConvert.DeserializeObject("");
@@ -42,29 +43,30 @@ namespace Web_Lib
             jsoncontent = JsonConvert.DeserializeObject(content);
             return jsoncontent;
         }
+        */
 
         public JObject ConvertHttpToJObject(HttpResponseMessage message)
         {
             string content = message.Content.ReadAsStringAsync().Result;
             if (content == "")
             {
-                JObject empty = new JObject();
+                JObject empty = new();
                 return empty;
             }
             JObject jobject = JObject.Parse(content);
             return jobject;
         }
 
-        public JArray ConvertHttpToJArray(HttpResponseMessage messsage)
+        public static JArray ConvertHttpToJArray(HttpResponseMessage messsage)
         {
             string content = messsage.Content.ReadAsStringAsync().Result;
             if (content == "")
             {
-                JArray empty = new JArray();
+                JArray empty = new();
                 return empty;
             }
-            JArray epiarray = JArray.Parse(content);
-            return epiarray;
+            JArray jarray = JArray.Parse(content);
+            return jarray;
         }
 
         #region TVMaze APIs
