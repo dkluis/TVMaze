@@ -9,34 +9,25 @@ namespace TvmEntities
             Logger log = new("TvmEntities.log");
             log.Start("TvmEntities");
 
-            Show show = new("New-Test-DB", log);
-            show.FillViaTvmaze(1);
-            log.Write($"Show: Exists TVM {show.showExistOnTvm}, Followed: {show.isFollowed}, Filled: {show.isFilled}: " +
-                $"{show.Id}, {show.TvmShowId}, {show.ShowName}, {show.CleanedShowName}, {show.Finder}, {show.AltShowName}, " +
-                $"{show.UpdateDate}, Status for Tvm: {show.TvmStatus}, Status {show.ShowStatus}");
-            log.Write($"{show.TvmCountry}, {show.TvmImage}, {show.TvmImdb}, {show.TvmLanguage}, {show.TvmNetwork}, {show.TvmSummary}");
-            show.Reset();
-            
-            show.FillViaTvmaze(15);
-            log.Write($"Show: Exists TVM {show.showExistOnTvm}, Followed: {show.isFollowed}, Filled: {show.isFilled}: " +
-                $"{show.Id}, {show.TvmShowId}, {show.ShowName}, {show.CleanedShowName}, {show.Finder}, {show.AltShowName}, " +
-                $"{show.UpdateDate}, Status for Tvm: {show.TvmStatus}, Status {show.ShowStatus}");
-            log.Write($"{show.TvmCountry}, {show.TvmImage}, {show.TvmImdb}, {show.TvmLanguage}, {show.TvmNetwork}, {show.TvmSummary}");
-            show.Reset();
+            using (Show show = new("New-Test-DB", log))
+            {
+                show.FillViaTvmaze(53057);
 
-            show.FillViaTvmaze(18);
-            log.Write($"Show: Exists TVM {show.showExistOnTvm}, Followed: {show.isFollowed}, Filled: {show.isFilled}: " +
-                $"{show.Id}, {show.TvmShowId}, {show.ShowName}, {show.CleanedShowName}, {show.Finder}, {show.AltShowName}, " +
-                $"{show.UpdateDate}, Status for Tvm: {show.TvmStatus}, Status {show.ShowStatus}");
-            log.Write($"{show.TvmCountry}, {show.TvmImage}, {show.TvmImdb}, {show.TvmLanguage}, {show.TvmNetwork}, {show.TvmSummary}");
-            show.Reset();
+                log.Write($"Show: Exists TVM {show.showExistOnTvm}, Followed: {show.isFollowed}, Filled: {show.isFilled}: " +
+                    $"Id {show.Id}, TvmShowId {show.TvmShowId}, ShowName {show.ShowName}, Cleaned {show.CleanedShowName}, Finder {show.Finder}, Alt {show.AltShowName}, " +
+                    $"U Date {show.UpdateDate}, P Date {show.PremiereDate} Status for Tvm: {show.TvmStatus}, Status {show.ShowStatus}");
 
-            show.FillViaTvmaze(17);
-            log.Write($"Show: Exists TVM {show.showExistOnTvm}, Followed: {show.isFollowed}, Filled: {show.isFilled}: " +
-                $"{show.Id}, {show.TvmShowId}, {show.ShowName}, {show.CleanedShowName}, {show.Finder}, {show.AltShowName}, " +
-                $"{show.UpdateDate}, Status for Tvm: {show.TvmStatus}, Status {show.ShowStatus}");
-            log.Write($"{show.TvmCountry}, {show.TvmImage}, {show.TvmImdb}, {show.TvmLanguage}, {show.TvmNetwork}, {show.TvmSummary}");
-            show.Reset();
+                log.Write($"Country {show.TvmCountry}, Image {show.TvmImage}, Imdb {show.TvmImdb}, Language {show.TvmLanguage}, Network {show.TvmNetwork}, Summary {show.TvmSummary}");
+
+                if (show.isForReview)
+                {
+                    log.Write($"Insert Result is {show.DbInsert()}");
+                }
+                else
+                {
+                    log.Write($"Show is NOT rated for Review");
+                }
+            }
 
             log.Stop();
         }

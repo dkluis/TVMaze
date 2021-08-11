@@ -16,8 +16,8 @@ namespace TvmEntities
         public string TvmStatus = " ";
         public string TvmUrl = "";
         public string ShowName = "";
-        public string ShowStatus = " ";
-        public string PremiereDate = "1970-01-01";
+        public string ShowStatus = "";
+        public string PremiereDate = "";
         public string Finder = " ";
         public string CleanedShowName = "";
         public string AltShowName = "";
@@ -41,6 +41,7 @@ namespace TvmEntities
         public bool isFilled;
         public bool showExistOnTvm;
         public bool isFollowed;
+        public bool isForReview;
 
         private readonly string connection;
         private readonly MariaDB Mdb;
@@ -86,16 +87,47 @@ namespace TvmEntities
             using WebAPI js = new(log);
             FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
             if (isFollowed) { FillViaDB(showid, true); }
+            if (!isFollowed) { ValidateForReview(); }
         }
 
         public bool DbUpdate()
         {
-            return false;
+            if (!isFollowed || !isFilled) { return false; }  // Show does not exist in the DB 
+
+            // updfields += $"`` = '{}', ";
+            string updfields = "";
+            string sqlpre = $"update shows set ";
+            updfields += $"`Finder` = '{Finder}', ";
+            updfields += $"`ShowName` = '{ShowName}', ";
+            updfields += $"`AltShowName` = '{AltShowName}', ";
+            updfields += $"`CleanedShowName` = '{CleanedShowName}', ";
+            updfields += $"`UpdateDate` = '{DateTime.Now.Date.ToString("yyyy-MM-dd")}' ";
+            string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
+            Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
+            return true;
         }
 
         public bool DbInsert()
         {
-            return false;
+            if (isFollowed || !isFilled) { return false; }
+            // values += $"'{}', ";  for strings
+            // values += $"{}, ";    for ints
+            string values = "";
+            string sqlpre = $"insert into shows values (";
+            string sqlsuf = $");";
+            values += $"{0}, ";
+            values += $"{TvmShowId}, "; 
+            values += $"'New', ";
+            values += $"'{TvmUrl}', ";
+            values += $"'{ShowName}', ";
+            values += $"'{ShowStatus}', ";
+            values += $"'{PremiereDate}', ";
+            values += $"'{Finder}', ";
+            values += $"'{CleanedShowName}', ";
+            values += $"'{AltShowName}', ";
+            values += $"'{DateTime.Now.ToString("yyyy-MM-dd")}' ";
+            Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+            return true;
         }
 
         private void FillViaJson(JObject showjson)
@@ -112,8 +144,16 @@ namespace TvmEntities
                 }
                 TvmUrl = showjson["url"].ToString();
                 ShowName = showjson["name"].ToString();
-                ShowStatus = showjson["status"].ToString();
-                if (showjson["premiered"] is not null) { PremiereDate = Convert.ToDateTime(showjson["premiered"]).ToString("yyyy-MM-dd"); }
+                ShowStatus = showjson["status"].ToString(); 
+                if (showjson["premiered"] is not null)
+                {
+                    PremiereDate = "1900-01-01";
+                    string date = showjson["premiered"].ToString();
+                    if (date != "")
+                    {
+                        PremiereDate = Convert.ToDateTime(showjson["premiered"]).ToString("yyyy-MM-dd");
+                    }
+                }
                 // Finder
                 // TvmStatus
                 CleanedShowName = Common.RemoveSpecialCharsInShowname(ShowName);
@@ -123,11 +163,25 @@ namespace TvmEntities
                 if (showjson["type"] is not null) { TvmType = showjson["type"].ToString(); }
                 if (showjson["language"] is not null) { TvmLanguage = showjson["language"].ToString(); }
                 if (showjson["officialSite"] is not null) { TvmOfficialSite = showjson["officialSite"].ToString(); }
-                if (showjson["network"]["name"] is not null) { TvmNetwork = showjson["network"]["name"].ToString(); }
-                if (showjson["network"]["country"]["name"] is not null) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
+                if (showjson["network"].ToString() != "")
+                {
+                    if (showjson["network"]["name"] is not null) { TvmNetwork = showjson["network"]["name"].ToString(); }
+                    if (showjson["network"]["country"]["name"] is not null) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
+                }
+
                 if (showjson["externals"]["imdb"] is not null) { TvmImdb = showjson["externals"]["imdb"].ToString(); }
-                if (showjson["image"]["medium"] is not null) { TvmImage = showjson["image"]["medium"].ToString(); }
-                if (showjson["summary"] is not null) { TvmSummary = showjson["summary"].ToString(); }
+                if (showjson["image"].ToString() != "")
+                {
+                    if (showjson["image"]["medium"] is not null) { TvmImage = showjson["image"]["medium"].ToString(); }
+                }
+
+                if (showjson["summary"] is not null)
+                {
+                    if (showjson["image"].ToString() != "")
+                    { TvmSummary = showjson["summary"].ToString(); }
+                    else
+                    { TvmSummary = "##Unknow##"; }
+                }
                 isFilled = true;
             }
         }
@@ -159,6 +213,36 @@ namespace TvmEntities
                     isFilled = true;
                 }
             }
+        }
+
+        private bool ValidateForReview()
+        {
+            if (!isFilled) { isForReview = false; return false; }
+
+            isForReview = false;
+
+            if (TvmLanguage != "English" && TvmNetwork != "NetFlix") { return false; } else { if (TvmLanguage != "English") { return false; } }
+            if (ShowStatus == "Ended") { return false; } // && PremiereDate < Convert)
+            switch (TvmType)
+            {
+                case "Sport": 
+                case "News":
+                case "Variety":
+                case "Game Show":
+                case "":
+                    return false;
+            }
+            switch (TvmNetwork)
+            {
+                case "YouTube":
+                case "YouTube Premium":
+                case "Facebook Watch":
+                case "":
+                    return false;
+            }
+
+            isForReview = true;
+            return isForReview;
         }
 
         public void Dispose()
