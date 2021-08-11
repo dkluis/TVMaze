@@ -9,7 +9,7 @@ namespace TvmEntities
 {
     public class Show : IDisposable
     {
-        #region Record Definition
+        #region DB Record Definition
 
         public Int32 Id = 0;
         public Int32 TvmShowId = 0;
@@ -25,12 +25,26 @@ namespace TvmEntities
 
         #endregion
 
+        #region Tvm Record Definiton (without what is in DB record)
+
+        public string TvmType;
+        public string TvmLanguage;
+        public string TvmOfficialSite;
+        public string TvmNetwork;
+        public string TvmCountry;
+        public string TvmImdb;
+        public string TvmImage;
+        public string TvmSummary;
+
+        #endregion
+
         public bool isFilled;
         public bool showExistOnTvm;
         public bool isFollowed;
+
+        private readonly string connection;
         private readonly MariaDB Mdb;
         private readonly Logger log;
-        private readonly string connection;
 
         public Show(string conninfo, Logger logger)
         {
@@ -52,12 +66,39 @@ namespace TvmEntities
             CleanedShowName = "";
             AltShowName = "";
             UpdateDate = "1900-01-01";
+
+            TvmType = "";
+            TvmLanguage = "";
+            TvmOfficialSite = "";
+            TvmNetwork = "";
+            TvmCountry = "";
+            TvmImdb = "";
+            TvmImage = "";
+            TvmSummary = "";
+
             isFilled = false;
             showExistOnTvm = false;
             isFollowed = false;
         }
 
-        public void FillViaJson(JObject showjson)
+        public void FillViaTvmaze(Int32 showid)
+        {
+            using WebAPI js = new(log);
+            FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
+            if (isFollowed) { FillViaDB(showid, true); }
+        }
+
+        public bool DbUpdate()
+        {
+            return false;
+        }
+
+        public bool DbInsert()
+        {
+            return false;
+        }
+
+        private void FillViaJson(JObject showjson)
         {
             if (showjson["id"] is not null)
             {
@@ -72,20 +113,29 @@ namespace TvmEntities
                 TvmUrl = showjson["url"].ToString();
                 ShowName = showjson["name"].ToString();
                 ShowStatus = showjson["status"].ToString();
-                PremiereDate = Convert.ToDateTime(showjson["premiered"]).ToString("yyyy-MM-dd");
+                if (showjson["premiered"] is not null) { PremiereDate = Convert.ToDateTime(showjson["premiered"]).ToString("yyyy-MM-dd"); }
                 // Finder
                 // TvmStatus
                 CleanedShowName = Common.RemoveSpecialCharsInShowname(ShowName);
                 // AltShowName
                 // UpdateDate
+
+                if (showjson["type"] is not null) { TvmType = showjson["type"].ToString(); }
+                if (showjson["language"] is not null) { TvmLanguage = showjson["language"].ToString(); }
+                if (showjson["officialSite"] is not null) { TvmOfficialSite = showjson["officialSite"].ToString(); }
+                if (showjson["network"]["name"] is not null) { TvmNetwork = showjson["network"]["name"].ToString(); }
+                if (showjson["network"]["country"]["name"] is not null) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
+                if (showjson["externals"]["imdb"] is not null) { TvmImdb = showjson["externals"]["imdb"].ToString(); }
+                if (showjson["image"]["medium"] is not null) { TvmImage = showjson["image"]["medium"].ToString(); }
+                if (showjson["summary"] is not null) { TvmSummary = showjson["summary"].ToString(); }
                 isFilled = true;
             }
         }
 
-        public void FillViaDB(Int32 showid, bool JsonIsDone)
+        private void FillViaDB(Int32 showid, bool JsonIsDone)
         {
             if (!isFollowed && JsonIsDone) { return; }
-            
+
             using (MySqlDataReader rdr = Mdb.ExecQuery($"select * from shows where `TvmShowId` = {showid};"))
             {
                 while (rdr.Read())
@@ -109,33 +159,6 @@ namespace TvmEntities
                     isFilled = true;
                 }
             }
-        }
-
-        public void FillViaDB(MySqlDataReader showrdr)
-        {
-
-        }
-
-        public void FillViaTvmaze(Int32 showid)
-        {
-            using WebAPI js = new(log);
-            FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
-            if (isFollowed) { FillViaDB(showid, true); }
-        }
-
-        public bool DbUpdate()
-        {
-            return false;
-        }
-
-        public bool DbInsert()
-        {
-            return false;
-        }
-
-        public bool TvmUpdateFollowed(bool followed)
-        {
-            return false;
         }
 
         public void Dispose()

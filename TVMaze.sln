@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportFromPythonTVM", "Impo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckTvmShowUpdates", "CheckTvmShowUpdates\CheckTvmShowUpdates.csproj", "{B290417F-DDD7-4EB8-B037-FB5270B5E068}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvmEntities", "TvmEntities\TvmEntities.csproj", "{4F2B7915-0E19-423F-9BC6-7A08E053ABE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvmEntities", "TvmEntities\TvmEntities.csproj", "{4F2B7915-0E19-423F-9BC6-7A08E053ABE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +58,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{8D76AA06-603E-4D1B-9A89-8BA03F480133} = {1685E191-E906-4D06-925A-DF8A39F8539D}
 		{12016370-595F-4A84-AA5C-831A45D69575} = {1685E191-E906-4D06-925A-DF8A39F8539D}
 		{B290417F-DDD7-4EB8-B037-FB5270B5E068} = {1685E191-E906-4D06-925A-DF8A39F8539D}
 	EndGlobalSection
