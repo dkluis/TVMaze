@@ -107,80 +107,158 @@ namespace CheckTvmShowUpdates
 
             #endregion
 
+            #region Testing isShowFollowed
+
+            bool isShowFollowed;
+            using (TvmSql ts = new("New-Test-DB", log))
+            {
+                isShowFollowed = ts.IsShowIdFollowed(1);
+            }
+            log.Write($"Followed is {isShowFollowed}");
+            using (TvmSql ts = new("New-Test-DB", log))
+            {
+                isShowFollowed = ts.IsShowIdFollowed(2);
+            }
+            log.Write($"Followed is {isShowFollowed}");
+
+            #endregion
+
             #region Get TVMaze last 24 Show Updates and update Epoch table;
 
+            #region Get the Epoch timestamp of tvmaze show updates in last 24 hours
+
             WebAPI tvmapi = new(log);
-            log.Write("Start to API test", "Program", 0);
+            log.Write("Start Get TVMaze last 24 Hour Updates", "Program", 0);
             JObject jsoncontent = tvmapi.ConvertHttpToJObject(tvmapi.GetShowUpdateEpochs("day"));  //day or week or month
             log.Write($"Found {jsoncontent.Count} updates from Tvmaze in the last 24 hours", "Program", 0);
+
+            #endregion
+
+            #region Get Last Show Evaluated for suitability from the Epoch Table
+
+            Int32 LastShowInserted;
+            using (TvmSql ts = new("New-Test-DB", log))
+            {
+                LastShowInserted = ts.GetLastTvmShowIdInserted();
+            }
+            if (LastShowInserted == 99999999)
+            {
+                log.Write($"No Last Show Inserted was found");
+            }
+            log.Write($"Last Show Inserted is {LastShowInserted}");
+
+            #endregion
+
+            #region Processing all Epoch updates
 
             MariaDB Mdbr = new("New-Test-DB", log);
             MariaDB Mdbw = new("New-Test-DB", log);
             MySqlDataReader rdr;
 
-            //Get Last inserted Show ID
-            Int32 LastShowInserted = 999999999;
-            MariaDB lastShow = new("New-Test-DB", log);
-            MySqlDataReader rlastshow;
-            rlastshow = lastShow.ExecQuery($"select TvmShowId from `TvmDB-Test`.TvmShowUpdates order by TvmShowId desc limit 1;");
-            while (rlastshow.Read())
-            {
-                LastShowInserted = Int32.Parse(rlastshow["TvmShowid"].ToString());
-            }
-            log.Write($"Last Show Inserted was {LastShowInserted}");
-            lastShow.Close();
-
             bool InEpochTable;
-            int idx = 1;
-
+            bool UpdateNeeded;
             foreach (var kvp in jsoncontent)
             {
+                Int32 showid = Int32.Parse(kvp.Key);
                 InEpochTable = false;
+                UpdateNeeded = false;
 
-                //log.Write($"Record {idx}: {kvp}", "Looping Updated Shows", 0);
-
-                rdr = Mdbr.ExecQuery($"select * from TvmShowUpdates where `TvmShowId` = {kvp.Key}");
-
+                rdr = Mdbr.ExecQuery($"select * from TvmShowUpdates where `TvmShowId` = {showid}");
                 while (rdr.Read())
                 {
+                    InEpochTable = true;
                     if (rdr["TvmUpdateEpoch"].ToString() != kvp.Value.ToString())
                     {
                         Mdbw.ExecNonQuery($"update TvmShowUpdates set " +
                             $"`TvmUpdateEpoch` = {kvp.Value}, " +
-                            $"`TvmUpdateDate` = '{DateTime.Now.ToString("yyyy-MM-dd")}' " +
+                            $"`TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' " +
                             $"where `Id` = {rdr["Id"]}");
                         Mdbw.Close();
-                        log.Write($"Record {idx} Epoch {kvp.Value} updated for ShowID {kvp.Key}", "Looping Json", 3);
-                        /*
-                        // Show and Episodes should be updated (or inserted) if the show is being followed
-                        HttpResponseMessage showinfo = tvmapi.GetShow(kvp.Key);
-                        log.Write(showinfo.Content.ReadAsStringAsync().Result, "Update Show");
-                        showinfo = tvmapi.GetEpisodesByShow(kvp.Key);
-                        log.Write(showinfo.Content.ReadAsStringAsync().Result, "Update Episodes for Show");
-                        */
+                        log.Write($"Epoch {kvp.Value} updated for ShowID {showid}", "Looping Json", 3);
+                        UpdateNeeded = true;
                     }
                     else
                     {
-                        log.Write($"Record {idx} No Action Epochs are the same for ShowID {kvp.Key}");
+                        log.Write($"No Action Epochs are the same for ShowID {showid}");
+
                     }
                     InEpochTable = true;
                 }
+                Mdbr.Close();
+
                 if (!InEpochTable)
                 {
-                    Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {kvp.Key}, {kvp.Value}, '{DateTime.Now.ToString("yyyy-MM-dd")}')");
+                    Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {showid}, {kvp.Value}, '{DateTime.Now:yyyy-MM-dd}')");
                     Mdbw.Close();
-                    if (Int32.Parse(kvp.Key) > LastShowInserted)
+                    if (showid > LastShowInserted)
                     {
-                        log.Write($"Record {idx} Inserted Epoch Record for {kvp.Key}", "Looping Json", 1);
+                        bool Followed;
+                        using (TvmSql ts = new("New-Test-DB", log))
+                        {
+                            Followed = ts.IsShowIdFollowed(showid);
+                        }
+                        if (Followed)
+                        {
+                            //Figure out a way to delete episodes that don't exist anymore.
+                            log.Write($"Here is where the update of Followed Shows and Episodes goes ShowId = {showid}");
+                            using (WebAPI showinfo = new(log))
+                            {
+                                JObject show = showinfo.ConvertHttpToJObject(showinfo.GetShow(showid));
+                                log.Write($"{show["id"]}, {show["url"]}, {show["updated"]}");
+                                // Insert Show Sql
+                            }
+                            using (WebAPI episodes = new(log))
+                            {
+                                JArray jsonc = episodes.ConvertHttpToJArray(episodes.GetEpisodesByShow(showid));
+                                foreach (var rec in jsonc)
+                                {
+                                    log.Write($"Show {showid}, Episode {rec["id"]}, Url {rec["url"]}");
+                                    // Insert Episode Sql
+                                }
+                            }
+                            continue;  // Done Processing this tvshow
+                        }
+                        log.Write($"Inserted Epoch Record for {showid}", "Looping Json", 1);
                         //Show should be inserted with New status for review assuming it fits the selection rules
+                        using (WebAPI showinfo = new(log))
+                        {
+                            JObject show = showinfo.ConvertHttpToJObject(showinfo.GetShow(showid));
+                            log.Write($"{show["id"]}, {show["url"]}, {show["updated"]}");
+                            // Insert Show Sql
+                        }
+                        using (WebAPI episodes = new(log))
+                        {
+                            JArray jsonc = episodes.ConvertHttpToJArray(episodes.GetEpisodesByShow(showid));
+                            foreach (var rec in jsonc)
+                            {
+                                log.Write($"Show {showid}, Episode {rec["id"]}, Url {rec["url"]}");
+                                // Insert Episode Sql
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (UpdateNeeded)
+                        {
+                            bool Followed;
+                            using (TvmSql ts = new("New-Test-DB", log))
+                            {
+                                Followed = ts.IsShowIdFollowed(showid);
+                            }
+                            if (Followed)
+                            {
+                                //Go update the Show info and all episodes
+                                //Figure out a way to delete episodes that don't exist anymore.
+                                log.Write($"Here is where the update of Followed Shows and Episodes goes ShowId = {showid}");
+
+                            }
+                        }
                     }
                 }
-                //if (kvp.Key > 20) { break; };
-                Mdbr.Close();
-                idx++;
+                tvmapi.Dispose();
             }
 
-            tvmapi.Dispose();
+            #endregion
 
             #endregion
 
@@ -188,3 +266,4 @@ namespace CheckTvmShowUpdates
         }
     }
 }
+

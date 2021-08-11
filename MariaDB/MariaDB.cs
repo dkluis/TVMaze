@@ -42,7 +42,7 @@ namespace DB_Lib
                 conninfo = Common.ReadConfig(conninfo);
             }
 # if DEBUG   
-            mdblog.Write($"Configuration String is {conninfo} ", "MariaDB", 3);
+            // mdblog.Write($"Configuration String is {conninfo} ", "MariaDB", 3);
 # endif
 
             success = false;

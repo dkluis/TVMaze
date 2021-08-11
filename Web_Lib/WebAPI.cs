@@ -1,9 +1,6 @@
 ﻿using Common_Lib;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -57,7 +54,7 @@ namespace Web_Lib
             return jobject;
         }
 
-        public static JArray ConvertHttpToJArray(HttpResponseMessage messsage)
+        public JArray ConvertHttpToJArray(HttpResponseMessage messsage)
         {
             string content = messsage.Content.ReadAsStringAsync().Result;
             if (content == "")
@@ -140,18 +137,6 @@ namespace Web_Lib
             log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 3);
 
             PerformWaitTvmApi(api);
- 
-            /*
-            Task t = PerformTvmApiAsync(api);
-            t.Wait();
-            //client.CancelPendingRequests();
-            
-            if (!_http_response.IsSuccessStatusCode)
-            {
-                log.Write($"Http Response Code is: {_http_response.StatusCode}");
-                _http_response = new HttpResponseMessage();
-            }
-            */
 
             return _http_response;
         }
