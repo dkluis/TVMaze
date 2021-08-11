@@ -42,7 +42,7 @@ CREATE TABLE `Shows` (
   KEY `Shows_FK_1` (`ShowStatus`),
   CONSTRAINT `Shows_FK` FOREIGN KEY (`TvmStatus`) REFERENCES `TvmStatuses` (`TvmStatus`),
   CONSTRAINT `Shows_FK_1` FOREIGN KEY (`ShowStatus`) REFERENCES `ShowStatuses` (`ShowStatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=1549 DEFAULT CHARSET=utf8mb4 COMMENT='ASP.NET EF Tables';
+) ENGINE=InnoDB AUTO_INCREMENT=1552 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `Episodes` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -61,7 +61,7 @@ CREATE TABLE `Episodes` (
   KEY `Episodes_FK_1` (`PlexStatus`),
   CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`),
   CONSTRAINT `Episodes_FK_1` FOREIGN KEY (`PlexStatus`) REFERENCES `PlexStatuses` (`PlexStatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=2674 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=31579 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO PlexStatuses (PlexStatus) VALUES
 	 (' '),
@@ -88,7 +88,7 @@ CREATE TABLE `TvmShowUpdates` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `TvmShowId` int(11) NOT NULL,
   `TvmUpdateEpoch` int(11) NOT NULL,
+  `TvmUpdateDate` date DEFAULT '1900-01-01',
   PRIMARY KEY (`Id`),
-  UNIQUE KEY `TvmShowUpdates_UN` (`TvmShowId`),
-  CONSTRAINT `TvmShowUpdates_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  UNIQUE KEY `TvmShowUpdates_UN` (`TvmShowId`)
+) ENGINE=InnoDB AUTO_INCREMENT=54695 DEFAULT CHARSET=utf8mb4;

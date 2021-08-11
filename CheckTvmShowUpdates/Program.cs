@@ -110,12 +110,12 @@ namespace CheckTvmShowUpdates
             #region Testing isShowFollowed
 
             bool isShowFollowed;
-            using (TvmSql ts = new("New-Test-DB", log))
+            using (TvmCommonSql ts = new("New-Test-DB", log))
             {
                 isShowFollowed = ts.IsShowIdFollowed(1);
             }
             log.Write($"Followed is {isShowFollowed}");
-            using (TvmSql ts = new("New-Test-DB", log))
+            using (TvmCommonSql ts = new("New-Test-DB", log))
             {
                 isShowFollowed = ts.IsShowIdFollowed(2);
             }
@@ -137,7 +137,7 @@ namespace CheckTvmShowUpdates
             #region Get Last Show Evaluated for suitability from the Epoch Table
 
             Int32 LastShowInserted;
-            using (TvmSql ts = new("New-Test-DB", log))
+            using (TvmCommonSql ts = new("New-Test-DB", log))
             {
                 LastShowInserted = ts.GetLastTvmShowIdInserted();
             }
@@ -193,7 +193,7 @@ namespace CheckTvmShowUpdates
                     if (showid > LastShowInserted)
                     {
                         bool Followed;
-                        using (TvmSql ts = new("New-Test-DB", log))
+                        using (TvmCommonSql ts = new("New-Test-DB", log))
                         {
                             Followed = ts.IsShowIdFollowed(showid);
                         }
@@ -241,7 +241,7 @@ namespace CheckTvmShowUpdates
                         if (UpdateNeeded)
                         {
                             bool Followed;
-                            using (TvmSql ts = new("New-Test-DB", log))
+                            using (TvmCommonSql ts = new("New-Test-DB", log))
                             {
                                 Followed = ts.IsShowIdFollowed(showid);
                             }
