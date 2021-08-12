@@ -14,7 +14,7 @@ namespace TvmEntities
             log.Write($"Log Level at 1", "", 1);
             log.Write($"Log Level at 2", null, 2);
             log.Write($"Log Level at 3");
-            log.Write($"Log Level at 1 with another function string", "Another Function", 1);
+            log.Write($"Log Level at 1 with another function string", "Another Function with a lot more charactes", 1);
 
             log.Write($"Appinfo DbConnection is {appinfo.DbConnection}");
             log.Write($"Appinfo Application is {appinfo.Application}");
@@ -24,16 +24,29 @@ namespace TvmEntities
 
             #region Write a config file
 
-            Logger config = new("ConfigFile.txt", null);
-            config.WriteNoHead("\"First Record\": \"Some Info\"", true);
+            Logger config = new("ConfigFile.json", null);
+            config.Empty();
+            config.WriteNoHead("{");
+            config.WriteNoHead("\"First Record\": \"Some Info\",");
             config.WriteNoHead("\"Second Record\": \"Some Info\"");
+            config.WriteNoHead("}");
+            log.Write("Created the config file");
+            log.Elapsed();
+
+            Logger config2 = new("ConfigFile2.json", null);
+            config2.Empty();
+            config2.WriteNoHead("{ ", false);
+            config2.WriteNoHead("\"First Record\": \"Some Info\", ",  false);
+            config2.WriteNoHead("\"Second Record\": \"Some Info\" ", false);
+            config2.WriteNoHead("}", false);
             log.Write("Created the config file");
             log.Elapsed();
 
             #endregion
 
             #region Define the path to the log or the config file
-            AppInfo defpath = new("TvmEntities", "New-Test-DB", "SomeWhereElse.log", new string[] { "asdf", "123" });
+
+            AppInfo defpath = new("TvmEntities", "New-Test-DB", "SomeWhereElse.log", new string[] { "Users", "Dick", "TVMaze" });
             log.Write($"FilePath is now: {defpath.FullPath} on Drive {defpath.Drive}", "Testing Setting Path");
 
             #endregion

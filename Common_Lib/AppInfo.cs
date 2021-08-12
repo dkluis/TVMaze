@@ -42,6 +42,7 @@ namespace Common_Lib
                 }
                 FilePath = Path.Combine(logpath, logfilename);
             }
+
             FullPath = Path.Combine(FilePath, FileName);
 
             Log = new(FileName, Application);  // Adjust to starting using the LoggerFilePath

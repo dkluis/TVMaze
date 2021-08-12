@@ -70,9 +70,16 @@ namespace Common_Lib
             EmptyLine(3);
         }
 
+        public void Empty()
+        {
+            using StreamWriter file = new(fulllogpath, false);
+            file.Write("");
+        }
+
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
         {
             if (function == "" || function == null) { function = app; }
+            if (function.Length > 19) { function = function.Substring(0, 19); }
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
@@ -83,6 +90,7 @@ namespace Common_Lib
         public void Write(string[] messages, string function = "", int loglevel = 3, bool append = true)
         {
             if (function == "" || function == null) { function = app; }
+            if (function.Length > 19) { function = function.Substring(0, 19); }
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
@@ -111,18 +119,18 @@ namespace Common_Lib
             }
         }
 
-        public void WriteNoHead(string message, bool append = true)
+        public void WriteNoHead(string message, bool newline = true)
         {
-            using StreamWriter file = new(fulllogpath, append);
-            file.WriteLine(message);
+            using StreamWriter file = new(fulllogpath, true);
+            if(newline) { file.WriteLine(message); } else { file.Write(message); }
         }
 
-        public void WriteNoHead(string[] messages, bool append = true)
+        public void WriteNoHead(string[] messages, bool newline = true)
         {
-            using StreamWriter file = new(fulllogpath, append);
+            using StreamWriter file = new(fulllogpath, true);
             foreach (string msg in messages)
             {
-                file.WriteLine(msg);
+                if (newline) { file.WriteLine(msg); } else { file.Write(msg); }
             }
         }
 
