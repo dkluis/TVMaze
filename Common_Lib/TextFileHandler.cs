@@ -6,7 +6,6 @@ namespace Common_Lib
 {
     public class TextFileHandler
     {
-        //private readonly string file;
         private readonly string filepath;
         private readonly string fullfilepath;
         private readonly int level;
@@ -21,9 +20,9 @@ namespace Common_Lib
             filepath = infilepath;
             fullfilepath = Path.Combine(filepath, filename);
 
-            if (!File.Exists(this.fullfilepath))
+            if (!File.Exists(fullfilepath))
             {
-                File.Create(this.fullfilepath).Close();
+                File.Create(fullfilepath).Close();
             }
             Console.WriteLine($"Logfile name is {fullfilepath} ");
         }
