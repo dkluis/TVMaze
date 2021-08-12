@@ -25,7 +25,9 @@ namespace TvmEntities
 
             #region Write a config file
 
-            TextFileHandler config = new("ConfigFile.json", null, @"C:\Users\Dick\TVMaze");
+            string[] conpath = new string[] { "Users", "Dick", "TVMaze" };
+            AppInfo app1 = new("TvmEntities", "New-Test-DB", "Config.json", conpath);
+            TextFileHandler config = app1.TxtFile;
             config.Empty();
             config.WriteNoHead("{");
             config.WriteNoHead("\"First Record\": \"Some Info\",");
@@ -34,7 +36,8 @@ namespace TvmEntities
             log.Write("Created the config file");
             log.Elapsed();
 
-            TextFileHandler config2 = new("ConfigFile2.json", null, @"C:\Users\Dick\TVMaze");
+            AppInfo app2 = new("TvmEntities", "New-Test-DB", "Config2.json", conpath);
+            TextFileHandler config2 = app2.TxtFile;
             config2.Empty();
             config2.WriteNoHead("{ ", false);
             config2.WriteNoHead("\"First Record\": \"Some Info\", ",  false);
