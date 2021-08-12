@@ -11,14 +11,14 @@ namespace CheckTvmShowUpdates
     {
         static void Main()
         {
-            Logger log = new("CheckTvmShowUpdates.log");
-            log.Start("ImportFromPythonTVM");
+            AppInfo appinfo = new("CheckTvmShowUpd", "New-Test-DB", "CheckTvmShowUpdates.log");
+            Logger log = appinfo.Log;
+            log.Start();
 
             #region Testing Json Handling (New)
 
             #region JObject GetShow(1)
-
-            /*
+  
             using(WebAPI parsetest = new(log))
             {
                 log.Write("Starting Parse test for Show 1 Info");
@@ -29,12 +29,11 @@ namespace CheckTvmShowUpdates
                 log.Write($"{show["id"]}, {show["url"]}, {show["genres"][0]}, {show["network"]["name"]}, {show["updated"]}");
 
             }
-            */
-
+            
             #endregion
 
             #region JArray GetFollowedShows()
-            /*
+            
             using (WebAPI testuserapi = new(log))
             {
                 log.Write("Starting Followed Shows API test");
@@ -53,11 +52,11 @@ namespace CheckTvmShowUpdates
                     }
                 }
             }
-            */
+            
             #endregion
 
             #region GetShowUpdateEpochs("day")
-            /*
+            
             using (WebAPI testepochs = new(log))
             {
                 log.Write("Starting Show Update Epoch API test");
@@ -79,11 +78,11 @@ namespace CheckTvmShowUpdates
                     }
                 }
             }
-            */
+            
             #endregion
 
             #region GetEpisodesByShow(1)
-            /*
+            
             using (WebAPI testshow = new(log))
             {
                 log.Write("Starting Get Episodes by Show");
@@ -102,7 +101,7 @@ namespace CheckTvmShowUpdates
                     }
                 }
             }
-            */
+            
             #endregion
 
             #endregion
@@ -110,12 +109,12 @@ namespace CheckTvmShowUpdates
             #region Testing isShowFollowed
 
             bool isShowFollowed;
-            using (TvmCommonSql ts = new("New-Test-DB", log))
+            using (TvmCommonSql ts = new(appinfo))
             {
                 isShowFollowed = ts.IsShowIdFollowed(1);
             }
             log.Write($"Followed is {isShowFollowed}");
-            using (TvmCommonSql ts = new("New-Test-DB", log))
+            using (TvmCommonSql ts = new(appinfo))
             {
                 isShowFollowed = ts.IsShowIdFollowed(2);
             }
@@ -137,7 +136,7 @@ namespace CheckTvmShowUpdates
             #region Get Last Show Evaluated for suitability from the Epoch Table
 
             Int32 LastShowInserted;
-            using (TvmCommonSql ts = new("New-Test-DB", log))
+            using (TvmCommonSql ts = new(appinfo))
             {
                 LastShowInserted = ts.GetLastTvmShowIdInserted();
             }
@@ -193,7 +192,7 @@ namespace CheckTvmShowUpdates
                     if (showid > LastShowInserted)
                     {
                         bool Followed;
-                        using (TvmCommonSql ts = new("New-Test-DB", log))
+                        using (TvmCommonSql ts = new(appinfo))
                         {
                             Followed = ts.IsShowIdFollowed(showid);
                         }
@@ -241,7 +240,7 @@ namespace CheckTvmShowUpdates
                         if (UpdateNeeded)
                         {
                             bool Followed;
-                            using (TvmCommonSql ts = new("New-Test-DB", log))
+                            using (TvmCommonSql ts = new(appinfo))
                             {
                                 Followed = ts.IsShowIdFollowed(showid);
                             }

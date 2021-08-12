@@ -8,12 +8,17 @@ namespace DB_Lib
     {
         private readonly MariaDB db;
         MySqlDataReader rdr;
-        private readonly string connection;
 
-        public TvmCommonSql(string conninfo, Logger logger)
+        /*
+        public TvmCommonSql(string conninfo, Logger logger)  //To Be Deprecated
         {
             db = new(conninfo, logger);
-            connection = conninfo;
+        }
+        */
+
+        public TvmCommonSql(AppInfo appinfo)
+        {
+            db = new(appinfo.DbConnection, appinfo.Log);
         }
 
         public Int32 GetLastTvmShowIdInserted()

@@ -45,22 +45,15 @@ namespace TvmEntities
         public bool isFollowed;
         public bool isForReview;
 
-        private readonly string connection;
         private readonly MariaDB Mdb;
         private readonly Logger log;
-
-        public Show(string conninfo, Logger logger)
-        {
-            Mdb = new(conninfo, logger);
-            log = logger;
-            connection = conninfo;
-        }
+        private readonly AppInfo Appinfo;
 
         public Show(AppInfo appinfo)
         {
-            Mdb = new(appinfo.DbConnection, appinfo.Log);
-            log = appinfo.Log;
-            connection = appinfo.DbConnection;
+            Appinfo = appinfo;
+            Mdb = new(Appinfo.DbConnection, Appinfo.Log);
+            log = Appinfo.Log;
         }
 
         public void Reset()
@@ -110,7 +103,7 @@ namespace TvmEntities
             updfields += $"`ShowName` = '{ShowName}', ";
             updfields += $"`AltShowName` = '{AltShowName}', ";
             updfields += $"`CleanedShowName` = '{CleanedShowName}', ";
-            updfields += $"`UpdateDate` = '{DateTime.Now.Date.ToString("yyyy-MM-dd")}' ";
+            updfields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
             Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
             return true;
@@ -134,7 +127,7 @@ namespace TvmEntities
             values += $"'{Finder}', ";
             values += $"'{CleanedShowName}', ";
             values += $"'{AltShowName}', ";
-            values += $"'{DateTime.Now.ToString("yyyy-MM-dd")}' ";
+            values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             return true;
         }
@@ -145,7 +138,7 @@ namespace TvmEntities
             {
                 showExistOnTvm = true;
                 TvmShowId = Int32.Parse(showjson["id"].ToString());
-                using (TvmCommonSql tcs = new(connection, log))
+                using (TvmCommonSql tcs = new(Appinfo))
                     Id = tcs.GetIdViaShowid(TvmShowId);
                 if (Id != 0)
                 {
@@ -264,28 +257,6 @@ namespace TvmEntities
     public class SearchShowsOnTvmaze
     {
         public List<Show> Found = new();
-
-        public SearchShowsOnTvmaze(string conninfo, Logger logger, string showname)
-        {
-            int idx = 0;
-            var exectime = new System.Diagnostics.Stopwatch();
-
-            while (idx < 20)
-            {
-                exectime.Restart();
-                idx++;
-                using (Show show = new(conninfo, logger))
-                {
-                    show.FillViaTvmaze(idx);
-                    // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); } 
-                    Found.Add(show);
-                }
-                Thread.Sleep(1500);
-                exectime.Stop();
-                logger.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
-            }
-            
-        }
 
         public SearchShowsOnTvmaze(AppInfo appinfo, string showname)
         {
