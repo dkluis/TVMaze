@@ -1,4 +1,5 @@
 ﻿using Common_Lib;
+using System.Collections.Generic;
 
 namespace TvmEntities
 {
@@ -9,6 +10,8 @@ namespace TvmEntities
             Logger log = new("TvmEntities.log");
             log.Start("TvmEntities");
 
+            #region Test Show Class in general
+            /*
             using (Show show = new("New-Test-DB", log))
             {
                 show.FillViaTvmaze(53057);
@@ -28,6 +31,19 @@ namespace TvmEntities
                     log.Write($"Show is NOT rated for Review");
                 }
             }
+            */
+            #endregion
+
+            #region Testing Searching TVMaze with Showname and returning list of show classes.
+
+            SearchShowsOnTvmaze showsearch = new("New-Test-DB", log, "Lost");
+            List<Show> showsFound = showsearch.Found;
+            foreach (Show showFound in showsFound)
+            {
+                log.Write($"Show Found TvmShowid {showFound.TvmShowId}, {showFound.ShowName}");
+            }
+
+            #endregion
 
             log.Stop();
         }

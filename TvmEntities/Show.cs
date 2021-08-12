@@ -3,6 +3,8 @@ using DB_Lib;
 using MySqlConnector;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using Web_Lib;
 
 namespace TvmEntities
@@ -116,7 +118,7 @@ namespace TvmEntities
             string sqlpre = $"insert into shows values (";
             string sqlsuf = $");";
             values += $"{0}, ";
-            values += $"{TvmShowId}, "; 
+            values += $"{TvmShowId}, ";
             values += $"'New', ";
             values += $"'{TvmUrl}', ";
             values += $"'{ShowName}', ";
@@ -144,7 +146,7 @@ namespace TvmEntities
                 }
                 TvmUrl = showjson["url"].ToString();
                 ShowName = showjson["name"].ToString();
-                ShowStatus = showjson["status"].ToString(); 
+                ShowStatus = showjson["status"].ToString();
                 if (showjson["premiered"] is not null)
                 {
                     PremiereDate = "1900-01-01";
@@ -225,7 +227,7 @@ namespace TvmEntities
             if (ShowStatus == "Ended") { return false; } // && PremiereDate < Convert)
             switch (TvmType)
             {
-                case "Sport": 
+                case "Sport":
                 case "News":
                 case "Variety":
                 case "Game Show":
@@ -250,5 +252,33 @@ namespace TvmEntities
             Mdb.Close();
             GC.SuppressFinalize(this);
         }
+    }
+
+    public class SearchShowsOnTvmaze
+    {
+        public List<Show> Found = new();
+
+        public SearchShowsOnTvmaze(string conninfo, Logger logger, string showname)
+        {
+            int idx = 0;
+            var exectime = new System.Diagnostics.Stopwatch();
+
+            while (idx < 20)
+            {
+                exectime.Restart();
+                idx++;
+                using (Show show = new(conninfo, logger))
+                {
+                    show.FillViaTvmaze(idx);
+                    // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); }
+                    Found.Add(show);
+                }
+                Thread.Sleep(2500);
+                exectime.Stop();
+                logger.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
+            }
+            
+        }
+
     }
 }
