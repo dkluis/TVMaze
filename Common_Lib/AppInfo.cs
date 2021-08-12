@@ -9,23 +9,24 @@ namespace Common_Lib
         public readonly Logger Log;
         public readonly string Application;
         public readonly string Drive;
-        public readonly string LoggerFilePath;
-        public readonly string LoggerFileName;
+        public readonly string FilePath;
+        public readonly string FileName;
+        public readonly string FullPath;
 
         public AppInfo(string application, string dbconnection, string logfilename, string[] logfilepathelements = null)
         {
             Application = application;
             DbConnection = dbconnection;
-            LoggerFileName = logfilename;
+            FileName = logfilename;
 
             Common.EnvInfo envinfo = new();
             Drive = envinfo.Drive;
             if (logfilepathelements is not null)
             {
-                LoggerFilePath = Drive;
+                FilePath = Drive;
                 foreach (string element in logfilepathelements)
                 {
-                    LoggerFilePath = Path.Combine(LoggerFilePath, element);
+                    FilePath = Path.Combine(FilePath, element);
                 }
             }
             else
@@ -39,10 +40,11 @@ namespace Common_Lib
                 {
                     logpath = Common.ReadConfig("MacLogPath");
                 }
-                LoggerFilePath = Path.Combine(logpath, logfilename);
+                FilePath = Path.Combine(logpath, logfilename);
             }
+            FullPath = Path.Combine(FilePath, FileName);
 
-            Log = new(logfilename, Application);  // Adjust to starting using the LoggerFilePath
+            Log = new(FileName, Application);  // Adjust to starting using the LoggerFilePath
         }
 
     }

@@ -20,7 +20,7 @@ namespace TvmEntities
             log.Write($"Appinfo Application is {appinfo.Application}");
             log.EmptyLine(5);
 
-            log.Elapsed();
+            //log.Elapsed();
 
             #region Write a config file
 
@@ -34,7 +34,7 @@ namespace TvmEntities
 
             #region Define the path to the log or the config file
             AppInfo defpath = new("TvmEntities", "New-Test-DB", "SomeWhereElse.log", new string[] { "asdf", "123" });
-            log.Write($"FilePath is now: {defpath.LoggerFilePath} on Drive {defpath.Drive}", "Testing Setting Path");
+            log.Write($"FilePath is now: {defpath.FullPath} on Drive {defpath.Drive}", "Testing Setting Path");
 
             #endregion
             
