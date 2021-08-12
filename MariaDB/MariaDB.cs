@@ -63,7 +63,7 @@ namespace DB_Lib
 
         public MariaDB(AppInfo appinfo)
         {
-            mdblog = appinfo.Log;
+            mdblog = appinfo.TxtFile;
           
 # if DEBUG   
             // mdblog.Write($"Configuration String is {conninfo} ", "MariaDB", 3);

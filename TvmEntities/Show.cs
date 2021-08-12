@@ -53,7 +53,7 @@ namespace TvmEntities
         {
             Appinfo = appinfo;
             Mdb = new(appinfo);
-            log = Appinfo.Log;
+            log = appinfo.TxtFile;
         }
 
         public void Reset()
@@ -262,7 +262,7 @@ namespace TvmEntities
         {
             int idx = 0;
             var exectime = new System.Diagnostics.Stopwatch();
-            Logger log = appinfo.Log;
+            Logger log = appinfo.TxtFile;
 
             while (idx < 20)
             {

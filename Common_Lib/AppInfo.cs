@@ -6,7 +6,7 @@ namespace Common_Lib
     public class AppInfo
     {
         public readonly string DbConnection;
-        public readonly Logger Log;
+        public readonly Logger TxtFile;
         public readonly string Application;
         public readonly string Drive;
         public readonly string FilePath;
@@ -43,9 +43,7 @@ namespace Common_Lib
                 FilePath = Path.Combine(logpath, logfilename);
             }
 
-            FullPath = Path.Combine(FilePath, FileName);
-
-            Log = new(FileName, Application);  // Adjust to starting using the LoggerFilePath
+            TxtFile = new(FileName, Application, FilePath); 
         }
 
     }

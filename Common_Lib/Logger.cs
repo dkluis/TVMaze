@@ -6,23 +6,26 @@ namespace Common_Lib
 {
     public class Logger
     {
-        private readonly string logfile;
-        private readonly string logpath;
-        private readonly string fulllogpath;
+        //private readonly string file;
+        private readonly string filepath;
+        private readonly string fullfilepath;
         private readonly int level;
         protected string app;
         protected Stopwatch timer = new();
 
-        public Logger(string logname = null, string appl = null)
+       //public Logger(string filename = null, string appl = null, string infilepath = null);
+        public Logger(string filename, string appl, string infilepath)
         {
             timer.Start();
-            if (logname == null || logname == "")
+            app = appl;
+            /*
+            if (filename == null || filename == "")
             {
-                logfile = "Logger.log";
+                file = "Logger.log";
             }
             else
             {
-                logfile = logname;
+                file = filename;
             }
             if (appl == null || appl == "")
             {
@@ -33,23 +36,35 @@ namespace Common_Lib
                 app = appl;
             }
 
-            Common.EnvInfo env = new();
-            level = Int16.Parse(Common.ReadConfig("LogLevel"));
-            if (env.OS == "Windows")
+            if (infilepath is null)
             {
-                logpath = Common.ReadConfig("PCLogPath");
+                Common.EnvInfo env = new();
+                level = Int16.Parse(Common.ReadConfig("LogLevel"));
+                if (env.OS == "Windows")
+                {
+                    filepath = Common.ReadConfig("PCLogPath");
+                }
+                else
+                {
+                    filepath = Common.ReadConfig("MacLogPath");
+                }
+                fullfilepath = Path.Combine(filepath, file);
             }
             else
             {
-                logpath = Common.ReadConfig("MacLogPath");
+                filepath = infilepath;
+                fullfilepath = Path.Combine(filepath, file);
             }
-            fulllogpath = Path.Combine(logpath, logfile);
+            */
+            
+            filepath = infilepath;
+            fullfilepath = Path.Combine(filepath, filename);
 
-            if (!File.Exists(fulllogpath))
+            if (!File.Exists(this.fullfilepath))
             {
-                File.Create(fulllogpath).Close();
+                File.Create(this.fullfilepath).Close();
             }
-            Console.WriteLine($"Logfile name is {fulllogpath} ");
+            Console.WriteLine($"Logfile name is {fullfilepath} ");
         }
 
         public void Start(string application = null)
@@ -72,7 +87,7 @@ namespace Common_Lib
 
         public void Empty()
         {
-            using StreamWriter file = new(fulllogpath, false);
+            using StreamWriter file = new(fullfilepath, false);
             file.Write("");
         }
 
@@ -82,7 +97,7 @@ namespace Common_Lib
             if (function.Length > 19) { function = function.Substring(0, 19); }
             if (loglevel <= level)
             {
-                using StreamWriter file = new(fulllogpath, append);
+                using StreamWriter file = new(fullfilepath, append);
                 file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2} --> {message}");
             }
         }
@@ -93,7 +108,7 @@ namespace Common_Lib
             if (function.Length > 19) { function = function.Substring(0, 19); }
             if (loglevel <= level)
             {
-                using StreamWriter file = new(fulllogpath, append);
+                using StreamWriter file = new(fullfilepath, append);
                 foreach (string msg in messages)
                 {
                     file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2}--> {msg}");
@@ -111,7 +126,7 @@ namespace Common_Lib
         public void EmptyLine(int lines = 1)
         {
             int idx = 1;
-            using StreamWriter file = new(fulllogpath, true);
+            using StreamWriter file = new(fullfilepath, true);
             while (idx <= lines)
             {
                 file.WriteLine($"");
@@ -121,20 +136,20 @@ namespace Common_Lib
 
         public void WriteNoHead(string message, bool newline = true)
         {
-            using StreamWriter file = new(fulllogpath, true);
+            using StreamWriter file = new(fullfilepath, true);
             if(newline) { file.WriteLine(message); } else { file.Write(message); }
         }
 
         public void WriteNoHead(string[] messages, bool newline = true)
         {
-            using StreamWriter file = new(fulllogpath, true);
+            using StreamWriter file = new(fullfilepath, true);
             foreach (string msg in messages)
             {
                 if (newline) { file.WriteLine(msg); } else { file.Write(msg); }
             }
         }
 
-        public string ReadKey()
+        public static string ReadKey()
         {
             return "";
         }

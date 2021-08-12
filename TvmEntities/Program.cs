@@ -7,8 +7,9 @@ namespace TvmEntities
     {
         static void Main()
         {
-            AppInfo appinfo = new("TvmEntities", "New-Test-DB", "TvmEntities.log");
-            Logger log = appinfo.Log;
+            string[] newpath = new string [] { "Users", "Dick", "TVMaze", "Logs" }; 
+            AppInfo appinfo = new("TvmEntities", "New-Test-DB", "TvmEntities.log", newpath);
+            Logger log = appinfo.TxtFile;
             log.Start();
 
             log.Write($"Log Level at 1", "", 1);
@@ -24,7 +25,7 @@ namespace TvmEntities
 
             #region Write a config file
 
-            Logger config = new("ConfigFile.json", null);
+            Logger config = new("ConfigFile.json", null, @"C:\Users\Dick\TVMaze");
             config.Empty();
             config.WriteNoHead("{");
             config.WriteNoHead("\"First Record\": \"Some Info\",");
@@ -33,7 +34,7 @@ namespace TvmEntities
             log.Write("Created the config file");
             log.Elapsed();
 
-            Logger config2 = new("ConfigFile2.json", null);
+            Logger config2 = new("ConfigFile2.json", null, @"C:\Users\Dick\TVMaze");
             config2.Empty();
             config2.WriteNoHead("{ ", false);
             config2.WriteNoHead("\"First Record\": \"Some Info\", ",  false);

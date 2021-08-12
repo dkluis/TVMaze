@@ -12,7 +12,7 @@ namespace CheckTvmShowUpdates
         static void Main()
         {
             AppInfo appinfo = new("CheckTvmShowUpd", "New-Test-DB", "CheckTvmShowUpdates.log");
-            Logger log = appinfo.Log;
+            Logger log = appinfo.TxtFile;
             log.Start();
 
             #region Testing Json Handling (New)
