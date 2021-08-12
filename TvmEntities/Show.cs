@@ -52,7 +52,7 @@ namespace TvmEntities
         public Show(AppInfo appinfo)
         {
             Appinfo = appinfo;
-            Mdb = new(Appinfo.DbConnection, Appinfo.Log);
+            Mdb = new(appinfo);
             log = Appinfo.Log;
         }
 

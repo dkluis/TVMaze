@@ -150,8 +150,8 @@ namespace CheckTvmShowUpdates
 
             #region Processing all Epoch updates
 
-            MariaDB Mdbr = new("New-Test-DB", log);
-            MariaDB Mdbw = new("New-Test-DB", log);
+            MariaDB Mdbr = new(appinfo);
+            MariaDB Mdbw = new(appinfo);
             MySqlDataReader rdr;
 
             bool InEpochTable;

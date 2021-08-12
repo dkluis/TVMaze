@@ -18,7 +18,7 @@ namespace DB_Lib
 
         public TvmCommonSql(AppInfo appinfo)
         {
-            db = new(appinfo.DbConnection, appinfo.Log);
+            db = new(appinfo);
         }
 
         public Int32 GetLastTvmShowIdInserted()

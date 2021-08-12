@@ -8,22 +8,22 @@ namespace ImportFromPythonTVM
     {
         static void Main()
         {
-
-            Logger log = new("ImportFromPythonTVM.log");
-            log.Start("ImportFromPythonTVM");
+            AppInfo appinfo = new("ImportFromPythonDB", "New-Test-DB", "ImportFromPythonDB.log");
+            AppInfo pythoninfo = new("ImportFromPythonDB", "ProdDB", "ImportFromPythonDB.log");
+            Logger log = appinfo.Log;
+            log.Start();
 
             #region Migrate Shows
-            /*
-            using (MariaDB PythonDB = new("ProdDB", log))
+            
+            using (MariaDB PythonDB = new(pythoninfo))
             {
-                
-                MariaDB TvmazeDB = new("New-Test-DB", log);
+                MariaDB TvmazeDB = new(appinfo);
                 // PythonDB.Command("select * from shows where `status` != 'Skipped' and `showid` > 123;");
                 PythonDB.Command("select * from shows where `status` != 'Skipped';");
                 MySqlConnector.MySqlDataReader presult = PythonDB.ExecQuery();
                 while (presult.Read())
                 {
-                    log.Write($"Processing: {presult["showid"].ToString().PadLeft(6)} : {presult["status"].ToString().PadRight(15)} : {presult["showname"].ToString()}", "Fill new Shows Table", 3);
+                    log.Write($"Processing: {presult["showid"],6} : {presult["status"],-15} : {presult["showname"]}", "Fill new Shows Table", 3);
 
                     string showname = presult["showname"].ToString();
                     if (showname.Contains("'"))
@@ -63,14 +63,14 @@ namespace ImportFromPythonTVM
                     }
                 }
             }
-            */
+            
             #endregion
 
             #region Migrate Episodes
-            /*
-            using (MariaDB PythonDB = new("ProdDB", log))
+            
+            using (MariaDB PythonDB = new(pythoninfo))
             {
-                MariaDB TvmazeDB = new("New-Test-DB", log);
+                MariaDB TvmazeDB = new(appinfo);
                 //PythonDB.Command("select * from episodes where epiid = 13007;");
                 PythonDB.Command("select * from episodes order by `showid`, `season`, `episode`;");
                 MySqlConnector.MySqlDataReader presult = PythonDB.ExecQuery();
@@ -151,7 +151,7 @@ namespace ImportFromPythonTVM
                     }
                 }
             }
-            */
+            
             #endregion
 
             log.Stop();
