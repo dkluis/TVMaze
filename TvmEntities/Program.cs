@@ -7,8 +7,10 @@ namespace TvmEntities
     {
         static void Main()
         {
-            Logger log = new("TvmEntities.log");
-            log.Start("TvmEntities");
+            Logger log = new("TvmEntities.log", "TvmEntities");
+            log.Start();
+
+            log.Write($"First Message");
 
             #region Test Show Class in general
             /*
@@ -35,7 +37,7 @@ namespace TvmEntities
             #endregion
 
             #region Testing Searching TVMaze with Showname and returning list of show classes.
-            
+            /*
             var exectime = new System.Diagnostics.Stopwatch();
             exectime.Start();
             
@@ -45,10 +47,11 @@ namespace TvmEntities
             {
                 log.Write($"Show Found TvmShowid {showFound.TvmShowId}, {showFound.ShowName}");
             }
-
-            #endregion
             exectime.Stop();
             log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.", "ShowSearchOnTvmaze", 0);
+            */
+            #endregion
+
 
             log.Stop();
         }

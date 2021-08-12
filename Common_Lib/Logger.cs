@@ -11,7 +11,7 @@ namespace Common_Lib
         private readonly int level;
         private string app;
 
-        public Logger(string logname = null)
+        public Logger(string logname = null, string appl = null)
         {
             if (logname == null || logname == "")
             {
@@ -20,6 +20,14 @@ namespace Common_Lib
             else
             {
                 logfile = logname;
+            }
+            if (appl == null || appl == "")
+                    {
+                app = "Logger";
+            }
+            else 
+            {
+                app = appl;
             }
 
             Common.EnvInfo env = new();
@@ -42,9 +50,12 @@ namespace Common_Lib
             Console.WriteLine($"Logfile name is {fulllogpath} ");
         }
 
-        public void Start(string application)
+        public void Start(string application = null)
         {
-            app = application;
+            if (application is not null)
+            {
+                app = application;
+            }
             Write($"{app} Started  ##########################################", app, 0);
         }
 
@@ -53,8 +64,9 @@ namespace Common_Lib
             Write($"{app} Finished ##########################################", app, 0);
         }
 
-        public void Write(string message, string function = "", int loglevel = 1, bool append = true)
+        public void Write(string message, string function = "", int loglevel = 3, bool append = true)
         {
+            if (function == "") { function = app; }
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
@@ -62,8 +74,9 @@ namespace Common_Lib
             }
         }
 
-        public void Write(string[] messages, string function = "", int loglevel = 1, bool append = true)
+        public void Write(string[] messages, string function = "", int loglevel = 3, bool append = true)
         {
+            if (function == "") { function = app; }
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
@@ -73,5 +86,6 @@ namespace Common_Lib
                 }
             }
         }
+
     }
 }
