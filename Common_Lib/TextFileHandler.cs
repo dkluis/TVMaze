@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Common_Lib
 {
-    public class Logger
+    public class TextFileHandler
     {
         //private readonly string file;
         private readonly string filepath;
@@ -13,49 +13,10 @@ namespace Common_Lib
         protected string app;
         protected Stopwatch timer = new();
 
-       //public Logger(string filename = null, string appl = null, string infilepath = null);
-        public Logger(string filename, string appl, string infilepath)
+        public TextFileHandler(string filename, string appl, string infilepath)
         {
             timer.Start();
             app = appl;
-            /*
-            if (filename == null || filename == "")
-            {
-                file = "Logger.log";
-            }
-            else
-            {
-                file = filename;
-            }
-            if (appl == null || appl == "")
-            {
-                app = "Logger";
-            }
-            else
-            {
-                app = appl;
-            }
-
-            if (infilepath is null)
-            {
-                Common.EnvInfo env = new();
-                level = Int16.Parse(Common.ReadConfig("LogLevel"));
-                if (env.OS == "Windows")
-                {
-                    filepath = Common.ReadConfig("PCLogPath");
-                }
-                else
-                {
-                    filepath = Common.ReadConfig("MacLogPath");
-                }
-                fullfilepath = Path.Combine(filepath, file);
-            }
-            else
-            {
-                filepath = infilepath;
-                fullfilepath = Path.Combine(filepath, file);
-            }
-            */
             
             filepath = infilepath;
             fullfilepath = Path.Combine(filepath, filename);

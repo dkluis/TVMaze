@@ -17,7 +17,7 @@ namespace DataBase
 
             AppInfo app1info = new("Database", "ProductionDB", "CheckTvmShowUpdates.log");
             AppInfo appinfo = new("Database", "Tvm-Test-DB", "CheckTvmShowUpdates.log");
-            Logger log = app1info.TxtFile;
+            TextFileHandler log = app1info.TxtFile;
             log.Start();
 
             #region DB Example

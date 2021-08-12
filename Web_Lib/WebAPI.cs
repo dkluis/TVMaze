@@ -22,9 +22,9 @@ namespace Web_Lib
         readonly string RarbgAPI_url_pre = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string='";
         readonly string RarbgAPI_url_suf = "'&token=lnjzy73ucv&format=json_extended&app_id=lol";
 
-        private readonly Logger log;
+        private readonly TextFileHandler log;
 
-        public WebAPI(Logger logger)
+        public WebAPI(TextFileHandler logger)
         {
             log = logger;
         }

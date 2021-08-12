@@ -10,7 +10,7 @@ namespace ImportFromPythonTVM
         {
             AppInfo appinfo = new("ImportFromPythonDB", "New-Test-DB", "ImportFromPythonDB.log");
             AppInfo pythoninfo = new("ImportFromPythonDB", "ProdDB", "ImportFromPythonDB.log");
-            Logger log = appinfo.TxtFile;
+            TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
             #region Migrate Shows

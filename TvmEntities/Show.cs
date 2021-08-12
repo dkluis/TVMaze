@@ -46,7 +46,7 @@ namespace TvmEntities
         public bool isForReview;
 
         private readonly MariaDB Mdb;
-        private readonly Logger log;
+        private readonly TextFileHandler log;
         private readonly AppInfo Appinfo;
 
         public Show(AppInfo appinfo)
@@ -262,7 +262,7 @@ namespace TvmEntities
         {
             int idx = 0;
             var exectime = new System.Diagnostics.Stopwatch();
-            Logger log = appinfo.TxtFile;
+            TextFileHandler log = appinfo.TxtFile;
 
             while (idx < 20)
             {

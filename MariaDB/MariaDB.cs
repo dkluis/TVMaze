@@ -14,7 +14,7 @@ namespace DB_Lib
         public bool success;
         public int rows;
         public Exception exception;
-        public Logger mdblog;
+        public TextFileHandler mdblog;
 
         // private readonly Common common = new();
 

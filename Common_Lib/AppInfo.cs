@@ -6,7 +6,7 @@ namespace Common_Lib
     public class AppInfo
     {
         public readonly string DbConnection;
-        public readonly Logger TxtFile;
+        public readonly TextFileHandler TxtFile;
         public readonly string Application;
         public readonly string Drive;
         public readonly string FilePath;

@@ -9,13 +9,13 @@ namespace Web_Lib
 {
     public class WebScrape : IDisposable
     {
-        private readonly Logger log;
+        private readonly TextFileHandler log;
         public List<string> magnets = new();
         // private Common common = new();
         public bool WholeSeasonFound;
         public bool rarbgError;
 
-        public WebScrape(Logger logger)
+        public WebScrape(TextFileHandler logger)
         {
             log = logger;
         }
@@ -248,9 +248,9 @@ namespace Web_Lib
 
         #region Get Prioritized Magnet
 
-        public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, Logger logger)
+        public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, TextFileHandler logger)
         {
-            Logger log = logger;
+            TextFileHandler log = logger;
             string seasepi;
             if (epi_num == 1)
             {
