@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Web_Lib
@@ -101,6 +102,23 @@ namespace Web_Lib
             catch (Exception e)
             {
                 log.Write($"Exception: {e.Message}", "WebAPI Async", 0);
+                if (e.Message.Contains("50 seconds elapsing"))
+                {
+                    //Thread.Sleep(1000);
+                    log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
+                    try
+                    {
+                        log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
+                        HttpResponseMessage response = new();
+                        _http_response = await client.GetAsync(api).ConfigureAwait(false);
+                    }
+                    catch (Exception ee)
+                    {
+
+                        log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0);
+
+                    }
+                }
             }
         }
 
@@ -111,7 +129,7 @@ namespace Web_Lib
                 client.BaseAddress = new Uri(tvmaze_url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
-                client.Timeout = TimeSpan.FromSeconds(50);
+                client.Timeout = TimeSpan.FromSeconds(30);
                 _tvmaze_url_initialized = true;
             }
         }
@@ -124,7 +142,7 @@ namespace Web_Lib
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("Authorization", "Basic RGlja0tsdWlzOkVpb1dWRVJpZDdHekpteUlQTEVCR09mUHExTm40SFdM");
                 client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
-                client.Timeout = TimeSpan.FromSeconds(50);
+                client.Timeout = TimeSpan.FromSeconds(30);
                 _tvmaze_user_url_initialized = true;
             }
         }

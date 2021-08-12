@@ -273,7 +273,7 @@ namespace TvmEntities
                     // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); }
                     Found.Add(show);
                 }
-                Thread.Sleep(2500);
+                Thread.Sleep(1500);
                 exectime.Stop();
                 logger.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
             }

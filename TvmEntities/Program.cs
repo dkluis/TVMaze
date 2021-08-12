@@ -35,7 +35,10 @@ namespace TvmEntities
             #endregion
 
             #region Testing Searching TVMaze with Showname and returning list of show classes.
-
+            
+            var exectime = new System.Diagnostics.Stopwatch();
+            exectime.Start();
+            
             SearchShowsOnTvmaze showsearch = new("New-Test-DB", log, "Lost");
             List<Show> showsFound = showsearch.Found;
             foreach (Show showFound in showsFound)
@@ -44,6 +47,8 @@ namespace TvmEntities
             }
 
             #endregion
+            exectime.Stop();
+            log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.", "ShowSearchOnTvmaze", 0);
 
             log.Stop();
         }
