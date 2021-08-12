@@ -66,7 +66,7 @@ namespace Common_Lib
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
         {
-            if (function == "") { function = app; }
+            if (function == "" || function == null) { function = app; }
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);
@@ -76,7 +76,7 @@ namespace Common_Lib
 
         public void Write(string[] messages, string function = "", int loglevel = 3, bool append = true)
         {
-            if (function == "") { function = app; }
+            if (function == "" || function == null) { function = app; }
             if (loglevel <= level)
             {
                 using StreamWriter file = new(fulllogpath, append);

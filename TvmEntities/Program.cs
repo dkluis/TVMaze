@@ -7,14 +7,22 @@ namespace TvmEntities
     {
         static void Main()
         {
-            Logger log = new("TvmEntities.log", "TvmEntities");
+            AppInfo appinfo = new("TvmEntities", "New-Test-DB", "TvmEntities.log");
+            Logger log = appinfo.Log;
             log.Start();
 
-            log.Write($"First Message");
+            log.Write($"Log Level at 1", "", 1);
+            log.Write($"Log Level at 2", null, 2);
+            log.Write($"Log Level at 3");
+            log.Write($"Log Level at 1 with another function string", "Another Function", 1);
+
+            log.Write($"Appinfo DbConnection is {appinfo.DbConnection}");
+            log.Write($"Appinfo Application is {appinfo.Application}");
 
             #region Test Show Class in general
-            /*
-            using (Show show = new("New-Test-DB", log))
+            
+            //using (Show show = new("New-Test-DB", log))
+            using (Show show = new(appinfo))
             {
                 show.FillViaTvmaze(53057);
 
@@ -33,15 +41,16 @@ namespace TvmEntities
                     log.Write($"Show is NOT rated for Review");
                 }
             }
-            */
+            
             #endregion
 
             #region Testing Searching TVMaze with Showname and returning list of show classes.
-            /*
+            
             var exectime = new System.Diagnostics.Stopwatch();
             exectime.Start();
-            
-            SearchShowsOnTvmaze showsearch = new("New-Test-DB", log, "Lost");
+
+            // SearchShowsOnTvmaze showsearch = new("New-Test-DB", log, "Lost");
+            SearchShowsOnTvmaze showsearch = new(appinfo, "Lost");
             List<Show> showsFound = showsearch.Found;
             foreach (Show showFound in showsFound)
             {
@@ -49,7 +58,7 @@ namespace TvmEntities
             }
             exectime.Stop();
             log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.", "ShowSearchOnTvmaze", 0);
-            */
+            
             #endregion
 
 

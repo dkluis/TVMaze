@@ -56,6 +56,13 @@ namespace TvmEntities
             connection = conninfo;
         }
 
+        public Show(AppInfo appinfo)
+        {
+            Mdb = new(appinfo.DbConnection, appinfo.Log);
+            log = appinfo.Log;
+            connection = appinfo.DbConnection;
+        }
+
         public void Reset()
         {
             Id = 0;
@@ -270,7 +277,7 @@ namespace TvmEntities
                 using (Show show = new(conninfo, logger))
                 {
                     show.FillViaTvmaze(idx);
-                    // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); }
+                    // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); } 
                     Found.Add(show);
                 }
                 Thread.Sleep(1500);
@@ -278,6 +285,29 @@ namespace TvmEntities
                 logger.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
             }
             
+        }
+
+        public SearchShowsOnTvmaze(AppInfo appinfo, string showname)
+        {
+            int idx = 0;
+            var exectime = new System.Diagnostics.Stopwatch();
+            Logger log = appinfo.Log;
+
+            while (idx < 20)
+            {
+                exectime.Restart();
+                idx++;
+                using (Show show = new(appinfo))
+                {
+                    show.FillViaTvmaze(idx);
+                    // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); }
+                    Found.Add(show);
+                }
+                Thread.Sleep(1500);
+                exectime.Stop();
+                log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
+            }
+
         }
 
     }
