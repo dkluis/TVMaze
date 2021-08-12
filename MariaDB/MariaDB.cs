@@ -73,7 +73,8 @@ namespace DB_Lib
             exception = new Exception();
             try
             {
-                conn = new MySqlConnection(appinfo.DbConnection);
+                string connstr = Common.ReadConfig(appinfo.DbConnection);
+                conn = new MySqlConnection(connstr);
                 success = true;
             }
             catch (Exception e)

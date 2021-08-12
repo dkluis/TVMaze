@@ -18,9 +18,29 @@ namespace TvmEntities
 
             log.Write($"Appinfo DbConnection is {appinfo.DbConnection}");
             log.Write($"Appinfo Application is {appinfo.Application}");
+            log.EmptyLine(5);
 
-            #region Test Show Class in general
+            log.Elapsed();
+
+            #region Write a config file
+
+            Logger config = new("ConfigFile.txt", null);
+            config.WriteNoHead("\"First Record\": \"Some Info\"", true);
+            config.WriteNoHead("\"Second Record\": \"Some Info\"");
+            log.Write("Created the config file");
+            log.Elapsed();
+
+            #endregion
+
+            #region Define the path to the log or the config file
+            AppInfo defpath = new("TvmEntities", "New-Test-DB", "SomeWhereElse.log", new string[] { "asdf", "123" });
+            log.Write($"FilePath is now: {defpath.LoggerFilePath} on Drive {defpath.Drive}", "Testing Setting Path");
+
+            #endregion
             
+            /*
+            #region Test Show Class in general
+
             //using (Show show = new("New-Test-DB", log))
             using (Show show = new(appinfo))
             {
@@ -44,6 +64,7 @@ namespace TvmEntities
             
             #endregion
 
+
             #region Testing Searching TVMaze with Showname and returning list of show classes.
             
             var exectime = new System.Diagnostics.Stopwatch();
@@ -61,6 +82,7 @@ namespace TvmEntities
             
             #endregion
 
+            */
 
             log.Stop();
         }

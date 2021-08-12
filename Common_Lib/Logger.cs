@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Common_Lib
@@ -9,10 +10,12 @@ namespace Common_Lib
         private readonly string logpath;
         private readonly string fulllogpath;
         private readonly int level;
-        private string app;
+        protected string app;
+        protected Stopwatch timer = new();
 
         public Logger(string logname = null, string appl = null)
         {
+            timer.Start();
             if (logname == null || logname == "")
             {
                 logfile = "Logger.log";
@@ -22,16 +25,15 @@ namespace Common_Lib
                 logfile = logname;
             }
             if (appl == null || appl == "")
-                    {
+            {
                 app = "Logger";
             }
-            else 
+            else
             {
                 app = appl;
             }
 
             Common.EnvInfo env = new();
-            // Common com = new();
             level = Int16.Parse(Common.ReadConfig("LogLevel"));
             if (env.OS == "Windows")
             {
@@ -57,11 +59,15 @@ namespace Common_Lib
                 app = application;
             }
             Write($"{app} Started  ##########################################", app, 0);
+            EmptyLine();
         }
 
         public void Stop()
         {
-            Write($"{app} Finished ##########################################", app, 0);
+            timer.Stop();
+            EmptyLine();
+            Write($"{app} Finished ###################  in {timer.ElapsedMilliseconds} mSec  #######################", app, 0);
+            EmptyLine(3);
         }
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
@@ -87,5 +93,45 @@ namespace Common_Lib
             }
         }
 
+        public void Elapsed()
+        {
+            EmptyLine();
+            Write($"{app} Elapsed up to now: {timer.ElapsedMilliseconds} mSec", "Elapsed Time", 0);
+            EmptyLine();
+        }
+
+        public void EmptyLine(int lines = 1)
+        {
+            int idx = 1;
+            using StreamWriter file = new(fulllogpath, true);
+            while (idx <= lines)
+            {
+                file.WriteLine($"");
+                idx++;
+            }
+        }
+
+        public void WriteNoHead(string message, bool append = true)
+        {
+            using StreamWriter file = new(fulllogpath, append);
+            file.WriteLine(message);
+        }
+
+        public void WriteNoHead(string[] messages, bool append = true)
+        {
+            using StreamWriter file = new(fulllogpath, append);
+            foreach (string msg in messages)
+            {
+                file.WriteLine(msg);
+            }
+        }
+
+        public string ReadKey()
+        {
+            return "";
+        }
     }
 }
+
+
+
