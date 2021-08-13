@@ -98,24 +98,25 @@ namespace Common_Lib
             }
         }
 
-        public void WriteNoHead(string message, bool newline = true)
+        public void WriteNoHead(string message, bool newline = true, bool append = true)
         {
-            using StreamWriter file = new(fullfilepath, true);
+            using StreamWriter file = new(fullfilepath, append);
             if(newline) { file.WriteLine(message); } else { file.Write(message); }
         }
 
-        public void WriteNoHead(string[] messages, bool newline = true)
+        public void WriteNoHead(string[] messages, bool newline = true, bool append = true)
         {
-            using StreamWriter file = new(fullfilepath, true);
+            using StreamWriter file = new(fullfilepath, append);
             foreach (string msg in messages)
             {
                 if (newline) { file.WriteLine(msg); } else { file.Write(msg); }
             }
         }
 
-        public static string ReadKey()
+        public string ReadFile()
         {
-            return "";
+            string filetext = File.ReadAllText(fullfilepath);
+            return filetext;
         }
     }
 }
