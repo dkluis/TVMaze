@@ -7,7 +7,7 @@ namespace TvmEntities
     {
         static void Main()
         {
-            string[] newpath = new string [] { "Users", "Dick", "TVMaze", "Logs" }; 
+            string[] newpath = new string[] { "Users", "Dick", "TVMaze", "Logs" };
             AppInfo appinfo = new("TvmEntities", "New-Test-DB", "TvmEntities.log", newpath);
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
@@ -40,7 +40,7 @@ namespace TvmEntities
             TextFileHandler config2 = app2.TxtFile;
             config2.EmptyLine();
             config2.WriteNoHead("{ ", false);
-            config2.WriteNoHead("\"First Record\": \"Some Info\", ",  false);
+            config2.WriteNoHead("\"First Record\": \"Some Info\", ", false);
             config2.WriteNoHead("\"Second Record\": \"Some Info\" ", false);
             config2.WriteNoHead("}", false);
             log.Write("Created the config file");
@@ -54,8 +54,8 @@ namespace TvmEntities
             log.Write($"FilePath is now: {defpath.FullPath} on Drive {defpath.Drive}", "Testing Setting Path");
 
             #endregion
-            
-            
+
+
             #region Test Show Class in general
 
             //using (Show show = new("New-Test-DB", log))
@@ -79,12 +79,12 @@ namespace TvmEntities
                 }
                 show.CloseDB();
             }
-            
+
             #endregion
 
 
             #region Testing Searching TVMaze with Showname and returning list of show classes.
-            
+
             var exectime = new System.Diagnostics.Stopwatch();
             exectime.Start();
 
@@ -97,11 +97,12 @@ namespace TvmEntities
             }
             exectime.Stop();
             log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.", "ShowSearchOnTvmaze", 0);
-            
+
             #endregion
 
-            
+
             log.Stop();
         }
     }
 }
+
