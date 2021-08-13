@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Newtonsoft.Json.Linq;
+using Common_Lib;
 
 namespace Common_Lib
 {
@@ -16,7 +18,7 @@ namespace Common_Lib
         {
             timer.Start();
             app = appl;
-            
+
             filepath = infilepath;
             fullfilepath = Path.Combine(filepath, filename);
 
@@ -24,7 +26,9 @@ namespace Common_Lib
             {
                 File.Create(fullfilepath).Close();
             }
+#if DEBUG
             Console.WriteLine($"Logfile name is {fullfilepath} ");
+#endif
         }
 
         public void Start()
@@ -41,19 +45,6 @@ namespace Common_Lib
             Write($"{app} Finished ###################  in {timer.ElapsedMilliseconds} mSec  #######################", app, 0);
             EmptyLine();
         }
-
-        /*
-        public void Empty(int lines = 1)
-        {
-            int idx = 1;
-            while (idx <= lines)
-            {
-                using StreamWriter file = new(fullfilepath, true);
-                file.WriteLine("");
-                idx++;
-            }
-        }
-        */
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
         {
@@ -101,7 +92,7 @@ namespace Common_Lib
         public void WriteNoHead(string message, bool newline = true, bool append = true)
         {
             using StreamWriter file = new(fullfilepath, append);
-            if(newline) { file.WriteLine(message); } else { file.Write(message); }
+            if (newline) { file.WriteLine(message); } else { file.Write(message); }
         }
 
         public void WriteNoHead(string[] messages, bool newline = true, bool append = true)
@@ -113,13 +104,53 @@ namespace Common_Lib
             }
         }
 
-        public string ReadFile()
+        public string ReadKeyArray(string find)
         {
             string filetext = File.ReadAllText(fullfilepath);
-            return filetext;
+            JArray kvps = ConvertJsonTxt.ConvertStringToJArray(filetext);
+            foreach (JToken rec in kvps)
+            {
+                if (rec[find] is null) { return ""; }
+                if (rec[find].ToString() != "") { return rec[find].ToString(); }
+            }
+            return "";
+        }
+
+        public string ReadKeyObject(string find)
+        {
+            string filetext = File.ReadAllText(fullfilepath);
+            JObject kvps = ConvertJsonTxt.ConvertStringToJObject(filetext);
+            foreach (var rec in kvps)
+            {
+                if (rec.Key.ToString() == find) { return rec.Value.ToString(); }
+            }
+            return "";
         }
     }
 }
 
+public class ReadKeyFromFile
+{
+    public string FindInArray(string fullfilepath, string find)
+    {
+        string filetext = File.ReadAllText(fullfilepath);
+        JArray kvps = ConvertJsonTxt .ConvertStringToJArray(filetext);
+        foreach (JToken rec in kvps)
+        {
+            if (rec[find] is null) { return ""; }
+            if (rec[find].ToString() != "") { return rec[find].ToString(); }
+        }
+        return "";
+    }
 
-
+    public string FindInObject(string fullfilepath, string find)
+    {
+        string filetext = File.ReadAllText(fullfilepath);
+        JObject kvps = ConvertJsonTxt.ConvertStringToJObject(filetext);
+        foreach (var rec in kvps)
+        {
+            if (rec.Key.ToString() == find) { return rec.Value.ToString(); }
+        }
+        return "";
+    }
+}

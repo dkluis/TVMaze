@@ -17,5 +17,16 @@ namespace Common_Lib
             return jarray;
         }
 
+        public static JObject ConvertStringToJObject(string message)
+        {
+            if (message == "")
+            {
+                JObject empty = new();
+                return empty;
+            }
+            JObject jobject = JObject.Parse(message);
+            return jobject;
+        }
+
     }
 }
