@@ -28,7 +28,7 @@ namespace TvmEntities
             string[] conpath = new string[] { "Users", "Dick", "TVMaze" };
             AppInfo app1 = new("TvmEntities", "New-Test-DB", "Config.json", conpath);
             TextFileHandler config = app1.TxtFile;
-            config.Empty();
+            config.EmptyLine();
             config.WriteNoHead("{");
             config.WriteNoHead("\"First Record\": \"Some Info\",");
             config.WriteNoHead("\"Second Record\": \"Some Info\"");
@@ -38,7 +38,7 @@ namespace TvmEntities
 
             AppInfo app2 = new("TvmEntities", "New-Test-DB", "Config2.json", conpath);
             TextFileHandler config2 = app2.TxtFile;
-            config2.Empty();
+            config2.EmptyLine();
             config2.WriteNoHead("{ ", false);
             config2.WriteNoHead("\"First Record\": \"Some Info\", ",  false);
             config2.WriteNoHead("\"Second Record\": \"Some Info\" ", false);

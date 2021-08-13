@@ -16,72 +16,87 @@ namespace DataBase
             watch.Start();
 
             string[] newpath = new string[] { "Users", "Dick", "TVMaze", "Logs" };
-            AppInfo app1info = new("Database", "ProductionDB", "CheckTvmShowUpdates.log", newpath);
-            AppInfo appinfo = new("Database", "Tvm-Test-DB", "CheckTvmShowUpdates.log", newpath);
-            AppInfo app2info = new("Database", "ProdDB", "CheckTvmShowUpdates.log", newpath);
+            AppInfo app1info = new("1 ProductionDB", "ProductionDB", "TvmazeConsoleApp.log", newpath);
             TextFileHandler log = app1info.TxtFile;
             log.Start();
 
             #region DB Example
-            
+
+            #region App1Info
+
             log.Write("Connection to the MariaDB Test-TVM-DB with wrong DB Connection");
-            using (MariaDB MDb = new(app1info))
+            MariaDB MDb1 = new(app1info);
+            MDb1.Open();
+            if (!MDb1.success)
             {
-                if (!MDb.success)
-                {
-                    log.Write($"Exception is: {MDb.exception.Message}", "DB Exception", 0);
-                }
+                log.Write($"Exception is: {MDb1.exception.Message}", "DB Exception", 0);
             }
-            log.Empty(2);
+            MDb1.Close();
+            log.EmptyLine();
 
+            #endregion
+
+            #region App2Info
+
+            AppInfo app2info = new("2 ProdDB", "ProdDB", "TvmazeConsoleApp.log", newpath);
+            log = app2info.TxtFile;
+            MySqlConnector.MySqlDataReader records2;
+            MariaDB MDb2 = new(app2info);
+            log.Write("Opening the connection to the MariaDB Test-TVM-DB");
+            if (!MDb2.success)
+            {
+                log.Write($"Open Exception is: {MDb2.exception.Message}");
+                log.EmptyLine();
+            }
+            log.Write("Reading key_values");
+            MDb2.Command("Select * from key_values");
+            if (!MDb2.success)
+            {
+                log.Write($"Command Exception is: {MDb2.exception.Message}");
+            }
+            records2 = MDb2.ExecQuery();
+            if (!MDb2.success)
+            {
+                log.Write($"ExecQuery Exception is: {MDb2.exception.Message}");
+            }
+            else
+            {
+                log.Write($"ExecQuery result is: {records2.Depth} and {records2.FieldCount}");
+            }
+            MDb2.Close();
+            log.EmptyLine();
+
+            #endregion
+
+            #region AppInfo
+
+            AppInfo appinfo = new("A Tvm-Test-DB", "ProdDB", "TvmazeConsoleApp.log", newpath);
+            log = appinfo.TxtFile;
+
+            MariaDB MDb = new(appinfo);
             MySqlConnector.MySqlDataReader records;
-            using (MariaDB MDb = new(app2info))
+            log.Write("Executing a query via the overloaded ExecQuery method passing in the query directly");
+            records = MDb.ExecQuery("Select * from download_options");
+            if (!MDb.success)
             {
-                log.Write("Opening the connection to the MariaDB Test-TVM-DB");
-                if (!MDb.success)
-                {
-                    log.Write($"Open Exception is: {MDb.exception.Message}");
-                    log.Empty();
-                }
-                log.Write("Reading key_values");
-                MDb.Command("Select * from key_values");
-                if (!MDb.success)
-                {
-                    log.Write($"Command Exception is: {MDb.exception.Message}");
-                }
-                records = MDb.ExecQuery();
-                if (!MDb.success)
-                {
-                    log.Write($"ExecQuery Exception is: {MDb.exception.Message}");
-                }
-                else
-                {
-                    log.Write($"ExecQuery result is: {records.Depth} and {records.FieldCount}");
-                }
+                log.Write($"ExecQuery Exception is: {MDb.exception.Message}", "Read Output", 0);
             }
-
-            using (MariaDB MDb = new(appinfo))
+            else
             {
-                log.Write("Executing a query via the overloaded ExecQuery method passing in the query directly", "Program", 3);
-                records = MDb.ExecQuery("Select * from download_options");
-                if (!MDb.success)
-                {
-                    log.Write($"ExecQuery Exception is: {MDb.exception.Message}", "Read Output", 0);
-                }
-                else
-                {
-                    log.Write($"ExecQuery result is: {records.Depth} and {records.FieldCount}", "Read Output", 3);
-                }
+                log.Write($"ExecQuery result is: {records.Depth} and {records.FieldCount}", "Read Output", 3);
                 while (records.Read())
                 {
                     log.Write($"Prov Name: {records["providername"],-30}", "Read Output", 3);
                 }
             }
-            
+            MDb.Close();
+
+            #endregion
+
             #endregion
 
             #region TVMaze API
-           
+
             WebAPI tvmapi = new(log);
             log.Write("Start to API test", "Program", 0);
             HttpResponseMessage result = tvmapi.GetShow("Eden: Untamed Planet");
@@ -91,13 +106,13 @@ namespace DataBase
             dynamic jsoncontent = JsonConvert.DeserializeObject(content);
 
             log.Write($"JSon is {jsoncontent}");
-          
+
             tvmapi.Dispose();
-            
+
             #endregion
 
             #region Testing Rarbg
-            
+
             tvmapi = new(log);
             log.Write("Start to Rarbg API test", "Program", 0);
             result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet s01e02");
@@ -108,7 +123,7 @@ namespace DataBase
             {
                 Environment.Exit(99);
             }
-            
+
             content = result.Content.ReadAsStringAsync().Result;
             jsoncontent = JsonConvert.DeserializeObject(content);
             // log.Write($"JSon is {jsoncontent}");
@@ -121,11 +136,11 @@ namespace DataBase
             }
 
             tvmapi.Dispose();
-            
+
             #endregion
 
             #region Getters
-            
+
             MariaDB getterMdb = new(appinfo);
             getterMdb.Command("select showname, imdb from shows where `showname` = 'Hit & Run'");
             records = getterMdb.ExecQuery();
@@ -135,7 +150,7 @@ namespace DataBase
             {
                 Environment.Exit(99);
             }
-            
+
             while (records.Read())
             {
                 showname = records["showname"].ToString();
@@ -155,7 +170,7 @@ namespace DataBase
             {
                 log.Write($"No matching magnet found", "Program", 3);
             }
-            
+
             #endregion
 
             log.Write($"Program executed in {watch.ElapsedMilliseconds} mSec");

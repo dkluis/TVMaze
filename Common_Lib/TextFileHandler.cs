@@ -27,12 +27,9 @@ namespace Common_Lib
             Console.WriteLine($"Logfile name is {fullfilepath} ");
         }
 
-        public void Start(string application = null)
+        public void Start()
         {
-            if (application is not null)
-            {
-                app = application;
-            }
+            EmptyLine();
             Write($"{app} Started  ##########################################", app, 0);
             EmptyLine();
         }
@@ -42,19 +39,21 @@ namespace Common_Lib
             timer.Stop();
             EmptyLine();
             Write($"{app} Finished ###################  in {timer.ElapsedMilliseconds} mSec  #######################", app, 0);
-            EmptyLine(3);
+            EmptyLine();
         }
 
+        /*
         public void Empty(int lines = 1)
         {
             int idx = 1;
             while (idx <= lines)
             {
-                using StreamWriter file = new(fullfilepath, false);
-                file.Write("");
+                using StreamWriter file = new(fullfilepath, true);
+                file.WriteLine("");
                 idx++;
             }
         }
+        */
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
         {

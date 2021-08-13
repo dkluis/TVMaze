@@ -31,8 +31,7 @@ namespace Common_Lib
             }
 
             FullPath = Path.Combine(FilePath, FileName);
-            TxtFile = new(FileName, Application, FilePath); 
+            TxtFile = new(FileName, Application, FilePath);
         }
-
     }
 }
