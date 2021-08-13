@@ -43,7 +43,9 @@ namespace Web_Lib
         }
         */
 
+#pragma warning disable CA1822 // Mark members as static
         public JObject ConvertHttpToJObject(HttpResponseMessage message)
+#pragma warning restore CA1822 // Mark members as static
         {
             string content = message.Content.ReadAsStringAsync().Result;
             if (content == "")
@@ -55,7 +57,10 @@ namespace Web_Lib
             return jobject;
         }
 
+
+#pragma warning disable CA1822 // Mark members as static
         public JArray ConvertHttpToJArray(HttpResponseMessage messsage)
+#pragma warning restore CA1822 // Mark members as static
         {
             string content = messsage.Content.ReadAsStringAsync().Result;
             if (content == "")

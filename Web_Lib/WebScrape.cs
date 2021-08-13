@@ -248,7 +248,9 @@ namespace Web_Lib
 
         #region Get Prioritized Magnet
 
+#pragma warning disable CA1822 // Mark members as static
         public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, TextFileHandler logger)
+#pragma warning restore CA1822 // Mark members as static
         {
             TextFileHandler log = logger;
             string seasepi;
