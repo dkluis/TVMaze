@@ -247,9 +247,13 @@ namespace TvmEntities
             return isForReview;
         }
 
-        public void Dispose()
+        public void CloseDB()
         {
             Mdb.Close();
+        }
+
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
     }
@@ -282,4 +286,5 @@ namespace TvmEntities
         }
 
     }
+
 }

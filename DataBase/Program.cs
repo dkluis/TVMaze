@@ -15,14 +15,16 @@ namespace DataBase
             Stopwatch watch = new();
             watch.Start();
 
-            AppInfo app1info = new("Database", "ProductionDB", "CheckTvmShowUpdates.log");
-            AppInfo appinfo = new("Database", "Tvm-Test-DB", "CheckTvmShowUpdates.log");
+            string[] newpath = new string[] { "Users", "Dick", "TVMaze", "Logs" };
+            AppInfo app1info = new("Database", "ProductionDB", "CheckTvmShowUpdates.log", newpath);
+            AppInfo appinfo = new("Database", "Tvm-Test-DB", "CheckTvmShowUpdates.log", newpath);
+            AppInfo app2info = new("Database", "ProdDB", "CheckTvmShowUpdates.log", newpath);
             TextFileHandler log = app1info.TxtFile;
             log.Start();
 
             #region DB Example
             
-            log.Write("Connection to the MariaDB Test-TVM-DB with wrong password");
+            log.Write("Connection to the MariaDB Test-TVM-DB with wrong DB Connection");
             using (MariaDB MDb = new(app1info))
             {
                 if (!MDb.success)
@@ -30,28 +32,31 @@ namespace DataBase
                     log.Write($"Exception is: {MDb.exception.Message}", "DB Exception", 0);
                 }
             }
+            log.Empty(2);
 
             MySqlConnector.MySqlDataReader records;
-            using (MariaDB MDb = new(appinfo))
+            using (MariaDB MDb = new(app2info))
             {
-                log.Write("Opening the connection to the MariaDB Test-TVM-DB with correct password", "Program", 3);
+                log.Write("Opening the connection to the MariaDB Test-TVM-DB");
                 if (!MDb.success)
                 {
-                    log.Write($"Open Exception is: {MDb.exception.Message}", "Correct Password", 0);
+                    log.Write($"Open Exception is: {MDb.exception.Message}");
+                    log.Empty();
                 }
+                log.Write("Reading key_values");
                 MDb.Command("Select * from key_values");
                 if (!MDb.success)
                 {
-                    log.Write($"Command Exception is: {MDb.exception.Message}", "Correct Password", 0);
+                    log.Write($"Command Exception is: {MDb.exception.Message}");
                 }
                 records = MDb.ExecQuery();
                 if (!MDb.success)
                 {
-                    log.Write($"ExecQuery Exception is: {MDb.exception.Message}", "Correct Password", 0);
+                    log.Write($"ExecQuery Exception is: {MDb.exception.Message}");
                 }
                 else
                 {
-                    log.Write($"ExecQuery result is: {records.Depth} and {records.FieldCount}", "Correct Password", 3);
+                    log.Write($"ExecQuery result is: {records.Depth} and {records.FieldCount}");
                 }
             }
 

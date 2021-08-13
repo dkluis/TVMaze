@@ -1,4 +1,4 @@
-﻿using Common_Lib;
+using Common_Lib;
 using MySqlConnector;
 using System;
 

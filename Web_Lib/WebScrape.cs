@@ -20,11 +20,6 @@ namespace Web_Lib
             log = logger;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         #region EZTV
 
         public void GetEZTVMagnets(string showname, string seasepi)
@@ -197,11 +192,11 @@ namespace Web_Lib
             {
                 prio += 60;
             }
-            if (magnet.ToLower().Contains("xvid"))
+            else if (magnet.ToLower().Contains("xvid"))
             {
                 prio += 50;
             }
-            if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
+            else if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
             {
                 prio += 20;
             }
@@ -210,15 +205,15 @@ namespace Web_Lib
             {
                 prio += 15;
             }
-            if (magnet.ToLower().Contains("hdtv"))
+            else if (magnet.ToLower().Contains("hdtv"))
             {
                 prio += 14;
             }
-            if (magnet.ToLower().Contains("720p"))
+            else if (magnet.ToLower().Contains("720p"))
             {
                 prio += 10;
             }
-            if (magnet.ToLower().Contains("480p"))
+            else if (magnet.ToLower().Contains("480p"))
             {
                 prio += 3;
             }
@@ -227,11 +222,11 @@ namespace Web_Lib
             {
                 prio += 10;
             }
-            if (magnet.ToLower().Contains(".mp3"))
+            else if (magnet.ToLower().Contains(".mp3"))
             {
                 prio += 5;
             }
-            if (magnet.ToLower().Contains(".avi"))
+            else if (magnet.ToLower().Contains(".avi"))
             {
                 prio += 3;
             }
@@ -240,6 +235,11 @@ namespace Web_Lib
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
 
     }
 
