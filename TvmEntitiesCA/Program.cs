@@ -7,8 +7,8 @@ namespace TvmEntities
     {
         static void Main()
         {
-            string[] newpath = new string[] { "Users", "Dick", "TVMaze", "Logs" };
-            AppInfo appinfo = new("TvmEntities", "New-Test-DB", "TvmEntities.log", newpath);
+            string[] newpath = new string[] { "Users", "Dick", "TVMaze"};
+            AppInfo appinfo = new("TvmEntities", "DbProduction", newpath);
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -26,7 +26,7 @@ namespace TvmEntities
             #region Write a config file
 
             string[] conpath = new string[] { "Users", "Dick", "TVMaze" };
-            AppInfo app1 = new("TvmEntities", "New-Test-DB", "Config.json", conpath);
+            AppInfo app1 = new("TvmEntities", "DbProduction", conpath);
             TextFileHandler config = app1.TxtFile;
             config.EmptyLine();
             config.WriteNoHead("{");

@@ -13,7 +13,9 @@ namespace Common_Lib
         public readonly string FullPath;
         public readonly string ActiveDBConn;
 
+        public readonly string ConfigFileName;
         public readonly string ConfigFullPath;
+        public readonly TextFileHandler CnfFile;
         public readonly string DbProdConn;
         public readonly string DbTestConn;
         public readonly string DbAltConn;
@@ -35,16 +37,20 @@ namespace Common_Lib
                 }
             }
 
+            ConfigFileName = Application + ".cnf";
+            ConfigFullPath = Path.Combine(FilePath, ConfigFileName);
+            ReadKeyFromFile rkffo = new();
+            LogLevel = int.Parse(rkffo.FindInArray(ConfigFullPath, "LogLevel"));
+
             FileName = Application + ".log";
             FullPath = Path.Combine(FilePath, FileName);
-            TxtFile = new(FileName, Application, FilePath);
 
-            ConfigFullPath = Path.Combine(FilePath, Application + ".cnf");
-            ReadKeyFromFile rkffo = new();
+            TxtFile = new(FileName, Application, FilePath, LogLevel);
+            CnfFile = new(ConfigFileName, Application, FilePath, LogLevel);
+
             DbProdConn= rkffo.FindInArray(ConfigFullPath, "DbProduction");
             DbTestConn = rkffo.FindInArray(ConfigFullPath, "DbTesting");
             DbAltConn = rkffo.FindInArray(ConfigFullPath, "DbAlternate");
-            LogLevel = int.Parse(rkffo.FindInArray(ConfigFullPath, "LogLevel"));
             TvmazeToken = rkffo.FindInArray(ConfigFullPath, "TvmazeToken");
 
             switch (dbconnection)

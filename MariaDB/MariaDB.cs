@@ -16,64 +16,16 @@ namespace DB_Lib
         public Exception exception;
         public TextFileHandler mdblog;
 
-        // private readonly Common common = new();
-
-        // The username, password in the app.config xml file are used here for the testing only.
-        // 2 Test databases are setup TestDB and ProdDB.   They are identical except for their data.
-        // The TestDB is the default
-
-        /*
-        public MariaDB(string conninfo = null, Logger log = null)  //To Be Deprecated
-        {
-            if (log == null)
-            {
-                mdblog = new();
-            }
-            else
-            {
-                mdblog = log;
-            }
-
-            if (conninfo == null || conninfo == "")
-            {
-                conninfo = Common.ReadConfig("TestDB");
-            }
-            else
-            {
-                conninfo = Common.ReadConfig(conninfo);
-            }
-# if DEBUG   
-            // mdblog.Write($"Configuration String is {conninfo} ", "MariaDB", 3);
-# endif
-
-            success = false;
-            exception = new Exception();
-            try
-            {
-                conn = new MySqlConnection(conninfo);
-                success = true;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                mdblog.Write($"MariaDB Class Connection Error: {e.Message}", "MariaDB", 0);
-            }
-        }
-        */
-
         public MariaDB(AppInfo appinfo)
         {
             mdblog = appinfo.TxtFile;
-# if DEBUG   
-            mdblog.Write($"Configuration String is {appinfo.DbConnection} ");
-# endif
 
             success = false;
             exception = new Exception();
             try
             {
-                string connstr = Common.ReadConfig(appinfo.DbConnection);
-                conn = new MySqlConnection(connstr);
+                //string connstr = Common.ReadConfig(appinfo.DbConnection);
+                conn = new MySqlConnection(appinfo.ActiveDBConn);
                 success = true;
             }
             catch (Exception e)

@@ -10,14 +10,15 @@ namespace Common_Lib
     {
         private readonly string filepath;
         private readonly string fullfilepath;
-        private readonly int level = 3;
+        public int level;
         protected string app;
         protected Stopwatch timer = new();
 
-        public TextFileHandler(string filename, string appl, string infilepath)
+        public TextFileHandler(string filename, string appl, string infilepath, int loglevel)
         {
             timer.Start();
             app = appl;
+            level = loglevel;
 
             filepath = infilepath;
             fullfilepath = Path.Combine(filepath, filename);
@@ -26,9 +27,7 @@ namespace Common_Lib
             {
                 File.Create(fullfilepath).Close();
             }
-#if DEBUG
-            Console.WriteLine($"Logfile name is {fullfilepath} ");
-#endif
+
         }
 
         public void Start()

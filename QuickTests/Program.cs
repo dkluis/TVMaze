@@ -9,6 +9,7 @@ namespace QuickTests
             string[] appPath = new string[] { "Users", "Dick", "TVMaze" };
             AppInfo appinfo = new("QuickTest", "DbProduction", appPath);
             TextFileHandler log = appinfo.TxtFile;
+            TextFileHandler cnf = appinfo.CnfFile;
             log.Start();
             
             log.Write($"{appinfo.DbProdConn}");
