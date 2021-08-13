@@ -52,6 +52,7 @@ namespace Common_Lib
             {
                 using StreamWriter file = new(fullfilepath, false);
                 file.Write("");
+                idx++;
             }
         }
 

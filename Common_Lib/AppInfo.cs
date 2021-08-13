@@ -13,7 +13,7 @@ namespace Common_Lib
         public readonly string FileName;
         public readonly string FullPath;
 
-        public AppInfo(string application, string dbconnection, string logfilename, string[] logfilepathelements = null)
+        public AppInfo(string application, string dbconnection, string logfilename, string[] logfilepathelements)
         {
             Application = application;
             DbConnection = dbconnection;
@@ -29,20 +29,8 @@ namespace Common_Lib
                     FilePath = Path.Combine(FilePath, element);
                 }
             }
-            else
-            {
-                string logpath;
-                if (envinfo.OS == "Windows")
-                {
-                    logpath = Common.ReadConfig("PCLogPath");
-                }
-                else
-                {
-                    logpath = Common.ReadConfig("MacLogPath");
-                }
-                FilePath = Path.Combine(logpath, logfilename);
-            }
 
+            FullPath = Path.Combine(FilePath, FileName);
             TxtFile = new(FileName, Application, FilePath); 
         }
 
