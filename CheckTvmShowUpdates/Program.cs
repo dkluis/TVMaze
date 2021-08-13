@@ -11,7 +11,8 @@ namespace CheckTvmShowUpdates
     {
         static void Main()
         {
-            AppInfo appinfo = new("CheckTvmShowUpd", "New-Test-DB", "CheckTvmShowUpdates.log");
+            string[] newpath = new string[] { "Users", "Dick", "TVMaze", "Logs" };
+            AppInfo appinfo = new("CheckTvmShowUpd", "New-Test-DB", "CheckTvmShowUpdates.log", newpath);
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 

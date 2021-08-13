@@ -8,8 +8,9 @@ namespace ImportFromPythonTVM
     {
         static void Main()
         {
-            AppInfo appinfo = new("ImportFromPythonDB", "New-Test-DB", "ImportFromPythonDB.log");
-            AppInfo pythoninfo = new("ImportFromPythonDB", "ProdDB", "ImportFromPythonDB.log");
+            string[] newpath = new string[] { "Users", "Dick", "TVMaze", "Logs" };
+            AppInfo appinfo = new("ImportFromPythonDB", "New-Test-DB", "ImportFromPythonDB.log", newpath);
+            AppInfo pythoninfo = new("ImportFromPythonDB", "ProdDB", "ImportFromPythonDB.log", newpath);
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 

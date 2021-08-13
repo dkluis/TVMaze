@@ -197,11 +197,11 @@ namespace Web_Lib
             {
                 prio += 60;
             }
-            if (magnet.ToLower().Contains("xvid"))
+            else if (magnet.ToLower().Contains("xvid"))
             {
                 prio += 50;
             }
-            if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
+            else if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
             {
                 prio += 20;
             }

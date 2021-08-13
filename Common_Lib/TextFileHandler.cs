@@ -8,7 +8,7 @@ namespace Common_Lib
     {
         private readonly string filepath;
         private readonly string fullfilepath;
-        private readonly int level;
+        private readonly int level = 3;
         protected string app;
         protected Stopwatch timer = new();
 
@@ -45,10 +45,14 @@ namespace Common_Lib
             EmptyLine(3);
         }
 
-        public void Empty()
+        public void Empty(int lines = 1)
         {
-            using StreamWriter file = new(fullfilepath, false);
-            file.Write("");
+            int idx = 1;
+            while (idx <= lines)
+            {
+                using StreamWriter file = new(fullfilepath, false);
+                file.Write("");
+            }
         }
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)

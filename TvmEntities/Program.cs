@@ -55,7 +55,7 @@ namespace TvmEntities
 
             #endregion
             
-            /*
+            
             #region Test Show Class in general
 
             //using (Show show = new("New-Test-DB", log))
@@ -77,6 +77,7 @@ namespace TvmEntities
                 {
                     log.Write($"Show is NOT rated for Review");
                 }
+                show.CloseDB();
             }
             
             #endregion
@@ -99,8 +100,7 @@ namespace TvmEntities
             
             #endregion
 
-            */
-
+            
             log.Stop();
         }
     }
