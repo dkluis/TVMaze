@@ -32,20 +32,6 @@ namespace Web_Lib
             TvmazeSecurity = appinfo.TvmazeToken;
         }
 
-        /*
-        public dynamic ConvertHttpToJson(HttpResponseMessage message)
-        {
-            var jsoncontent = JsonConvert.DeserializeObject("");
-            if (message is null)
-            {
-                return jsoncontent;
-            }
-            string content = message.Content.ReadAsStringAsync().Result;
-            jsoncontent = JsonConvert.DeserializeObject(content);
-            return jsoncontent;
-        }
-        */
-
 #pragma warning disable CA1822 // Mark members as static
         public JObject ConvertHttpToJObject(HttpResponseMessage message)
 #pragma warning restore CA1822 // Mark members as static

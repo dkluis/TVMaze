@@ -1,0 +1,49 @@
+﻿@page
+@using Common_Lib;
+@using TvmEntities;
+@model IndexModel
+@{
+    ViewData["Title"] = "Show Data";
+    AppInfo appinfo = new("Tvmaze", "Web TryOut", "DbProduction");
+    Console.WriteLine($"{appinfo.ActiveDBConn}");
+    Show show = new(appinfo);
+    show.FillViaTvmaze(1);
+    Console.WriteLine(show.ShowName);
+}
+
+<div class="text-center">
+    <h2>Welcome</h2>
+    <h1>Trying ASP.Net with Blazor</h1>
+    <p>Building a Page to Show data from the TVMaze DB</p>
+</div>
+
+<div>
+    <h2>Application Info Table:</h2>
+    <table style="width:100%", border="1">
+        <tr>
+            <th>Application Name</th>
+            <th>Program Name</th>
+        </tr>
+        <tr>
+            <td>@appinfo.Application</td>
+            <td>@appinfo.Program</td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <h2>Show Info Table:</h2>
+    <table style="width:100%" , border="1">
+        <tr>
+            <th>DB Show Id</th>
+            <th>Show Name</th>
+            <th>Tvm Show Id</th>
+            <th>Tvm Image</th>
+        </tr>
+        <tr>
+            <td>@show.Id</td>
+            <td>@show.ShowName</td>
+            <td>@show.TvmShowId</td>
+            <td><img src="@show.TvmImage" width="=50" height="50"/></td>
+        </tr>
+</div>
