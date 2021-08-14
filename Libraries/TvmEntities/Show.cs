@@ -268,7 +268,7 @@ namespace TvmEntities
             var exectime = new System.Diagnostics.Stopwatch();
             TextFileHandler log = appinfo.TxtFile;
 
-            while (idx < 5)
+            while (idx < 20)
             {
                 exectime.Restart();
                 idx++;

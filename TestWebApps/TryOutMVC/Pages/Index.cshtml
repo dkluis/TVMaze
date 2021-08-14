@@ -53,8 +53,9 @@
 
 <div class="text-center">
     <br />
-    <h2>List of First 5 TVMaze shows</h2>
+    <h2>The First 20 TVMaze Shows</h2>
     <p>
+        Looping from 1 to 20 (Tvm Show Id 19 does not exist anymore) <br /><br />
         Loading of this page is slow, since the data collection for the list is<br />
         NOT using Async and later Rendering (YET)
     </p>
@@ -77,13 +78,15 @@
                     <th>Tvm Image</th>
                 </tr>
                 @{  string DbSI = "";
+                    string TvmSI = "";
                     foreach (Show rec in showsfound)
                     {
                         if (rec.Id == 0) { DbSI = "NiDB"; } else { DbSI = rec.Id.ToString(); }
+                        if (rec.TvmShowId == 0) { TvmSI = "NoTvm"; } else { TvmSI = rec.TvmShowId.ToString(); }
                         <tr>
                             <td>@DbSI</td>
                             <td>@rec.ShowName</td>
-                            <td>@rec.TvmShowId</td>
+                            <td>@TvmSI</td>
                             <td><img src="@rec.TvmImage" width="50" height="50" /></td>
                         </tr>
                     }
