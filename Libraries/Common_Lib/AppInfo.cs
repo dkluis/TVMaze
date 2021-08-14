@@ -35,12 +35,12 @@ namespace Common_Lib
 
             Common.EnvInfo envinfo = new();
             Drive = envinfo.Drive;
-            if (envinfo.OS == "")
+            if (envinfo.OS == "Windows")
             { HomeDir = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"); }
             else
             { HomeDir = Environment.GetEnvironmentVariable("HOME"); }
             HomeDir = Path.Combine(HomeDir, Application);
-            
+
             ConfigFileName = Application + ".cnf";
             ConfigPath = HomeDir;
             ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
@@ -55,7 +55,7 @@ namespace Common_Lib
             TxtFile = new(FileName, Program, FilePath, LogLevel);
             CnfFile = new(ConfigFileName, Program, ConfigPath, LogLevel);
 
-            DbProdConn= rkffo.FindInArray(ConfigFullPath, "DbProduction");
+            DbProdConn = rkffo.FindInArray(ConfigFullPath, "DbProduction");
             DbTestConn = rkffo.FindInArray(ConfigFullPath, "DbTesting");
             DbAltConn = rkffo.FindInArray(ConfigFullPath, "DbAlternate");
             TvmazeToken = rkffo.FindInArray(ConfigFullPath, "TvmazeToken");
