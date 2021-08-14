@@ -10,9 +10,6 @@
     Show show = new(appinfo);
     show.FillViaTvmaze(1);
     appinfo.TxtFile.Write($"Show Name: {show.ShowName}");
-    //SearchShowsOnTvmaze showsearch = new(appinfo, "");
-    //List<Show> showsfound = showsearch.Found;
-    List<Show> showsfound = new();
 }
 
 <div class="text-center">
@@ -56,37 +53,46 @@
 
 <div class="text-center">
     <br />
-    <h2>List of First 20 TVMaze shows</h2>
+    <h2>List of First 5 TVMaze shows</h2>
     <p>
-        Commented out the loading of the data for the table.  Empty List for now <br />
-        The Table itself detects that the list is empty and does not even show up
+        Loading of this page is slow, since the data collection for the list is<br />
+        NOT using Async and later Rendering (YET)
     </p>
 </div>
 
-@{ if (showsfound.Count != 0)
+@{
+    var exectime = new System.Diagnostics.Stopwatch();
+    exectime.Start();
+    SearchShowsOnTvmaze showsearch = new(appinfo, "");
+    List<Show> showsfound = showsearch.Found;
+    //List<Show> showsfound = new();
+    if (showsfound.Count != 0)
     {
-    <div class="text-center">
-        <br />
-        <h2>First 20 Shows Table:</h2>
-        <p>Commented out the loading of the data for the table.  Empty List for now</p>
-        <table style="width:100%" , border="1">
-            <tr>
-                <th>DB Show Id</th>
-                <th>Show Name</th>
-                <th>Tvm Show Id</th>
-                <th>Tvm Image</th>
-            </tr>
-            @{ foreach (Show rec in showsfound)
-                {
-                    <tr>
-                        <td>@rec.Id</td>
-                        <td>@rec.ShowName</td>
-                        <td>@rec.TvmShowId</td>
-                        <td><img src="@rec.TvmImage" width="50" height="50" /></td>
-                    </tr>
+        <div class="text-center">
+            <table style="width:100%" , border="1">
+                <tr>
+                    <th>DB Show Id</th>
+                    <th>Show Name</th>
+                    <th>Tvm Show Id</th>
+                    <th>Tvm Image</th>
+                </tr>
+                @{  string DbSI = "";
+                    foreach (Show rec in showsfound)
+                    {
+                        if (rec.Id == 0) { DbSI = "NiDB"; } else { DbSI = rec.Id.ToString(); }
+                        <tr>
+                            <td>@DbSI</td>
+                            <td>@rec.ShowName</td>
+                            <td>@rec.TvmShowId</td>
+                            <td><img src="@rec.TvmImage" width="50" height="50" /></td>
+                        </tr>
+                    }
                 }
-            }
-        </table>
-    </div>
-     }
+            </table>
+            @{
+                exectime.Stop();
+                <p>Last 5 Table Loading took @exectime.ElapsedMilliseconds ms.</p>
+                }
+        </div>
+    }
 }

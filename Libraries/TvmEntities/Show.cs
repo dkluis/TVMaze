@@ -268,7 +268,7 @@ namespace TvmEntities
             var exectime = new System.Diagnostics.Stopwatch();
             TextFileHandler log = appinfo.TxtFile;
 
-            while (idx < 20)
+            while (idx < 5)
             {
                 exectime.Restart();
                 idx++;
@@ -278,7 +278,7 @@ namespace TvmEntities
                     // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); }
                     Found.Add(show);
                 }
-                Thread.Sleep(1500);
+                // Thread.Sleep(250);
                 exectime.Stop();
                 log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
             }
