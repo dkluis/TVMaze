@@ -7,8 +7,7 @@ namespace TvmEntities
     {
         static void Main()
         {
-            string[] newpath = new string[] { "Users", "Dick", "TVMaze"};
-            AppInfo appinfo = new("TvmEntities", "DbProduction", newpath);
+            AppInfo appinfo = new("TVMaze", "Tvm Entities", "DbProduction");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -23,10 +22,10 @@ namespace TvmEntities
 
             //log.Elapsed();
 
-            #region Write a config file
-
-            string[] conpath = new string[] { "Users", "Dick", "TVMaze" };
-            AppInfo app1 = new("TvmEntities", "DbProduction", conpath);
+            #region Write a config file (Do Not Use Anymore)
+            // Do NOT use anymore
+            /*
+            AppInfo app1 = new("TVMaze", "Tvm Entities", "DbProduction");
             TextFileHandler config = app1.TxtFile;
             config.EmptyLine();
             config.WriteNoHead("{");
@@ -36,7 +35,7 @@ namespace TvmEntities
             log.Write("Created the config file");
             log.Elapsed();
 
-            AppInfo app2 = new("TvmEntities", "New-Test-DB", "Config2.json", conpath);
+            AppInfo app2 = new("TVMaze", "Tvm Entities", "DbProduction");
             TextFileHandler config2 = app2.TxtFile;
             config2.EmptyLine();
             config2.WriteNoHead("{ ", false);
@@ -45,14 +44,7 @@ namespace TvmEntities
             config2.WriteNoHead("}", false);
             log.Write("Created the config file");
             log.Elapsed();
-
-            #endregion
-
-            #region Define the path to the log or the config file
-
-            AppInfo defpath = new("TvmEntities", "New-Test-DB", "SomeWhereElse.log", new string[] { "Users", "Dick", "TVMaze" });
-            log.Write($"FilePath is now: {defpath.FullPath} on Drive {defpath.Drive}", "Testing Setting Path");
-
+            */
             #endregion
 
 

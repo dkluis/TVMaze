@@ -15,8 +15,7 @@ namespace DataBase
             Stopwatch watch = new();
             watch.Start();
 
-            string[] newpath = new string[] { "Users", "Dick", "TVMaze", "Logs" };
-            AppInfo app1info = new("1 ProductionDB", "ProductionDB", "TvmazeConsoleApp.log", newpath);
+            AppInfo app1info = new("TVMaze", "ConsoleApp", "DbProduction");
             TextFileHandler log = app1info.TxtFile;
             log.Start();
 
@@ -38,7 +37,7 @@ namespace DataBase
 
             #region App2Info
 
-            AppInfo app2info = new("2 ProdDB", "ProdDB", "TvmazeConsoleApp.log", newpath);
+            AppInfo app2info = new("TVMaze", "ConsoleApp", "DbProduction");
             log = app2info.TxtFile;
             MySqlConnector.MySqlDataReader records2;
             MariaDB MDb2 = new(app2info);
@@ -70,7 +69,7 @@ namespace DataBase
 
             #region AppInfo
 
-            AppInfo appinfo = new("A Tvm-Test-DB", "ProdDB", "TvmazeConsoleApp.log", newpath);
+            AppInfo appinfo = new("TVMaze", "ConsoleApp", "DbTesting"); 
             log = appinfo.TxtFile;
 
             MariaDB MDb = new(appinfo);
@@ -98,7 +97,7 @@ namespace DataBase
             #region TVMaze API
 
             WebAPI tvmapi = new(log);
-            log.Write("Start to API test", "Program", 0);
+            log.Write("Start to API test");
             HttpResponseMessage result = tvmapi.GetShow("Eden: Untamed Planet");
             log.Write($"Result back from API call {result.StatusCode}", "Program WebAPI", 3);
 
@@ -114,7 +113,7 @@ namespace DataBase
             #region Testing Rarbg
 
             tvmapi = new(log);
-            log.Write("Start to Rarbg API test", "Program", 0);
+            log.Write("Start to Rarbg API test");
             result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet s01e02");
 
             log.Write($"Result back from API call {result.StatusCode}", "Program RarbgAPI", 3);
@@ -129,10 +128,13 @@ namespace DataBase
             // log.Write($"JSon is {jsoncontent}");
 
             string magnet;
-            foreach (var show in jsoncontent["torrent_results"])
+            if (jsoncontent["torrent_result"] is not null)
             {
-                magnet = show["download"];
-                log.Write($"magnet found: {magnet}");
+                foreach (var show in jsoncontent["torrent_results"])
+                {
+                    magnet = show["download"];
+                    log.Write($"magnet found: {magnet}");
+                }
             }
 
             tvmapi.Dispose();

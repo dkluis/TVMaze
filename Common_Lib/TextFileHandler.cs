@@ -105,6 +105,7 @@ namespace Common_Lib
 
         public string ReadKeyArray(string find)
         {
+            if (!File.Exists(fullfilepath)) { return ""; }
             string filetext = File.ReadAllText(fullfilepath);
             JArray kvps = ConvertJsonTxt.ConvertStringToJArray(filetext);
             foreach (JToken rec in kvps)
@@ -117,6 +118,7 @@ namespace Common_Lib
 
         public string ReadKeyObject(string find)
         {
+            if (!File.Exists(fullfilepath)) { return ""; }
             string filetext = File.ReadAllText(fullfilepath);
             JObject kvps = ConvertJsonTxt.ConvertStringToJObject(filetext);
             foreach (var rec in kvps)
@@ -132,6 +134,7 @@ public class ReadKeyFromFile
 {
     public string FindInArray(string fullfilepath, string find)
     {
+        if (!File.Exists(fullfilepath)) { return "";  }
         string filetext = File.ReadAllText(fullfilepath);
         JArray kvps = ConvertJsonTxt .ConvertStringToJArray(filetext);
         foreach (JToken rec in kvps)
@@ -144,6 +147,7 @@ public class ReadKeyFromFile
 
     public string FindInObject(string fullfilepath, string find)
     {
+        if (!File.Exists(fullfilepath)) { return ""; }
         string filetext = File.ReadAllText(fullfilepath);
         JObject kvps = ConvertJsonTxt.ConvertStringToJObject(filetext);
         foreach (var rec in kvps)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Common_Lib
 {
@@ -7,6 +8,8 @@ namespace Common_Lib
         public readonly string DbConnection;
         public readonly TextFileHandler TxtFile;
         public readonly string Application;
+        public readonly string Program;
+        public readonly string HomeDir;
         public readonly string Drive;
         public readonly string FilePath;
         public readonly string FileName;
@@ -14,39 +17,43 @@ namespace Common_Lib
         public readonly string ActiveDBConn;
 
         public readonly string ConfigFileName;
+        public readonly string ConfigPath;
         public readonly string ConfigFullPath;
         public readonly TextFileHandler CnfFile;
+        public readonly int LogLevel;
+
         public readonly string DbProdConn;
         public readonly string DbTestConn;
         public readonly string DbAltConn;
-        public readonly string TvmazeToken;
-        public readonly int LogLevel;
 
-        public AppInfo(string application, string dbconnection, string[] logfilepathelements)
+        public readonly string TvmazeToken;
+
+        public AppInfo(string application, string program, string dbconnection)
         {
             Application = application;
+            Program = program;
 
             Common.EnvInfo envinfo = new();
             Drive = envinfo.Drive;
-            if (logfilepathelements is not null)
-            {
-                FilePath = Drive;
-                foreach (string element in logfilepathelements)
-                {
-                    FilePath = Path.Combine(FilePath, element);
-                }
-            }
-
+            if (envinfo.OS == "")
+            { HomeDir = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"); }
+            else
+            { HomeDir = Environment.GetEnvironmentVariable("HOME"); }
+            HomeDir = Path.Combine(HomeDir, Application);
+            
             ConfigFileName = Application + ".cnf";
-            ConfigFullPath = Path.Combine(FilePath, ConfigFileName);
+            ConfigPath = HomeDir;
+            ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
+            if (!File.Exists(ConfigFullPath)) { Console.WriteLine($"Log File Does not Exist {ConfigFullPath}"); Environment.Exit(666); }
             ReadKeyFromFile rkffo = new();
             LogLevel = int.Parse(rkffo.FindInArray(ConfigFullPath, "LogLevel"));
 
-            FileName = Application + ".log";
+            FileName = Program + ".log";
+            FilePath = Path.Combine(HomeDir, "Logs");
             FullPath = Path.Combine(FilePath, FileName);
 
-            TxtFile = new(FileName, Application, FilePath, LogLevel);
-            CnfFile = new(ConfigFileName, Application, FilePath, LogLevel);
+            TxtFile = new(FileName, Program, FilePath, LogLevel);
+            CnfFile = new(ConfigFileName, Program, ConfigPath, LogLevel);
 
             DbProdConn= rkffo.FindInArray(ConfigFullPath, "DbProduction");
             DbTestConn = rkffo.FindInArray(ConfigFullPath, "DbTesting");

@@ -6,8 +6,7 @@ namespace QuickTests
     {
         static void Main()
         {
-            string[] appPath = new string[] { "Users", "Dick", "TVMaze" };
-            AppInfo appinfo = new("QuickTest", "DbProduction", appPath);
+            AppInfo appinfo = new("TVMaze", "QuickTest" , "DbProduction");
             TextFileHandler log = appinfo.TxtFile;
             TextFileHandler cnf = appinfo.CnfFile;
             log.Start();
@@ -17,6 +16,8 @@ namespace QuickTests
             log.Write($"{appinfo.TvmazeToken}");
             log.Write($"{appinfo.LogLevel}");
             log.Write($"{appinfo.ActiveDBConn}");
+            log.Write($"{appinfo.HomeDir}");
+            log.Write($"{appinfo.FullPath}");
 
 
             ReadKeyFromFile rkffo = new();
