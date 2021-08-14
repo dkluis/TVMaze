@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common_Lib\Common_Lib.csproj" />
-    <ProjectReference Include="..\MariaDB\DB_Lib.csproj" />
+    <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj" />
+    <ProjectReference Include="..\..\Libraries\MariaDB\DB_Lib.csproj" />
   </ItemGroup>
-
 </Project>
