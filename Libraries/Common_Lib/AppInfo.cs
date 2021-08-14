@@ -27,6 +27,7 @@ namespace Common_Lib
         public readonly string DbAltConn;
 
         public readonly string TvmazeToken;
+        public readonly string RarbgToken;
 
         public AppInfo(string application, string program, string dbconnection)
         {
@@ -59,6 +60,7 @@ namespace Common_Lib
             DbTestConn = rkffo.FindInArray(ConfigFullPath, "DbTesting");
             DbAltConn = rkffo.FindInArray(ConfigFullPath, "DbAlternate");
             TvmazeToken = rkffo.FindInArray(ConfigFullPath, "TvmazeToken");
+            RarbgToken = rkffo.FindInArray(ConfigFullPath, "RarbgToken");
 
             switch (dbconnection)
             {

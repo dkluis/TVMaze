@@ -97,7 +97,7 @@ namespace DataBase
 
             #region TVMaze API
 
-            WebAPI tvmapi = new(log);
+            WebAPI tvmapi = new(appinfo);
             log.Write("Start to API test");
             HttpResponseMessage result = tvmapi.GetShow("Eden: Untamed Planet");
             log.Write($"Result back from API call {result.StatusCode}", "Program WebAPI", 3);
@@ -113,7 +113,7 @@ namespace DataBase
 
             #region Testing Rarbg
 
-            tvmapi = new(log);
+            tvmapi = new(appinfo);
             log.Write("Start to Rarbg API test");
             result = tvmapi.GetRarbgMagnets("Eden: Untamed Planet s01e02");
 
@@ -162,7 +162,7 @@ namespace DataBase
             }
             getterMdb.Close();
 
-            Magnets search = new();
+            Magnets search = new(appinfo);
             magnet = search.PerformShowEpisodeMagnetsSearch(showname, 1, 2, log);
 
             if (magnet != "")

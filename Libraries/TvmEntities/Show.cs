@@ -86,7 +86,7 @@ namespace TvmEntities
 
         public void FillViaTvmaze(Int32 showid)
         {
-            using WebAPI js = new(log);
+            using WebAPI js = new(Appinfo);
             FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
             if (isFollowed) { FillViaDB(showid, true); }
             if (!isFollowed) { ValidateForReview(); }

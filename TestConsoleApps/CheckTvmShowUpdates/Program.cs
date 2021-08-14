@@ -19,7 +19,7 @@ namespace CheckTvmShowUpdates
 
             #region JObject GetShow(1)
   
-            using(WebAPI parsetest = new(log))
+            using(WebAPI parsetest = new(appinfo))
             {
                 log.Write("Starting Parse test for Show 1 Info");
 
@@ -34,7 +34,7 @@ namespace CheckTvmShowUpdates
 
             #region JArray GetFollowedShows()
             
-            using (WebAPI testuserapi = new(log))
+            using (WebAPI testuserapi = new(appinfo))
             {
                 log.Write("Starting Followed Shows API test");
                 JArray jsonc = testuserapi.ConvertHttpToJArray(testuserapi.GetFollowedShows());
@@ -57,7 +57,7 @@ namespace CheckTvmShowUpdates
 
             #region GetShowUpdateEpochs("day")
             
-            using (WebAPI testepochs = new(log))
+            using (WebAPI testepochs = new(appinfo))
             {
                 log.Write("Starting Show Update Epoch API test");
                 var jsonc = testepochs.ConvertHttpToJObject(testepochs.GetShowUpdateEpochs("day"));
@@ -83,7 +83,7 @@ namespace CheckTvmShowUpdates
 
             #region GetEpisodesByShow(1)
             
-            using (WebAPI testshow = new(log))
+            using (WebAPI testshow = new(appinfo))
             {
                 log.Write("Starting Get Episodes by Show");
                 JArray jsonc = testshow.ConvertHttpToJArray(testshow.GetEpisodesByShow(1));
@@ -126,7 +126,7 @@ namespace CheckTvmShowUpdates
 
             #region Get the Epoch timestamp of tvmaze show updates in last 24 hours
 
-            WebAPI tvmapi = new(log);
+            WebAPI tvmapi = new(appinfo);
             log.Write("Start Get TVMaze last 24 Hour Updates", "Program", 0);
             JObject jsoncontent = tvmapi.ConvertHttpToJObject(tvmapi.GetShowUpdateEpochs("day"));  //day or week or month
             log.Write($"Found {jsoncontent.Count} updates from Tvmaze in the last 24 hours", "Program", 0);
@@ -200,13 +200,13 @@ namespace CheckTvmShowUpdates
                         {
                             //Figure out a way to delete episodes that don't exist anymore.
                             log.Write($"Here is where the update of Followed Shows and Episodes goes ShowId = {showid}");
-                            using (WebAPI showinfo = new(log))
+                            using (WebAPI showinfo = new(appinfo))
                             {
                                 JObject show = showinfo.ConvertHttpToJObject(showinfo.GetShow(showid));
                                 log.Write($"{show["id"]}, {show["url"]}, {show["updated"]}");
                                 // Insert Show Sql
                             }
-                            using (WebAPI episodes = new(log))
+                            using (WebAPI episodes = new(appinfo))
                             {
                                 JArray jsonc = episodes.ConvertHttpToJArray(episodes.GetEpisodesByShow(showid));
                                 foreach (var rec in jsonc)
@@ -219,13 +219,13 @@ namespace CheckTvmShowUpdates
                         }
                         log.Write($"Inserted Epoch Record for {showid}", "Looping Json", 1);
                         //Show should be inserted with New status for review assuming it fits the selection rules
-                        using (WebAPI showinfo = new(log))
+                        using (WebAPI showinfo = new(appinfo))
                         {
                             JObject show = showinfo.ConvertHttpToJObject(showinfo.GetShow(showid));
                             log.Write($"{show["id"]}, {show["url"]}, {show["updated"]}");
                             // Insert Show Sql
                         }
-                        using (WebAPI episodes = new(log))
+                        using (WebAPI episodes = new(appinfo))
                         {
                             JArray jsonc = episodes.ConvertHttpToJArray(episodes.GetEpisodesByShow(showid));
                             foreach (var rec in jsonc)

@@ -19,6 +19,8 @@ namespace QuickTests
             //log.Write($"{appinfo.LogLevel}");
             //log.Write($"{appinfo.ActiveDBConn}");
             log.Write($"{appinfo.HomeDir}");
+            log.Write($"{appinfo.TvmazeToken}");
+            log.Write($"{appinfo.RarbgToken}");
             //log.Write($"{appinfo.FullPath}");
 
 

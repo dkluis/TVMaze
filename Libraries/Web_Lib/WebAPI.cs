@@ -12,21 +12,24 @@ namespace Web_Lib
     public class WebAPI : IDisposable
     {
         private readonly HttpClient client = new();
-        static HttpClient rarbgclient = new();
+        private static HttpClient rarbgclient = new();
         private HttpResponseMessage _http_response;
-        readonly string tvmaze_url = "https://api.tvmaze.com/";
+        private readonly string tvmaze_url = "https://api.tvmaze.com/";
         private bool _tvmaze_url_initialized;
-        readonly string tvmaze_user_url = "https://api.tvmaze.com/v1/user/";
+        private readonly string tvmaze_user_url = "https://api.tvmaze.com/v1/user/";
         private bool _tvmaze_user_url_initialized;
 
-        readonly string RarbgAPI_url_pre = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string='";
-        readonly string RarbgAPI_url_suf = "'&token=lnjzy73ucv&format=json_extended&app_id=lol";
+        private readonly string RarbgAPI_url_pre = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string='";
+        private string RarbgAPI_url_suf;
+        private readonly string TvmazeSecurity;
 
         private readonly TextFileHandler log;
 
-        public WebAPI(TextFileHandler logger)
+        public WebAPI(AppInfo appinfo)
         {
-            log = logger;
+            log = appinfo.TxtFile;
+            RarbgAPI_url_suf = appinfo.RarbgToken;
+            TvmazeSecurity = appinfo.TvmazeToken;
         }
 
         /*
@@ -145,7 +148,7 @@ namespace Web_Lib
             {
                 client.BaseAddress = new Uri(tvmaze_user_url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Add("Authorization", "Basic RGlja0tsdWlzOkVpb1dWRVJpZDdHekpteUlQTEVCR09mUHExTm40SFdM");
+                client.DefaultRequestHeaders.Add("Authorization", TvmazeSecurity);
                 client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
                 client.Timeout = TimeSpan.FromSeconds(30);
                 _tvmaze_user_url_initialized = true;

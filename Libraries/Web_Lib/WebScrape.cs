@@ -14,10 +14,12 @@ namespace Web_Lib
         // private Common common = new();
         public bool WholeSeasonFound;
         public bool rarbgError;
+        public AppInfo appinfo;
 
-        public WebScrape(TextFileHandler logger)
+        public WebScrape(AppInfo info)
         {
-            log = logger;
+            appinfo = info;
+            log = appinfo.TxtFile;
         }
 
         #region EZTV
@@ -125,7 +127,8 @@ namespace Web_Lib
         public void GetRarbgMagnets(string showname, string seasepi)
         {
             int prio;
-            WebAPI tvmapi = new(log);
+            
+            WebAPI tvmapi = new(appinfo);
             log.Write("Start to Rarbg API test", "Program", 0);
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
@@ -245,8 +248,14 @@ namespace Web_Lib
 
     public class Magnets
     {
+        private readonly AppInfo appinfo;
 
         #region Get Prioritized Magnet
+
+        public Magnets(AppInfo info)
+        {
+            appinfo = info;
+        }
 
 #pragma warning disable CA1822 // Mark members as static
         public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, TextFileHandler logger)
@@ -264,7 +273,7 @@ namespace Web_Lib
                 seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
             }
 
-            using WebScrape seasonscrape = new(log);
+            using WebScrape seasonscrape = new(appinfo);
             {
                 seasonscrape.magnets = new();
                 seasonscrape.GetRarbgMagnets(showname, seasepi);
@@ -281,7 +290,7 @@ namespace Web_Lib
 
             if (epi_num == 1) // Nothing found while search for the Season
             {
-                using WebScrape episodescrape = new(log);
+                using WebScrape episodescrape = new(appinfo);
                 {
                     episodescrape.magnets = new();
                     seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
