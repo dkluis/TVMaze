@@ -18,7 +18,7 @@
     "TryOutMVC": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:55931;http://localhost:35125",
+      "applicationUrl": "https://localhost:55932;http://localhost:35125",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

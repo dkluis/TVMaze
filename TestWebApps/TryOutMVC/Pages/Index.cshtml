@@ -5,10 +5,14 @@
 @{
     ViewData["Title"] = "Show Data";
     AppInfo appinfo = new("Tvmaze", "Web TryOut", "DbProduction");
-    Console.WriteLine($"{appinfo.ActiveDBConn}");
+    appinfo.TxtFile.Start();
+    appinfo.TxtFile.Write($"DbConnection: {appinfo.ActiveDBConn}");
     Show show = new(appinfo);
     show.FillViaTvmaze(1);
-    Console.WriteLine(show.ShowName);
+    appinfo.TxtFile.Write($"Show Name: {show.ShowName}");
+    //SearchShowsOnTvmaze showsearch = new(appinfo, "");
+    //List<Show> showsfound = showsearch.Found;
+    List<Show> showsfound = new();
 }
 
 <div class="text-center">
@@ -17,7 +21,7 @@
     <p>Building a Page to Show data from the TVMaze DB</p>
 </div>
 
-<div>
+<div class="text-center">
     <h2>Application Info Table:</h2>
     <table style="width:100%", border="1">
         <tr>
@@ -31,7 +35,8 @@
     </table>
 </div>
 
-<div>
+<div class="text-center">
+    <br />
     <h2>Show Info Table:</h2>
     <table style="width:100%" , border="1">
         <tr>
@@ -44,6 +49,44 @@
             <td>@show.Id</td>
             <td>@show.ShowName</td>
             <td>@show.TvmShowId</td>
-            <td><img src="@show.TvmImage" width="=50" height="50"/></td>
+            <td><img src="@show.TvmImage" width="50" height="50" /></td>
         </tr>
+    </table>
 </div>
+
+<div class="text-center">
+    <br />
+    <h2>List of First 20 TVMaze shows</h2>
+    <p>
+        Commented out the loading of the data for the table.  Empty List for now <br />
+        The Table itself detects that the list is empty and does not even show up
+    </p>
+</div>
+
+@{ if (showsfound.Count != 0)
+    {
+    <div class="text-center">
+        <br />
+        <h2>First 20 Shows Table:</h2>
+        <p>Commented out the loading of the data for the table.  Empty List for now</p>
+        <table style="width:100%" , border="1">
+            <tr>
+                <th>DB Show Id</th>
+                <th>Show Name</th>
+                <th>Tvm Show Id</th>
+                <th>Tvm Image</th>
+            </tr>
+            @{ foreach (Show rec in showsfound)
+                {
+                    <tr>
+                        <td>@rec.Id</td>
+                        <td>@rec.ShowName</td>
+                        <td>@rec.TvmShowId</td>
+                        <td><img src="@rec.TvmImage" width="50" height="50" /></td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+     }
+}
