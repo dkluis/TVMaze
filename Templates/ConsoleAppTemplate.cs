@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Common_Lib;
 
 namespace UpdateShowEpochs

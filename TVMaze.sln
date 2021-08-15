@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVMazeConsoleApp", "TestCon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvmEntitiesCA", "TestConsoleApps\TvmEntitiesCA\TvmEntitiesCA.csproj", "{02025773-0E64-4D01-B709-8476ECDB767C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateShows", "ProdConsoleApps\UpdateShows\UpdateShows.csproj", "{90F802D3-98D5-413D-84F6-9FF79721D7D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateShowEpochs", "ProdConsoleApps\UpdateShows\UpdateShowEpochs.csproj", "{90F802D3-98D5-413D-84F6-9FF79721D7D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{D86C48FD-5669-4B07-82F1-A3C12FF53192}"
 EndProject
