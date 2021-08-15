@@ -12,6 +12,7 @@ namespace QuickTests
     {
         static void Main()
         {
+            Console.WriteLine("Started QuickTests");
             AppInfo appinfo = new("TVMaze", "QuickTest" , "DbProduction");
             TextFileHandler log = appinfo.TxtFile;
             TextFileHandler cnf = appinfo.CnfFile;
@@ -37,10 +38,6 @@ namespace QuickTests
 
             //System.Diagnostics.Process.Start(@"/Applications/Safari.app/Contents/MacOS/Safari");
 
-            Process p = new Process();
-            p.StartInfo.FileName = "/Applications/Safari.app/Contents/MacOS/Safari";  // just for example, you can use yours.
-            p.Start();
-
             WebScrape showscrape = new(appinfo);
             List<string> ShowRssShows = showscrape.GetShowRssInfo();
             log.Write($"Found {ShowRssShows.Count} in the ShowRss HTML download");
@@ -48,7 +45,7 @@ namespace QuickTests
             {
                 log.Write($"Found show: ---{show}---");
             }
-
+            Console.WriteLine("Finished QuickTests");
             log.Stop();
         }
     }
