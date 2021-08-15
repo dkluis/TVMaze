@@ -33,6 +33,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryOutMVC", "TestWebApps\Tr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps for Testing", "WebApps for Testing", "{6A287390-0D0E-4202-806C-B73B25C34C23}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{AC7DEE87-1264-4221-B9EB-2FF7F1174351}"
+	ProjectSection(SolutionItems) = preProject
+		Templates\ConsoleAppTemplate.cs = Templates\ConsoleAppTemplate.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
