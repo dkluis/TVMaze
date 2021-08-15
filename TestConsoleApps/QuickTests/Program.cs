@@ -1,5 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Common_Lib;
+using Web_Lib;
+using HtmlAgilityPack;
 
 namespace QuickTests
 {
@@ -35,6 +40,14 @@ namespace QuickTests
             Process p = new Process();
             p.StartInfo.FileName = "/Applications/Safari.app/Contents/MacOS/Safari";  // just for example, you can use yours.
             p.Start();
+
+            WebScrape showscrape = new(appinfo);
+            List<string> ShowRssShows = showscrape.GetShowRssInfo();
+            log.Write($"Found {ShowRssShows.Count} in the ShowRss HTML download");
+            foreach (string show in ShowRssShows)
+            {
+                log.Write($"Found show: ---{show}---");
+            }
 
             log.Stop();
         }

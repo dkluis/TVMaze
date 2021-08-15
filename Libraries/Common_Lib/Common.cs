@@ -75,9 +75,21 @@ namespace Common_Lib
                                .Replace("'", "")
                                .Replace("\"", "")
                                .Replace(":", "")
+                               .Replace("&#039;", "")
+                               .Replace("&amp;", "")
+                               .Replace("&", "and") //TODO Still investigation the replace for & to and
                                .Trim()
-                               .ToLower();   // Still investigation the replace for & to and 
+                               .ToLower();   
             return showname;
+        }
+
+        public static string RemoveSuffixFromShowname(string showname)
+        {
+            string[] pieces = showname.Split("(");
+            if (pieces.Length > 2)
+                return showname;
+
+            return pieces[0].Trim();
         }
 
         public static string BuildSeasonEpisodeString(int seas_num, int epi_num)

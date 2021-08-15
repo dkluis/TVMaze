@@ -195,6 +195,8 @@ namespace Web_Lib
 
         #endregion
 
+        #region Scrape APIs
+
         #region RarbgAPI
 
         public HttpResponseMessage GetRarbgMagnets(string searchfor)
@@ -229,6 +231,8 @@ namespace Web_Lib
             log.Write($"API String = {api}", "RarbgAPI", 3);
             return api;
         }
+
+        #endregion
 
         #endregion
 

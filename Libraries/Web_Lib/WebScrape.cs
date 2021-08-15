@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 
 namespace Web_Lib
@@ -14,13 +15,15 @@ namespace Web_Lib
         // private Common common = new();
         public bool WholeSeasonFound;
         public bool rarbgError;
-        public AppInfo appinfo;
+        private readonly AppInfo appinfo;
 
         public WebScrape(AppInfo info)
         {
             appinfo = info;
             log = appinfo.TxtFile;
         }
+
+        #region Finders
 
         #region EZTV
 
@@ -127,9 +130,7 @@ namespace Web_Lib
         public void GetRarbgMagnets(string showname, string seasepi)
         {
             int prio;
-            
             WebAPI tvmapi = new(appinfo);
-            log.Write("Start to Rarbg API test", "Program", 0);
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
 
@@ -143,18 +144,16 @@ namespace Web_Lib
                 return;
             }
 
-            var content = result.Content.ReadAsStringAsync().Result;
+            string content = result.Content.ReadAsStringAsync().Result;
             if (content == "{\"error\":\"No results found\",\"error_code\":20}")
             {
-                // Try to get the result again.   Sometimes gives this error eventhough there are magnets to be found
+                //TODO Figure out to repeat the call here, most of the time a second call finds it
                 log.Write("Status OK, Error Occured Not Found", "Rarbg", 1);
                 rarbgError = true;
                 return;
             }
 
             dynamic jsoncontent = JsonConvert.DeserializeObject(content);
-            // log.Write($"JSon is {jsoncontent}");
-
             foreach (var show in jsoncontent["torrent_results"])
             {
                 string magnet = show["download"];
@@ -162,7 +161,7 @@ namespace Web_Lib
                 log.Write($"Magnet found: {magnet}");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
-                    //To Do still need the compara string check
+                    //TODO still need the compare string check
                     magnets.Add(prio + "#$# " + magnet);
                     log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 3);
                 }
@@ -176,6 +175,7 @@ namespace Web_Lib
 
         #region EztvAPI IMDB
 
+        //TODO IMDB Webscrape
 
         #endregion
 
@@ -235,6 +235,45 @@ namespace Web_Lib
             }
 
             return prio;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region ShowRss
+
+        public List<string> GetShowRssInfo()
+        {
+
+            //TODO Figure out how to log into ShowRss via webscrape and replace below string loading
+
+            string showrsspath = Path.Combine(appinfo.ConfigPath, "Inputs", "ShowRss.html");
+            HtmlDocument showrsshtml = new();
+
+            string showrssinfo = File.ReadAllText(showrsspath);
+            showrsshtml.LoadHtml(showrssinfo);
+
+            HtmlNodeCollection table = showrsshtml.DocumentNode.SelectNodes("//li/a");
+            List<string> Titles = new();
+            string showname;
+
+            foreach (HtmlNode node in table)
+            {
+                if (node.Attributes["class"] is null) { continue; }
+                if (node.Attributes["class"].Value.ToLower().Contains("sh"))
+                {
+                    showname = Common.RemoveSpecialCharsInShowname(node.Attributes["title"].Value);
+                    showname = Common.RemoveSuffixFromShowname(showname);
+                    Titles.Add(showname);
+                }
+            }
+
+            return Titles;
+
+            //TODO Find title in the Shows table ---> Add to Shows table if not exist ???
+            //TODO Change the finder to ShowRSS
+
         }
 
         #endregion
