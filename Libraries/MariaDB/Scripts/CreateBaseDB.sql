@@ -1,10 +1,11 @@
 
+drop table Episodes;
 drop table PlexStatuses;
+
+drop table Shows;
 drop table TvmStatuses;
 drop table ShowStatuses;
 drop table TvmShowUpdates;
-drop table Episodes;
-drop table Shows;
 
 
 CREATE TABLE `PlexStatuses` (
@@ -22,46 +23,14 @@ CREATE TABLE `ShowStatuses` (
   PRIMARY KEY (`ShowStatus`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `Shows` (
+CREATE TABLE `TvmShowUpdates` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `TvmShowId` int(11) NOT NULL,
-  `TvmStatus` varchar(10) NOT NULL,
-  `TvmUrl` varchar(175) DEFAULT ' ',
-  `ShowName` varchar(100) NOT NULL,
-  `ShowStatus` varchar(20) NOT NULL,
-  `PremiereDate` date NOT NULL DEFAULT '1970-01-01',
-  `Finder` varchar(10) NOT NULL DEFAULT 'Multi',
-  `CleanedShowName` varchar(100) NOT NULL DEFAULT ' ',
-  `AltShowname` varchar(100) NOT NULL DEFAULT ' ',
-  `UpdateDate` date NOT NULL DEFAULT curdate(),
+  `TvmUpdateEpoch` int(11) NOT NULL,
+  `TvmUpdateDate` date DEFAULT '1900-01-01',
   PRIMARY KEY (`Id`),
-  UNIQUE KEY `Shows_UN` (`TvmShowId`),
-  KEY `Shows_ShowName_IDX` (`ShowName`) USING BTREE,
-  KEY `Shows_CleanedShowName_IDX` (`CleanedShowName`) USING BTREE,
-  KEY `Shows_FK` (`TvmStatus`),
-  KEY `Shows_FK_1` (`ShowStatus`),
-  CONSTRAINT `Shows_FK` FOREIGN KEY (`TvmStatus`) REFERENCES `TvmStatuses` (`TvmStatus`),
-  CONSTRAINT `Shows_FK_1` FOREIGN KEY (`ShowStatus`) REFERENCES `ShowStatuses` (`ShowStatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=1552 DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Episodes` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `TvmShowId` int(11) NOT NULL,
-  `TvmEpisodeId` int(11) NOT NULL,
-  `TvmUrl` varchar(175) NOT NULL DEFAULT ' ',
-  `SeasonEpisode` varchar(10) NOT NULL,
-  `Season` int(11) NOT NULL,
-  `Episode` int(11) NOT NULL,
-  `BroadcastDate` date DEFAULT NULL,
-  `PlexStatus` varchar(10) NOT NULL DEFAULT ' ',
-  `PlexDate` date DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `Episodes_UN` (`TvmShowId`,`TvmEpisodeId`),
-  KEY `Episodes_FK` (`TvmShowId`),
-  KEY `Episodes_FK_1` (`PlexStatus`),
-  CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`),
-  CONSTRAINT `Episodes_FK_1` FOREIGN KEY (`PlexStatus`) REFERENCES `PlexStatuses` (`PlexStatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=31579 DEFAULT CHARSET=utf8mb4;
+  UNIQUE KEY `TvmShowUpdates_TvmShowId` (`TvmShowId`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO PlexStatuses (PlexStatus) VALUES
 	 (' '),
@@ -84,11 +53,44 @@ INSERT INTO TvmStatuses (TvmStatus) VALUES
 	 ('Skipping'),
 	 ('Undecided');
 
-CREATE TABLE `TvmShowUpdates` (
+CREATE TABLE `Shows` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `TvmShowId` int(11) NOT NULL,
-  `TvmUpdateEpoch` int(11) NOT NULL,
-  `TvmUpdateDate` date DEFAULT '1900-01-01',
+  `TvmStatus` varchar(10) NOT NULL,
+  `TvmUrl` varchar(175) DEFAULT ' ',
+  `ShowName` varchar(100) NOT NULL,
+  `ShowStatus` varchar(20) NOT NULL,
+  `PremiereDate` date NOT NULL DEFAULT '1970-01-01',
+  `Finder` varchar(10) NOT NULL DEFAULT 'Multi',
+  `CleanedShowName` varchar(100) NOT NULL DEFAULT ' ',
+  `AltShowname` varchar(100) NOT NULL DEFAULT ' ',
+  `UpdateDate` date NOT NULL DEFAULT curdate(),
   PRIMARY KEY (`Id`),
-  UNIQUE KEY `TvmShowUpdates_UN` (`TvmShowId`)
-) ENGINE=InnoDB AUTO_INCREMENT=54695 DEFAULT CHARSET=utf8mb4;
+  UNIQUE KEY `Shows_TvmShowId` (`TvmShowId`),
+  KEY `Shows_ShowName_IDX` (`ShowName`) USING BTREE,
+  KEY `Shows_CleanedShowName_IDX` (`CleanedShowName`) USING BTREE,
+  KEY `Shows_FK` (`TvmStatus`),
+  KEY `Shows_FK_1` (`ShowStatus`),
+  CONSTRAINT `Shows_FK` FOREIGN KEY (`TvmStatus`) REFERENCES `TvmStatuses` (`TvmStatus`),
+  CONSTRAINT `Shows_FK_1` FOREIGN KEY (`ShowStatus`) REFERENCES `ShowStatuses` (`ShowStatus`),
+  CONSTRAINT `Shows_FK_2` FOREIGN KEY (`TvmShowId`) REFERENCES `TvmShowUpdates` (`TvmShowId`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `Episodes` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `TvmShowId` int(11) NOT NULL,
+  `TvmEpisodeId` int(11) NOT NULL,
+  `TvmUrl` varchar(175) NOT NULL DEFAULT ' ',
+  `SeasonEpisode` varchar(10) NOT NULL,
+  `Season` int(11) NOT NULL,
+  `Episode` int(11) NOT NULL,
+  `BroadcastDate` date DEFAULT NULL,
+  `PlexStatus` varchar(10) NOT NULL DEFAULT ' ',
+  `PlexDate` date DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Episodes_TvmShowid_TvmEpisodeId` (`TvmShowId`,`TvmEpisodeId`),
+  KEY `Episodes_FK` (`TvmShowId`),
+  KEY `Episodes_FK_1` (`PlexStatus`),
+  CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`),
+  CONSTRAINT `Episodes_FK_1` FOREIGN KEY (`PlexStatus`) REFERENCES `PlexStatuses` (`PlexStatus`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
