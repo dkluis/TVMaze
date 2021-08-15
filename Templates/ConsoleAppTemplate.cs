@@ -1,21 +1,23 @@
 using System;
 using Common_Lib;
 
-namespace UpdateShowEpochs
+namespace This_Program
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Starting UpdateShowEpochs");
-            AppInfo appinfo = new("TVMaze", "Update Show Epochs", "DbAlternate");
+            string This_Program = "This Program";
+            Console.WriteLine($"Starting {This_Program}");
+            AppInfo appinfo = new("TVMaze", This_Program, "DB Needed from Config");
+            Console.WriteLine($"Progress can be followin in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
 
 
             log.Stop();
-            Console.WriteLine("Finishing UpdateShowEpochs");
+            Console.WriteLine($"Finishing {This_Program} Program");
         }
     }
 }

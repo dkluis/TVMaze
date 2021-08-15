@@ -156,7 +156,7 @@ namespace CheckTvmShowUpdates
 
             bool InEpochTable;
             bool UpdateNeeded;
-            foreach (var kvp in jsoncontent)
+            foreach (System.Collections.Generic.KeyValuePair<string, JToken> kvp in jsoncontent)
             {
                 Int32 showid = Int32.Parse(kvp.Key);
                 InEpochTable = false;
