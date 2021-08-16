@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj" />
-    <ProjectReference Include="..\..\Libraries\TvmEntities\TvmEntities.csproj" />
     <ProjectReference Include="..\..\Libraries\MariaDB\DB_Lib.csproj" />
+    <ProjectReference Include="..\..\Libraries\TvmEntities\TvmEntities.csproj" />
   </ItemGroup>
 </Project>

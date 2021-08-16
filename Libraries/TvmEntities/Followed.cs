@@ -43,9 +43,10 @@ namespace TvmEntities
             values += $"'{TvmShowId}', ";
             values += $"'{UpdateDate}' ";
 
-            _ = Mdb.ExecNonQuery(sqlpre + values + sqlsuf, ignore);
+            int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf, ignore);
             Mdb.Close();
-            return Mdb.success;
+            if (rows == 0) { return false; }
+            return true;
         }
 
         public bool DbUpdate(bool ignore = false)
@@ -57,9 +58,19 @@ namespace TvmEntities
             updfields += $"`TvmShowId` = '{TvmShowId}', ";
             updfields += $"`UpdateDate` = '{UpdateDate}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
-            _ = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf, ignore);
+            int rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf, ignore);
             Mdb.Close();
-            return Mdb.success;
+            if (rows == 0) { return false;  }
+            return true;
+        }
+
+        public bool DbDelete(bool ignore = false)
+        {
+            int rows = Mdb.ExecNonQuery($"delete from Followed where `TvmShowId` = {TvmShowId}");
+            log.Write($"DbDelete for Show: {TvmShowId}", "", 4);
+            Mdb.Close();
+            if (rows == 0) { return false; }
+            return true;
         }
 
         public void Fill(Int32 ShowId, String UpdDate = "")
@@ -68,29 +79,27 @@ namespace TvmEntities
             if (UpdDate != "") { UpdateDate = UpdDate; } 
         }
 
-        public List<string> ShowsToDelete()
+        public List<int> ShowsToDelete(List<int> followedontvmaze)
         {
-            List<string> showstodelete = new();
-            List<string> showsinfollowed = new();
+            List<int> showstodelete = new();
+            List<int> followedindb = new();
 
-            using (MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmShowId` from Follewed"))
+            using (MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmShowId` from Followed"))
             {
                 while (rdr.Read())
                 {
-                    showsinfollowed.Add(rdr["TvmShowId"].ToString());
+                    followedindb.Add(Int32.Parse(rdr["TvmShowId"].ToString()));
                 }
                 Mdb.Close();
             }
 
-            using (MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmShowId` from Follewed"))
+            if (followedontvmaze.Count == followedindb.Count) { return showstodelete; }
+
+            foreach (int showid in followedindb)
             {
-                while (rdr.Read())
-                {
-
-                }
-                Mdb.Close();
+                if (followedontvmaze.Exists(e => e.Equals(showid))) { continue; }
+                showstodelete.Add(showid);
             }
-
 
             return showstodelete;
         }

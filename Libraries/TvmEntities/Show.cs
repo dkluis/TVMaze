@@ -106,6 +106,7 @@ namespace TvmEntities
             updfields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
             Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
+            log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
             Mdb.Close();
             return Mdb.success;
         }
@@ -133,6 +134,15 @@ namespace TvmEntities
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+            log.Write($"DbInsert for Show: {TvmShowId}", "", 4);
+            Mdb.Close();
+            return Mdb.success;
+        }
+
+        public bool DbDelete()
+        {
+            _ = Mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {TvmShowId}");
+            log.Write($"DbDelete for Show: {TvmShowId}", "", 4);
             Mdb.Close();
             return Mdb.success;
         }
