@@ -17,7 +17,7 @@ namespace This_Program
 
 
             log.Stop();
-            Console.WriteLine($"Finishing {This_Program} Program");
+            Console.WriteLine($"Finished {This_Program} Program");
         }
     }
 }

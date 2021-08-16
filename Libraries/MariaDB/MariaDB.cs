@@ -127,7 +127,7 @@ namespace DB_Lib
             }
         }
 
-        public int ExecNonQuery()
+        public int ExecNonQuery(bool ignore = false)
         {
             success = true;
             exception = new Exception();
@@ -135,18 +135,19 @@ namespace DB_Lib
             {
                 if (!connOpen) { Open(); };
                 rows = cmd.ExecuteNonQuery();
+                if (rows !> 0) { success = false; }
                 return rows;
             }
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", null, 0);
+                if (!ignore) { mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", null, 0); }
                 success = false;
                 return rows;
             }
         }
 
-        public int ExecNonQuery(string sql)
+        public int ExecNonQuery(string sql, bool ignore = false)
         {
             cmd = this.Command(sql);
             success = true;
@@ -155,12 +156,13 @@ namespace DB_Lib
             {
                 if (!connOpen) { Open(); };
                 rows = cmd.ExecuteNonQuery();
+                if (rows! > 0) { success = false; }
                 return rows;
             }
             catch (Exception e)
             {
                 exception = e;
-                mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", null, 0);
+                if (!ignore) { mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", null, 0); }
                 success = false;
                 return rows;
             }

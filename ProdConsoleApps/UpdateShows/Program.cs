@@ -40,11 +40,15 @@ namespace UpdateShowEpochs
                 //TODO figure out if this show's epoch is already up to date and continue to skip the rest
                 showid = Int32.Parse(show.Key);
 
+                tvmshow.FillViaTvmaze(showid);
+                log.Write($"TvmShowId: {tvmshow.TvmShowId}, Epoch: {show.Value}, Name: {tvmshow.ShowName}");
+
                 rdr = Mdbr.ExecQuery($"select * from TvmShowUpdates where `TvmShowId` = {showid}");
                 if (!rdr.HasRows)
                 {
                     Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {show.Key}, {show.Value}, '{DateTime.Now:yyyy-MM-dd}');");
-                    log.Write($"Inserted Epoch Record");
+                    if (!tvmshow.DbInsert()) { tvmshow.DbUpdate(); }
+                    log.Write($"Inserted Epoch Record and Show Record");
                 }
                 else
                 {
@@ -52,14 +56,12 @@ namespace UpdateShowEpochs
                     {
                         if (rdr["TvmUpdateEpoch"].ToString() != show.Value.ToString())
                         {
-                            Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid});");
-                            log.Write($"Updated Epoch Record");
+
+                            Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};");
+                            if (!tvmshow.DbInsert()) { tvmshow.DbUpdate();  }
+                            log.Write($"Updated Epoch Record and Show Record");
                         }
                     }
-
-                    tvmshow.FillViaTvmaze(showid);
-                    log.Write($"TvmShowId: {tvmshow.TvmShowId}, Epoch: {show.Value}, Name: {tvmshow.ShowName}");
-                    
                 }
                 // rdr.Close();
                 Mdbr.Close();
@@ -67,7 +69,7 @@ namespace UpdateShowEpochs
             }
 
             log.Stop();
-            Console.WriteLine($"Finishing {This_Program} Program");
+            Console.WriteLine($"Finished {This_Program} Program");
         }
     }
 }

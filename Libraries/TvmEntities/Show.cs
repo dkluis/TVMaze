@@ -106,30 +106,35 @@ namespace TvmEntities
             updfields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
             Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
-            return true;
+            Mdb.Close();
+            return Mdb.success;
         }
 
         public bool DbInsert()
         {
             if (isFollowed || !isFilled) { return false; }
-            // values += $"'{}', ";  for strings
-            // values += $"{}, ";    for ints
+
             string values = "";
             string sqlpre = $"insert into shows values (";
             string sqlsuf = $");";
+
+            // values += $"'{}', ";  for strings
+            // values += $"{}, ";    for ints
+            // values += $".... );"' for last value
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
             values += $"'New', ";
             values += $"'{TvmUrl}', ";
-            values += $"'{ShowName}', ";
+            values += $"'{ShowName.Replace("'", "''")}', ";
             values += $"'{ShowStatus}', ";
             values += $"'{PremiereDate}', ";
             values += $"'{Finder}', ";
             values += $"'{CleanedShowName}', ";
-            values += $"'{AltShowName}', ";
+            values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
-            return true;
+            Mdb.Close();
+            return Mdb.success;
         }
 
         private void FillViaJson(JObject showjson)

@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		Templates\ConsoleAppTemplate.cs = Templates\ConsoleAppTemplate.cs
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateFollowed", "ProdConsoleApps\UpdateShows\UpdateFollowed\UpdateFollowed.csproj", "{CE2937B3-8647-407B-B721-CAC2D43183CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{6739BC40-4D70-4AAE-B08D-D53ECB1FC5C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6739BC40-4D70-4AAE-B08D-D53ECB1FC5C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6739BC40-4D70-4AAE-B08D-D53ECB1FC5C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE2937B3-8647-407B-B721-CAC2D43183CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE2937B3-8647-407B-B721-CAC2D43183CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE2937B3-8647-407B-B721-CAC2D43183CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE2937B3-8647-407B-B721-CAC2D43183CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{27A5F07C-E7C6-4001-94AA-A40F36F9987A} = {D86C48FD-5669-4B07-82F1-A3C12FF53192}
 		{A4ED98DC-856E-4257-ADCB-E8DF96C2AD43} = {D86C48FD-5669-4B07-82F1-A3C12FF53192}
 		{6739BC40-4D70-4AAE-B08D-D53ECB1FC5C7} = {6A287390-0D0E-4202-806C-B73B25C34C23}
+		{CE2937B3-8647-407B-B721-CAC2D43183CD} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55AA4077-0AFF-49EB-AF91-E7F22F2EEF33}

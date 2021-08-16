@@ -146,7 +146,7 @@ namespace Web_Lib
             SetTvmaze();
 
             string api = $"search/shows?q={showname}";
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 3);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 4);
 
             PerformWaitTvmApi(api);
 
@@ -158,7 +158,7 @@ namespace Web_Lib
             SetTvmaze();
             string api = $"shows/{showid}";
             PerformWaitTvmApi(api);
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 3);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 4);
 
             return _http_response;
         }
@@ -168,7 +168,7 @@ namespace Web_Lib
             SetTvmaze();
             string api = $"shows/{showid}/episodes";
             PerformWaitTvmApi(api);
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GEBS", 3);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GEBS", 4);
 
             return _http_response;
         }
@@ -178,7 +178,7 @@ namespace Web_Lib
             SetTvmaze();
             string api = $"updates/shows?since={period}";
             PerformWaitTvmApi(api);
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GSUE", 3);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GSUE", 4);
 
             return _http_response;
         }
@@ -188,7 +188,7 @@ namespace Web_Lib
             SetTvmazeUser();
             string api = $"follows/shows";
             PerformWaitTvmApi(api);
-            log.Write($"API String = {tvmaze_user_url}{api}", "WebAPI GFS", 3);
+            log.Write($"API String = {tvmaze_user_url}{api}", "WebAPI GFS", 4);
 
             return _http_response;
         }

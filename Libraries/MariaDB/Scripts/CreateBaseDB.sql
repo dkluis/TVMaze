@@ -76,6 +76,14 @@ CREATE TABLE `Shows` (
   CONSTRAINT `Shows_FK_2` FOREIGN KEY (`TvmShowId`) REFERENCES `TvmShowUpdates` (`TvmShowId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `Followed` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `TvmShowId` int(11) NOT NULL,
+  `UpdateDate` date NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `TvmFollowedShows_UN` (`TvmShowId`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4
+
 CREATE TABLE `Episodes` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `TvmShowId` int(11) NOT NULL,
