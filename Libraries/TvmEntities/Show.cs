@@ -94,15 +94,15 @@ namespace TvmEntities
 
         public bool DbUpdate()
         {
-            if (!isFollowed || !isFilled) { return false; }  // Show does not exist in the DB 
+            // if (!isFollowed || !isFilled) { return false; } 
 
             // updfields += $"`` = '{}', ";
             string updfields = "";
             string sqlpre = $"update shows set ";
             updfields += $"`Finder` = '{Finder}', ";
-            updfields += $"`ShowName` = '{ShowName}', ";
-            updfields += $"`AltShowName` = '{AltShowName}', ";
-            updfields += $"`CleanedShowName` = '{CleanedShowName}', ";
+            updfields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";
+            updfields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
+            updfields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
             updfields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
             Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
@@ -113,7 +113,8 @@ namespace TvmEntities
 
         public bool DbInsert()
         {
-            if (isFollowed || !isFilled) { return false; }
+            if (!isForReview) { log.Write($"New Show {TvmUrl} Ignored due to Review Rules"); }
+            if (!isFilled || !isForReview) { return false; }
 
             string values = "";
             string sqlpre = $"insert into shows values (";
@@ -124,13 +125,14 @@ namespace TvmEntities
             // values += $".... );"' for last value
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
-            values += $"'New', ";
+            if (isFollowed) { values += $"'Following', "; } else { values += $"'New', "; }
+            // values += $"'{TvmStatus}', ";
             values += $"'{TvmUrl}', ";
             values += $"'{ShowName.Replace("'", "''")}', ";
             values += $"'{ShowStatus}', ";
             values += $"'{PremiereDate}', ";
             values += $"'{Finder}', ";
-            values += $"'{CleanedShowName}', ";
+            values += $"'{CleanedShowName.Replace("'", "''")}', ";
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
@@ -154,11 +156,11 @@ namespace TvmEntities
                 showExistOnTvm = true;
                 TvmShowId = Int32.Parse(showjson["id"].ToString());
                 using (TvmCommonSql tcs = new(Appinfo))
-                    Id = tcs.GetIdViaShowid(TvmShowId);
-                if (Id != 0)
                 {
-                    isFollowed = true;
+                    if (tcs.IsShowIdFollowed(TvmShowId)) { isFollowed = true; } else { isFollowed = false; }
+                    TvmStatus = "Following";
                 }
+       
                 TvmUrl = showjson["url"].ToString();
                 ShowName = showjson["name"].ToString();
                 ShowStatus = showjson["status"].ToString();

@@ -7,6 +7,8 @@ drop table TvmStatuses;
 drop table ShowStatuses;
 drop table TvmShowUpdates;
 
+drop table Followed;
+
 
 CREATE TABLE `PlexStatuses` (
   `PlexStatus` varchar(10) NOT NULL,

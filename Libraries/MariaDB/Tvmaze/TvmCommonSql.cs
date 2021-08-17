@@ -35,7 +35,7 @@ namespace DB_Lib
         public bool IsShowIdFollowed(Int32 showid)
         {
             bool isFollowed = false;
-            rdr = db.ExecQuery($"select TvmShowId from Shows where `TvmShowId` = {showid};");
+            rdr = db.ExecQuery($"select TvmShowId from Followed where `TvmShowId` = {showid};");
             while (rdr.Read())
             {
                 isFollowed = true;

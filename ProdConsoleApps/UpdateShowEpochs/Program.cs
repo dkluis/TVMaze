@@ -56,7 +56,6 @@ namespace UpdateShowEpochs
                     {
                         if (rdr["TvmUpdateEpoch"].ToString() != show.Value.ToString())
                         {
-
                             Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};");
                             if (!tvmshow.DbInsert()) { tvmshow.DbUpdate();  }
                             log.Write($"Updated Epoch Record and Show Record");
