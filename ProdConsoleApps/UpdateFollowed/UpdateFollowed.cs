@@ -9,9 +9,9 @@ using TvmEntities;
 using Newtonsoft.Json.Linq;
 
 
-namespace This_Program
+namespace UpdateFollowed
 {
-    class Program
+    class UpdateFollowed
     {
         private static void Main()
         {

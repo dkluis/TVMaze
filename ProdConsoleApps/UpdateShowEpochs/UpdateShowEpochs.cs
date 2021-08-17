@@ -10,7 +10,7 @@ using TvmEntities;
 
 namespace UpdateShowEpochs
 {
-    class Program
+    class UpdateShowEpochs
     {
         static void Main()
         {

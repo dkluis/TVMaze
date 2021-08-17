@@ -8,7 +8,7 @@ using HtmlAgilityPack;
 
 namespace QuickTests
 {
-    class Program
+    class QuickTests
     {
         static void Main()
         {
@@ -43,7 +43,7 @@ namespace QuickTests
             log.Write($"Found {ShowRssShows.Count} in the ShowRss HTML download");
             foreach (string show in ShowRssShows)
             {
-                log.Write($"Found show: ---{show}---");
+                log.Write($"Found show: {show}");
             }
             Console.WriteLine("Finished QuickTests");
             log.Stop();

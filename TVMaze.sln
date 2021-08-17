@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateFollowed", "ProdConso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateShowEpochs", "ProdConsoleApps\UpdateShowEpochs\UpdateShowEpochs.csproj", "{0E35981B-F684-4404-B09C-A1FC0706EC3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefreshShows", "ProdConsoleApps\RefreshShows\RefreshShows.csproj", "{2BB4B184-D35C-4D14-84F6-4E22180B4110}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +96,10 @@ Global
 		{0E35981B-F684-4404-B09C-A1FC0706EC3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E35981B-F684-4404-B09C-A1FC0706EC3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E35981B-F684-4404-B09C-A1FC0706EC3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BB4B184-D35C-4D14-84F6-4E22180B4110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BB4B184-D35C-4D14-84F6-4E22180B4110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BB4B184-D35C-4D14-84F6-4E22180B4110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BB4B184-D35C-4D14-84F6-4E22180B4110}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +117,7 @@ Global
 		{6739BC40-4D70-4AAE-B08D-D53ECB1FC5C7} = {6A287390-0D0E-4202-806C-B73B25C34C23}
 		{669FAC07-6BBC-4404-96BF-3BC3DCAEFB83} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 		{0E35981B-F684-4404-B09C-A1FC0706EC3C} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
+		{2BB4B184-D35C-4D14-84F6-4E22180B4110} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55AA4077-0AFF-49EB-AF91-E7F22F2EEF33}

@@ -1,11 +1,13 @@
 ﻿using Common_Lib;
 using DB_Lib;
+using Web_Lib;
+
 using MySqlConnector;
 using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using Web_Lib;
+
 
 namespace TvmEntities
 {
@@ -20,7 +22,7 @@ namespace TvmEntities
         public string ShowName = "";
         public string ShowStatus = "";
         public string PremiereDate = "";
-        public string Finder = " ";
+        public string Finder = "Multi";
         public string CleanedShowName = "";
         public string AltShowName = "";
         public string UpdateDate = "1900-01-01";
@@ -65,7 +67,7 @@ namespace TvmEntities
             ShowName = "";
             ShowStatus = " ";
             PremiereDate = "1970-01-01";
-            Finder = " ";
+            Finder = "Multi";
             CleanedShowName = "";
             AltShowName = "";
             UpdateDate = "1900-01-01";
@@ -160,7 +162,7 @@ namespace TvmEntities
                     if (tcs.IsShowIdFollowed(TvmShowId)) { isFollowed = true; } else { isFollowed = false; }
                     TvmStatus = "Following";
                 }
-       
+
                 TvmUrl = showjson["url"].ToString();
                 ShowName = showjson["name"].ToString();
                 ShowStatus = showjson["status"].ToString();
@@ -299,9 +301,41 @@ namespace TvmEntities
                 exectime.Stop();
                 log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
             }
+        }
+    }
 
+    public class SearchShowsViaNames
+    {
+        private List<Int32> Found = new();
+
+        public List<Int32> Find(AppInfo appinfo, string showname)
+        {
+            Found = new();
+            using (MariaDB Mdbr = new(appinfo))
+            {
+                showname = showname.Replace("'", "''");
+                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{showname}' or `AltShowName` = '{showname}');";
+                MySqlDataReader rdr = Mdbr.ExecQuery(sql);
+                if (!rdr.HasRows) { return Found; }
+                while (rdr.Read())
+                {
+                    Found.Add(Int32.Parse(rdr["TvmShowId"].ToString()));
+                }
+            }
+            return Found;
+        }
+    }
+
+    public class UpdateFinder
+    {
+        public void ToShowRss(AppInfo appinfo, Int32 showid)
+        {
+            using (MariaDB Mdbw = new(appinfo))
+            {
+                string sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showid};";
+                Mdbw.ExecNonQuery(sql);
+            }
         }
 
     }
-
 }
