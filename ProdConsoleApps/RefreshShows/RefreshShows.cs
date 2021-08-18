@@ -5,6 +5,8 @@ using Common_Lib;
 using Web_Lib;
 using TvmEntities;
 
+using Newtonsoft.Json.Linq;
+
 namespace RefreshShows
 {
     class RefreshShows
@@ -18,8 +20,32 @@ namespace RefreshShows
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
+            // Update Shows table with all Followed Shows
 
+            WebAPI tvmapi = new(appinfo);
+            JArray jsoncontent = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
+            Show iu_show = new(appinfo);
 
+            int iu_idx = 0;
+            foreach (JToken show in jsoncontent)
+            {
+                iu_show.FillViaTvmaze(Int32.Parse(show["show_id"].ToString()));
+                if (iu_show.isFilled)
+                {
+                    log.Write($"Updating Shows Table with {show["show_id"]}");
+                    iu_show.DbUpdate();
+                    iu_idx++;
+                    iu_show.Reset();
+                }
+                else
+                {
+                    log.Write($"Inserting into Shows Table with {show["show_id"]}");
+                    iu_show.DbInsert();
+                    iu_idx++;
+                    iu_show.Reset();
+                }
+            }
+            log.Write($"Updated {iu_idx} Show records");
 
 
             // Update All Shows with ShowRss Finder Info
@@ -32,7 +58,7 @@ namespace RefreshShows
             int idx = 1;
             foreach (string show in ShowRssShows)
             {
-                log.Write($"On ShowRss: {show}", "", 4);
+                // log.Write($"On ShowRss: {show}", "", 4);
                 List<int> foundindb = ssvn.Find(appinfo, show);
                 if (foundindb.Count < 1) { continue; }
                 if (foundindb.Count > 1)
@@ -40,13 +66,13 @@ namespace RefreshShows
                     log.Write($"Found multiple shows {show} in DB Show Table");
                     foreach (int showid in foundindb)
                     {
-                        log.Write($"TvmShowId {showid}", "", 0);
+                        log.Write($"TvmShowId {showid}: {show}", "", 0);
                     }
+                    idx--;
                     continue;
                 }
-                //TODO Update the Shows table record to Following
                 log.Write($"Updating {show} to Finder: ShowRss", "", 4);
-                UF.ToShowRss(appinfo, Int32.Parse(foundindb[0].ToString()));
+                UpdateFinder.ToShowRss(appinfo, Int32.Parse(foundindb[0].ToString()));
                 idx++;
             }
             log.Write($"Updated {idx} Shows to Finder ShowRss");

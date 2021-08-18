@@ -1,0 +1,60 @@
+﻿
+
+Initial Sequence to follow
+
+Use DBeaver to drop and create the tables
+
+1. Copy the script from DB_Lib>Scripts>CreateBaseDB.sql
+2. NOTE:  Make sure to update the values statement for Table LastShowEvaluated before executing the script.
+3. Execute the whole script
+
+1.  InitializeShowEpochs        Done
+2.  UpdateFollowed              Done
+3.  RefreshShows                Done
+4.  UpdateShowEpochs            Done
+
+5.  InitializeEpisodes
+6.  RefreshEpisodes
+7.  UpdateEpisodes
+8.  UpdateEpisodesFromPlex
+
+9.  FindEpisodesMagnets
+
+10. Web UI Tvmaze   
+
+
+
+Daily Sequence (xx minutes)
+
+1. UpdateEpisodesFromPlex   - 15 Minutes (01)
+2. Web UI Tvmaze            - On Demand
+                              Use to evaluate new shows on Tvmaze (already filtered by the rules first)
+                              Use see statistics
+                              Use to view episodes to be found
+                              ???
+
+
+
+Daily Sequence (xx hourly)
+
+1. UpdateFollowed           - 6 Hourly  (45)
+2. UpdateShowEpochs         - 1 Hourly  (05)
+3. UpdateEpisodes           - 1 Hourly after UpdateShowEpochs (10)
+
+
+
+Daily Sequence (at xx)
+
+1. FindEpisodeMagnets       - Between 4am and 8pm every 30 minutes
+                              after UpdateEpisodes (15)
+
+
+Weekly Sequence (xx day of week)
+
+1. RefreshShows            - Saturday (12:01)
+2. RefreshEpisodes         - Sunday of Month (12:01)
+
+
+
+Monthly Sequence (xx day of Month)
+

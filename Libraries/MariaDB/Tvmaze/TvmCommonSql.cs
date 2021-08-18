@@ -9,13 +9,6 @@ namespace DB_Lib
         private readonly MariaDB db;
         MySqlDataReader rdr;
 
-        /*
-        public TvmCommonSql(string conninfo, Logger logger)  //To Be Deprecated
-        {
-            db = new(conninfo, logger);
-        }
-        */
-
         public TvmCommonSql(AppInfo appinfo)
         {
             db = new(appinfo);
@@ -29,6 +22,7 @@ namespace DB_Lib
             {
                 LastShowInserted = Int32.Parse(rdr["TvmShowid"].ToString());
             }
+            db.Close();
             return LastShowInserted;
         }
 
@@ -40,6 +34,7 @@ namespace DB_Lib
             {
                 isFollowed = true;
             }
+            db.Close();
             return isFollowed;
         }
 
@@ -57,6 +52,48 @@ namespace DB_Lib
                 Id = Int32.Parse(rdr["Id"].ToString());
             }
             return Id;
+        }
+
+        public int GetShowEpoch(int showid)
+        {
+            int epoch = 0;
+            rdr = db.ExecQuery($"select `TvmUpdateEpoch` from TvmShowUpdates where `TvmShowId` = {showid};");
+            if (rdr is null)
+            {
+                return epoch;
+            }
+
+            while (rdr.Read())
+            {
+                epoch = Int32.Parse(rdr["TvmUpdateEpoch"].ToString());
+            }
+            
+            return epoch;
+        }
+
+        public int GetLastEvaluatedShow()
+        {
+            int epoch = 0;
+
+            rdr = db.ExecQuery($"select `ShowId` from LastShowEvaluated where `Id` = 1;");
+            if (rdr is null)
+            {
+                db.Close();
+                return epoch;
+            }
+
+            while (rdr.Read())
+            {
+                epoch = Int32.Parse(rdr["ShowId"].ToString());
+            }
+            db.Close();
+            return epoch;
+        }
+
+        public void SetLastEvaluatedShow(int newlastepoch)
+        {
+            db.ExecNonQuery($"update LastShowEvaluated set `ShowId` = {newlastepoch};");
+            db.Close();
         }
 
         public void Dispose()

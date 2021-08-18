@@ -43,7 +43,9 @@ namespace TvmEntities
         #endregion
 
         public bool isFilled;
-        public bool showExistOnTvm;
+        public bool isDBFilled;
+        public bool isJsonFilled;
+        public bool isOnTvmaze;
         public bool isFollowed;
         public bool isForReview;
 
@@ -82,7 +84,9 @@ namespace TvmEntities
             TvmSummary = "";
 
             isFilled = false;
-            showExistOnTvm = false;
+            isJsonFilled = false;
+            isDBFilled = false;
+            isOnTvmaze = false;
             isFollowed = false;
         }
 
@@ -96,9 +100,8 @@ namespace TvmEntities
 
         public bool DbUpdate()
         {
-            // if (!isFollowed || !isFilled) { return false; } 
-
             // updfields += $"`` = '{}', ";
+            Mdb.success = true;
             string updfields = "";
             string sqlpre = $"update shows set ";
             updfields += $"`Finder` = '{Finder}', ";
@@ -107,16 +110,23 @@ namespace TvmEntities
             updfields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
             updfields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
-            Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
+            int rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
             log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
             Mdb.Close();
+            if (rows == 0) { Mdb.success = false; }
             return Mdb.success;
         }
 
         public bool DbInsert()
         {
-            if (!isForReview) { log.Write($"New Show {TvmUrl} Ignored due to Review Rules"); }
-            if (!isFilled || !isForReview) { return false; }
+            if (!isForReview && !isFollowed)
+            {
+                log.Write($"New Show {TvmUrl} Ignored due to Review Rules");
+                Mdb.success = true;
+                return Mdb.success;
+            }
+            
+            Mdb.success = true;
 
             string values = "";
             string sqlpre = $"insert into shows values (";
@@ -128,7 +138,6 @@ namespace TvmEntities
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
             if (isFollowed) { values += $"'Following', "; } else { values += $"'New', "; }
-            // values += $"'{TvmStatus}', ";
             values += $"'{TvmUrl}', ";
             values += $"'{ShowName.Replace("'", "''")}', ";
             values += $"'{ShowStatus}', ";
@@ -137,17 +146,20 @@ namespace TvmEntities
             values += $"'{CleanedShowName.Replace("'", "''")}', ";
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
-            Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+            int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbInsert for Show: {TvmShowId}", "", 4);
             Mdb.Close();
+            if (rows == 0) { Mdb.success = false; }
             return Mdb.success;
         }
 
         public bool DbDelete()
         {
-            _ = Mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {TvmShowId}");
+            Mdb.success = true;
+            int rows = Mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {TvmShowId}");
             log.Write($"DbDelete for Show: {TvmShowId}", "", 4);
             Mdb.Close();
+            if (rows == 0) { Mdb.success = false; }
             return Mdb.success;
         }
 
@@ -155,7 +167,7 @@ namespace TvmEntities
         {
             if (showjson["id"] is not null)
             {
-                showExistOnTvm = true;
+                isOnTvmaze = true;
                 TvmShowId = Int32.Parse(showjson["id"].ToString());
                 using (TvmCommonSql tcs = new(Appinfo))
                 {
@@ -203,14 +215,13 @@ namespace TvmEntities
                     else
                     { TvmSummary = "##Unknow##"; }
                 }
-                isFilled = true;
+                isJsonFilled = true;
+                if(isDBFilled) { isFilled = true; }
             }
         }
 
         private void FillViaDB(Int32 showid, bool JsonIsDone)
         {
-            if (!isFollowed && JsonIsDone) { return; }
-
             using (MySqlDataReader rdr = Mdb.ExecQuery($"select * from shows where `TvmShowId` = {showid};"))
             {
                 while (rdr.Read())
@@ -231,15 +242,14 @@ namespace TvmEntities
                     ShowStatus = rdr["ShowStatus"].ToString();
                     PremiereDate = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
                     CleanedShowName = rdr["CleanedShowName"].ToString();
-                    isFilled = true;
+                    isDBFilled = true;
+                    if (isJsonFilled) { isFilled = true;  }
                 }
             }
         }
 
         private bool ValidateForReview()
         {
-            if (!isFilled) { isForReview = false; return false; }
-
             isForReview = false;
 
             if (TvmLanguage != "English" && TvmNetwork != "NetFlix") { return false; } else { if (TvmLanguage != "English") { return false; } }
@@ -328,7 +338,7 @@ namespace TvmEntities
 
     public class UpdateFinder
     {
-        public void ToShowRss(AppInfo appinfo, Int32 showid)
+        public static void ToShowRss(AppInfo appinfo, Int32 showid)
         {
             using (MariaDB Mdbw = new(appinfo))
             {
@@ -338,4 +348,5 @@ namespace TvmEntities
         }
 
     }
+
 }

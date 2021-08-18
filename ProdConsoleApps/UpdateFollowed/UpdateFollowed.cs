@@ -7,6 +7,7 @@ using DB_Lib;
 using TvmEntities;
 
 using Newtonsoft.Json.Linq;
+using MySqlConnector;
 
 
 namespace UpdateFollowed
@@ -24,18 +25,31 @@ namespace UpdateFollowed
             log.Start();
 
             WebAPI tvmapi = new(appinfo);
-            JArray jsoncontent = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
-            log.Write($"Found {jsoncontent.Count} Followed Shows Tvmaze", This_Program, 0);
+            JArray followedontvmaze = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
+            log.Write($"Found {followedontvmaze.Count} Followed Shows Tvmaze", This_Program, 0);
 
-            //#TODO Get the # of shows in the Followed Table.
+            using (MariaDB Mdbr = new(appinfo))
+            {
+                string records = "0";
+                MySqlDataReader rdr = Mdbr.ExecQuery($"select count(*) from Followed");
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        records = rdr[0].ToString();
+                    }
+                }
+                log.Write($"There are {records} records in Following Table");
+            }
 
             int idx = 0;
             List<int> AllFollowedShows = new();
+
             using (MariaDB Mdbw = new(appinfo))
             {
                 Followed following = new(appinfo);
 
-                foreach (JToken show in jsoncontent)
+                foreach (JToken show in followedontvmaze)
                 {
                     // log.Write($"Show is {show["show_id"]}");
                     following.Fill(Int32.Parse(show["show_id"].ToString()), "");
@@ -51,7 +65,6 @@ namespace UpdateFollowed
             }
 
             Followed deletefollowed = new(appinfo);
-
 
             List<int> deletethese = deletefollowed.ShowsToDelete(AllFollowedShows);
             log.Write($"Count of shows To Delete {deletethese.Count}");

@@ -46,7 +46,6 @@ namespace Web_Lib
             return jobject;
         }
 
-
 #pragma warning disable CA1822 // Mark members as static
         public JArray ConvertHttpToJArray(HttpResponseMessage messsage)
 #pragma warning restore CA1822 // Mark members as static
@@ -158,7 +157,7 @@ namespace Web_Lib
             SetTvmaze();
             string api = $"shows/{showid}";
             PerformWaitTvmApi(api);
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS", 4);
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GS Int", 4);
 
             return _http_response;
         }
@@ -175,6 +174,7 @@ namespace Web_Lib
 
         public HttpResponseMessage GetShowUpdateEpochs(string period)
         {
+            // day, week, month option for period
             SetTvmaze();
             string api = $"updates/shows?since={period}";
             PerformWaitTvmApi(api);

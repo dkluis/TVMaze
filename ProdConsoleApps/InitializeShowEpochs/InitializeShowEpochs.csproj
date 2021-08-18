@@ -6,14 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj" />
+    <ProjectReference Include="..\..\Libraries\MariaDB\DB_Lib.csproj" />
     <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj" />
     <ProjectReference Include="..\..\Libraries\TvmEntities\TvmEntities.csproj" />
-    <ProjectReference Include="..\ImportFromPythonTVM\ImportFromPythonTVM.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="HtmlAgilityPack" />
+    <None Remove="Newtonsoft.Json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.36" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>

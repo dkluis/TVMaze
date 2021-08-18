@@ -22,11 +22,11 @@ namespace UpdateShowEpochs
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            MariaDB Mdbr = new(appinfo);
-            MariaDB Mdbw = new(appinfo);
-            MySqlDataReader rdr;
-            Int32 showid;
-
+            int showid;
+            int showepoch;
+            int LastEvaluatedShow;
+            using (TvmCommonSql ge = new(appinfo)) { LastEvaluatedShow = ge.GetLastEvaluatedShow(); }
+            log.Write($"Last Evaluated ShowId = {LastEvaluatedShow}");
 
             // Get the last 24 hours of Shows that changes on TVMaze
             WebAPI tvmapi = new(appinfo);
@@ -35,36 +35,37 @@ namespace UpdateShowEpochs
 
             Show tvmshow = new(appinfo);
 
+            int indbepoch;
+
             foreach (KeyValuePair<string, JToken> show in jsoncontent)
             {
-                //TODO figure out if this show's epoch is already up to date and continue to skip the rest
-                showid = Int32.Parse(show.Key);
+                showid = int.Parse(show.Key.ToString());
+                showepoch = int.Parse(show.Value.ToString());
+                using (TvmCommonSql gse = new(appinfo)) { indbepoch = gse.GetShowEpoch(showid); }
 
                 tvmshow.FillViaTvmaze(showid);
-                log.Write($"TvmShowId: {tvmshow.TvmShowId}, Epoch: {show.Value}, Name: {tvmshow.ShowName}");
+                if (showepoch == indbepoch) { log.Write($"Skipping since show is already up to date"); continue; }
 
-                rdr = Mdbr.ExecQuery($"select * from TvmShowUpdates where `TvmShowId` = {showid}");
-                if (!rdr.HasRows)
+                log.Write($"TvmShowId: {tvmshow.TvmShowId}, New Epoch: {showepoch}, In DB Epoch {indbepoch}, Name: {tvmshow.ShowName}");
+
+                if (indbepoch == 0)
                 {
-                    Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {show.Key}, {show.Value}, '{DateTime.Now:yyyy-MM-dd}');");
-                    if (!tvmshow.DbInsert()) { tvmshow.DbUpdate(); }
+                    using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {showid}, {showepoch}, '{DateTime.Now:yyyy-MM-dd}');"); Mdbw.Close(); }
+                    // using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};"); Mdbw.Close(); }
+
+                    if (showid < LastEvaluatedShow) { log.Write($"This show is evaluated already"); continue; }
+
+                    tvmshow.DbInsert();
+                    using (TvmCommonSql se = new(appinfo)) { se.SetLastEvaluatedShow(showid); }
                     log.Write($"Inserted Epoch Record and Show Record");
                 }
                 else
                 {
-                    while (rdr.Read())
-                    {
-                        if (rdr["TvmUpdateEpoch"].ToString() != show.Value.ToString())
-                        {
-                            Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};");
-                            if (!tvmshow.DbInsert()) { tvmshow.DbUpdate();  }
-                            log.Write($"Updated Epoch Record and Show Record");
-                        }
-                    }
+                    using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};"); Mdbw.Close(); }
+                    tvmshow.DbUpdate();
+                    log.Write($"Updated Epoch Record and Show Record");
                 }
-                // rdr.Close();
-                Mdbr.Close();
-                Mdbw.Close();
+                tvmshow.Reset();
             }
 
             log.Stop();
