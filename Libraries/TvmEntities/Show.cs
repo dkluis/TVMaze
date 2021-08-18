@@ -252,15 +252,15 @@ namespace TvmEntities
         {
             isForReview = false;
 
-            if (TvmLanguage != "English" && TvmNetwork != "NetFlix") { return false; } else { if (TvmLanguage != "English") { return false; } }
-            if (ShowStatus == "Ended") { return false; } // && PremiereDate < Convert)
+            if (TvmLanguage != "English" && TvmNetwork != "NetFlix") { return false; } else { if (TvmLanguage != "English" && TvmImage != "") { return false; } }
+            if (ShowStatus == "Ended") { return false; } //TODO still allow ended show if the airdate is within 2 years back from now!!! && PremiereDate < Convert)
             switch (TvmType)
             {
                 case "Sport":
                 case "News":
                 case "Variety":
                 case "Game Show":
-                case "":
+                case "Talk Show":
                     return false;
             }
             switch (TvmNetwork)
@@ -268,6 +268,7 @@ namespace TvmEntities
                 case "YouTube":
                 case "YouTube Premium":
                 case "Facebook Watch":
+                case "Nick Jr.":
                 case "":
                     return false;
             }
