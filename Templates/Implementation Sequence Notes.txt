@@ -16,7 +16,7 @@ Use DBeaver to drop and create the tables
 5.  InitializeEpisodes
 6.  RefreshEpisodes
 7.  UpdateEpisodes
-8.  UpdateEpisodesFromPlex
+8.  UpdateEpisodesFromPlex (and TVMaze)
 
 9.  FindEpisodesMagnets
 

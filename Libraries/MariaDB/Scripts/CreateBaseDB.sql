@@ -107,9 +107,10 @@ CREATE TABLE `Episodes` (
   `PlexStatus` varchar(10) NOT NULL DEFAULT ' ',
   `PlexDate` date DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  UNIQUE KEY `Episodes_TvmShowid_TvmEpisodeId` (`TvmShowId`,`TvmEpisodeId`),
+  UNIQUE KEY `Episodes_UN` (`TvmEpisodeId`),
   KEY `Episodes_FK` (`TvmShowId`),
   KEY `Episodes_FK_1` (`PlexStatus`),
+  KEY `Episodes_TvmShowId_IDX` (`TvmShowId`) USING BTREE,
   CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`),
   CONSTRAINT `Episodes_FK_1` FOREIGN KEY (`PlexStatus`) REFERENCES `PlexStatuses` (`PlexStatus`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;

@@ -57,6 +57,7 @@ namespace TvmEntities
         {
             Id = 0;
             TvmShowId = 0;
+            TvmEpisodeId = 0;
             TvmUrl = "";
             ShowName = "";
             SeasonEpisode = "";
@@ -88,7 +89,7 @@ namespace TvmEntities
 
         private void FillViaJson(JObject episode)
         {
-            Id = int.Parse(episode["id"].ToString());
+            //TODO Id can only be filled via FillViaDB....   Id = int.Parse(episode["id"].ToString());
             BroadcastDate = episode["airdate"].ToString();
 
             //TODO also search for the watched, downloaded, etc statuses
@@ -96,6 +97,7 @@ namespace TvmEntities
             PlexDate = null;
 
             TvmShowId = int.Parse(episode["_embedded"]["show"]["id"].ToString());
+            TvmEpisodeId = int.Parse(episode["id"].ToString());
             ShowName = episode["_embedded"]["show"]["name"].ToString();
 
             TvmUrl = episode["url"].ToString();
@@ -109,7 +111,36 @@ namespace TvmEntities
             TvmSummary = episode["summary"].ToString();
             if (episode["image"] is not null) { TvmImage = episode["image"]["medium"].ToString(); }
             TvmRunTime = int.Parse(episode["runtime"].ToString());
-        }    
+        }
+
+        public bool DbInsert()
+        {
+            Mdb.success = true;
+
+            string values = "";
+            string sqlpre = $"insert into episodes values (";
+            string sqlsuf = $");";
+
+            // values += $"'{}', ";  for strings
+            // values += $"{}, ";    for ints
+            // values += $".... );"' for last value
+            values += $"{0}, ";
+            values += $"{TvmShowId}, ";
+            values += $"{TvmEpisodeId}, ";
+            values += $"'{TvmUrl}', ";
+            values += $"'{SeasonEpisode}', ";
+            values += $"{SeasonNum}, ";
+            values += $"{EpisodeNum}, ";
+            values += $"'{BroadcastDate}', ";
+            values += $"'{PlexStatus}', ";
+            if (PlexDate is null) { values += $"null "; } else { values += $"'{PlexDate}' "; }
+            //values += $"'{DateTime.Now:yyyy-MM-dd}' ";
+            int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+            log.Write($"DbInsert for Episode: {TvmEpisodeId}", "", 4);
+            Mdb.Close();
+            if (rows == 0) { Mdb.success = false; };
+            return Mdb.success;
+        }
 
         private void FillViaDb(int showid)
         {

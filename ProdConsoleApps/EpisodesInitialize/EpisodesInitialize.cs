@@ -19,8 +19,11 @@ namespace This_Program
 
             epi.FillViaTvmaze(1);
             log.Write($"{epi.ShowName} {epi.TvmImage}, {epi.TvmRunTime}");
+            epi.DbInsert();
             epi.Reset();
             epi.FillViaTvmaze(2);
+            epi.DbInsert();
+            epi.Reset();
             log.Write($"{epi.ShowName} {epi.TvmImage}, {epi.TvmRunTime}");
 
             log.Stop();
