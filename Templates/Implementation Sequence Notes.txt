@@ -20,7 +20,9 @@ Use DBeaver to drop and create the tables
 
 9.  FindEpisodesMagnets
 
-10. Web UI Tvmaze   
+10. Web UI Tvmaze
+
+11. Cleanup PlexMedia directories
 
 
 

@@ -193,6 +193,16 @@ namespace Web_Lib
             return _http_response;
         }
 
+        public HttpResponseMessage GetEpisode(int episodeid)
+        {
+            SetTvmaze();
+            string api = $"episodes/{episodeid}?embed=show";
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
+            PerformWaitTvmApi(api);
+
+            return _http_response;
+        }
+
         #endregion
 
         #region Scrape APIs
