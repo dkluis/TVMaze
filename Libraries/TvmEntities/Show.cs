@@ -113,7 +113,7 @@ namespace TvmEntities
             int rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
             log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
             Mdb.Close();
-            if (rows == 0) { Mdb.success = false; }
+            if (rows == 0) { Mdb.success = false; } 
             return Mdb.success;
         }
 
@@ -171,7 +171,7 @@ namespace TvmEntities
                 TvmShowId = Int32.Parse(showjson["id"].ToString());
                 using (TvmCommonSql tcs = new(Appinfo))
                 {
-                    if (tcs.IsShowIdFollowed(TvmShowId)) { isFollowed = true; } else { isFollowed = false; }
+                    isFollowed = tcs.IsShowIdFollowed(TvmShowId);
                     TvmStatus = "Following";
                 }
 
@@ -224,25 +224,28 @@ namespace TvmEntities
         {
             using (MySqlDataReader rdr = Mdb.ExecQuery($"select * from shows where `TvmShowId` = {showid};"))
             {
+                isDBFilled = false;
                 while (rdr.Read())
                 {
                     isFollowed = true;
+                    isDBFilled = true;
                     if (JsonIsDone)
                     {
                         Finder = rdr["Finder"].ToString();
                         AltShowName = rdr["AltShowName"].ToString();
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
                         TvmStatus = rdr["TvmStatus"].ToString();
-                        continue;
                     }
-                    Id = Int32.Parse(rdr["Id"].ToString());
-                    TvmShowId = Int32.Parse(rdr["TvmShowId"].ToString());
-                    TvmUrl = rdr["TvmUrl"].ToString();
-                    ShowName = rdr["ShowName"].ToString();
-                    ShowStatus = rdr["ShowStatus"].ToString();
-                    PremiereDate = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
-                    CleanedShowName = rdr["CleanedShowName"].ToString();
-                    isDBFilled = true;
+                    else
+                    {
+                        Id = Int32.Parse(rdr["Id"].ToString());
+                        TvmShowId = Int32.Parse(rdr["TvmShowId"].ToString());
+                        TvmUrl = rdr["TvmUrl"].ToString();
+                        ShowName = rdr["ShowName"].ToString();
+                        ShowStatus = rdr["ShowStatus"].ToString();
+                        PremiereDate = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
+                        CleanedShowName = rdr["CleanedShowName"].ToString();
+                    }
                     if (isJsonFilled) { isFilled = true;  }
                 }
             }

@@ -30,7 +30,7 @@ namespace RefreshShows
             foreach (JToken show in jsoncontent)
             {
                 iu_show.FillViaTvmaze(Int32.Parse(show["show_id"].ToString()));
-                if (iu_show.isFilled)
+                if (iu_show.isDBFilled)
                 {
                     log.Write($"Updating Shows Table with {show["show_id"]}");
                     iu_show.DbUpdate();

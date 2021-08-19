@@ -54,7 +54,7 @@ Daily Sequence (at xx)
 Weekly Sequence (xx day of week)
 
 1. RefreshShows            - Saturday (12:01)
-2. RefreshEpisodes         - Sunday of Month (12:01)
+2. RefreshEpisodes         - Sunday (12:01)
 
 
 

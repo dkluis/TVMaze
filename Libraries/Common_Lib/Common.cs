@@ -75,6 +75,7 @@ namespace Common_Lib
                                .Replace("'", "")
                                .Replace("\"", "")
                                .Replace(":", "")
+                               .Replace("?", "")  //TODO Validate if ? should be taken out
                                .Replace("&#039;", "")
                                .Replace("&amp;", "")
                                .Replace("&", "and") //TODO Still investigation the replace for & to and
