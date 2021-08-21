@@ -72,7 +72,7 @@ namespace RefreshShows
                     continue;
                 }
                 log.Write($"Updating {show} to Finder: ShowRss", "", 4);
-                UpdateFinder.ToShowRss(appinfo, Int32.Parse(foundindb[0].ToString()));
+                UF.ToShowRss(appinfo, Int32.Parse(foundindb[0].ToString()));
                 idx++;
             }
             log.Write($"Updated {idx} Shows to Finder ShowRss");

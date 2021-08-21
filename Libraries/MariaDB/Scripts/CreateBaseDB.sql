@@ -17,7 +17,7 @@ CREATE TABLE `LastShowEvaluated` (
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO TVMazeNewDB.LastShowEvaluated (ShowId) VALUES
-	 (56914);
+	 (56942);
 
 CREATE TABLE `PlexStatuses` (
   `PlexStatus` varchar(10) NOT NULL,

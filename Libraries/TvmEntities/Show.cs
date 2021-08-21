@@ -94,8 +94,8 @@ namespace TvmEntities
         {
             using WebAPI js = new(Appinfo);
             FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
-            if (isFollowed) { FillViaDB(showid, true); }
-            if (!isFollowed) { ValidateForReview(); }
+            FillViaDB(showid, true);
+            if (!isFollowed && !isDBFilled) { ValidateForReview(); }
         }
 
         public bool DbUpdate()
@@ -113,7 +113,7 @@ namespace TvmEntities
             int rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
             log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
             Mdb.Close();
-            if (rows == 0) { Mdb.success = false; } 
+            if (rows == 0) { Mdb.success = false; }
             return Mdb.success;
         }
 
@@ -125,7 +125,7 @@ namespace TvmEntities
                 Mdb.success = true;
                 return Mdb.success;
             }
-            
+
             Mdb.success = true;
 
             string values = "";
@@ -172,7 +172,7 @@ namespace TvmEntities
                 using (TvmCommonSql tcs = new(Appinfo))
                 {
                     isFollowed = tcs.IsShowIdFollowed(TvmShowId);
-                    TvmStatus = "Following";
+                    if (isFollowed) { TvmStatus = "Following"; } else { TvmStatus = "New"; }
                 }
 
                 TvmUrl = showjson["url"].ToString();
@@ -216,7 +216,7 @@ namespace TvmEntities
                     { TvmSummary = "##Unknow##"; }
                 }
                 isJsonFilled = true;
-                if(isDBFilled) { isFilled = true; }
+                if (isDBFilled) { isFilled = true; }
             }
         }
 
@@ -227,11 +227,18 @@ namespace TvmEntities
                 isDBFilled = false;
                 while (rdr.Read())
                 {
-                    isFollowed = true;
                     isDBFilled = true;
                     if (JsonIsDone)
                     {
+                        TvmStatus = rdr["TvmStatus"].ToString();
                         Finder = rdr["Finder"].ToString();
+                        if ( rdr["TvmStatus"].ToString() == "New")
+                        {
+                            CheckTvm ct = new();
+                            bool Followed = ct.IsFollowedShow(Appinfo, showid);
+                            if (Followed) { TvmStatus = "Followed"; }
+                            isFollowed = Followed;
+                        }
                         AltShowName = rdr["AltShowName"].ToString();
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
                         TvmStatus = rdr["TvmStatus"].ToString();
@@ -246,7 +253,7 @@ namespace TvmEntities
                         PremiereDate = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
                         CleanedShowName = rdr["CleanedShowName"].ToString();
                     }
-                    if (isJsonFilled) { isFilled = true;  }
+                    if (isJsonFilled) { isFilled = true; }
                 }
             }
         }
@@ -254,8 +261,17 @@ namespace TvmEntities
         private bool ValidateForReview()
         {
             isForReview = false;
-
-            if (TvmLanguage != "English" && TvmNetwork != "NetFlix") { return false; } else { if (TvmLanguage != "English" && TvmImage != "") { return false; } }
+            if (TvmLanguage != "")
+            {
+                if (TvmLanguage != "English" && TvmNetwork != "NetFlix")
+                {
+                    return false;
+                }
+                else if (TvmLanguage != "English" && TvmImage != "")
+                {
+                    return false;
+                }
+            }
             if (ShowStatus == "Ended") { return false; } //TODO still allow ended show if the airdate is within 2 years back from now!!! && PremiereDate < Convert)
             switch (TvmType)
             {
@@ -342,15 +358,48 @@ namespace TvmEntities
 
     public class UpdateFinder
     {
-        public static void ToShowRss(AppInfo appinfo, Int32 showid)
+        public void ToShowRss(AppInfo appinfo, Int32 showid)
         {
             using (MariaDB Mdbw = new(appinfo))
             {
                 string sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showid};";
-                Mdbw.ExecNonQuery(sql);
+                appinfo.TxtFile.Write($"Executing: sql", "UpdateFinder", 4);
+                if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update of Finder unsuccessful", "", 4); }
             }
         }
-
     }
 
+    public class CheckTvm
+    {
+        public bool IsFollowedShow(AppInfo appinfo, int showid)
+        {
+            bool isFollowed = false;
+            using (WebAPI webapi = new(appinfo))
+            {
+                isFollowed = webapi.CheckForFollowedShow(showid);
+            }
+
+            return isFollowed;
+        }
+    }
+
+    public class CheckDb
+    {
+        public int FollowedCount(AppInfo appinfo)
+        {
+            int records = 0;
+            using (MariaDB Mdbr = new(appinfo))
+            {
+                MySqlDataReader rdr = Mdbr.ExecQuery($"select count(*) from Followed");
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        records = int.Parse(rdr[0].ToString());
+                    }
+                }
+                return records;
+            }
+        }
+    }
 }

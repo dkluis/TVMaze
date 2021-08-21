@@ -19,58 +19,63 @@ namespace UpdateFollowed
             string This_Program = "Update Followed";
             Console.WriteLine($"Starting {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            AppInfo shows = new("TVMaze", This_Program, "DbAlternate");
             Console.WriteLine($"Progress can be followin in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
             WebAPI tvmapi = new(appinfo);
             JArray followedontvmaze = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
-            log.Write($"Found {followedontvmaze.Count} Followed Shows Tvmaze", This_Program, 0);
+            log.Write($"Found {followedontvmaze.Count} Followed Shows Tvmaze");
 
-            using (MariaDB Mdbr = new(appinfo))
-            {
-                string records = "0";
-                MySqlDataReader rdr = Mdbr.ExecQuery($"select count(*) from Followed");
-                if (rdr.HasRows)
-                {
-                    while (rdr.Read())
-                    {
-                        records = rdr[0].ToString();
-                    }
-                }
-                log.Write($"There are {records} records in Following Table");
-            }
+            CheckDb cdb = new();
+            int records = cdb.FollowedCount(appinfo);
+            log.Write($"There are {records} records in Following Table");
+            log.EmptyLine(2);
+
+
+            Show theshow = new(appinfo);
 
             int idx = 0;
             List<int> AllFollowedShows = new();
 
             using (MariaDB Mdbw = new(appinfo))
             {
-                Followed following = new(appinfo);
+                Followed inDBasFollowing = new(appinfo);
+                int jtshow;
 
                 foreach (JToken show in followedontvmaze)
                 {
-                    // log.Write($"Show is {show["show_id"]}");
-                    following.Fill(Int32.Parse(show["show_id"].ToString()), "");
-                    AllFollowedShows.Add(Int32.Parse(show["show_id"].ToString()));
-                    // Test Condition below to be taken out for production
-                    // if (Int32.Parse(show["show_id"].ToString()) > 10) { AllFollowedShows.Add(Int32.Parse(show["show_id"].ToString())); }
-                    if (!following.DbUpdate(true)) { following.DbInsert(); };
-                    following.Reset();
+                    jtshow = int.Parse(show["show_id"].ToString());
+                    log.Write($"Processing {jtshow}", "", 4);
+                    inDBasFollowing.GetFollowed(jtshow);
+                    if (inDBasFollowing.inDB)
+                    {
+                        inDBasFollowing.DbUpdate();
+                        theshow.FillViaTvmaze(jtshow);
+                        if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
+                        theshow.Reset();
+                    }
+                    else
+                    {
+                        inDBasFollowing.DbInsert();
+                        if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
+                        theshow.Reset();
+                    }
+
+                    inDBasFollowing.Reset();
+
+                    AllFollowedShows.Add(int.Parse(show["show_id"].ToString()));
                     idx++;
+                    Mdbw.Close();
                 }
                 log.Write($"Updated or Inserted {idx} Followed Shows");
-                Mdbw.Close();
             }
 
             Followed deletefollowed = new(appinfo);
-
             List<int> deletethese = deletefollowed.ShowsToDelete(AllFollowedShows);
             log.Write($"Count of shows To Delete {deletethese.Count}");
 
-            Followed followed = new(appinfo);
-
+            Followed inDbAsFollowed = new(appinfo);
             using (Show dshow = new(appinfo))
             {
                 foreach (int showid in deletethese)
@@ -79,11 +84,8 @@ namespace UpdateFollowed
                     if (dshow.DbDelete())
                     {
                         log.Write($"ShowId Deleted from Shows: {showid}");
-                        //delete the show itself from Followed
-                        followed.Fill(showid, "");
-                        if (followed.DbDelete())
-                        { log.Write($"Show is also deleted"); } else { log.Write($"Show deletion error"); }
-                        followed.Reset();
+                        if (inDbAsFollowed.DbDelete()) { log.Write($"Show is also deleted"); } else { log.Write($"Show deletion error"); }
+                        inDbAsFollowed.Reset();
                     }
                     else { log.Write($"Delete Failed for ShowId {showid}"); }
                     

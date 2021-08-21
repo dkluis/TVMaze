@@ -203,6 +203,17 @@ namespace Web_Lib
             return _http_response;
         }
 
+        public bool CheckForFollowedShow(int showid)
+        {
+            bool isFollowed = false;
+            SetTvmazeUser();
+            string api = $"follows/shows/{showid}";
+            PerformWaitTvmApi(api);
+            log.Write($"API String = {tvmaze_user_url}{api}", "WebAPI GFS", 4);
+            if (_http_response.IsSuccessStatusCode) { isFollowed = true;  }
+            return isFollowed;
+        }
+
         #endregion
 
         #region Scrape APIs

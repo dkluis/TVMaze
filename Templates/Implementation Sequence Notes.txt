@@ -8,10 +8,10 @@ Use DBeaver to drop and create the tables
 2. NOTE:  Make sure to update the values statement for Table LastShowEvaluated before executing the script.
 3. Execute the whole script
 
-1.  InitializeShowEpochs        Done
-2.  UpdateFollowed              Done
-3.  RefreshShows                Done
-4.  UpdateShowEpochs            Done
+1.  InitializeShowEpochs        One Time Only     Done
+2.  UpdateFollowed                                Done
+3.  RefreshShows                                  Done
+4.  UpdateShowEpochs                              Done
 
 5.  InitializeEpisodes
 6.  RefreshEpisodes
