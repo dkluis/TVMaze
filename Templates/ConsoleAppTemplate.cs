@@ -10,7 +10,7 @@ namespace This_Program
             string This_Program = "This Program";
             Console.WriteLine($"Starting {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DB Needed from Config");
-            Console.WriteLine($"Progress can be followin in {appinfo.FullPath}");
+            Console.WriteLine($"Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 

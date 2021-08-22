@@ -137,4 +137,13 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55AA4077-0AFF-49EB-AF91-E7F22F2EEF33}
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$0.StandardHeader = $2
+		$0.VersionControlPolicy = $3
+		description = Shows are 95% done
+		version = 0.2
+	EndGlobalSection
 EndGlobal

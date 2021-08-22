@@ -261,15 +261,14 @@ namespace TvmEntities
         private bool ValidateForReview()
         {
             isForReview = false;
-            if (TvmLanguage != "")
+            if (TvmNetwork != "NetFlix")  //TODO need to add other networks that language is not an issue.
             {
-                if (TvmLanguage != "English" && TvmNetwork != "NetFlix")
+                if (TvmLanguage != "")
                 {
-                    return false;
-                }
-                else if (TvmLanguage != "English" && TvmImage != "")
-                {
-                    return false;
+                    if (TvmLanguage != "English")
+                    {
+                        return false;
+                    }
                 }
             }
             if (ShowStatus == "Ended") { return false; } //TODO still allow ended show if the airdate is within 2 years back from now!!! && PremiereDate < Convert)
@@ -288,6 +287,7 @@ namespace TvmEntities
                 case "YouTube Premium":
                 case "Facebook Watch":
                 case "Nick Jr.":
+                case "ESPN":
                 case "":
                     return false;
             }

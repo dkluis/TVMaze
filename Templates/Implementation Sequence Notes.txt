@@ -13,7 +13,7 @@ Use DBeaver to drop and create the tables
 3.  RefreshShows                                  Done
 4.  UpdateShowEpochs                              Done
 
-5.  InitializeEpisodes
+5.  InitializeEpisodes          One Time Only
 6.  RefreshEpisodes
 7.  UpdateEpisodes
 8.  UpdateEpisodesFromPlex (and TVMaze)

@@ -16,7 +16,7 @@ namespace RefreshShows
             string This_Program = "Refresh Shows";
             Console.WriteLine($"Starting {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"Progress can be followin in {appinfo.FullPath}");
+            Console.WriteLine($"Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
