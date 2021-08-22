@@ -14,19 +14,19 @@ namespace DB_Lib
             db = new(appinfo);
         }
 
-        public Int32 GetLastTvmShowIdInserted()
+        public int GetLastTvmShowIdInserted()
         {
-            Int32 LastShowInserted = 99999999;
+            int LastShowInserted = 99999999;
             rdr = db.ExecQuery($"select TvmShowId from TvmShowUpdates order by TvmShowId desc limit 1;");
             while (rdr.Read())
             {
-                LastShowInserted = Int32.Parse(rdr["TvmShowid"].ToString());
+                LastShowInserted = int.Parse(rdr["TvmShowid"].ToString());
             }
             db.Close();
             return LastShowInserted;
         }
 
-        public bool IsShowIdFollowed(Int32 showid)
+        public bool IsShowIdFollowed(int showid)
         {
             bool isFollowed = false;
             rdr = db.ExecQuery($"select TvmShowId from Followed where `TvmShowId` = {showid};");
@@ -38,9 +38,9 @@ namespace DB_Lib
             return isFollowed;
         }
 
-        public Int32 GetIdViaShowid(Int32 showid)
+        public int GetIdViaShowid(int showid)
         {
-            Int32 Id = 0;
+            int Id = 0;
             rdr = db.ExecQuery($"select Id from Shows where `TvmShowId` = {showid};");
             if (rdr is null)
             {
@@ -49,7 +49,7 @@ namespace DB_Lib
 
             while (rdr.Read())
             {
-                Id = Int32.Parse(rdr["Id"].ToString());
+                Id = int.Parse(rdr["Id"].ToString());
             }
             return Id;
         }
@@ -65,7 +65,7 @@ namespace DB_Lib
 
             while (rdr.Read())
             {
-                epoch = Int32.Parse(rdr["TvmUpdateEpoch"].ToString());
+                epoch = int.Parse(rdr["TvmUpdateEpoch"].ToString());
             }
             
             return epoch;
@@ -84,7 +84,7 @@ namespace DB_Lib
 
             while (rdr.Read())
             {
-                epoch = Int32.Parse(rdr["ShowId"].ToString());
+                epoch = int.Parse(rdr["ShowId"].ToString());
             }
             db.Close();
             return epoch;

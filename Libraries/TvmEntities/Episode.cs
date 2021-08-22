@@ -83,34 +83,52 @@ namespace TvmEntities
             using (WebAPI je = new(Appinfo))
             {
                 FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
-                // FillViaDb(showid);  // Might not be necessary unless some show info needs to be added to the episode table
+                FillEpiMarks(je.ConvertHttpToJObject(je.GetEpisodeMarks(episodeid)));
+                FillViaDb(episodeid);
             }   
         }
 
         private void FillViaJson(JObject episode)
         {
-            //TODO Id can only be filled via FillViaDB....   Id = int.Parse(episode["id"].ToString());
-            BroadcastDate = episode["airdate"].ToString();
+            Id = 0;
 
-            //TODO also search for the watched, downloaded, etc statuses
             PlexStatus = " ";
             PlexDate = null;
 
             TvmShowId = int.Parse(episode["_embedded"]["show"]["id"].ToString());
             TvmEpisodeId = int.Parse(episode["id"].ToString());
             ShowName = episode["_embedded"]["show"]["name"].ToString();
-
             TvmUrl = episode["url"].ToString();
-
             SeasonNum = int.Parse(episode["season"].ToString());
             EpisodeNum = int.Parse(episode["number"].ToString());      
             SeasonEpisode = Common.BuildSeasonEpisodeString(SeasonNum, EpisodeNum);
-        
+            if (episode["airdate"] is not null) { BroadcastDate = episode["airdate"].ToString(); }
+       
 
             TvmType = episode["type"].ToString();
             TvmSummary = episode["summary"].ToString();
             if (episode["image"] is not null) { TvmImage = episode["image"]["medium"].ToString(); }
             TvmRunTime = int.Parse(episode["runtime"].ToString());
+
+            isJsonFilled = true;
+        }
+
+        private void FillEpiMarks(JObject epm)
+        {
+            if (epm is not null)
+            {
+
+            }
+        }
+
+        private void FillViaDb(int episode)
+        {
+            MySqlDataReader rdr = Mdb.ExecQuery("select * from Episodes where `TvmEpisodeId` = episode;");
+            while (rdr.Read())
+            {
+                Id = int.Parse(rdr["Id"].ToString());
+                isDBFilled = true;
+            }
         }
 
         public bool DbInsert()
@@ -131,7 +149,7 @@ namespace TvmEntities
             values += $"'{SeasonEpisode}', ";
             values += $"{SeasonNum}, ";
             values += $"{EpisodeNum}, ";
-            values += $"'{BroadcastDate}', ";
+            if (BroadcastDate is null) { values += $"null "; } else { values += $"'{BroadcastDate}', "; }
             values += $"'{PlexStatus}', ";
             if (PlexDate is null) { values += $"null "; } else { values += $"'{PlexDate}' "; }
             //values += $"'{DateTime.Now:yyyy-MM-dd}' ";
@@ -140,11 +158,6 @@ namespace TvmEntities
             Mdb.Close();
             if (rows == 0) { Mdb.success = false; };
             return Mdb.success;
-        }
-
-        private void FillViaDb(int showid)
-        {
-            TvmShowId = showid;
         }
 
         public void Dispose()

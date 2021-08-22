@@ -18,7 +18,11 @@ namespace Common_Lib
         {
             timer.Start();
             app = appl;
+#if DEBUG
+            level = 4;
+#else
             level = loglevel;
+#endif
 
             filepath = infilepath;
             fullfilepath = Path.Combine(filepath, filename);

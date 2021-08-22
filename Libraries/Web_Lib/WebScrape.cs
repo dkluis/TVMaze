@@ -32,7 +32,7 @@ namespace Web_Lib
             string html = BuildEztvURL(showname);
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
-            log.Write($"Compare string = {comparewithmagnet}", "Eztv", 2);
+            log.Write($"Compare string = {comparewithmagnet}", "Eztv", 4);
 
             int priority;
             string prioritizedmagnet;
@@ -50,7 +50,7 @@ namespace Web_Lib
                     if (priority > 130)
                     {
                         prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                        log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "Eztv", 3);
+                        log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "Eztv", 4);
                         magnets.Add(prioritizedmagnet);
                     }
                 }
@@ -66,7 +66,7 @@ namespace Web_Lib
             showname = Common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //eztv seach char.
             eztv_url += showname;
-            log.Write($"URL MagnetDL is {eztv_url}", "Eztv", 3);
+            log.Write($"URL MagnetDL is {eztv_url}", "Eztv", 4);
             return eztv_url;
         }
 
@@ -79,7 +79,7 @@ namespace Web_Lib
             string html = BuildMagnetDLURL(showname);
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
-            log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 2);
+            log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 4);
 
             int priority;
             string prioritizedmagnet;
@@ -91,7 +91,7 @@ namespace Web_Lib
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
             if (table is null)
             {
-                log.Write($"No result return from the webscape", "MagnetDL", 0);
+                log.Write($"No result return from the webscape", "MagnetDL", 3);
                 return;
             }
             foreach (HtmlNode node in table)
@@ -103,7 +103,7 @@ namespace Web_Lib
                     if (priority > 130)
                     {
                         prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                        log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "MagnetDL", 3);
+                        log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "MagnetDL", 4);
                         magnets.Add(prioritizedmagnet);
                     }
                 }
@@ -135,12 +135,12 @@ namespace Web_Lib
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
 
             HttpResponseMessage result = tvmapi.GetRarbgMagnets(showname + " " + seasepi);
-            log.Write($"Compare string = {comparewithmagnet}", "RarbgAPI", 3);
+            log.Write($"Compare string = {comparewithmagnet}", "RarbgAPI", 4);
 
-            log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 3);
+            log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 4);
             if (!result.IsSuccessStatusCode)
             {
-                log.Write($"No Result returned from the API", "RarbgAPI", 0);
+                log.Write($"No Result returned from the API", "RarbgAPI", 4);
                 return;
             }
 
@@ -148,7 +148,7 @@ namespace Web_Lib
             if (content == "{\"error\":\"No results found\",\"error_code\":20}")
             {
                 //TODO Figure out to repeat the call here, most of the time a second call finds it
-                log.Write("Status OK, Error Occured Not Found", "Rarbg", 1);
+                log.Write("Status OK, Error Occured Not Found", "Rarbg", 4);
                 rarbgError = true;
                 return;
             }
@@ -163,7 +163,7 @@ namespace Web_Lib
                 {
                     //TODO still need the compare string check
                     magnets.Add(prio + "#$# " + magnet);
-                    log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 3);
+                    log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 4);
                 }
             }
 
@@ -339,13 +339,13 @@ namespace Web_Lib
 
                     if (episodescrape.magnets.Count > 0)
                     {
-                        log.Write($"Total Magnets found {episodescrape.magnets.Count}", "Getters", 1);
+                        log.Write($"Total Magnets found {episodescrape.magnets.Count}", "Getters", 4);
                         return episodescrape.magnets[0];
                     }
                     else
                     {
 
-                        log.Write("No Magnets found", "Getters", 1);
+                        log.Write("No Magnets found", "Getters", 4);
                         return "";
                     }
                 }

@@ -17,9 +17,9 @@ namespace UpdateFollowed
         private static void Main()
         {
             string This_Program = "Update Followed";
-            Console.WriteLine($"Starting {This_Program}");
+            Console.WriteLine($"{DateTime.Now}: Starting {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"Progress can be followed in {appinfo.FullPath}");
+            Console.WriteLine($"{DateTime.Now}: Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -29,7 +29,7 @@ namespace UpdateFollowed
 
             CheckDb cdb = new();
             int records = cdb.FollowedCount(appinfo);
-            log.Write($"There are {records} records in Following Table");
+            log.Write($"There are {records} records in Following Table", "", 2);
             log.EmptyLine(2);
 
 
@@ -95,7 +95,7 @@ namespace UpdateFollowed
             }
 
             log.Stop();
-            Console.WriteLine($"Finished {This_Program} Program");
+            Console.WriteLine($"{DateTime.Now}: Finished {This_Program} Program");
         }
     }
 }

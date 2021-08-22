@@ -261,7 +261,10 @@ namespace TvmEntities
         private bool ValidateForReview()
         {
             isForReview = false;
-            if (TvmNetwork != "NetFlix")  //TODO need to add other networks that language is not an issue.
+            if (TvmNetwork.ToLower() != "netflix" &&
+                TvmNetwork.ToLower() != "amazon prime video" &&
+                TvmNetwork.ToLower() != "hbo max" &&
+                TvmNetwork.ToLower() != "hulu")  //TODO need to add other networks that language is not an issue.
             {
                 if (TvmLanguage != "")
                 {
@@ -271,23 +274,28 @@ namespace TvmEntities
                     }
                 }
             }
-            if (ShowStatus == "Ended") { return false; } //TODO still allow ended show if the airdate is within 2 years back from now!!! && PremiereDate < Convert)
-            switch (TvmType)
+            if (ShowStatus == "Ended") 
             {
-                case "Sport":
-                case "News":
-                case "Variety":
-                case "Game Show":
-                case "Talk Show":
+                string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyyy");
+                if (!PremiereDate.Contains(compdate)) { return false; }
+            }
+            switch (TvmType.ToLower())
+            {
+                case "sport":
+                case "news":
+                case "variety":
+                case "game show":
+                case "talk show":
                     return false;
             }
-            switch (TvmNetwork)
+            switch (TvmNetwork.ToLower())
             {
-                case "YouTube":
-                case "YouTube Premium":
-                case "Facebook Watch":
-                case "Nick Jr.":
-                case "ESPN":
+                case "youTube":
+                case "youTube premium":
+                case "facebook watch":
+                case "nick jr.":
+                case "espn":
+                case "abc kids":
                 case "":
                     return false;
             }
@@ -324,12 +332,10 @@ namespace TvmEntities
                 using (Show show = new(appinfo))
                 {
                     show.FillViaTvmaze(idx);
-                    // if (show.Id != 0) { Found.Add(show); } else { logger.Write($"ShowId {idx} not found or timed out"); }
                     Found.Add(show);
                 }
-                // Thread.Sleep(250);
                 exectime.Stop();
-                log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.");
+                log.Write($"SearchShow Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
             }
         }
     }

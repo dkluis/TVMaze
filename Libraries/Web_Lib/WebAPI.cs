@@ -60,7 +60,7 @@ namespace Web_Lib
             return jarray;
         }
 
-        #region TVMaze APIs
+        #region TVMaze Show APIs
 
         private void PerformWaitTvmApi(string api)
         {
@@ -71,7 +71,7 @@ namespace Web_Lib
             t.Wait();
 
             exectime.Stop();
-            log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.");
+            log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
 
             if (_http_response is null)
             {
@@ -193,6 +193,21 @@ namespace Web_Lib
             return _http_response;
         }
 
+        public bool CheckForFollowedShow(int showid)
+        {
+            bool isFollowed = false;
+            SetTvmazeUser();
+            string api = $"follows/shows/{showid}";
+            PerformWaitTvmApi(api);
+            log.Write($"API String = {tvmaze_user_url}{api}", "WebAPI GFS", 4);
+            if (_http_response.IsSuccessStatusCode) { isFollowed = true;  }
+            return isFollowed;
+        }
+
+        #endregion
+
+        #region Tvmaze Episode APIs
+
         public HttpResponseMessage GetEpisode(int episodeid)
         {
             SetTvmaze();
@@ -203,15 +218,18 @@ namespace Web_Lib
             return _http_response;
         }
 
-        public bool CheckForFollowedShow(int showid)
+        public HttpResponseMessage GetEpisodeMarks(int episodeid)
         {
-            bool isFollowed = false;
             SetTvmazeUser();
-            string api = $"follows/shows/{showid}";
+            string api = $"episodes/{episodeid}";
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GM Epi", 4);
             PerformWaitTvmApi(api);
-            log.Write($"API String = {tvmaze_user_url}{api}", "WebAPI GFS", 4);
-            if (_http_response.IsSuccessStatusCode) { isFollowed = true;  }
-            return isFollowed;
+
+            /*
+             * 0 = watched, 1 = acquired, 2 = skipped 
+            */
+
+            return _http_response;
         }
 
         #endregion
@@ -249,7 +267,7 @@ namespace Web_Lib
         private string GetRarbgMagnetsAPI(string searchfor)
         {
             string api = $"{RarbgAPI_url_pre}{Common.RemoveSpecialCharsInShowname(searchfor)}{RarbgAPI_url_suf}";
-            log.Write($"API String = {api}", "RarbgAPI", 3);
+            log.Write($"API String = {api}", "RarbgAPI", 4);
             return api;
         }
 

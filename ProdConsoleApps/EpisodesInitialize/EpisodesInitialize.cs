@@ -9,9 +9,9 @@ namespace This_Program
         static void Main()
         {
             string This_Program = "Init Episode Table";
-            Console.WriteLine($"Starting {This_Program}");
+            Console.WriteLine($"{DateTime.Now}: Starting {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"Progress can be followed in {appinfo.FullPath}");
+            Console.WriteLine($"{DateTime.Now}: Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -27,7 +27,7 @@ namespace This_Program
             log.Write($"{epi.ShowName} {epi.TvmImage}, {epi.TvmRunTime}");
 
             log.Stop();
-            Console.WriteLine($"Finished {This_Program} Program");
+            Console.WriteLine($"{DateTime.Now}: Finished {This_Program} Program");
         }
     }
 }
