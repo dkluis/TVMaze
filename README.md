@@ -1,6 +1,29 @@
-# Tvmaze
-C# Tvmaze System is a replacement for Tvmaze Python
+# TVMaze Local
 
-Have written a lot of library items myself instead of using available NuGet packages and/or build in options for log.   
 
-Using this project to exercise my knowledge and learn more.
+***TVMaze is a system to manage the TV Shows and Episdes you want to follow and get onto your Plex installation***
+
+
+## Premise
+
+TVMaze Local uses TVMaze (Web) to stay up to date with the world of TV and Plex as the Media Library manager, as well as ShowRss and Transmission
+
+## Approach
+
+TVmaze Local implements the public as well as user (premium) APIs from TVMaze (Web) to keep track of the shows you follow and its episodes, include acquired, watched and skip statuses.
+
+Complete syncing between TVMaze local, TVMaze web, Plex, ShowRss and Transmission is the goal, with no user interaction where possible.
+
+TVMaze local has "Review rules" for new shows added to TVMaze web and if a show passes the review rules it is added to TVMaze local for User approval or rejection, either decision will be synced out.
+
+See the [Implementation Notes](https://github.com/dkluis/TVMaze/blob/44bf6a7b82e94e9f2ad586264629224621459d90/Templates/Implementation%20Sequence%20Notes.md) in the Templates Directory.
+
+## Technology
+
+1. Written in C# (DotNet Core 5.0 and NewtonSoft)
+    1. Implemented and Tested on MacOS (should work on Windows or Linux as well)
+    1. Platypus (dotnet xxx.dll to xxx.app) (MacOS only)
+1. MariaDB Server (mySql should as well)
+    1. DBeaver (DB Management)
+1. Apache (Web Server)
+    1. TVMaze Local UI
