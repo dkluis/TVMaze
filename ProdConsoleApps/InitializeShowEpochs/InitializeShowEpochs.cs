@@ -1,11 +1,9 @@
-﻿using System;
-
-using Common_Lib;
-using Web_Lib;
+﻿using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
-
 using Newtonsoft.Json.Linq;
+using System;
+using Web_Lib;
 
 namespace InitializeShowEpochs
 {
@@ -22,7 +20,6 @@ namespace InitializeShowEpochs
 
             WebAPI tvmapi = new(appinfo);
             JArray jsoncontent = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
-            Show iu_show = new(appinfo);
 
             int iu_idx = 0;
             MariaDB Mdbw = new(appinfo);

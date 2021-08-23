@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-
-using Common_Lib;
-using Web_Lib;
+﻿using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using Web_Lib;
 
 namespace UpdateShowEpochs
 {
@@ -30,7 +29,7 @@ namespace UpdateShowEpochs
             // Get the last 24 hours of Shows that changes on TVMaze
             WebAPI tvmapi = new(appinfo);
             JObject jsoncontent = tvmapi.ConvertHttpToJObject(tvmapi.GetShowUpdateEpochs("day"));
-            log.Write($"Found {jsoncontent.Count} updates on Tvmaze", This_Program , 0);
+            log.Write($"Found {jsoncontent.Count} updates on Tvmaze", This_Program, 0);
 
             Show tvmshow = new(appinfo);
 

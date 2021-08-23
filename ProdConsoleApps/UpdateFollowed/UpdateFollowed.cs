@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Common_Lib;
-using Web_Lib;
+﻿using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
-
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using Web_Lib;
 
 
 namespace UpdateFollowed
@@ -43,14 +41,14 @@ namespace UpdateFollowed
             int idx = 0;
             List<int> AllFollowedShows = new();
 
-            
+
             using (MariaDB Mdbw = new(appinfo))
             {
                 Followed inDBasFollowing = new(appinfo);
                 int jtshow;
 
                 foreach (JToken show in followedontvmaze)
-                { 
+                {
                     jtshow = int.Parse(show["show_id"].ToString());
 
                     log.Write($"Processing {jtshow}", "", 4);
