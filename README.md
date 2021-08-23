@@ -27,3 +27,20 @@ See the [Implementation Notes](https://github.com/dkluis/TVMaze/blob/44bf6a7b82e
     1. DBeaver (DB Management)
 1. Apache (Web Server)
     1. TVMaze Local UI
+
+## TVMaze Local Libraries
+
+1. Web_Lib
+    1. WebAPIs.cs (Handles all TVMaze web API activities)
+    1. WebScrape.cs (Handles all other web activities )
+1. TvmEntities (Handles all activities for:)
+    1. Shows.cs     
+    1. Episodes.cs  
+    1. Followed.cs  (Track and manage all "Followed" shows)
+1. DB_Lib
+    1. MariaDB (Handles all MariaDB I/O)
+1. Common_Lib
+    1. AppInfo.cs (Handles all initialization of programs and libraries)
+    1. Common.cs
+    1. ConverJsonText.cs (Handles conversions to and from JSON)
+    1. TextFileHandler.cs (Handles all Logging and Config File access for programs and libraries)
