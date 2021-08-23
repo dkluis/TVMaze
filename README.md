@@ -16,7 +16,7 @@ Complete syncing between TVMaze local, TVMaze web, Plex, ShowRss and Transmissio
 
 TVMaze local has "Review rules" for new shows added to TVMaze web and if a show passes the review rules it is added to TVMaze local for User approval or rejection, either decision will be synced out.
 
-See the [Implementation Notes](https://github.com/dkluis/TVMaze/blob/44bf6a7b82e94e9f2ad586264629224621459d90/Templates/Implementation%20Sequence%20Notes.md) in the Templates Directory.
+See the [Implementation Notes](https://github.com/dkluis/TVMaze/blob/8aafbbb9efaabc2a7347404f3a39faa9332d0c46/Documentation/Implementation%20Sequence%20Notes.md) in the Templates Directory.
 
 ## Technology
 
@@ -33,7 +33,7 @@ See the [Implementation Notes](https://github.com/dkluis/TVMaze/blob/44bf6a7b82e
 1. Web_Lib
     1. WebAPIs.cs (Handles all TVMaze web API activities)
     1. WebScrape.cs (Handles all other web activities )
-1. TvmEntities (Handles all activities for:)
+1. Entities_lib (Handles all activities for:)
     1. Shows.cs     
     1. Episodes.cs  
     1. Followed.cs  (Track and manage all "Followed" shows)

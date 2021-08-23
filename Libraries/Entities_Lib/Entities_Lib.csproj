@@ -3,12 +3,12 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <ReleaseVersion>0.2</ReleaseVersion>
+    <ReleaseVersion>0.3</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DB_Lib\DB_Lib.csproj" />
     <ProjectReference Include="..\Common_Lib\Common_Lib.csproj" />
-    <ProjectReference Include="..\MariaDB\DB_Lib.csproj" />
     <ProjectReference Include="..\Web_Lib\Web_Lib.csproj" />
   </ItemGroup>
 

@@ -6,7 +6,7 @@ using DB_Lib;
 
 using MySqlConnector;
 
-namespace TvmEntities
+namespace Entities_Lib
 {
     public class Followed
     {

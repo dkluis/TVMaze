@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace TvmEntities
+namespace Entities_Lib
 {
     public class Show : IDisposable
     {

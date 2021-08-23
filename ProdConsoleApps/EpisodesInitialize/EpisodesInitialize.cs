@@ -1,6 +1,6 @@
 ﻿using System;
 using Common_Lib;
-using TvmEntities;
+using Entities_Lib;
 
 namespace InitializeEpisodes
 {

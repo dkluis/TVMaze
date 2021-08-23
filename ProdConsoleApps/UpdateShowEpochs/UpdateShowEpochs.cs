@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using MySqlConnector;
 
 using Common_Lib;
 using Web_Lib;
 using DB_Lib;
-using TvmEntities;
+using Entities_Lib;
 
 namespace UpdateShowEpochs
 {
