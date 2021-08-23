@@ -35,6 +35,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{468A184A-AE5E-43AB-989E-E7330E4E9034}"
 	ProjectSection(SolutionItems) = preProject
 		Documentation\Implementation Sequence Notes.md = Documentation\Implementation Sequence Notes.md
+		Documentation\Applications Explained.md = Documentation\Applications Explained.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{D2F4BAD7-12FD-4D6B-998A-388F466F4E31}"

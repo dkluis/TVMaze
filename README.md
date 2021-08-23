@@ -27,6 +27,9 @@ See the [Implementation Notes](https://github.com/dkluis/TVMaze/blob/8aafbbb9efa
     1. DBeaver (DB Management)
 1. Apache (Web Server)
     1. TVMaze Local UI
+1. Transmission (Media Transfer)
+1. ShowRss (Media Transfer information feed)
+1. Catch (Interface between ShowRss feed and Transmission)
 
 ## TVMaze Local Libraries
 
