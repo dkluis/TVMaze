@@ -264,7 +264,9 @@ namespace Entities_Lib
             if (TvmNetwork.ToLower() != "netflix" &&
                 TvmNetwork.ToLower() != "amazon prime video" &&
                 TvmNetwork.ToLower() != "hbo max" &&
-                TvmNetwork.ToLower() != "hulu")  //TODO need to add other networks that language is not an issue.
+                TvmNetwork.ToLower() != "hbo" &&
+                TvmNetwork.ToLower() != "hulu" &&
+                TvmNetwork.ToLower() != "disney+")
             {
                 if (TvmLanguage != "")
                 {

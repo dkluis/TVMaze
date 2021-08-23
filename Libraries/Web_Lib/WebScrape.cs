@@ -175,8 +175,6 @@ namespace Web_Lib
 
         #region EztvAPI IMDB
 
-        //TODO IMDB Webscrape
-
         #endregion
 
         #region Priorities
@@ -270,10 +268,6 @@ namespace Web_Lib
             }
 
             return Titles;
-
-            //TODO Find title in the Shows table ---> Add to Shows table if not exist ???
-            //TODO Change the finder to ShowRSS
-
         }
 
         #endregion

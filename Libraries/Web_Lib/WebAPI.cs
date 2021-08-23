@@ -97,7 +97,6 @@ namespace Web_Lib
                 log.Write($"Exception: {e.Message}", "WebAPI Async", 0);
                 if (e.Message.Contains(" seconds elapsing"))
                 {
-                    //Thread.Sleep(1000);
                     log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
                     try
                     {

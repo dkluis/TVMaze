@@ -31,7 +31,7 @@ namespace RefreshShowRss
             {
                 // log.Write($"On ShowRss: {show}", "", 4);
                 List<int> foundindb = ssvn.Find(appinfo, show);
-                if (foundindb.Count < 1) { continue; }
+                if (foundindb.Count < 1) { log.Write($"Found {show} on ShowRSS but not in Followed/Shows", "", 2);  continue; }
                 if (foundindb.Count > 1)
                 {
                     log.Write($"Found multiple shows {show} in DB Show Table");
