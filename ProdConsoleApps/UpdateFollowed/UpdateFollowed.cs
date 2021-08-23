@@ -30,6 +30,12 @@ namespace UpdateFollowed
             CheckDb cdb = new();
             int records = cdb.FollowedCount(appinfo);
             log.Write($"There are {records} records in Following Table", "", 2);
+
+            if (Math.Abs(followedontvmaze.Count - records) > 30)
+            {
+                log.Write($"Skipping this program since too many records are going to be deleted: {Math.Abs(followedontvmaze.Count - records)}");
+                Environment.Exit(999);
+            }
             log.EmptyLine(2);
 
 
@@ -38,14 +44,16 @@ namespace UpdateFollowed
             int idx = 0;
             List<int> AllFollowedShows = new();
 
+            
             using (MariaDB Mdbw = new(appinfo))
             {
                 Followed inDBasFollowing = new(appinfo);
                 int jtshow;
 
                 foreach (JToken show in followedontvmaze)
-                {
+                { 
                     jtshow = int.Parse(show["show_id"].ToString());
+
                     log.Write($"Processing {jtshow}", "", 4);
                     inDBasFollowing.GetFollowed(jtshow);
                     if (inDBasFollowing.inDB)
@@ -70,9 +78,11 @@ namespace UpdateFollowed
                 }
                 log.Write($"Updated or Inserted {idx} Followed Shows");
             }
+            
 
             Followed deletefollowed = new(appinfo);
             List<int> deletethese = deletefollowed.ShowsToDelete(AllFollowedShows);
+            deletefollowed.Reset();
             log.Write($"Count of shows To Delete {deletethese.Count}");
 
             Followed inDbAsFollowed = new(appinfo);
@@ -80,14 +90,14 @@ namespace UpdateFollowed
             {
                 foreach (int showid in deletethese)
                 {
+                    // Deleting from the Followed Table
+                    deletefollowed.GetFollowed(showid);
+                    if (deletefollowed.DbDelete()) { log.Write($"Show Delete from Followed {showid}", "", 4); } else { log.Write($"Delete Failed for Followed Table {showid}", "", 0); } 
+                    deletefollowed.Reset();
+
+                    // Deleting from the Shows Table
                     dshow.FillViaTvmaze(showid);
-                    if (dshow.DbDelete())
-                    {
-                        log.Write($"ShowId Deleted from Shows: {showid}");
-                        if (inDbAsFollowed.DbDelete()) { log.Write($"Show is also deleted"); } else { log.Write($"Show deletion error"); }
-                        inDbAsFollowed.Reset();
-                    }
-                    else { log.Write($"Delete Failed for ShowId {showid}"); }
+                    if (dshow.DbDelete()) { log.Write($"ShowId Deleted from Shows: {showid}", "", 4); } else { log.Write($"Delete Failed for Shows Table {showid}", "", 0); }
                     
                 }
                 dshow.Reset();
