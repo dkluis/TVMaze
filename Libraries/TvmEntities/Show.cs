@@ -15,8 +15,8 @@ namespace TvmEntities
     {
         #region DB Record Definition
 
-        public Int32 Id = 0;
-        public Int32 TvmShowId = 0;
+        public int Id = 0;
+        public int TvmShowId = 0;
         public string TvmStatus = " ";
         public string TvmUrl = "";
         public string ShowName = "";
@@ -90,7 +90,7 @@ namespace TvmEntities
             isFollowed = false;
         }
 
-        public void FillViaTvmaze(Int32 showid)
+        public void FillViaTvmaze(int showid)
         {
             using WebAPI js = new(Appinfo);
             FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
@@ -168,7 +168,7 @@ namespace TvmEntities
             if (showjson["id"] is not null)
             {
                 isOnTvmaze = true;
-                TvmShowId = Int32.Parse(showjson["id"].ToString());
+                TvmShowId = int.Parse(showjson["id"].ToString());
                 using (TvmCommonSql tcs = new(Appinfo))
                 {
                     isFollowed = tcs.IsShowIdFollowed(TvmShowId);
@@ -220,7 +220,7 @@ namespace TvmEntities
             }
         }
 
-        private void FillViaDB(Int32 showid, bool JsonIsDone)
+        private void FillViaDB(int showid, bool JsonIsDone)
         {
             using (MySqlDataReader rdr = Mdb.ExecQuery($"select * from shows where `TvmShowId` = {showid};"))
             {
@@ -245,8 +245,8 @@ namespace TvmEntities
                     }
                     else
                     {
-                        Id = Int32.Parse(rdr["Id"].ToString());
-                        TvmShowId = Int32.Parse(rdr["TvmShowId"].ToString());
+                        Id = int.Parse(rdr["Id"].ToString());
+                        TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
                         TvmUrl = rdr["TvmUrl"].ToString();
                         ShowName = rdr["ShowName"].ToString();
                         ShowStatus = rdr["ShowStatus"].ToString();
@@ -342,9 +342,9 @@ namespace TvmEntities
 
     public class SearchShowsViaNames
     {
-        private List<Int32> Found = new();
+        private List<int> Found = new();
 
-        public List<Int32> Find(AppInfo appinfo, string showname)
+        public List<int> Find(AppInfo appinfo, string showname)
         {
             Found = new();
             using (MariaDB Mdbr = new(appinfo))
@@ -352,10 +352,11 @@ namespace TvmEntities
                 showname = showname.Replace("'", "''");
                 string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{showname}' or `AltShowName` = '{showname}');";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
+                if (rdr is null) { return Found; }
                 if (!rdr.HasRows) { return Found; }
                 while (rdr.Read())
                 {
-                    Found.Add(Int32.Parse(rdr["TvmShowId"].ToString()));
+                    Found.Add(int.Parse(rdr["TvmShowId"].ToString()));
                 }
             }
             return Found;
@@ -364,13 +365,13 @@ namespace TvmEntities
 
     public class UpdateFinder
     {
-        public void ToShowRss(AppInfo appinfo, Int32 showid)
+        public void ToShowRss(AppInfo appinfo, int showid)
         {
             using (MariaDB Mdbw = new(appinfo))
             {
                 string sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showid};";
-                appinfo.TxtFile.Write($"Executing: sql", "UpdateFinder", 4);
-                if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update of Finder unsuccessful", "", 4); }
+                // appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
+                if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4); }
             }
         }
     }

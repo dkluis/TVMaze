@@ -2,9 +2,9 @@
 using Common_Lib;
 using TvmEntities;
 
-namespace This_Program
+namespace InitializeEpisodes
 {
-    class EpisodesInitialize
+    class InitializeEpisodes
     {
         static void Main()
         {

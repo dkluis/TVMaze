@@ -7,7 +7,6 @@ using DB_Lib;
 using TvmEntities;
 
 using Newtonsoft.Json.Linq;
-using MySqlConnector;
 
 
 namespace UpdateFollowed
@@ -77,31 +76,6 @@ namespace UpdateFollowed
                     Mdbw.Close();
                 }
                 log.Write($"Updated or Inserted {idx} Followed Shows");
-            }
-            
-
-            Followed deletefollowed = new(appinfo);
-            List<int> deletethese = deletefollowed.ShowsToDelete(AllFollowedShows);
-            deletefollowed.Reset();
-            log.Write($"Count of shows To Delete {deletethese.Count}");
-
-            Followed inDbAsFollowed = new(appinfo);
-            using (Show dshow = new(appinfo))
-            {
-                foreach (int showid in deletethese)
-                {
-                    // Deleting from the Followed Table
-                    deletefollowed.GetFollowed(showid);
-                    if (deletefollowed.DbDelete()) { log.Write($"Show Delete from Followed {showid}", "", 4); } else { log.Write($"Delete Failed for Followed Table {showid}", "", 0); } 
-                    deletefollowed.Reset();
-
-                    // Deleting from the Shows Table
-                    dshow.FillViaTvmaze(showid);
-                    if (dshow.DbDelete()) { log.Write($"ShowId Deleted from Shows: {showid}", "", 4); } else { log.Write($"Delete Failed for Shows Table {showid}", "", 0); }
-                    
-                }
-                dshow.Reset();
-                dshow.CloseDB();
             }
 
             log.Stop();

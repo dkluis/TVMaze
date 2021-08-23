@@ -34,7 +34,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{AC7DEE87-1264-4221-B9EB-2FF7F1174351}"
 	ProjectSection(SolutionItems) = preProject
 		Templates\ConsoleAppTemplate.cs = Templates\ConsoleAppTemplate.cs
-		Templates\Implementation Sequence Notes.txt = Templates\Implementation Sequence Notes.txt
+		Templates\Implementation Sequence Notes.md = Templates\Implementation Sequence Notes.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateFollowed", "ProdConsoleApps\UpdateFollowed\UpdateFollowed.csproj", "{669FAC07-6BBC-4404-96BF-3BC3DCAEFB83}"
@@ -45,7 +45,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefreshShows", "ProdConsole
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InitializeShowEpochs", "ProdConsoleApps\InitializeShowEpochs\InitializeShowEpochs.csproj", "{D7358EDA-DA0E-4029-A259-8144A9D88FA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpisodesInitialize", "ProdConsoleApps\EpisodesInitialize\EpisodesInitialize.csproj", "{486EEDE4-7634-4EE6-BB50-7CC91E998E08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InitializeEpisodes", "ProdConsoleApps\EpisodesInitialize\InitializeEpisodes.csproj", "{486EEDE4-7634-4EE6-BB50-7CC91E998E08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefreshShowRss", "ProdConsoleApps\RefreshShowRss\RefreshShowRss.csproj", "{14DBDFCF-2E36-4298-897F-F16D671CDC87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +115,10 @@ Global
 		{486EEDE4-7634-4EE6-BB50-7CC91E998E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{486EEDE4-7634-4EE6-BB50-7CC91E998E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{486EEDE4-7634-4EE6-BB50-7CC91E998E08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14DBDFCF-2E36-4298-897F-F16D671CDC87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14DBDFCF-2E36-4298-897F-F16D671CDC87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14DBDFCF-2E36-4298-897F-F16D671CDC87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14DBDFCF-2E36-4298-897F-F16D671CDC87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,6 +139,7 @@ Global
 		{2BB4B184-D35C-4D14-84F6-4E22180B4110} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 		{D7358EDA-DA0E-4029-A259-8144A9D88FA8} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 		{486EEDE4-7634-4EE6-BB50-7CC91E998E08} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
+		{14DBDFCF-2E36-4298-897F-F16D671CDC87} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55AA4077-0AFF-49EB-AF91-E7F22F2EEF33}
