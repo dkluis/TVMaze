@@ -57,12 +57,14 @@ namespace UpdateFollowed
                     {
                         inDBasFollowing.DbUpdate();
                         theshow.FillViaTvmaze(jtshow);
+                        theshow.TvmStatus = "Following";
                         if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
                         theshow.Reset();
                     }
                     else
                     {
                         inDBasFollowing.DbInsert();
+                        theshow.TvmStatus = "Following";
                         if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
                         theshow.Reset();
                     }

@@ -372,8 +372,41 @@ namespace Entities_Lib
             using (MariaDB Mdbw = new(appinfo))
             {
                 string sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showid};";
-                // appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
+                appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
                 if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4); }
+            }
+        }
+    }
+
+    public class UpdateTvmStatus
+    {
+        public void ToFollowed(AppInfo appinfo, int showid)
+        {
+            using (MariaDB Mdbw = new(appinfo))
+            {
+                string sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showid};";
+                appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
+                if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4); }
+            }
+        }
+
+        public void ToReview(AppInfo appinfo, int showid)
+        {
+            using (MariaDB Mdbw = new(appinfo))
+            {
+                string sql = $"update shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showid};";
+                appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
+                if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update to Review unsuccessful {sql}", "", 4); }
+            }
+        }
+
+        public void ToUnDecided(AppInfo appinfo, int showid)
+        {
+            using (MariaDB Mdbw = new(appinfo))
+            {
+                string sql = $"update shows set `TvmStatus` = 'Undecided' where `TvmShowId` = {showid};";
+                appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
+                if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update to Undecided unsuccessful {sql}", "", 4); }
             }
         }
     }
