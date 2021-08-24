@@ -83,7 +83,8 @@ namespace Entities_Lib
             using (WebAPI je = new(Appinfo))
             {
                 FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
-                FillEpiMarks(je.ConvertHttpToJObject(je.GetEpisodeMarks(episodeid)));
+                WebAPI fem = new(Appinfo);
+                FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
                 FillViaDb(episodeid);
             }   
         }
@@ -102,33 +103,56 @@ namespace Entities_Lib
             SeasonNum = int.Parse(episode["season"].ToString());
             EpisodeNum = int.Parse(episode["number"].ToString());      
             SeasonEpisode = Common.BuildSeasonEpisodeString(SeasonNum, EpisodeNum);
-            if (episode["airdate"] is not null) { BroadcastDate = episode["airdate"].ToString(); }
-       
-
+            if (episode["airdate"] is not null) { BroadcastDate = episode["airdate"].ToString(); } else { BroadcastDate = null; }
             TvmType = episode["type"].ToString();
-            TvmSummary = episode["summary"].ToString();
-            if (episode["image"] is not null) { TvmImage = episode["image"]["medium"].ToString(); }
-            TvmRunTime = int.Parse(episode["runtime"].ToString());
+            if (episode["summary"] is not null) { TvmSummary = episode["summary"].ToString(); }
+            if (episode["image"] is not null && episode["image"].ToString() != "")
+            {
+                if (episode["image"]["medium"] is not null && episode["image"]["medium"].ToString() != "")
+                {
+                    TvmImage = episode["image"]["medium"].ToString();
+                }
+            }
+            if (episode["runtime"] is not null && episode["runtime"].ToString() != "") { TvmRunTime = int.Parse(episode["runtime"].ToString()); }
 
             isJsonFilled = true;
         }
 
         private void FillEpiMarks(JObject epm)
         {
-            if (epm is not null)
+            if (epm is not null && epm.ToString() != "{}")
             {
-
+                /*
+                 * 0 = watched, 1 = acquired, 2 = skipped 
+                */
+                switch (epm["type"].ToString())
+                {
+                    case "0":
+                        PlexStatus = "Watched";
+                        break;
+                    case "1":
+                        PlexStatus = "Acquired";
+                        break;
+                    case "2":
+                        PlexStatus = "Skipped";
+                        break;
+                    default:
+                        PlexStatus = null;
+                        break;
+                }
+                if (epm["marked_at"] is not null) { PlexDate = Common.ConvertEpochToDate(int.Parse(epm["marked_at"].ToString())); }
             }
         }
 
         private void FillViaDb(int episode)
         {
-            MySqlDataReader rdr = Mdb.ExecQuery("select * from Episodes where `TvmEpisodeId` = episode;");
+            MySqlDataReader rdr = Mdb.ExecQuery($"select * from Episodes where `TvmEpisodeId` = {episode};");
             while (rdr.Read())
             {
                 Id = int.Parse(rdr["Id"].ToString());
                 isDBFilled = true;
             }
+            Mdb.Close();
         }
 
         public bool DbInsert()
@@ -149,10 +173,9 @@ namespace Entities_Lib
             values += $"'{SeasonEpisode}', ";
             values += $"{SeasonNum}, ";
             values += $"{EpisodeNum}, ";
-            if (BroadcastDate is null) { values += $"null "; } else { values += $"'{BroadcastDate}', "; }
+            if (BroadcastDate is null) { values += $"null, "; } else { values += $"'{BroadcastDate}', "; }
             values += $"'{PlexStatus}', ";
             if (PlexDate is null) { values += $"null "; } else { values += $"'{PlexDate}' "; }
-            //values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbInsert for Episode: {TvmEpisodeId}", "", 4);
             Mdb.Close();
@@ -163,7 +186,36 @@ namespace Entities_Lib
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-        }
+        }  
 
     }
+
+    public class EpisodesByShow
+    {
+        public List<Episode> episodesbyshow = new();
+
+        public List<Episode> Find(AppInfo appinfo, int showid)
+        {
+            JArray epsbyshow = new();
+            using (WebAPI wa = new(appinfo))
+            {
+                epsbyshow = wa.ConvertHttpToJArray(wa.GetEpisodesByShow(showid));
+                if (epsbyshow is null) { return episodesbyshow; }
+            }
+
+
+            foreach (JToken ep in epsbyshow)
+            {
+                using (Episode episode = new(appinfo))
+                {
+                    appinfo.TxtFile.Write($"Working on Episode {ep["id"]}");
+                    episode.FillViaTvmaze(int.Parse(ep["id"].ToString()));
+                    episodesbyshow.Add(episode);
+                }
+            }
+
+            return episodesbyshow;
+        }
+    }
+
 }

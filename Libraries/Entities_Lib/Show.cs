@@ -365,6 +365,27 @@ namespace Entities_Lib
         }
     }
 
+    public class SearchAllFollowed
+    {
+        private List<int> AllFollowed = new();
+
+        public List<int> Find(AppInfo appinfo)
+        {
+            using (MariaDB Mdbr = new(appinfo))
+            {
+                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = 'Following' order by `TvmShowId`;";
+                MySqlDataReader rdr = Mdbr.ExecQuery(sql);
+                if (rdr is null) { return AllFollowed; }
+                if (!rdr.HasRows) { return AllFollowed; }
+                while (rdr.Read())
+                {
+                    AllFollowed.Add(int.Parse(rdr["TvmShowId"].ToString()));
+                }
+            }
+            return AllFollowed;
+        }
+    }
+
     public class UpdateFinder
     {
         public void ToShowRss(AppInfo appinfo, int showid)

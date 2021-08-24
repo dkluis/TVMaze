@@ -12,9 +12,9 @@ namespace RefreshShowRss
         static void Main()
         {
             string This_Program = "Refresh ShowRss";
-            Console.WriteLine($"{DateTime.Now}: Starting {This_Program}");
+            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: Progress can be followed in {appinfo.FullPath}");
+            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -48,7 +48,7 @@ namespace RefreshShowRss
             log.Write($"Updated {idx} Shows to Finder ShowRss");
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: Finished {This_Program} Program");
+            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }
