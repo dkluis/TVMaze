@@ -5,13 +5,24 @@
 
 ***More to be added***
 ***MySql or MariaDB server is required***
-***Certain Directories and a configfile are required***
+
+## Setup Directories and ConfigFile
+
+There is Tvmaze.cnf template (in the Template directory) to adjust by replacing the YOURXXXXX items with your username, password, tokens, etc.
+After that you need to create a TVMaze directory in your home directory with the following sub-directories:  Apps, Inputs, Logs, and Scripts
+Place the adjusted Tvmaze.cnf file in the TVMaze directory. (Not the in a sub-directory)
 
 ### Use DBeaver (or commandline, or ...) to drop and create the tables in your DB
+
+**Repeat this for every DB you want to use**
+
+The config file is setup to have a production, test and alternate DB setup in MariaDB.
+If you only want a Prod then you only have to setup that one.  You can also change the DB (Schema) name as long as you update the config file as well.
 
 1. Copy the script from DB_Lib>Scripts>CreateBaseDB.sql
 1. NOTE:  Make sure to update the values statement for Table LastShowEvaluated before executing the script.
 1. Execute the whole script
+
 
 ### Execute in sequence
 

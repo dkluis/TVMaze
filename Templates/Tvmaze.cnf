@@ -1,0 +1,8 @@
+﻿[{
+"DbProduction": "server=ca-server.local; port=3306; database=TVMazeProdDB; uid=YOURUSER; pwd=YOURPASSWORD",
+"DbTesting": "server=ca-server.local; port=3306; database=TVMazeTestDB; uid=YOURUSER; pwd=YOURPASSWORD",
+"DbAlternate": "server=ca-server.local; port=3306; database=TVMazeNewDB; uid=YOURUSER; pwd=YOURPASSWORD",
+"LogLevel": "3",
+"RarbgToken": "'&token=YOUR-RARBG-TOKEN",
+"TvmazeToken": "Basic YOUR-TVMAZE-TOKEN"
+}]

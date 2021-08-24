@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{AC7DEE87-1264-4221-B9EB-2FF7F1174351}"
 	ProjectSection(SolutionItems) = preProject
 		Templates\ConsoleAppTemplate.cs = Templates\ConsoleAppTemplate.cs
+		Templates\Tvmaze.cnf = Templates\Tvmaze.cnf
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateFollowed", "ProdConsoleApps\UpdateFollowed\UpdateFollowed.csproj", "{669FAC07-6BBC-4404-96BF-3BC3DCAEFB83}"

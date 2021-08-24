@@ -8,7 +8,7 @@ drop table ShowStatuses;
 drop table TvmShowUpdates;
 drop table Followed;
 
-drop table LastShowEvaluated;
+drop table LastShowEvaluated;  
 
 CREATE TABLE `LastShowEvaluated` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -17,7 +17,7 @@ CREATE TABLE `LastShowEvaluated` (
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO TVMazeNewDB.LastShowEvaluated (ShowId) VALUES
-	 (56942);
+	 (57048);
 
 CREATE TABLE `PlexStatuses` (
   `PlexStatus` varchar(10) NOT NULL,
@@ -43,9 +43,9 @@ CREATE TABLE `TvmShowUpdates` (
   UNIQUE KEY `TvmShowUpdates_TvmShowId` (`TvmShowId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO PlexStatuses (PlexStatus) VALUES
+INSERT INTO TVMazeNewDB.PlexStatuses (PlexStatus) VALUES
 	 (' '),
-	 ('Downloaded'),
+	 ('Acquired'),
 	 ('Skipped'),
 	 ('Watched');
 	
@@ -58,7 +58,6 @@ INSERT INTO ShowStatuses (ShowStatus) VALUES
 
 INSERT INTO TvmStatuses (TvmStatus) VALUES
 	 (' '),
-	 ('Followed'),
 	 ('Following'),
 	 ('New'),
 	 ('Skipping'),
