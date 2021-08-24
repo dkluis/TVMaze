@@ -43,7 +43,7 @@ namespace InitializeEpisodes
                     idxalleps++;
                     idxepsbyshow++;
                 }
-                log.Write($"Number of Episodes for Show {showid}: {idxepsbyshow}");
+                log.Write($"Number of Episodes for Show {showid}: {idxepsbyshow}", "", 2);
             }
 
             log.Write($"Number of All Episodes for All Shows: {idxalleps}");

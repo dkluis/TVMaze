@@ -15,18 +15,21 @@
 
 ### Execute in sequence
 
+***Initialize Items***
+1.  InitializeShowEpochs        One Time Only
+1.  InitializeEpisodes          One Time Only
+
 ***Show Items***
-1.  InitializeShowEpochs        One Time Only     
 1.  UpdateFollowed                                
 1.  RefreshShows                              
 1.  RefreshShowRss          
 1.  UpdateShowEpochs
                             
 ***Episode Items***
-1.  InitializeEpisodes          One Time Only
-1.  RefreshEpisodes
 1.  UpdateEpisodes
 1.  UpdateEpisodesFromPlex (and TVMaze)
+1.  RefreshEpisodes
+
 
 ***Operational Items***
 1.  FindEpisodesMagnets

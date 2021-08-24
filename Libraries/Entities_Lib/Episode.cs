@@ -22,7 +22,7 @@ namespace Entities_Lib
         public string SeasonEpisode = "";
         public int    SeasonNum = 0;
         public int    EpisodeNum = 0;
-        public string BroadcastDate;
+        public string BroadcastDate = null;
         public string PlexStatus = " ";
         public string PlexDate;
 
@@ -103,7 +103,7 @@ namespace Entities_Lib
             SeasonNum = int.Parse(episode["season"].ToString());
             EpisodeNum = int.Parse(episode["number"].ToString());      
             SeasonEpisode = Common.BuildSeasonEpisodeString(SeasonNum, EpisodeNum);
-            if (episode["airdate"] is not null) { BroadcastDate = episode["airdate"].ToString(); } else { BroadcastDate = null; }
+            if (episode["airdate"] is not null) { BroadcastDate = episode["airdate"].ToString(); }
             TvmType = episode["type"].ToString();
             if (episode["summary"] is not null) { TvmSummary = episode["summary"].ToString(); }
             if (episode["image"] is not null && episode["image"].ToString() != "")
