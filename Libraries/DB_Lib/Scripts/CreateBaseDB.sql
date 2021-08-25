@@ -16,8 +16,8 @@ CREATE TABLE `LastShowEvaluated` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO TVMazeNewDB.LastShowEvaluated (ShowId) VALUES
-	 (57048);
+INSERT INTO LastShowEvaluated (ShowId) VALUES
+	 (57058);
 
 CREATE TABLE `PlexStatuses` (
   `PlexStatus` varchar(10) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE `TvmShowUpdates` (
   UNIQUE KEY `TvmShowUpdates_TvmShowId` (`TvmShowId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO TVMazeNewDB.PlexStatuses (PlexStatus) VALUES
+INSERT INTO PlexStatuses (PlexStatus) VALUES
 	 (' '),
 	 ('Acquired'),
 	 ('Skipped'),

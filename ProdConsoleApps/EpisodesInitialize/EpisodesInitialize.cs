@@ -17,7 +17,6 @@ namespace InitializeEpisodes
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-
             //Get All Followed Shows
             List<int> allfollowed = new();
             SearchAllFollowed sal = new();
@@ -33,6 +32,7 @@ namespace InitializeEpisodes
             int idxalleps = 0;
             foreach (int showid in allfollowed)
             {
+                // TODO take when fully tested --- if (showid < 43) { continue; } else if (showid > 43) { Environment.Exit(99); }
                 int idxepsbyshow = 0;
                 EpisodesByShow epsbyshow = new();
                 List<Episode> ebs = epsbyshow.Find(appinfo, showid);

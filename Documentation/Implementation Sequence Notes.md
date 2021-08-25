@@ -17,7 +17,8 @@ Place the adjusted Tvmaze.cnf file in the TVMaze directory. (Not the in a sub-di
 **Repeat this for every DB you want to use**
 
 The config file is setup to have a production, test and alternate DB setup in MariaDB.
-If you only want a Prod then you only have to setup that one.  You can also change the DB (Schema) name as long as you update the config file as well.
+The none Production DB are only needed if you want to change the code and test it on another DB.
+If you only want a Production DB then you only have to setup that one.  (You can also change the DB (Schema) name as long as you update the config file as well)
 
 1. Copy the script from DB_Lib>Scripts>CreateBaseDB.sql
 1. NOTE:  Make sure to update the values statement for Table LastShowEvaluated before executing the script.

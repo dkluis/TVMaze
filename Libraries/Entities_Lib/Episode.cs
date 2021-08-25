@@ -25,6 +25,7 @@ namespace Entities_Lib
         public string BroadcastDate = null;
         public string PlexStatus = " ";
         public string PlexDate;
+        public string UpdateDate = "1970-01-01";
 
         #endregion
 
@@ -66,6 +67,7 @@ namespace Entities_Lib
             BroadcastDate = null;
             PlexStatus = " ";
             PlexDate = null;
+            UpdateDate = "1970-01-01";
 
             TvmType = "";
             TvmSummary = "";
@@ -173,6 +175,7 @@ namespace Entities_Lib
             values += $"'{SeasonEpisode}', ";
             values += $"{SeasonNum}, ";
             values += $"{EpisodeNum}, ";
+            if (BroadcastDate == "") { BroadcastDate = null; }
             if (BroadcastDate is null) { values += $"null, "; } else { values += $"'{BroadcastDate}', "; }
             values += $"'{PlexStatus}', ";
             if (PlexDate is null) { values += $"null "; } else { values += $"'{PlexDate}' "; }
