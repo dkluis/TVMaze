@@ -193,9 +193,14 @@ namespace Entities_Lib
 
     }
 
-    public class EpisodesByShow
+    public class EpisodesByShow :IDisposable
     {
         public List<Episode> episodesbyshow = new();
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
 
         public List<Episode> Find(AppInfo appinfo, int showid)
         {

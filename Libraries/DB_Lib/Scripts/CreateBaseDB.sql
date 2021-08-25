@@ -98,7 +98,7 @@ CREATE TABLE `Episodes` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `TvmShowId` int(11) NOT NULL,
   `TvmEpisodeId` int(11) NOT NULL,
-  `TvmUrl` varchar(175) NOT NULL DEFAULT ' ',
+  `TvmUrl` varchar(255) NOT NULL DEFAULT ' ',
   `SeasonEpisode` varchar(10) NOT NULL,
   `Season` int(11) NOT NULL,
   `Episode` int(11) NOT NULL,
@@ -113,3 +113,32 @@ CREATE TABLE `Episodes` (
   CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`),
   CONSTRAINT `Episodes_FK_1` FOREIGN KEY (`PlexStatus`) REFERENCES `PlexStatuses` (`PlexStatus`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
+
+
+CREATE OR REPLACE
+ALGORITHM = UNDEFINED VIEW `EpisodesToAcquire` AS
+select
+    `e`.`Id` AS `Id`,
+    `e`.`TvmShowId` AS `TvmShowId`,
+    `s`.`ShowName` AS `ShowName`,
+    `s`.`CleanedShowName` AS `CleanedShowName`,
+    `s`.`AltShowname` AS `AltShowName`,
+    `e`.`TvmEpisodeId` AS `TvmEpisodeId`,
+    `e`.`TvmUrl` AS `TvmUrl`,
+    `e`.`SeasonEpisode` AS `SeasonEpisode`,
+    `e`.`Season` AS `Season`,
+    `e`.`Episode` AS `Episode`,
+    `e`.`BroadcastDate` AS `BroadcastDate`,
+    `e`.`PlexStatus` AS `PlexStatus`,
+    `e`.`PlexDate` AS `PlexDate`,
+    `s`.`Finder` as `Finder`
+from
+    (`episodes` `e`
+join `shows` `s` on
+    (`e`.`TvmShowId` = `s`.`TvmShowId`))
+where
+    `e`.`BroadcastDate` <= curdate()
+    and `e`.`PlexStatus` = ' '
+order by
+    `e`.`TvmShowId`,
+    `e`.`SeasonEpisode`;

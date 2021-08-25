@@ -42,7 +42,11 @@ namespace Common_Lib
             { HomeDir = Environment.GetEnvironmentVariable("HOME"); }
             HomeDir = Path.Combine(HomeDir, Application);
 
+#if DEBUG
+            ConfigFileName = Application + "Debug.cnf";
+#else
             ConfigFileName = Application + ".cnf";
+#endif
             ConfigPath = HomeDir;
             ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
             if (!File.Exists(ConfigFullPath)) { Console.WriteLine($"Log File Does not Exist {ConfigFullPath}"); Environment.Exit(666); }
@@ -59,9 +63,13 @@ namespace Common_Lib
             DbProdConn = rkffo.FindInArray(ConfigFullPath, "DbProduction");
             DbTestConn = rkffo.FindInArray(ConfigFullPath, "DbTesting");
             DbAltConn = rkffo.FindInArray(ConfigFullPath, "DbAlternate");
+
             TvmazeToken = rkffo.FindInArray(ConfigFullPath, "TvmazeToken");
             RarbgToken = rkffo.FindInArray(ConfigFullPath, "RarbgToken");
 
+#if DEBUG
+            ActiveDBConn = DbAltConn;
+#else
             switch (dbconnection)
             {
                 case "DbProduction":
@@ -77,6 +85,7 @@ namespace Common_Lib
                     ActiveDBConn = "";
                     break;
             }
+#endif
 
         }
 

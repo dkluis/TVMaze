@@ -1,6 +1,7 @@
 ﻿using Common_Lib;
 using MySqlConnector;
 using System;
+using System.Collections.Generic;
 
 namespace DB_Lib
 {
@@ -95,6 +96,7 @@ namespace DB_Lib
             db.ExecNonQuery($"update LastShowEvaluated set `ShowId` = {newlastepoch};");
             db.Close();
         }
+
 
         public void Dispose()
         {
