@@ -418,8 +418,13 @@ namespace Entities_Lib
         }
     }
 
-    public class UpdateTvmStatus
+    public class UpdateTvmStatus : IDisposable
     {
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
         public void ToFollowed(AppInfo appinfo, int showid)
         {
             using (MariaDB Mdbw = new(appinfo))

@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 		Resources\tvmaze-icon.png = Resources\tvmaze-icon.png
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdatePlexWatched", "ProdConsoleApps\UpdatePlexWatched\UpdatePlexWatched.csproj", "{0A7AE4E1-83FC-4455-9A59-1BF9B1F5893D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{14464B26-BF6A-496E-B000-E86E45D9F7E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14464B26-BF6A-496E-B000-E86E45D9F7E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14464B26-BF6A-496E-B000-E86E45D9F7E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A7AE4E1-83FC-4455-9A59-1BF9B1F5893D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A7AE4E1-83FC-4455-9A59-1BF9B1F5893D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A7AE4E1-83FC-4455-9A59-1BF9B1F5893D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A7AE4E1-83FC-4455-9A59-1BF9B1F5893D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +111,7 @@ Global
 		{14DBDFCF-2E36-4298-897F-F16D671CDC87} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 		{131C9722-B1EE-4BD6-A6EC-9DDD83BE013E} = {D86C48FD-5669-4B07-82F1-A3C12FF53192}
 		{14464B26-BF6A-496E-B000-E86E45D9F7E0} = {D86C48FD-5669-4B07-82F1-A3C12FF53192}
+		{0A7AE4E1-83FC-4455-9A59-1BF9B1F5893D} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55AA4077-0AFF-49EB-AF91-E7F22F2EEF33}

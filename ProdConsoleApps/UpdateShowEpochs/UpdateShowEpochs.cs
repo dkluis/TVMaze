@@ -51,7 +51,7 @@ namespace UpdateShowEpochs
                     if (showid > LastEvaluatedShow)
                     {
                         using (TvmCommonSql se = new(appinfo)) { se.SetLastEvaluatedShow(showid); }
-                        if (!tvmshow.isForReview) { log.Write($"Show {showid} is rejected because of review rules"); continue; }
+                        if (!tvmshow.isForReview) { log.Write($"Show {showid} is rejected because of review rules {tvmshow.TvmUrl}"); continue; }
                     }
                     else
                     {
@@ -65,7 +65,6 @@ namespace UpdateShowEpochs
                     else
                     {
                         log.Write($"Inserted new Show {showid}, {tvmshow.ShowName}", "", 2);
-                        //TODO Insert the Shows Episodes
                         int idxepsbyshow = 0;
                         using (EpisodesByShow epsbyshow = new())
                         {
@@ -91,6 +90,26 @@ namespace UpdateShowEpochs
                     else
                     {
                         //TODO Update and Insert the Episode
+                        int idxepsbyshow = 0;
+                        using (EpisodesByShow epsbyshow = new())
+                        {
+                            List<Episode> ebs = epsbyshow.Find(appinfo, showid);
+                            foreach (Episode eps in ebs)
+                            {
+                                if (!eps.isDBFilled)
+                                {
+                                    if (!eps.DbInsert()) { log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 0); }
+                                    else { log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}"); }
+                                }
+                                else
+                                {
+                                    //TODO create DBUpdate for episodes
+                                    log.Write($"Should be Updating {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}", "", 2); 
+                                }
+                                idxepsbyshow++;
+                            }
+                        }
+                        log.Write($"Number of Episodes for Show {showid}: {idxepsbyshow}", "", 2);
                     }
                     log.Write($"Updated Show {showid}");
 
