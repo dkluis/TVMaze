@@ -365,13 +365,15 @@ namespace Entities_Lib
     {
         private List<int> Found = new();
 
-        public List<int> Find(AppInfo appinfo, string showname)
+        public List<int> Find(AppInfo appinfo, string showname, string cleanedshowname = "", string altshowname = "")
         {
             Found = new();
+            if (altshowname == "") { altshowname = showname; }
+            if (cleanedshowname == "") { cleanedshowname = showname; }
             using (MariaDB Mdbr = new(appinfo))
             {
                 showname = showname.Replace("'", "''");
-                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{showname}' or `AltShowName` = '{showname}');";
+                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}');";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
                 if (rdr is null) { return Found; }
                 if (!rdr.HasRows) { return Found; }

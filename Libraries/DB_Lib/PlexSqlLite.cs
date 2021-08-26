@@ -45,6 +45,7 @@ namespace DB_Lib
         public string ShowName = "";
         public int Season = 999999;
         public int Episode = 999999;
+        public string SeasonEpisode = "";
         public string WatchedDate;
         public bool ProcessedToTvmaze;
         public string UpdateDate = " ";
@@ -52,16 +53,20 @@ namespace DB_Lib
         public int TvmShowId;
         public int TvmEpisodeId;
 
+        public string CleanedShowName = "";
+
         public void Reset()
         {
             ShowName = "";
             Season = 999999;
             Episode = 999999;
+            SeasonEpisode = "";
             WatchedDate = "";
             ProcessedToTvmaze = false;
             UpdateDate = " ";
             TvmShowId = new();
             TvmEpisodeId = new();
+            CleanedShowName = "";
         }
 
         public void Fill(string showname, int season, int episode, string watcheddate)
@@ -72,19 +77,22 @@ namespace DB_Lib
             string date = watcheddate.Split(" ")[0];
             WatchedDate = date;
             UpdateDate = DateTime.Now.ToString("yyyy-MM-dd");
-          
+            SeasonEpisode = Common.BuildSeasonEpisodeString(season, episode);
+            CleanedShowName = Common.RemoveSpecialCharsInShowname(showname);
         }
 
-        public bool UpdateTvmaze()
+        public void UpdateTvmaze()
         {
             ProcessedToTvmaze = true;
-
-            DbInsert();
-            return false;
+            if (DbInsert())
+            {
+                //Do the Tvmaze Update
+            }
         }
 
         public bool DbInsert()
         {
+
             return false;
         }
     }

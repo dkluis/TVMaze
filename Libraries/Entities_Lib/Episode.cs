@@ -226,4 +226,27 @@ namespace Entities_Lib
         }
     }
 
+    public class EpisodeSearch : IDisposable
+    {
+        public int Find(AppInfo appinfo, int showid, string seasonepisode)
+        {
+            int epiid = 0;
+            MariaDB Mdb = new(appinfo);
+            TextFileHandler log = appinfo.TxtFile;
+
+            MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showid} and `SeasonEpisode` = '{seasonepisode}'; ");
+            while (rdr.Read())
+            {
+                epiid = int.Parse(rdr[0].ToString());
+            }
+
+            return epiid;
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
+
 }
