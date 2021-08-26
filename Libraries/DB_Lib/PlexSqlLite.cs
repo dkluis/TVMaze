@@ -81,19 +81,31 @@ namespace DB_Lib
             CleanedShowName = Common.RemoveSpecialCharsInShowname(showname);
         }
 
-        public void UpdateTvmaze()
+        public void UpdateTvmaze(AppInfo appinfo)
         {
             ProcessedToTvmaze = true;
-            if (DbInsert())
+            if (DbInsert(appinfo))
             {
                 //Do the Tvmaze Update
             }
         }
 
-        public bool DbInsert()
+        public bool DbInsert(AppInfo appinfo)
         {
-
-            return false;
+            int rows;
+            bool success = false;
+            using (MariaDB Mdbw = new(appinfo))
+            {
+                string sql = $"insert into `PlexWatchedEpisodes` values (";
+                sql +=  $"0, {TvmShowId}, {TvmEpisodeId}, ";
+                sql += $"'{ShowName}', {Season}, {Episode}, ";
+                sql += $"'{SeasonEpisode}', '{WatchedDate}', ";
+                sql += $"0, '{DateTime.Now.ToString("yyyy.MM-dd")}' ); ";
+                rows = Mdbw.ExecNonQuery(sql, true);
+                if (rows == 1) { success = true; }
+            }
+            
+            return success;
         }
     }
 }

@@ -45,7 +45,7 @@ namespace DB_Lib
                             log.Write($"Multiple ShowIds found for {pwi.ShowName} is: {showid}", "", 1);
                             using (ActionItems ais = new(appinfo))
                             {
-                                ais.DbInsert($"Multiple ShowIds found for {pwi.ShowName} is: {showid}");
+                                ais.DbInsert($"Multiple ShowIds found for {pwi.ShowName} is: {showid}", true);
                             }
                         }
                     }
@@ -54,19 +54,17 @@ namespace DB_Lib
                         log.Write($"Did not find any ShowIds for {pwi.ShowName}", "", 1);
                         using (ActionItems ai = new(appinfo))
                         {
-                            ai.DbInsert($"Did not find any ShowIds for {pwi.ShowName}");
+                            ai.DbInsert($"Did not find any ShowIds for {pwi.ShowName}", true);
                         }
                     }
                     log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
+                    if (pwi.DbInsert(appinfo)) { ; } //TODO also update TVMaze
                 }
             }
             else
             {
                 log.Write($"No Watched Episodes Found");
             }
-
-            ActionItems aitems = new(appinfo);
-            aitems.DbInsert("");
 
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
