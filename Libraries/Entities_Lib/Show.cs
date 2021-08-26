@@ -261,12 +261,25 @@ namespace Entities_Lib
         private bool ValidateForReview()
         {
             isForReview = false;
-            if (TvmNetwork.ToLower() != "netflix" &&
-                TvmNetwork.ToLower() != "amazon prime video" &&
-                TvmNetwork.ToLower() != "hbo max" &&
-                TvmNetwork.ToLower() != "hbo" &&
-                TvmNetwork.ToLower() != "hulu" &&
-                TvmNetwork.ToLower() != "disney+")
+            if (TvmNetwork is not null)
+            {
+                if (TvmNetwork.ToLower() != "netflix" &&
+                    TvmNetwork.ToLower() != "amazon prime video" &&
+                    TvmNetwork.ToLower() != "hbo max" &&
+                    TvmNetwork.ToLower() != "hbo" &&
+                    TvmNetwork.ToLower() != "hulu" &&
+                    TvmNetwork.ToLower() != "disney+")
+                {
+                    if (TvmLanguage != "")
+                    {
+                        if (TvmLanguage != "English")
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            else
             {
                 if (TvmLanguage != "")
                 {
@@ -276,11 +289,13 @@ namespace Entities_Lib
                     }
                 }
             }
+
             if (ShowStatus == "Ended") 
             {
                 string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyyy");
                 if (!PremiereDate.Contains(compdate)) { return false; }
             }
+
             switch (TvmType.ToLower())
             {
                 case "sport":
@@ -290,16 +305,20 @@ namespace Entities_Lib
                 case "talk show":
                     return false;
             }
-            switch (TvmNetwork.ToLower())
+            if (TvmNetwork is not null)
             {
-                case "youTube":
-                case "youTube premium":
-                case "facebook watch":
-                case "nick jr.":
-                case "espn":
-                case "abc kids":
-                case "":
-                    return false;
+                switch (TvmNetwork.ToLower())
+                {
+                    case "youTube":
+                    case "youTube premium":
+                    case "facebook watch":
+                    case "nick jr.":
+                    case "espn":
+                    case "abc kids":
+                    case "disney Junior":
+                    case "":
+                        return false;
+                }
             }
 
             isForReview = true;

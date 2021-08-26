@@ -32,7 +32,6 @@ namespace UpdateShowEpochs
             log.Write($"Found {jsoncontent.Count} updates on Tvmaze", This_Program, 0);
 
             Show tvmshow = new(appinfo);
-
             int indbepoch;
 
             foreach (KeyValuePair<string, JToken> show in jsoncontent)
@@ -49,15 +48,23 @@ namespace UpdateShowEpochs
                 {
                     using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {showid}, {showepoch}, '{DateTime.Now:yyyy-MM-dd}');"); Mdbw.Close(); }
                     log.Write($"Inserted Epoch Record {showid} {tvmshow.ShowName}", "", 4);
-                    using (TvmCommonSql se = new(appinfo)) { se.SetLastEvaluatedShow(showid); }
-                    if (showid <= LastEvaluatedShow) { log.Write($"This show is evaluated already", "", 4); continue; }
-                    if (!tvmshow.isDBFilled) { log.Write($"Show {showid} is not a followed show", "", 3); continue; }
+                    if (showid > LastEvaluatedShow)
+                    {
+                        using (TvmCommonSql se = new(appinfo)) { se.SetLastEvaluatedShow(showid); }
+                        if (!tvmshow.isForReview) { log.Write($"Show {showid} is rejected because of review rules"); continue; }
+                    }
+                    else
+                    {
+                        log.Write($"This show is evaluated already", "", 4); continue;
+                    }
+                    //if (!tvmshow.isDBFilled) { log.Write($"Show {showid} is not a followed show", "", 3); continue; }
                     if (!tvmshow.DbInsert())
                     {
                         log.Write($"Insert of Show {showid} Failed", "", 2);
                     }
                     else
                     {
+                        log.Write($"Inserted new Show {showid}, {tvmshow.ShowName}", "", 2);
                         //TODO Insert the Shows Episodes
                         int idxepsbyshow = 0;
                         using (EpisodesByShow epsbyshow = new())
@@ -76,7 +83,7 @@ namespace UpdateShowEpochs
                 else
                 {
                     using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};"); Mdbw.Close(); }
-                    if (!tvmshow.isDBFilled) { log.Write($"Show {showid} is not a followed show", "", 3); }
+                    if (!tvmshow.isDBFilled) { log.Write($"Show {showid} is not a followed show", "", 3); continue;  }
                     if (!tvmshow.DbUpdate())
                     {
                         log.Write($"Update of Show {showid} Failed", "", 2);

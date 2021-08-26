@@ -17,7 +17,7 @@ CREATE TABLE `LastShowEvaluated` (
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO LastShowEvaluated (ShowId) VALUES
-	 (57058);
+	 (57099);
 
 CREATE TABLE `PlexStatuses` (
   `PlexStatus` varchar(10) NOT NULL,
@@ -116,9 +116,8 @@ CREATE TABLE `Episodes` (
 
 
 CREATE OR REPLACE
-ALGORITHM = UNDEFINED VIEW `EpisodesToAcquire` AS
+ALGORITHM = UNDEFINED VIEW `tvmazenewdb`.`episodestoacquire` AS
 select
-    `e`.`Id` AS `Id`,
     `e`.`TvmShowId` AS `TvmShowId`,
     `s`.`ShowName` AS `ShowName`,
     `s`.`CleanedShowName` AS `CleanedShowName`,
@@ -131,10 +130,10 @@ select
     `e`.`BroadcastDate` AS `BroadcastDate`,
     `e`.`PlexStatus` AS `PlexStatus`,
     `e`.`PlexDate` AS `PlexDate`,
-    `s`.`Finder` as `Finder`
+    `s`.`Finder` AS `Finder`
 from
-    (`episodes` `e`
-join `shows` `s` on
+    (`tvmazenewdb`.`episodes` `e`
+join `tvmazenewdb`.`shows` `s` on
     (`e`.`TvmShowId` = `s`.`TvmShowId`))
 where
     `e`.`BroadcastDate` <= curdate()
@@ -142,3 +141,4 @@ where
 order by
     `e`.`TvmShowId`,
     `e`.`SeasonEpisode`;
+
