@@ -14,7 +14,7 @@ namespace DB_Lib
         {
             string This_Program = "Update Plex Watched";
             Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
-            AppInfo appinfo = new("TVMaze", This_Program, "DB Needed from Config");
+            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
             Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
 
@@ -29,14 +29,13 @@ namespace DB_Lib
                 foreach (PlexWatchedInfo pwi in watchedepisodes)
                 {
                     SearchShowsViaNames ssvn = new();
-                    // log.Write($"{pwi.ShowName}, {pwi.Season}, {pwi.Episode}, {pwi.WatchedDate}, {pwi.CleanedShowName}");
                     List<int> foundindb = ssvn.Find(appinfo, pwi.ShowName, pwi.CleanedShowName);
                     if (foundindb.Count == 1)
                     {
                         pwi.TvmShowId = foundindb[0];
                         using (EpisodeSearch es = new())
                         {
-                            pwi.TvmEpisodeId = es.Find(appinfo, pwi.TvmShowId, pwi.SeasonEpisode );
+                            pwi.TvmEpisodeId = es.Find(appinfo, pwi.TvmShowId, pwi.SeasonEpisode);
                         }
                     }
                     else if (foundindb.Count > 1)
@@ -44,11 +43,19 @@ namespace DB_Lib
                         foreach (int showid in foundindb)
                         {
                             log.Write($"Multiple ShowIds found for {pwi.ShowName} is: {showid}", "", 1);
+                            using (ActionItems ais = new(appinfo))
+                            {
+                                ais.DbInsert($"Multiple ShowIds found for {pwi.ShowName} is: {showid}");
+                            }
                         }
                     }
                     else
                     {
-                        log.Write($"Did not find any ShowIds for {pwi.ShowName}");
+                        log.Write($"Did not find any ShowIds for {pwi.ShowName}", "", 1);
+                        using (ActionItems ai = new(appinfo))
+                        {
+                            ai.DbInsert($"Did not find any ShowIds for {pwi.ShowName}");
+                        }
                     }
                     log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
                 }
@@ -57,6 +64,9 @@ namespace DB_Lib
             {
                 log.Write($"No Watched Episodes Found");
             }
+
+            ActionItems aitems = new(appinfo);
+            aitems.DbInsert("");
 
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
