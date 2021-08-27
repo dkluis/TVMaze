@@ -9,6 +9,7 @@ drop table TvmShowUpdates;
 drop table Followed;
 
 drop table LastShowEvaluated;  
+drop table ActionItems;
 
 CREATE TABLE `LastShowEvaluated` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -18,6 +19,15 @@ CREATE TABLE `LastShowEvaluated` (
 
 INSERT INTO LastShowEvaluated (ShowId) VALUES
 	 (57099);
+
+CREATE TABLE `ActionItems` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Program` varchar(25) NOT NULL,
+  `Message` varchar(200) NOT NULL,
+  `UpdateDateTime` varchar(20) NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `ActionItems_UN` (`Program`,`Message`,`UpdateDateTime`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `PlexStatuses` (
   `PlexStatus` varchar(10) NOT NULL,
@@ -110,7 +120,7 @@ CREATE TABLE `Episodes` (
   KEY `Episodes_FK` (`TvmShowId`),
   KEY `Episodes_FK_1` (`PlexStatus`),
   KEY `Episodes_TvmShowId_IDX` (`TvmShowId`) USING BTREE,
-  CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`),
+  CONSTRAINT `Episodes_FK` FOREIGN KEY (`TvmShowId`) REFERENCES `Shows` (`TvmShowId`) on DELETE cascade,
   CONSTRAINT `Episodes_FK_1` FOREIGN KEY (`PlexStatus`) REFERENCES `PlexStatuses` (`PlexStatus`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
 
