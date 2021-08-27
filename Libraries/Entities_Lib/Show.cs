@@ -163,6 +163,16 @@ namespace Entities_Lib
             return Mdb.success;
         }
 
+        public bool DbDelete(int showid)
+        {
+            Mdb.success = true;
+            int rows = Mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {showid}");
+            log.Write($"DbDelete for Show: {showid}", "", 4);
+            Mdb.Close();
+            if (rows == 0) { Mdb.success = false; }
+            return Mdb.success;
+        }
+
         private void FillViaJson(JObject showjson)
         {
             if (showjson["id"] is not null)
@@ -290,7 +300,7 @@ namespace Entities_Lib
                 }
             }
 
-            if (ShowStatus == "Ended") 
+            if (ShowStatus == "Ended" || ShowStatus == "Running") 
             {
                 string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyyy");
                 if (!PremiereDate.Contains(compdate)) { return false; }
@@ -390,11 +400,11 @@ namespace Entities_Lib
     {
         private List<int> AllFollowed = new();
 
-        public List<int> Find(AppInfo appinfo)
+        public List<int> Find(AppInfo appinfo, string option = "Following")
         {
             using (MariaDB Mdbr = new(appinfo))
             {
-                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = 'Following' order by `TvmShowId`;";
+                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = '{option}' order by `TvmShowId`;";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
                 if (rdr is null) { return AllFollowed; }
                 if (!rdr.HasRows) { return AllFollowed; }

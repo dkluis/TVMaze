@@ -72,10 +72,18 @@ namespace Entities_Lib
         public bool DbDelete(bool ignore = false)
         {
             int rows = Mdb.ExecNonQuery($"delete from Followed where `TvmShowId` = {TvmShowId}");
-            log.Write($"DbDelete for Show: {TvmShowId}", "", 4);
             Mdb.Close();
             if (rows == 0) { return false; }
             log.Write($"Followed {TvmShowId} is deleted", "", 4);
+            return true;
+        }
+
+        public bool DbDelete(int showid)
+        {
+            int rows = Mdb.ExecNonQuery($"delete from Followed where `TvmShowId` = {showid}");
+            Mdb.Close();
+            if (rows == 0) { return false; }
+            log.Write($"Followed {showid} is deleted", "", 4);
             return true;
         }
 

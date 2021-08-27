@@ -21,58 +21,72 @@ namespace UpdateFollowed
             log.Start();
 
             WebAPI tvmapi = new(appinfo);
-            JArray followedontvmaze = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
-            log.Write($"Found {followedontvmaze.Count} Followed Shows Tvmaze");
+            JArray FollowedShowOnTvmaze = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
+            log.Write($"Found {FollowedShowOnTvmaze.Count} Followed Shows Tvmaze");
 
             CheckDb cdb = new();
             int records = cdb.FollowedCount(appinfo);
             log.Write($"There are {records} records in Following Table", "", 2);
 
-            if (Math.Abs(followedontvmaze.Count - records) > 30)
-            {
-                log.Write($"Skipping this program since too many records are going to be deleted: {Math.Abs(followedontvmaze.Count - records)}");
-                Environment.Exit(999);
-            }
-            log.EmptyLine(2);
-
-
             Show theshow = new(appinfo);
-
             int idx = 0;
             List<int> AllFollowedShows = new();
 
-
             using (MariaDB Mdbw = new(appinfo))
             {
-                Followed inDBasFollowing = new(appinfo);
+                Followed InFollowedTable = new(appinfo);
                 int jtshow;
 
-                foreach (JToken show in followedontvmaze)
+                foreach (JToken show in FollowedShowOnTvmaze)
                 {
                     jtshow = int.Parse(show["show_id"].ToString());
 
                     log.Write($"Processing {jtshow}", "", 4);
-                    inDBasFollowing.GetFollowed(jtshow);
-                    if (inDBasFollowing.inDB)
+                    InFollowedTable.GetFollowed(jtshow);
+                    if (InFollowedTable.inDB)
                     {
                         using (UpdateTvmStatus uts = new()) { uts.ToFollowed(appinfo, jtshow); }
                     }
                     else
                     {
-                        inDBasFollowing.DbInsert();
+                        InFollowedTable.DbInsert();
                         theshow.FillViaTvmaze(jtshow);
                         theshow.TvmStatus = "Following";
                         if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
                         theshow.Reset();
                     }
-
-                    inDBasFollowing.Reset();
+                    InFollowedTable.Reset();
 
                     AllFollowedShows.Add(int.Parse(show["show_id"].ToString()));
                     idx++;
                     Mdbw.Close();
                 }
                 log.Write($"Updated or Inserted {idx} Followed Shows");
+            }
+
+            Followed followed = new(appinfo);
+            List<int> ToDelete = followed.ShowsToDelete(AllFollowedShows);
+
+            if (ToDelete.Count > 0)
+            {
+                foreach (int showid in ToDelete)
+                {
+                    log.Write($"Need to Delete {showid}", "", 2);
+                    theshow.DbDelete(showid);
+                    theshow.Reset();
+                    followed.DbDelete(showid);
+                    followed.Reset();
+
+                }
+            }
+
+            if (Math.Abs(FollowedShowOnTvmaze.Count - records) > 10)
+            {
+                log.Write($"Skipping this program since too many records are going to be deleted: {Math.Abs(FollowedShowOnTvmaze.Count - records)}");
+                using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Skipping this program since too many records are going to be deleted: {Math.Abs(FollowedShowOnTvmaze.Count - records)}"); }
+                log.Write($"###################################################################################################################");
+                log.Stop();
+                Environment.Exit(999);
             }
 
             log.Stop();
