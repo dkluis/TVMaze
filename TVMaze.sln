@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 	ProjectSection(SolutionItems) = preProject
 		Templates\ConsoleAppTemplate.cs = Templates\ConsoleAppTemplate.cs
 		Templates\Tvmaze.cnf = Templates\Tvmaze.cnf
+		Templates\Script Example.txt = Templates\Script Example.txt
+		Templates\Crontab Example.txt = Templates\Crontab Example.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateFollowed", "ProdConsoleApps\UpdateFollowed\UpdateFollowed.csproj", "{669FAC07-6BBC-4404-96BF-3BC3DCAEFB83}"

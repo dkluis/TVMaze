@@ -1,0 +1,8 @@
+﻿01,31 3-21/1 * * * /Users/XXXXXX/TVMaze/Scripts/UpdateFollowed.sh  >>//Users/XXXXXXX/TVMaze/Logs/CronLog.log 2>>/Users/XXXXXX/TVMaze/Logs/CronLog.log
+05,35 3-21/1 * * * /Users/XXXXXX/TVMaze/Scripts/UpdateShowEpochs.sh >>//Users/XXXXXXX/TVMaze/Logs/CronLog.log 2>>/Users/XXXXXX/TVMaze/Logs/CronLog.log
+10,40 3-23/1 * * * /Users/XXXXXX/TVMaze/Scripts/UpdatePlexWatched.sh >>//Users/XXXXXXX/TVMaze/Logs/CronLog.log 2>>/Users/XXXXXX/TVMaze/Logs/CronLog.log
+
+Replace XXXXXX with your home directory Username
+
+01,31 at 1 min past the hour and 31 mins past the hour
+3-21/1 means between 3am and 9pm every hour

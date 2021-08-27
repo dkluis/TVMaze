@@ -1,0 +1,6 @@
+﻿cd /Users/XXXXXX/Tvmaze/Apps/UpdateFollowed
+/usr/local/share/dotnet/dotnet UpdateFollowed.dll
+
+
+Replace XXXXXX with your home directory Username
+Find out where dotnet is installed (Normal install is in /usr/local/share/dotnet
