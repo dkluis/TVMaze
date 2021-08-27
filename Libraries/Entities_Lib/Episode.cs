@@ -186,6 +186,25 @@ namespace Entities_Lib
             return Mdb.success;
         }
 
+        public bool DbUpdate()
+        {
+            Mdb.success = true;
+
+            string values = "";
+            string sqlpre = $"update episodes set ";
+            string sqlsuf = $"where `Id` = {Id};";
+
+            if (BroadcastDate == "") { BroadcastDate = null; }
+            if (BroadcastDate is null) { values += $"`BroadcastDate` = null, "; } else { values += $"`BroadcastDate` = '{BroadcastDate}', "; }
+            values += $"`PlexStatus` = '{PlexStatus}', ";
+            if (PlexDate is null) { values += $"`PlexDate` = null, "; } else { values += $"`PlexDate` = '{PlexDate}' "; }
+            int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+            log.Write($"DbUpdate for Episode: {TvmEpisodeId}", "", 4);
+            Mdb.Close();
+            if (rows == 0) { Mdb.success = false; }
+            return Mdb.success;
+        }
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);

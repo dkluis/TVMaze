@@ -65,7 +65,8 @@ namespace DB_Lib
                             epi.FillViaTvmaze(pwi.TvmEpisodeId);
                             epi.PlexDate = pwi.WatchedDate;
                             epi.PlexStatus = "Watched";
-                            // Update epi
+                            epi.DbUpdate();
+                            log.Write($"Update Episode Record {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 4);
 
                             // Now update Tvmaze
 
