@@ -199,7 +199,7 @@ namespace Web_Lib
             }
             else if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
             {
-                prio += 20;
+                prio += 65;
             }
             // Resolution values
             if (magnet.ToLower().Contains("1080p"))

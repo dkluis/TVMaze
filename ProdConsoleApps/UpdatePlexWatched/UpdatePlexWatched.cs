@@ -58,7 +58,22 @@ namespace DB_Lib
                         }
                     }
                     log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
-                    if (pwi.DbInsert(appinfo)) { ; } //TODO also update TVMaze
+                    if (pwi.DbInsert(appinfo))
+                    {
+                        using (Episode epi = new(appinfo))
+                        {
+                            epi.FillViaTvmaze(pwi.TvmEpisodeId);
+                            epi.PlexDate = pwi.WatchedDate;
+                            epi.PlexStatus = "Watched";
+                            // Update epi
+
+                            // Now update Tvmaze
+
+                            // Update pwi 
+                            pwi.ProcessedToTvmaze = true;
+                            
+                        }
+                    } 
                 }
             }
             else
