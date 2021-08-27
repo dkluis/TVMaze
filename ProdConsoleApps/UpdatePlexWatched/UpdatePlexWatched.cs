@@ -72,7 +72,8 @@ namespace DB_Lib
 
                             // Update pwi 
                             pwi.ProcessedToTvmaze = true;
-                            
+                            pwi.DbUpdate(appinfo);
+                            pwi.Reset();
                         }
                     } 
                 }

@@ -106,7 +106,19 @@ namespace DB_Lib
                 rows = Mdbw.ExecNonQuery(sql, true);
                 if (rows == 1) { success = true; }
             }
-            
+            return success;
+        }
+
+        public bool DbUpdate(AppInfo appInfo)
+        {
+            int rows = 0;
+            bool success = false;
+            using (MariaDB Mdbw = new(appInfo))
+            {
+                string sql = $"update `PlexWatchedEpisodes` set `ProcessedToTvmaze` = 1 where `TvmEpisodeId` = {TvmEpisodeId}";
+                rows = Mdbw.ExecNonQuery(sql, true);
+            }
+            if (rows == 1) { success = true; }
             return success;
         }
     }
