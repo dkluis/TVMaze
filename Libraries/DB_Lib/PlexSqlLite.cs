@@ -75,6 +75,8 @@ namespace DB_Lib
             Season = season;
             Episode = episode;
             string date = watcheddate.Split(" ")[0];
+            string[] d = date.Split(@"/");
+            date = d[2] + "-" + d[0].PadLeft(2, '0') + "-" + d[1].PadLeft(2, '0');
             WatchedDate = date;
             UpdateDate = DateTime.Now.ToString("yyyy-MM-dd");
             SeasonEpisode = Common.BuildSeasonEpisodeString(season, episode);
@@ -100,7 +102,7 @@ namespace DB_Lib
                 sql +=  $"0, {TvmShowId}, {TvmEpisodeId}, ";
                 sql += $"'{ShowName}', {Season}, {Episode}, ";
                 sql += $"'{SeasonEpisode}', '{WatchedDate}', ";
-                sql += $"0, '{DateTime.Now.ToString("yyyy.MM-dd")}' ); ";
+                sql += $"0, '{DateTime.Now.ToString("yyyy-MM-dd")}' ); ";
                 rows = Mdbw.ExecNonQuery(sql, true);
                 if (rows == 1) { success = true; }
             }
