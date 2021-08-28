@@ -9,6 +9,14 @@ using Web_Lib;
 
 namespace UpdateFollowed
 {
+    
+    /// <summary>
+    ///
+    ///     1. Gets all Followed marked shows from Tvmaze Web
+    ///     2. All Tvmaze Web show are evaluated and updated or inserted based on what is in Tvmaze Local and are marked as Following
+    ///     3. Deletes all Shows that were followed before but have been unfollowed
+    ///     
+    /// </summary>
     class UpdateFollowed
     {
         private static void Main()
@@ -66,27 +74,21 @@ namespace UpdateFollowed
 
             Followed followed = new(appinfo);
             List<int> ToDelete = followed.ShowsToDelete(AllFollowedShows);
-
             if (ToDelete.Count > 0)
             {
-                foreach (int showid in ToDelete)
+                if (ToDelete.Count <= 5)
                 {
-                    log.Write($"Need to Delete {showid}", "", 2);
-                    theshow.DbDelete(showid);
-                    theshow.Reset();
-                    followed.DbDelete(showid);
-                    followed.Reset();
+                    foreach (int showid in ToDelete)
+                    {
+                        log.Write($"Need to Delete {showid}", "", 2);
+                        theshow.DbDelete(showid);
+                        theshow.Reset();
+                        followed.DbDelete(showid);
+                        followed.Reset();
 
+                    }
                 }
-            }
-
-            if (Math.Abs(FollowedShowOnTvmaze.Count - records) > 10)
-            {
-                log.Write($"Skipping this program since too many records are going to be deleted: {Math.Abs(FollowedShowOnTvmaze.Count - records)}");
-                using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Skipping this program since too many records are going to be deleted: {Math.Abs(FollowedShowOnTvmaze.Count - records)}"); }
-                log.Write($"###################################################################################################################");
-                log.Stop();
-                Environment.Exit(999);
+                else { log.Write($"Too Many Shows are flagged for deletion {ToDelete.Count}", "", 0); }
             }
 
             log.Stop();

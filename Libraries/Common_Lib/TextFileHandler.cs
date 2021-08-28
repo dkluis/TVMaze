@@ -140,7 +140,7 @@ public class ReadKeyFromFile
     {
         if (!File.Exists(fullfilepath)) { return "";  }
         string filetext = File.ReadAllText(fullfilepath);
-        JArray kvps = ConvertJsonTxt .ConvertStringToJArray(filetext);
+        JArray kvps = ConvertJsonTxt.ConvertStringToJArray(filetext);
         foreach (JToken rec in kvps)
         {
             if (rec[find] is null) { return ""; }
@@ -160,4 +160,5 @@ public class ReadKeyFromFile
         }
         return "";
     }
+
 }

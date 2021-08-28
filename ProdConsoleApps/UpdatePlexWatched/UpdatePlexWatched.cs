@@ -8,6 +8,16 @@ using Entities_Lib;
 
 namespace DB_Lib
 {
+
+    /// <summary>
+    ///
+    ///     1. Reads the Plex Sqlite DB and get all Episodes that are marked Watched in the last day
+    ///     2. Figures out from the Plex Showname, season and episode numbers what TvmShowId and TvmEpisodeId it is in Tvmaze Local
+    ///     3. Updates Tvmaze Local and Tvmaze Web with the Watched status and the date
+    ///         a. Adds a record in Tvmaze Local to track if an episode is already updated
+    ///     4. Delete media from Plex if Auto Delete is set for that Show
+    /// 
+    /// </summary>
     class UpdatePlexWatched
     {
         static void Main()
@@ -68,12 +78,13 @@ namespace DB_Lib
                             epi.DbUpdate();
                             log.Write($"Update Episode Record {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 4);
 
-                            // Now update Tvmaze
+                            // TODO Update Tvmaze
 
-                            // Update pwi 
                             pwi.ProcessedToTvmaze = true;
                             pwi.DbUpdate(appinfo);
                             pwi.Reset();
+
+                            //TODO Potentially Delete Media
                         }
                     } 
                 }

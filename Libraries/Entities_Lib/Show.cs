@@ -284,6 +284,7 @@ namespace Entities_Lib
                     {
                         if (TvmLanguage != "English")
                         {
+                            log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 4);
                             return false;
                         }
                     }
@@ -295,6 +296,7 @@ namespace Entities_Lib
                 {
                     if (TvmLanguage != "English")
                     {
+                        log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 4);
                         return false;
                     }
                 }
@@ -303,7 +305,7 @@ namespace Entities_Lib
             if (ShowStatus == "Ended" || ShowStatus == "Running") 
             {
                 string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyyy");
-                if (!PremiereDate.Contains(compdate)) { return false; }
+                if (!PremiereDate.Contains(compdate)) { log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate} and Status {ShowStatus}", "", 4); return false; }
             }
 
             switch (TvmType.ToLower())
@@ -319,13 +321,14 @@ namespace Entities_Lib
             {
                 switch (TvmNetwork.ToLower())
                 {
-                    case "youTube":
-                    case "youTube premium":
+                    case "youtube":
+                    case "youtube premium":
                     case "facebook watch":
                     case "nick jr.":
                     case "espn":
                     case "abc kids":
                     case "disney Junior":
+                    case "food network":
                     case "":
                         return false;
                 }

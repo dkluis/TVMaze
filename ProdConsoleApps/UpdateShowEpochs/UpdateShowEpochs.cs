@@ -8,6 +8,18 @@ using Web_Lib;
 
 namespace UpdateShowEpochs
 {
+
+    /// <summary>
+    ///
+    ///     1. Maintains the Last TvmShowID that was processed and evaluated (allows to ignore none followed shows from before the Last TvmShowId)
+    ///     2. Gets from Tvmaze Web all Shows that were marked as having had a change (is also marked if an episode change happened)
+    ///     3. Process
+    ///         a. Ignores non followed shows below or equal to Last TvmShowId
+    ///         b. Evaluates non followed shows (if it should be reviewed based on the review rules) that are above Last TvmShowId
+    ///             i. Adds the shows that should be reviewed
+    ///         c. Updates all followed shows and update and/or inserts its episodes if the epoch timestamp is not the same as it is in Tvmaze Local
+    /// 
+    /// </summary>
     class UpdateShowEpochs
     {
         static void Main()
@@ -89,7 +101,6 @@ namespace UpdateShowEpochs
                     }
                     else
                     {
-                        //TODO Update and Insert the Episode
                         int idxepsbyshow = 0;
                         using (EpisodesByShow epsbyshow = new())
                         {
