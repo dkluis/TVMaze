@@ -27,6 +27,11 @@ namespace Entities_Lib
         public string PlexDate;
         public string UpdateDate = "1970-01-01";
 
+
+        public string MediaType = "";
+        public string CleanedShowName = "";
+        public string AltShowName = "";
+
         #endregion
 
         #region Tvm Record Definiton (without what is in DB record)
@@ -42,6 +47,7 @@ namespace Entities_Lib
         public bool isDBFilled;
         public bool isJsonFilled;
         public bool isOnTvmaze;
+        public bool isAutoDelete;
 
         private readonly MariaDB Mdb;
         private readonly TextFileHandler log;
@@ -69,6 +75,10 @@ namespace Entities_Lib
             PlexDate = null;
             UpdateDate = "1970-01-01";
 
+            MediaType = "";
+            CleanedShowName = "";
+            AltShowName = "";
+
             TvmType = "";
             TvmSummary = "";
             TvmImage = "";
@@ -78,6 +88,7 @@ namespace Entities_Lib
             isJsonFilled = false;
             isDBFilled = false;
             isOnTvmaze = false;
+            isAutoDelete = false;
         }
 
         public void FillViaTvmaze(int episodeid)
@@ -148,10 +159,14 @@ namespace Entities_Lib
 
         private void FillViaDb(int episode)
         {
-            MySqlDataReader rdr = Mdb.ExecQuery($"select * from Episodes where `TvmEpisodeId` = {episode};");
+            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodesfullinfo where `TvmEpisodeId` e = {episode};");
             while (rdr.Read())
             {
                 Id = int.Parse(rdr["Id"].ToString());
+                MediaType = rdr["MediaType"].ToString();
+                CleanedShowName = rdr["CleanedShowname"].ToString();
+                AltShowName = rdr["AltShowName"].ToString();
+                if (rdr["AutoDelete"].ToString() == "Yes") { isAutoDelete = true; }
                 isDBFilled = true;
             }
             Mdb.Close();

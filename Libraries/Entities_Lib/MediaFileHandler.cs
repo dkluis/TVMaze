@@ -129,6 +129,42 @@ namespace Entities_Lib
             return FilesInDirectory;
         }
 
+        public bool DeleteEpisodeFiles(Episode epi)
+        {
+            if (!epi.isAutoDelete) { return true; }
+            bool success = false;
+
+            string directory = "";
+            switch (epi.MediaType)
+            {
+                case "TS":
+                    directory = PlexMediaTvShows;
+                    break;
+                case "TSS":
+                    directory = PlexMediaTvShowSeries;
+                    break;
+                case "KTS":
+                    directory = PlexMediaKidsTvShows;
+                    break;
+                default:
+                    break;
+            }
+
+            string seas = $"Season {epi.SeasonNum}";
+            string seasonepisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
+            string showname = "";
+            if (epi.AltShowName != "") { showname = epi.AltShowName; } else { showname = epi.ShowName; }
+            string findin = Path.Combine(directory, showname, seas);
+            string[] files = Directory.GetFiles(findin);
+
+            foreach (string file in files)
+            { 
+                log.Write($"File to Delete {file}", "MediaFileHandler", 4);
+            }
+
+            return success;
+        }
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);

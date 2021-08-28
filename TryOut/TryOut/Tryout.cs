@@ -17,6 +17,7 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
+            Episode epi = new(appinfo);
             using MediaFileHandler mfh = new(appinfo);
             {
                 List<string> files = mfh.GetMediaByShow("TS", "The Killer Truth", 1, 1, true);
