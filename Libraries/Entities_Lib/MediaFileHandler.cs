@@ -80,7 +80,7 @@ namespace Entities_Lib
             return delete;
         }
 
-        public List<string> GetMediaByShow(string mediatype, string show, int season, int episode)
+        public List<string> GetMediaByShow(string mediatype, string show, int season, int episode, bool delete = false)
         {
             List<string> FilesInDirectory = new();
             string directory = "";
@@ -102,11 +102,32 @@ namespace Entities_Lib
             string seasonepisode = Common.BuildSeasonEpisodeString(season, episode);
             string findin = Path.Combine(directory, show, seas);
             string[] files = Directory.GetFiles(findin);
-            foreach (string file in files) { if (file.Contains(seasonepisode)) { FilesInDirectory.Add(file); }; }
+
+            foreach (string file in files)
+            {
+                if (file.Contains(seasonepisode))
+                {
+                    FilesInDirectory.Add(file);
+                    if (delete)
+                    {
+                        string f = file.Replace(findin, "").Replace("/", "");
+                        string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", f);
+                        try
+                        {
+                            File.Move(file, trashloc);
+                            log.Write($"Delete {f}, to {trashloc}", "", 4);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Write($"Something went wrong moving to trash {f}, {trashloc} {e.Message}", "", 0);
+                            using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving to trash {f}, {trashloc} {e.Message}"); }
+                        }
+                    }
+                }
+            }
 
             return FilesInDirectory;
         }
-
 
         public void Dispose()
         {

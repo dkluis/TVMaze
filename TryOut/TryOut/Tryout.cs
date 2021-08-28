@@ -19,7 +19,7 @@ namespace TryOut
 
             using MediaFileHandler mfh = new(appinfo);
             {
-                List<string> files = mfh.GetMediaByShow("TS", "The Killer Truth", 1, 1);
+                List<string> files = mfh.GetMediaByShow("TS", "The Killer Truth", 1, 1, true);
                 log.Write($"{files.Count}");
                 foreach (string file in files)
                 {
