@@ -84,7 +84,6 @@ namespace DB_Lib
                             pwi.DbUpdate(appinfo);
                             pwi.Reset();
 
-                            //TODO Potentially Delete Media
                             if (epi.isAutoDelete)
                             {
                                 log.Write($"Deleting this episode {epi.TvmEpisodeId} files", "", 4);

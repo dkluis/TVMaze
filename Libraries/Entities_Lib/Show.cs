@@ -107,7 +107,7 @@ namespace Entities_Lib
             string updfields = "";
             string sqlpre = $"update shows set ";
             updfields += $"`Finder` = '{Finder}', ";
-            updfields += $"`MediaType` = '{MediaType}'";
+            updfields += $"`MediaType` = '{MediaType}', ";
             updfields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";
             updfields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
             updfields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
@@ -306,7 +306,7 @@ namespace Entities_Lib
                 }
             }
 
-            if (ShowStatus != "Ended" && ShowStatus != "Running")
+            if (ShowStatus is "Ended" or "Running")
             {
                 string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
                 if (!PremiereDate.Contains(compdate)) { log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}", "", 4); return false; }

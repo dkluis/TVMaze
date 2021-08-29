@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
+
 using Common_Lib;
 using DB_Lib;
 
@@ -153,13 +155,33 @@ namespace Entities_Lib
             string seas = $"Season {epi.SeasonNum}";
             string seasonepisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
             string showname = "";
-            if (epi.AltShowName != "") { showname = epi.AltShowName; } else { showname = epi.ShowName; }
+            if (epi.AltShowName != "") { showname = epi.AltShowName; } else { showname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(epi.CleanedShowName); }
             string findin = Path.Combine(directory, showname, seas);
-            string[] files = Directory.GetFiles(findin);
-
-            foreach (string file in files)
-            { 
-                log.Write($"File to Delete {file}", "MediaFileHandler", 4);
+            try
+            {
+                string[] files = Directory.GetFiles(findin);
+                foreach (string file in files)
+                {
+                    log.Write($"File to Delete {file}", "MediaFileHandler", 4);
+                    string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", showname);
+                    if (file.Contains(seasonepisode))
+                    {
+                        try
+                        {
+                            File.Move(file, trashloc);
+                            log.Write($"Delete {epi.CleanedShowName}, to {trashloc}", "", 4);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Write($"Something went wrong moving to trash {showname}, {trashloc} {e.Message}", "", 0);
+                            using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving to trash {showname}, {trashloc} {e.Message}"); }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Write($"Error on getting Files for {Path.Combine(directory, showname, seas)}: {e}");
             }
 
             return success;
