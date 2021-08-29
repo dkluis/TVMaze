@@ -212,7 +212,7 @@ namespace Entities_Lib
             if (BroadcastDate == "") { BroadcastDate = null; }
             if (BroadcastDate is null) { values += $"`BroadcastDate` = null, "; } else { values += $"`BroadcastDate` = '{BroadcastDate}', "; }
             values += $"`PlexStatus` = '{PlexStatus}', ";
-            if (PlexDate is null) { values += $"`PlexDate` = null, "; } else { values += $"`PlexDate` = '{PlexDate}' "; }
+            if (PlexDate is null) { values += $"`PlexDate` = null "; } else { values += $"`PlexDate` = '{PlexDate}' "; }
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbUpdate for Episode: {TvmEpisodeId}", "", 4);
             Mdb.Close();

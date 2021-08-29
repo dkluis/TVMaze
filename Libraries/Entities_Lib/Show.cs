@@ -309,7 +309,11 @@ namespace Entities_Lib
             if (ShowStatus is "Ended" or "Running")
             {
                 string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
-                if (!PremiereDate.Contains(compdate)) { log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}", "", 4); return false; }
+                if (!PremiereDate.Contains(compdate) && PremiereDate != "1900-01-01")
+                {
+                    log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}", "", 4);
+                    return false;
+                }
             }
 
             switch (TvmType.ToLower())

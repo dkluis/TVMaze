@@ -19,10 +19,6 @@ namespace Entities_Lib
         // public string PlexMediaMovieSeries;
         // public string PlexMediaKidsMovies;
 
-        public bool DeleteTvShows;
-        public bool DeteteTvShowsSeries;
-        public bool DeleteKidsTvShows;
-
         public List<string> TvShowsInSeries;
         public List<string> MoviesinSeries;
         public List<string> TvShowsInKids;
@@ -44,12 +40,8 @@ namespace Entities_Lib
         public void GetSetMediaInfo()
         {
             PlexMediaTvShows = GetDirectoryViaMediaType("TS");
-            DeleteTvShows = GetDeleteViaMediaType("TS");
             PlexMediaTvShowSeries = GetDirectoryViaMediaType("TSS");
-            DeleteTvShows = GetDeleteViaMediaType("TSS");
             PlexMediaKidsTvShows = GetDirectoryViaMediaType("KTS");
-            DeleteTvShows = GetDeleteViaMediaType("KTS");
-
         }
 
         public string GetDirectoryViaMediaType(string mt)
@@ -65,70 +57,6 @@ namespace Entities_Lib
             }
             Mdb.Close();
             return path;
-        }
-
-        public bool GetDeleteViaMediaType(string mt)
-        {
-            bool delete = false;
-            MySqlDataReader rdr = Mdb.ExecQuery($"select `AutoDelete` from `MediaTypes` where `MediaType` = '{mt}'");
-            if (rdr is not null)
-            {
-                while (rdr.Read())
-                {
-                    if (rdr[0].ToString() == "Yes") { delete = true; } 
-                }
-            }
-            Mdb.Close();
-            return delete;
-        }
-
-        public List<string> GetMediaByShow(string mediatype, string show, int season, int episode, bool delete = false)
-        {
-            List<string> FilesInDirectory = new();
-            string directory = "";
-            switch (mediatype)
-            {
-                case "TS":
-                    directory = PlexMediaTvShows;
-                    break;
-                case "TSS":
-                    directory = PlexMediaTvShowSeries;
-                    break;
-                case "KTS":
-                    directory = PlexMediaKidsTvShows;
-                    break;
-                default:
-                    break;
-            }
-            string seas = $"Season {season}";
-            string seasonepisode = Common.BuildSeasonEpisodeString(season, episode);
-            string findin = Path.Combine(directory, show, seas);
-            string[] files = Directory.GetFiles(findin);
-
-            foreach (string file in files)
-            {
-                if (file.Contains(seasonepisode))
-                {
-                    FilesInDirectory.Add(file);
-                    if (delete)
-                    {
-                        string f = file.Replace(findin, "").Replace("/", "");
-                        string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", f);
-                        try
-                        {
-                            File.Move(file, trashloc);
-                            log.Write($"Delete {f}, to {trashloc}", "", 4);
-                        }
-                        catch (Exception e)
-                        {
-                            log.Write($"Something went wrong moving to trash {f}, {trashloc} {e.Message}", "", 0);
-                            using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving to trash {f}, {trashloc} {e.Message}"); }
-                        }
-                    }
-                }
-            }
-
-            return FilesInDirectory;
         }
 
         public bool DeleteEpisodeFiles(Episode epi)
@@ -163,18 +91,20 @@ namespace Entities_Lib
                 foreach (string file in files)
                 {
                     log.Write($"File to Delete {file}", "MediaFileHandler", 4);
-                    string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", showname);
+                    string medianame = file.Replace(findin, "").Replace("/", "");
+                    string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", medianame);
+
                     if (file.Contains(seasonepisode))
                     {
                         try
                         {
                             File.Move(file, trashloc);
-                            log.Write($"Delete {epi.CleanedShowName}, to {trashloc}", "", 4);
+                            log.Write($"Delete {medianame}, to {trashloc}", "", 4);
                         }
                         catch (Exception e)
                         {
-                            log.Write($"Something went wrong moving to trash {showname}, {trashloc} {e.Message}", "", 0);
-                            using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving to trash {showname}, {trashloc} {e.Message}"); }
+                            log.Write($"Something went wrong moving {medianame} to {trashloc}: {e.Message}", "", 0);
+                            using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving {medianame} to {trashloc}: {e.Message}"); }
                         }
                     }
                 }
