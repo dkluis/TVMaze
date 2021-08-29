@@ -159,7 +159,7 @@ namespace Entities_Lib
 
         private void FillViaDb(int episode)
         {
-            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodesfullinfo where `TvmEpisodeId` e = {episode};");
+            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodesfullinfo where `TvmEpisodeId` = {episode};");
             while (rdr.Read())
             {
                 Id = int.Parse(rdr["Id"].ToString());

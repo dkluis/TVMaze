@@ -23,6 +23,7 @@ namespace Entities_Lib
         public string ShowStatus = "";
         public string PremiereDate = "";
         public string Finder = "Multi";
+        public string MediaType = "TS";
         public string CleanedShowName = "";
         public string AltShowName = "";
         public string UpdateDate = "1900-01-01";
@@ -70,6 +71,7 @@ namespace Entities_Lib
             ShowStatus = " ";
             PremiereDate = "1970-01-01";
             Finder = "Multi";
+            MediaType = "TS";
             CleanedShowName = "";
             AltShowName = "";
             UpdateDate = "1900-01-01";
@@ -105,6 +107,7 @@ namespace Entities_Lib
             string updfields = "";
             string sqlpre = $"update shows set ";
             updfields += $"`Finder` = '{Finder}', ";
+            updfields += $"`MediaType` = '{MediaType}'";
             updfields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";
             updfields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
             updfields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
@@ -143,6 +146,7 @@ namespace Entities_Lib
             values += $"'{ShowStatus}', ";
             values += $"'{PremiereDate}', ";
             values += $"'{Finder}', ";
+            values += $"'{MediaType}', ";
             values += $"'{CleanedShowName.Replace("'", "''")}', ";
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
@@ -302,10 +306,10 @@ namespace Entities_Lib
                 }
             }
 
-            if (ShowStatus == "Ended" || ShowStatus == "Running") 
+            if (ShowStatus != "Ended" && ShowStatus != "Running")
             {
-                string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyyy");
-                if (!PremiereDate.Contains(compdate)) { log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate} and Status {ShowStatus}", "", 4); return false; }
+                string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
+                if (!PremiereDate.Contains(compdate)) { log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}", "", 4); return false; }
             }
 
             switch (TvmType.ToLower())

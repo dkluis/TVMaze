@@ -51,7 +51,7 @@ namespace UpdateShowEpochs
                 showid = int.Parse(show.Key.ToString());
                 showepoch = int.Parse(show.Value.ToString());
                 using (TvmCommonSql gse = new(appinfo)) { indbepoch = gse.GetShowEpoch(showid); }
-                if (showepoch == indbepoch) { log.Write($"Skipping since show is already up to date", "", 4); continue; }
+                if (showepoch == indbepoch) { log.Write($"Skipping {showid} since show is already up to date", "", 4); continue; }
 
                 tvmshow.FillViaTvmaze(showid);
                 log.Write($"TvmShowId: {tvmshow.TvmShowId},  Name: {tvmshow.ShowName}; Tvmaze Epoch: {showepoch}, In DB Epoch {indbepoch}", "", 4);
@@ -69,7 +69,7 @@ namespace UpdateShowEpochs
                     {
                         log.Write($"This show is evaluated already", "", 4); continue;
                     }
-                    //if (!tvmshow.isDBFilled) { log.Write($"Show {showid} is not a followed show", "", 3); continue; }
+
                     if (!tvmshow.DbInsert())
                     {
                         log.Write($"Insert of Show {showid} Failed", "", 2);
@@ -94,10 +94,11 @@ namespace UpdateShowEpochs
                 else
                 {
                     using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};"); Mdbw.Close(); }
-                    if (!tvmshow.isDBFilled) { log.Write($"Show {showid} is not a followed show", "", 3); continue;  }
+                    if (!tvmshow.isDBFilled) { continue;  }
                     if (!tvmshow.DbUpdate())
                     {
-                        log.Write($"Update of Show {showid} Failed", "", 2);
+                        log.Write($"Update of Show {showid} Failed", "", 0);
+                        using ( ActionItems ai = new(appinfo)) { ai.DbInsert($"Update of Show {showid} Failed"); }
                     }
                     else
                     {
@@ -107,15 +108,23 @@ namespace UpdateShowEpochs
                             List<Episode> ebs = epsbyshow.Find(appinfo, showid);
                             foreach (Episode eps in ebs)
                             {
+                                log.Write($"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 4);
                                 if (!eps.isDBFilled)
                                 {
-                                    if (!eps.DbInsert()) { log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 0); }
+                                    if (!eps.DbInsert())
+                                    {
+                                        log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 0);
+                                        using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}"); }
+                                    }
                                     else { log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}"); }
                                 }
                                 else
                                 {
-                                    //TODO create DBUpdate for episodes
-                                    log.Write($"Should be Updating {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}", "", 2); 
+                                    if (!eps.DbUpdate())
+                                    {
+                                        log.Write($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 0);
+                                        using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}"); }
+                                    }
                                 }
                                 idxepsbyshow++;
                             }
