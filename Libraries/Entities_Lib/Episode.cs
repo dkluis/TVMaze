@@ -194,6 +194,7 @@ namespace Entities_Lib
             if (BroadcastDate is null) { values += $"null, "; } else { values += $"'{BroadcastDate}', "; }
             values += $"'{PlexStatus}', ";
             if (PlexDate is null) { values += $"null "; } else { values += $"'{PlexDate}' "; }
+            //TODO add updatedate
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbInsert for Episode: {TvmEpisodeId}", "", 4);
             Mdb.Close();

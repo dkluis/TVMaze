@@ -147,7 +147,6 @@ namespace Web_Lib
             string content = result.Content.ReadAsStringAsync().Result;
             if (content == "{\"error\":\"No results found\",\"error_code\":20}")
             {
-                //TODO Figure out to repeat the call here, most of the time a second call finds it
                 log.Write("Status OK, Error Occured Not Found", "Rarbg", 4);
                 rarbgError = true;
                 return;

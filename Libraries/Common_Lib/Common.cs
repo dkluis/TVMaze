@@ -107,8 +107,6 @@ namespace Common_Lib
 
         #region Epochs & DateTime
 
-        //TODO all EPoch and DateTime routines
-
         public static string ConvertEpochToDate(int epoch)
         {
             string date = "";
