@@ -232,6 +232,23 @@ namespace Web_Lib
             return _http_response;
         }
 
+        public HttpResponseMessage PutEpisodeToWatched(int episodeid, string watcheddate = "")
+        {
+            SetTvmazeUser();
+            string api = $"episodes/{episodeid}";
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
+            string data = "{ \"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 0 }";
+            data = data.Replace("episodeid", episodeid.ToString());
+            if (watcheddate == "") { data = data.Replace("markedat", DateTime.Now.ToString("yyyy-MM-dd")); }
+            else { data = data.Replace("markedat", watcheddate); }
+            log.Write($"Data = {data}", "Web API PETW", 4);
+            client.DefaultRequestHeaders.Add("Data", data);
+
+            PerformWaitTvmApi(api);
+
+            return _http_response;
+        }
+
         #endregion
 
         #region Scrape APIs

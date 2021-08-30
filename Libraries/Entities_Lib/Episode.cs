@@ -97,8 +97,8 @@ namespace Entities_Lib
             {
                 FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
                 WebAPI fem = new(Appinfo);
-                FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
                 FillViaDb(episodeid);
+                FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
             }   
         }
 

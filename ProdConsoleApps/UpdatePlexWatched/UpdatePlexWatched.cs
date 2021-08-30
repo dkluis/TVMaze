@@ -5,6 +5,7 @@ using MySqlConnector;
 
 using Common_Lib;
 using Entities_Lib;
+using Web_Lib;
 
 namespace DB_Lib
 {
@@ -72,13 +73,13 @@ namespace DB_Lib
                     {
                         using (Episode epi = new(appinfo))
                         {
+                            using (WebAPI wa = new(appinfo)) { wa.PutEpisodeToWatched(epi.TvmEpisodeId, pwi.WatchedDate); }
+
                             epi.FillViaTvmaze(pwi.TvmEpisodeId);
                             epi.PlexDate = pwi.WatchedDate;
                             epi.PlexStatus = "Watched";
                             epi.DbUpdate();
                             log.Write($"Update Episode Record {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 4);
-
-                            // TODO Update Tvmaze
 
                             pwi.ProcessedToTvmaze = true;
                             pwi.DbUpdate(appinfo);

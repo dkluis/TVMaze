@@ -1,6 +1,7 @@
 ﻿using System;
 using Common_Lib;
 using Entities_Lib;
+using Web_Lib;
 
 using System.Collections.Generic;
 
@@ -17,8 +18,14 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            Show show = new(appinfo);
-            show.FillViaTvmaze(57227);
+            WebAPI wa = new(appinfo);
+            wa.PutEpisodeToWatched(2148111);
+
+            Episode epi = new(appinfo);
+            epi.FillViaTvmaze(2148111);
+            
+            
+            
 
 
             log.Stop();
