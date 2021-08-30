@@ -90,11 +90,11 @@ namespace Entities_Lib
                 string[] files = Directory.GetFiles(findin);
                 foreach (string file in files)
                 {
-                    log.Write($"File to Delete {file}", "MediaFileHandler", 4);
                     string medianame = file.Replace(findin, "").Replace("/", "");
                     string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", medianame);
+                    log.Write($"File to Delete {medianame} for episode {seasonepisode}", "MediaFileHandler", 4);
 
-                    if (file.Contains(seasonepisode))
+                    if (file.ToLower().Contains(seasonepisode.ToLower()))
                     {
                         try
                         {

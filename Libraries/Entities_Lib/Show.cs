@@ -277,16 +277,16 @@ namespace Entities_Lib
             isForReview = false;
             if (TvmNetwork is not null)
             {
-                if (TvmNetwork.ToLower() != "netflix" &&
-                    TvmNetwork.ToLower() != "amazon prime video" &&
-                    TvmNetwork.ToLower() != "hbo max" &&
-                    TvmNetwork.ToLower() != "hbo" &&
-                    TvmNetwork.ToLower() != "hulu" &&
-                    TvmNetwork.ToLower() != "disney+")
+                if (TvmNetwork.ToLower() is not "netflix" and
+                    not "amazon prime video" and
+                    not "hbo max" and
+                    not "hbo" and
+                    not "hulu" and
+                    not "disney+")
                 {
                     if (TvmLanguage != "")
                     {
-                        if (TvmLanguage != "English")
+                        if (TvmLanguage is not "English" and not "Dutch")
                         {
                             log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 4);
                             return false;
@@ -298,7 +298,7 @@ namespace Entities_Lib
             {
                 if (TvmLanguage != "")
                 {
-                    if (TvmLanguage != "English")
+                    if (TvmLanguage is not "English" and not "Dutch")
                     {
                         log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 4);
                         return false;

@@ -17,6 +17,9 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
+            Show show = new(appinfo);
+            show.FillViaTvmaze(57227);
+
 
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");

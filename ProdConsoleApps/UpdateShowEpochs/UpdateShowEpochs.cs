@@ -36,6 +36,7 @@ namespace UpdateShowEpochs
             int showepoch;
             int LastEvaluatedShow;
             using (TvmCommonSql ge = new(appinfo)) { LastEvaluatedShow = ge.GetLastEvaluatedShow(); }
+            int HighestShowId = LastEvaluatedShow;
             log.Write($"Last Evaluated ShowId = {LastEvaluatedShow}");
 
             // Get the last 24 hours of Shows that changes on TVMaze
@@ -62,7 +63,7 @@ namespace UpdateShowEpochs
                     log.Write($"Inserted Epoch Record {showid} {tvmshow.ShowName}", "", 4);
                     if (showid > LastEvaluatedShow)
                     {
-                        using (TvmCommonSql se = new(appinfo)) { se.SetLastEvaluatedShow(showid); }
+                        if (showid > HighestShowId) { HighestShowId = showid; }
                         if (!tvmshow.isForReview) { log.Write($"Show {showid} is rejected because of review rules {tvmshow.TvmUrl}"); continue; }
                     }
                     else
@@ -136,6 +137,8 @@ namespace UpdateShowEpochs
                 }
                 tvmshow.Reset();
             }
+
+            using (TvmCommonSql se = new(appinfo)) { se.SetLastEvaluatedShow(HighestShowId); }
 
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
