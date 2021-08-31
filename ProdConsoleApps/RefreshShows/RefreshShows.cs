@@ -2,7 +2,7 @@
 
 using Common_Lib;
 using Entities_Lib;
-using Web_Lib;
+using DB_Lib;
 
 using Newtonsoft.Json.Linq;
 
@@ -19,22 +19,20 @@ namespace RefreshShows
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            WebAPI tvmapi = new(appinfo);
-            JArray jsoncontent = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
+            MariaDB Mdbr = new(appinfo);
+            MySqlConnector.MySqlDataReader rdr;
+            rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows order by `TvmShowId`;");
 
-            int iu_idx = 0;
-
-            foreach (JToken show in jsoncontent)
+            while (rdr.Read())
             {
+                // if (int.Parse(rdr[0].ToString()) < 99) { continue; }
                 using (ShowAndEpisodes sae = new(appinfo))
                 {
-                    log.Write($"Working on {show["show_id"]}");
-                    sae.Refresh(int.Parse(show["show_id"].ToString()));
+                    log.Write($"Working on Show {rdr[0]}", "", 2);
+                    sae.Refresh(int.Parse(rdr[0].ToString()));
                     System.Threading.Thread.Sleep(1000);
                 }
             }
-
-            log.Write($"Updated {iu_idx} Show records");
 
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");

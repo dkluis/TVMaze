@@ -24,7 +24,7 @@ namespace Entities_Lib
             GC.SuppressFinalize(this);
         }
 
-        public void Refresh(int showid)
+        public void Refresh(int showid, bool ignore = false)
         {
             Show.FillViaTvmaze(showid);
             if (!Show.isDBFilled || !Show.isFollowed) { log.Write($"Error: Show: {showid} status in DB {Show.isDBFilled} and status Followed {Show.isFollowed}"); return; }
