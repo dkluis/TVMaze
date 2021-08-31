@@ -18,14 +18,10 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            WebAPI wa = new(appinfo);
-            wa.PutEpisodeToWatched(2148111);
 
-            Episode epi = new(appinfo);
-            epi.FillViaTvmaze(2148111);
-            
-            
-            
+            ShowAndEpisodes sae = new(appinfo);
+
+            sae.Refresh(45879);
 
 
             log.Stop();

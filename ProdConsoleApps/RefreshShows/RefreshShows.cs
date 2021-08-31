@@ -1,8 +1,10 @@
-﻿using Common_Lib;
+﻿using System;
+
+using Common_Lib;
 using Entities_Lib;
-using Newtonsoft.Json.Linq;
-using System;
 using Web_Lib;
+
+using Newtonsoft.Json.Linq;
 
 namespace RefreshShows
 {
@@ -17,31 +19,21 @@ namespace RefreshShows
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            // Update Shows table with all Followed Shows
-
             WebAPI tvmapi = new(appinfo);
             JArray jsoncontent = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
-            Show iu_show = new(appinfo);
 
             int iu_idx = 0;
+
             foreach (JToken show in jsoncontent)
             {
-                iu_show.FillViaTvmaze(Int32.Parse(show["show_id"].ToString()));
-                if (iu_show.isDBFilled)
+                using (ShowAndEpisodes sae = new(appinfo))
                 {
-                    log.Write($"Updating Shows Table with {show["show_id"]}");
-                    iu_show.DbUpdate();
-                    iu_idx++;
-                    iu_show.Reset();
-                }
-                else
-                {
-                    log.Write($"Inserting into Shows Table with {show["show_id"]}");
-                    iu_show.DbInsert();
-                    iu_idx++;
-                    iu_show.Reset();
+                    log.Write($"Working on {show["show_id"]}");
+                    sae.Refresh(int.Parse(show["show_id"].ToString()));
+                    System.Threading.Thread.Sleep(1000);
                 }
             }
+
             log.Write($"Updated {iu_idx} Show records");
 
             log.Stop();
