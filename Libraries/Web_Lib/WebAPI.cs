@@ -249,6 +249,41 @@ namespace Web_Lib
             return _http_response;
         }
 
+        public HttpResponseMessage PutEpisodeToAcquired(int episodeid, string acquiredate = "")
+        {
+            SetTvmazeUser();
+            string api = $"episodes/{episodeid}";
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
+            string data = "{ \"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 1 }";
+            data = data.Replace("episodeid", episodeid.ToString());
+            if (acquiredate == "") { data = data.Replace("markedat", DateTime.Now.ToString("yyyy-MM-dd")); }
+            else { data = data.Replace("markedat", acquiredate); }
+            log.Write($"Data = {data}", "Web API PETA", 4);
+            client.DefaultRequestHeaders.Add("Data", data);
+
+            PerformWaitTvmApi(api);
+
+            return _http_response;
+        }
+
+        public HttpResponseMessage PutEpisodeToSkipped(int episodeid, string skipdate = "")
+        {
+            SetTvmazeUser();
+            string api = $"episodes/{episodeid}";
+            log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
+            string data = "{ \"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 2 }";
+            data = data.Replace("episodeid", episodeid.ToString());
+            if (skipdate == "") { data = data.Replace("markedat", DateTime.Now.ToString("yyyy-MM-dd")); }
+            else { data = data.Replace("markedat", skipdate); }
+            log.Write($"Data = {data}", "Web API PETS", 4);
+            client.DefaultRequestHeaders.Add("Data", data);
+
+            PerformWaitTvmApi(api);
+
+            return _http_response;
+        }
+
+
         #endregion
 
         #region Scrape APIs

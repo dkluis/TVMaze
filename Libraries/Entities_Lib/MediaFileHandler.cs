@@ -18,6 +18,7 @@ namespace Entities_Lib
         // public string PlexMediaMovies;
         // public string PlexMediaMovieSeries;
         // public string PlexMediaKidsMovies;
+        public string PlexMediaAcquire;
 
         public List<string> TvShowsInSeries;
         public List<string> MoviesinSeries;
@@ -42,6 +43,7 @@ namespace Entities_Lib
             PlexMediaTvShows = GetDirectoryViaMediaType("TS");
             PlexMediaTvShowSeries = GetDirectoryViaMediaType("TSS");
             PlexMediaKidsTvShows = GetDirectoryViaMediaType("KTS");
+            PlexMediaAcquire = GetDirectoryViaMediaType("ACQ");
         }
 
         public string GetDirectoryViaMediaType(string mt)
@@ -113,6 +115,76 @@ namespace Entities_Lib
             {
                 log.Write($"Error on getting Files for {Path.Combine(directory, showname, seas)}: {e}");
             }
+
+            return success;
+        }
+
+        public bool MoveMediaToPlex(string mediainfo, Episode episode)
+        {
+            bool success = false;
+            string fullmediapath = Path.Combine(PlexMediaAcquire, mediainfo);
+
+            // Eliminating the [xxxx] suffixes on the directory, this gave problems trying to access and move files.
+            string[] fullmp = fullmediapath.Split("[");
+            if (fullmp.Length == 2)
+            {
+                Directory.Move(fullmediapath, fullmp[0]);
+                fullmediapath = fullmp[0];
+            }
+
+            FileAttributes atr = File.GetAttributes(fullmediapath);
+            bool isdirectory = false;
+            List<string> media = new();
+            string[] filesindirectory;
+            string destdirectory = "";
+            switch (episode.MediaType)
+            {
+                case "TS":
+                    destdirectory = PlexMediaTvShows;
+                    break;
+                case "TSS":
+                    destdirectory = PlexMediaTvShowSeries;
+                    break;
+                case "KTS":
+                    destdirectory = PlexMediaKidsTvShows;
+                    break;
+                default:
+                    break;
+            }
+
+            string findindir = Path.Combine(PlexMediaAcquire, mediainfo);
+            atr = File.GetAttributes(findindir);
+            if (atr == FileAttributes.Directory) { isdirectory = true; }
+            if (!isdirectory) { media.Add(mediainfo);  }
+            else
+            {
+                filesindirectory = Directory.GetFiles(findindir);
+                foreach (string file in filesindirectory)
+                {
+                    foreach (string ext in Appinfo.MediaExtensions)
+                    {
+                        log.Write($"Processing {file} with extension {ext}", "", 4);
+                        if (file.Contains(ext)) { media.Add(file); break; }
+                    }
+                }
+            }
+
+            if (media.Count == 0) { log.Write($"There was nothing to move {mediainfo}"); }
+            string shown;
+            if (episode.AltShowName != "") { shown = episode.AltShowName; } else { shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName); }
+            string todir = Path.Combine(destdirectory, shown, $"Season {episode.SeasonNum}");
+            if (!Directory.Exists(todir)) { Directory.CreateDirectory(todir); }
+
+            foreach (string file in media)
+            {
+                string fromfile = file.Replace(findindir, "").Replace("/", "");
+                string topath = Path.Combine(todir, fromfile);
+                File.Move(file, topath);
+                log.Write($"Moved from {file} to {topath}");
+            }
+
+            //TODO generalize the Processed or just delete when everything is fully tested
+            if (isdirectory) { Directory.Move(findindir, $"{PlexMediaAcquire}/Processed/{mediainfo}"); }
 
             return success;
         }

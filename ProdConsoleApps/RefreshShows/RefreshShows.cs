@@ -4,8 +4,6 @@ using Common_Lib;
 using Entities_Lib;
 using DB_Lib;
 
-using Newtonsoft.Json.Linq;
-
 namespace RefreshShows
 {
     class RefreshShows

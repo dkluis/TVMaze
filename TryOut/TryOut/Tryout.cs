@@ -4,6 +4,7 @@ using Entities_Lib;
 using Web_Lib;
 
 using System.Collections.Generic;
+using System.IO;
 
 namespace TryOut
 {
@@ -18,10 +19,26 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
+            string from = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/What.If.2021.S01E04.1080p.DSNP.WEBRip.DDP5.1.Atmos.x264-FLUX";
+            string fromfinal = from;
+            string[] frompieces = from.Split("[");
+            if (frompieces.Length == 2)
+            {
+                fromfinal = frompieces[0];
+                Directory.Move(from, fromfinal);
+            }
+            string[] fileindir = Directory.GetFiles(fromfinal);
 
-            ShowAndEpisodes sae = new(appinfo);
+            foreach (string file in fileindir)
+            {
+                log.Write($"File is: {file}");
+                if (file.ToLower().Contains(".ds_store")) { continue; }
+                File.Move(file, $"/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/" +
+                    $"{file.Replace("/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/What.If.2021.S01E04.1080p.DSNP.WEBRip.DDP5.1.Atmos.x264-FLUX", "")}", true);
+            }
 
-            sae.Refresh(45879);
+
+
 
 
             log.Stop();

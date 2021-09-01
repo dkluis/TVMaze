@@ -29,6 +29,8 @@ namespace Common_Lib
         public readonly string TvmazeToken;
         public readonly string RarbgToken;
 
+        public readonly string[] MediaExtensions;
+
         public AppInfo(string application, string program, string dbconnection)
         {
             Application = application;
@@ -66,6 +68,9 @@ namespace Common_Lib
 
             TvmazeToken = rkffo.FindInArray(ConfigFullPath, "TvmazeToken");
             RarbgToken = rkffo.FindInArray(ConfigFullPath, "RarbgToken");
+
+            string ME = rkffo.FindInArray(ConfigFullPath, "MediaExtensions");
+            MediaExtensions = ME.Split(", ");
 
 #if DEBUG
             ActiveDBConn = DbAltConn;
