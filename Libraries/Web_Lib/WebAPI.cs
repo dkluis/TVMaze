@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 using Common_Lib;
@@ -81,7 +82,7 @@ namespace Web_Lib
 
             if (!_http_response.IsSuccessStatusCode)
             {
-                log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress} {api}", "WebAPI Exec", 4);
+                log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
                 _http_response = new HttpResponseMessage();
             }
         }
@@ -91,7 +92,9 @@ namespace Web_Lib
             try
             {
                 HttpResponseMessage response = new();
+
                 _http_response = await client.GetAsync(api).ConfigureAwait(false);
+
             }
             catch (Exception e)
             {
@@ -109,6 +112,64 @@ namespace Web_Lib
                     {
 
                         log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0);
+
+                    }
+                }
+            }
+        }
+
+        private void PerformWaitPutTvmApiAsync(string api, string content)
+        {
+            var exectime = new System.Diagnostics.Stopwatch();
+            exectime.Start();
+
+            Task t = PerformPutTvmApiAsync(api, content);
+            t.Wait();
+
+            exectime.Stop();
+            log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
+
+            if (_http_response is null)
+            {
+                _http_response = new HttpResponseMessage();
+            }
+
+            if (!_http_response.IsSuccessStatusCode)
+            {
+                log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Put Exec", 4);
+                _http_response = new HttpResponseMessage();
+            }
+        }
+
+        private async Task PerformPutTvmApiAsync(string api, string content)
+        {
+
+            StringContent httpcontent = new(content, Encoding.UTF8, "application/json");
+            log.Write($"content now is {httpcontent.Headers.ToString()} for api {client.BaseAddress + api}", "WebAPI PPTAA", 4);
+
+            try
+            {
+                HttpResponseMessage response = new();
+
+                _http_response = await client.PutAsync(client.BaseAddress + api, httpcontent).ConfigureAwait(false);
+
+            }
+            catch (Exception e)
+            {
+                log.Write($"Exception: {e.Message}", "WebAPI Put Async", 0);
+                if (e.Message.Contains(" seconds elapsing"))
+                {
+                    log.Write($"Retrying Now: {api}", "WebAPI Put Async", 0);
+                    try
+                    {
+                        log.Write($"Retrying Now: {api}", "WebAPI Put Async", 0);
+                        HttpResponseMessage response = new();
+                        _http_response = await client.GetAsync(api).ConfigureAwait(false);
+                    }
+                    catch (Exception ee)
+                    {
+
+                        log.Write($"2nd Exception: {ee.Message}", "WebAPI Put Async", 0);
 
                     }
                 }
@@ -244,7 +305,7 @@ namespace Web_Lib
             log.Write($"Data = {data}", "Web API PETW", 4);
             client.DefaultRequestHeaders.Add("Data", data);
 
-            PerformWaitTvmApi(api);
+            PerformWaitPutTvmApiAsync(api, data);
 
             return _http_response;
         }
@@ -254,14 +315,14 @@ namespace Web_Lib
             SetTvmazeUser();
             string api = $"episodes/{episodeid}";
             log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
-            string data = "{ \"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 1 }";
+            string data = "{\"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 1}";
             data = data.Replace("episodeid", episodeid.ToString());
             if (acquiredate == "") { data = data.Replace("markedat", DateTime.Now.ToString("yyyy-MM-dd")); }
             else { data = data.Replace("markedat", acquiredate); }
             log.Write($"Data = {data}", "Web API PETA", 4);
-            client.DefaultRequestHeaders.Add("Data", data);
+            //client.DefaultRequestHeaders.Add("-d", data);
 
-            PerformWaitTvmApi(api);
+            PerformWaitPutTvmApiAsync(api, data);
 
             return _http_response;
         }
@@ -278,7 +339,7 @@ namespace Web_Lib
             log.Write($"Data = {data}", "Web API PETS", 4);
             client.DefaultRequestHeaders.Add("Data", data);
 
-            PerformWaitTvmApi(api);
+            PerformWaitPutTvmApiAsync(api, data);
 
             return _http_response;
         }

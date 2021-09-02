@@ -152,13 +152,12 @@ namespace Entities_Lib
                     break;
             }
 
-            string findindir = Path.Combine(PlexMediaAcquire, mediainfo);
-            atr = File.GetAttributes(findindir);
+            atr = File.GetAttributes(fullmediapath);
             if (atr == FileAttributes.Directory) { isdirectory = true; }
             if (!isdirectory) { media.Add(mediainfo);  }
             else
             {
-                filesindirectory = Directory.GetFiles(findindir);
+                filesindirectory = Directory.GetFiles(fullmediapath);
                 foreach (string file in filesindirectory)
                 {
                     foreach (string ext in Appinfo.MediaExtensions)
@@ -177,14 +176,14 @@ namespace Entities_Lib
 
             foreach (string file in media)
             {
-                string fromfile = file.Replace(findindir, "").Replace("/", "");
+                string fromfile = file.Replace(fullmediapath, "").Replace("/", "");
                 string topath = Path.Combine(todir, fromfile);
                 File.Move(file, topath);
                 log.Write($"Moved from {file} to {topath}");
             }
 
             //TODO generalize the Processed or just delete when everything is fully tested
-            if (isdirectory) { Directory.Move(findindir, $"{PlexMediaAcquire}/Processed/{mediainfo}"); }
+            if (isdirectory) { Directory.Move(fullmediapath, $"{PlexMediaAcquire}/Processed/{mediainfo}"); }
 
             return success;
         }

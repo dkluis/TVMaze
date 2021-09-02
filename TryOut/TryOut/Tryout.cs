@@ -5,6 +5,9 @@ using Web_Lib;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Diagnostics;
+using System.Threading;
 
 namespace TryOut
 {
@@ -19,27 +22,28 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            string from = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/What.If.2021.S01E04.1080p.DSNP.WEBRip.DDP5.1.Atmos.x264-FLUX";
-            string fromfinal = from;
-            string[] frompieces = from.Split("[");
-            if (frompieces.Length == 2)
-            {
-                fromfinal = frompieces[0];
-                Directory.Move(from, fromfinal);
-            }
-            string[] fileindir = Directory.GetFiles(fromfinal);
+            //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
 
-            foreach (string file in fileindir)
+            using (Process curl = new())
             {
-                log.Write($"File is: {file}");
-                if (file.ToLower().Contains(".ds_store")) { continue; }
-                File.Move(file, $"/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/" +
-                    $"{file.Replace("/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/What.If.2021.S01E04.1080p.DSNP.WEBRip.DDP5.1.Atmos.x264-FLUX", "")}", true);
+                curl.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/tvm_curl.sh - d '{episode_id:27,\"marked_at\":0,\"type\": 2}' 'https://api.tvmaze.com/v1/user/episodes/2154680'";
+                curl.StartInfo.Arguments = ("-d '{episode_id:27,\"marked_at\":0,\"type\": 2}' 'https://api.tvmaze.com/v1/user/episodes/2154680'");
+                curl.StartInfo.UseShellExecute = true;
+                curl.Start();
+                curl.WaitForExit();
+                //Console.ReadLine();
             }
 
-
-
-
+            /*
+            using (Process python = new())
+            {
+                python.StartInfo.FileName = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/Scripts/tvmaze.sh";
+                python.StartInfo.UseShellExecute = true;
+                python.StartInfo.RedirectStandardOutput = false;
+                bool started = python.Start();
+                python.WaitForExit();
+            }
+            */
 
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
