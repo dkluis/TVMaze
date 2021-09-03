@@ -59,6 +59,7 @@ namespace DB_Lib
                                 ais.DbInsert($"Multiple ShowIds found for {pwi.ShowName} is: {showid}", true);
                             }
                         }
+                        break;
                     }
                     else
                     {
@@ -67,6 +68,7 @@ namespace DB_Lib
                         {
                             ai.DbInsert($"Did not find any ShowIds for {pwi.ShowName}", true);
                         }
+                        break;
                     }
                     log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
                     if (pwi.DbInsert(appinfo))
