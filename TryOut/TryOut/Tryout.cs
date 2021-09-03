@@ -22,8 +22,13 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
+            string mediainfo = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/cold.blooded.alaska.s01e01.winter.kill.1080p.web.h264-b2b[eztv.re].mkv";
+            Console.WriteLine(mediainfo[mediainfo.Length - 4]);
+            Console.WriteLine(mediainfo.Substring(mediainfo.Length - 4, 4));
+            File.Move(mediainfo, "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/Temp/cold.blooded.alaska.s01e01.winter.kill.1080p.web.h264-b2b[eztv.re].mkv");
 
+            //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
+            /*
             using (Process curl = new())
             {
                 curl.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/tvm_curl.sh - d '{episode_id:27,\"marked_at\":0,\"type\": 2}' 'https://api.tvmaze.com/v1/user/episodes/2154680'";
@@ -33,7 +38,7 @@ namespace TryOut
                 curl.WaitForExit();
                 //Console.ReadLine();
             }
-
+            */
             /*
             using (Process python = new())
             {

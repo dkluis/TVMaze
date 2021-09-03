@@ -124,14 +124,6 @@ namespace Entities_Lib
             bool success = false;
             string fullmediapath = Path.Combine(PlexMediaAcquire, mediainfo);
 
-            // Eliminating the [xxxx] suffixes on the directory, this gave problems trying to access and move files.
-            string[] fullmp = fullmediapath.Split("[");
-            if (fullmp.Length == 2)
-            {
-                Directory.Move(fullmediapath, fullmp[0]);
-                fullmediapath = fullmp[0];
-            }
-
             FileAttributes atr = File.GetAttributes(fullmediapath);
             bool isdirectory = false;
             List<string> media = new();
@@ -157,6 +149,12 @@ namespace Entities_Lib
             if (!isdirectory) { media.Add(mediainfo);  }
             else
             {
+                string[] fullmp = fullmediapath.Split("[");
+                if (fullmp.Length == 2)
+                {
+                    Directory.Move(fullmediapath, fullmp[0]);
+                    fullmediapath = fullmp[0];
+                }
                 filesindirectory = Directory.GetFiles(fullmediapath);
                 foreach (string file in filesindirectory)
                 {
