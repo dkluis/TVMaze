@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Common_Lib;
-
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Web_Lib
@@ -75,11 +75,7 @@ namespace Web_Lib
             exectime.Stop();
             log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
 
-            if (_http_response is null)
-            {
-                _http_response = new HttpResponseMessage();
-            }
-
+            if (_http_response is null) { _http_response = new HttpResponseMessage(); }
             if (!_http_response.IsSuccessStatusCode)
             {
                 log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
@@ -91,10 +87,7 @@ namespace Web_Lib
         {
             try
             {
-                HttpResponseMessage response = new();
-
                 _http_response = await client.GetAsync(api).ConfigureAwait(false);
-
             }
             catch (Exception e)
             {
@@ -105,23 +98,20 @@ namespace Web_Lib
                     try
                     {
                         log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
-                        HttpResponseMessage response = new();
                         _http_response = await client.GetAsync(api).ConfigureAwait(false);
                     }
-                    catch (Exception ee)
-                    {
-
-                        log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0);
-
-                    }
+                    catch (Exception ee) { log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0); }
                 }
             }
         }
 
-        private void PerformWaitPutTvmApiAsync(string api, string content)
+        private void PerformWaitPutTvmApiAsync(string api, int epi, string date, string type = "")
         {
             var exectime = new System.Diagnostics.Stopwatch();
             exectime.Start();
+
+            EpisodeMarking em = new(epi, date, type);
+            string content = em.GetJson();
 
             Task t = PerformPutTvmApiAsync(api, content);
             t.Wait();
@@ -129,10 +119,7 @@ namespace Web_Lib
             exectime.Stop();
             log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
 
-            if (_http_response is null)
-            {
-                _http_response = new HttpResponseMessage();
-            }
+            if (_http_response is null) { _http_response = new HttpResponseMessage(); }
 
             if (!_http_response.IsSuccessStatusCode)
             {
@@ -141,39 +128,13 @@ namespace Web_Lib
             }
         }
 
-        private async Task PerformPutTvmApiAsync(string api, string content)
+        private async Task PerformPutTvmApiAsync(string api, string json)
         {
+            StringContent httpcontent = new(json, Encoding.UTF8, "application/json");
+            log.Write($"json content now is {json} for api {client.BaseAddress + api}", "WebAPI PPTAA", 4);
 
-            StringContent httpcontent = new(content, Encoding.UTF8, "application/json");
-            log.Write($"content now is {httpcontent.Headers.ToString()} for api {client.BaseAddress + api}", "WebAPI PPTAA", 4);
-
-            try
-            {
-                HttpResponseMessage response = new();
-
-                _http_response = await client.PutAsync(client.BaseAddress + api, httpcontent).ConfigureAwait(false);
-
-            }
-            catch (Exception e)
-            {
-                log.Write($"Exception: {e.Message}", "WebAPI Put Async", 0);
-                if (e.Message.Contains(" seconds elapsing"))
-                {
-                    log.Write($"Retrying Now: {api}", "WebAPI Put Async", 0);
-                    try
-                    {
-                        log.Write($"Retrying Now: {api}", "WebAPI Put Async", 0);
-                        HttpResponseMessage response = new();
-                        _http_response = await client.GetAsync(api).ConfigureAwait(false);
-                    }
-                    catch (Exception ee)
-                    {
-
-                        log.Write($"2nd Exception: {ee.Message}", "WebAPI Put Async", 0);
-
-                    }
-                }
-            }
+            try { _http_response = await client.PutAsync(client.BaseAddress + api, httpcontent).ConfigureAwait(false); }
+            catch (Exception e) { log.Write($"Exception: {e.Message}", "WebAPI Put Async", 0); }
         }
 
         private void SetTvmaze()
@@ -297,15 +258,8 @@ namespace Web_Lib
         {
             SetTvmazeUser();
             string api = $"episodes/{episodeid}";
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
-            string data = "{ \"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 0 }";
-            data = data.Replace("episodeid", episodeid.ToString());
-            if (watcheddate == "") { data = data.Replace("markedat", DateTime.Now.ToString("yyyy-MM-dd")); }
-            else { data = data.Replace("markedat", watcheddate); }
-            log.Write($"Data = {data}", "Web API PETW", 4);
-            client.DefaultRequestHeaders.Add("Data", data);
-
-            PerformWaitPutTvmApiAsync(api, data);
+            if (watcheddate == "") { watcheddate = DateTime.Now.ToString("yyyy-MM-dd"); }
+            PerformWaitPutTvmApiAsync(api, episodeid, watcheddate, "Watched");
 
             return _http_response;
         }
@@ -314,15 +268,8 @@ namespace Web_Lib
         {
             SetTvmazeUser();
             string api = $"episodes/{episodeid}";
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
-            string data = "{\"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 1}";
-            data = data.Replace("episodeid", episodeid.ToString());
-            if (acquiredate == "") { data = data.Replace("markedat", DateTime.Now.ToString("yyyy-MM-dd")); }
-            else { data = data.Replace("markedat", acquiredate); }
-            log.Write($"Data = {data}", "Web API PETA", 4);
-            //client.DefaultRequestHeaders.Add("-d", data);
-
-            PerformWaitPutTvmApiAsync(api, data);
+            if (acquiredate == "") { acquiredate = DateTime.Now.ToString("yyyy-MM-dd"); }
+            PerformWaitPutTvmApiAsync(api, episodeid, acquiredate, "Acquired");
 
             return _http_response;
         }
@@ -331,15 +278,8 @@ namespace Web_Lib
         {
             SetTvmazeUser();
             string api = $"episodes/{episodeid}";
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI G Epi", 4);
-            string data = "{ \"episode_id\": episodeid, \"marked_at\": markedat, \"type\": 2 }";
-            data = data.Replace("episodeid", episodeid.ToString());
-            if (skipdate == "") { data = data.Replace("markedat", DateTime.Now.ToString("yyyy-MM-dd")); }
-            else { data = data.Replace("markedat", skipdate); }
-            log.Write($"Data = {data}", "Web API PETS", 4);
-            client.DefaultRequestHeaders.Add("Data", data);
-
-            PerformWaitPutTvmApiAsync(api, data);
+            if (skipdate == "") { skipdate = DateTime.Now.ToString("yyyy-MM-dd"); }
+            PerformWaitPutTvmApiAsync(api, episodeid, skipdate, "Skipped");
 
             return _http_response;
         }
@@ -391,6 +331,39 @@ namespace Web_Lib
         public void Dispose()
         {
             GC.SuppressFinalize(this);
+        }
+    }
+
+    public class EpisodeMarking
+    {
+        public int episode_id;
+        public int marked_at;
+        public int type;
+
+        public EpisodeMarking(int epi, string date, string ty = "")
+        {
+            episode_id = epi;
+            marked_at = Common.ConvertDateToEpoch(date);
+            switch (ty)
+            {
+                case "Watched":
+                    type = 0;
+                    break;
+                case "Acquired":
+                    type = 1;
+                    break;
+                case "Skipped":
+                    type = 2;
+                    break;
+                default:
+                    type = 0;
+                    break;
+            }
+
+        }
+        public string GetJson()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

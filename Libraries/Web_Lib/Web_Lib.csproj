@@ -6,12 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.36" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common_Lib\Common_Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="HtmlAgilityPack" />
+  </ItemGroup>
 </Project>
