@@ -22,10 +22,13 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            string mediainfo = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/cold.blooded.alaska.s01e01.winter.kill.1080p.web.h264-b2b[eztv.re].mkv";
-            Console.WriteLine(mediainfo[mediainfo.Length - 4]);
-            Console.WriteLine(mediainfo.Substring(mediainfo.Length - 4, 4));
-            File.Move(mediainfo, "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/TransmissionFiles/Temp/cold.blooded.alaska.s01e01.winter.kill.1080p.web.h264-b2b[eztv.re].mkv");
+            // Refresh a single show ///////////////
+            using (ShowAndEpisodes sae = new(appinfo))
+            {
+                int showid = 57360;
+                log.Write($"Working on Refreshing Show {showid}", "", 2);
+                sae.Refresh(showid);
+            }
 
             //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
             /*

@@ -106,6 +106,7 @@ namespace Entities_Lib
             Mdb.success = true;
             string updfields = "";
             string sqlpre = $"update shows set ";
+            updfields += $"`TvmStatus` = '{TvmStatus}', ";
             updfields += $"`Finder` = '{Finder}', ";
             updfields += $"`MediaType` = '{MediaType}', ";
             updfields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";

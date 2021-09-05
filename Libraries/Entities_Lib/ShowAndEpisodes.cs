@@ -28,6 +28,7 @@ namespace Entities_Lib
         {
             Show.FillViaTvmaze(showid);
             if (!Show.isDBFilled || !Show.isFollowed) { log.Write($"Error: Show: {showid} status in DB {Show.isDBFilled} and status Followed {Show.isFollowed}"); return; }
+            Show.TvmStatus = "Following";
             Show.DbUpdate();
             Show.Reset();
 
