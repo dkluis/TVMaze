@@ -81,7 +81,7 @@ namespace DB_Lib
                             epi.PlexDate = pwi.WatchedDate;
                             epi.PlexStatus = "Watched";
                             epi.DbUpdate();
-                            log.Write($"Update Episode Record {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 4);
+                            log.Write($"Update Episode Record {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
 
                             pwi.ProcessedToTvmaze = true;
                             pwi.DbUpdate(appinfo);
@@ -89,7 +89,7 @@ namespace DB_Lib
 
                             if (epi.isAutoDelete)
                             {
-                                log.Write($"Deleting this episode {epi.TvmEpisodeId} files", "", 4);
+                                log.Write($"Deleting this episode {epi.TvmEpisodeId} file", "", 3);
                                 using (MediaFileHandler mfh = new(appinfo))
                                 {
                                     _ = mfh.DeleteEpisodeFiles(epi);

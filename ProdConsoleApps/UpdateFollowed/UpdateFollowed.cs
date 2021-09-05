@@ -62,6 +62,11 @@ namespace UpdateFollowed
                         theshow.TvmStatus = "Following";
                         if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
                         theshow.Reset();
+                        using (ShowAndEpisodes sae = new(appinfo))
+                        {
+                            log.Write($"Working on Refreshing Show {jtshow}", "", 2);
+                            sae.Refresh(jtshow);
+                        }
                     }
                     InFollowedTable.Reset();
 

@@ -19,7 +19,7 @@ namespace RefreshShows
 
             MariaDB Mdbr = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
-            rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows order by `TvmShowId`;");
+            rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows order by `TvmShowId` desc;");
 
             while (rdr.Read())
             {

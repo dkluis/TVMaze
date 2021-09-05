@@ -146,7 +146,7 @@ namespace Entities_Lib
 
             atr = File.GetAttributes(fullmediapath);
             if (atr == FileAttributes.Directory) { isdirectory = true; }
-            if (!isdirectory) { media.Add(mediainfo);  }
+            if (!isdirectory) { media.Add(fullmediapath); }
             else
             {
                 string[] fullmp = fullmediapath.Split("[");
@@ -176,8 +176,16 @@ namespace Entities_Lib
             {
                 string fromfile = file.Replace(fullmediapath, "").Replace("/", "");
                 string topath = Path.Combine(todir, fromfile);
-                File.Move(file, topath);
-                log.Write($"Moved from {file} to {topath}");
+                try
+                {
+                    File.Move(file, topath);
+                    log.Write($"Moved from {file} to {topath}");
+                }
+                catch (Exception ex)
+                {
+                    log.Write($"Error Moving File {file} to {topath} >>> {ex.Message}"); 
+                }
+
             }
 
             //TODO generalize the Processed or just delete when everything is fully tested

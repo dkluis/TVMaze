@@ -124,7 +124,7 @@ namespace Entities_Lib
         {
             if (!isForReview && !isFollowed)
             {
-                log.Write($"New Show {TvmUrl} Ignored due to Review Rules");
+                log.Write($"New Show {TvmUrl} because isForReview and isFollowed are set to false");
                 Mdb.success = true;
                 return Mdb.success;
             }
@@ -288,7 +288,7 @@ namespace Entities_Lib
                     {
                         if (TvmLanguage is not "English" and not "Dutch")
                         {
-                            log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 4);
+                            log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 2);
                             return false;
                         }
                     }
@@ -300,7 +300,7 @@ namespace Entities_Lib
                 {
                     if (TvmLanguage is not "English" and not "Dutch")
                     {
-                        log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 4);
+                        log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 2);
                         return false;
                     }
                 }
@@ -311,7 +311,7 @@ namespace Entities_Lib
                 string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
                 if (!PremiereDate.Contains(compdate) && PremiereDate != "1900-01-01")
                 {
-                    log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}", "", 4);
+                    log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}", "", 2);
                     return false;
                 }
             }
@@ -323,6 +323,7 @@ namespace Entities_Lib
                 case "variety":
                 case "game show":
                 case "talk show":
+                    log.Write($"Rejected {TvmShowId} due to Type {TvmType}", "", 2);
                     return false;
             }
             if (TvmNetwork is not null)
@@ -338,7 +339,8 @@ namespace Entities_Lib
                     case "disney Junior":
                     case "food network":
                     case "":
-                        return false;
+                        log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}", "", 2);
+                        return  false;
                 }
             }
 
