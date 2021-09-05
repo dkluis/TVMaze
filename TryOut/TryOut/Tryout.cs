@@ -23,14 +23,14 @@ namespace TryOut
             log.Start();
 
             // Refresh a single show ///////////////
-            /*
+            
             using (ShowAndEpisodes sae = new(appinfo))
             {
-                int showid = 57360;
+                int showid = 73;
                 log.Write($"Working on Refreshing Show {showid}", "", 2);
                 sae.Refresh(showid);
             }
-            */
+            
             //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
             /*
             using (Process curl = new())
@@ -43,9 +43,6 @@ namespace TryOut
                 //Console.ReadLine();
             }
             */
-
-            WebAPI wa = new(appinfo);
-            wa.PutEpisodeToAcquired(2161963, "2021-09-05");
 
             /*
             using (Process python = new())
