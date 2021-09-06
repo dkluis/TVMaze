@@ -119,8 +119,53 @@ namespace Entities_Lib
             return success;
         }
 
-        public bool MoveMediaToPlex(string mediainfo, Episode episode)
+        public bool MoveMediaToPlex(string mediainfo, Episode episode = null, Show show = null)
         {
+            if (episode is null && show is null)
+            {
+                log.Write($"Episode and Show are set to null, cannot process the move for {mediainfo}", "", 0);
+                using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Episode and Show are set to null, cannot process the move for {mediainfo}"); }
+                return false;
+            }
+            string destdirectory = "";
+            string shown = "";
+            if (episode is not null)
+            {
+                switch (episode.MediaType)
+                {
+                    case "TS":
+                        destdirectory = PlexMediaTvShows;
+                        break;
+                    case "TSS":
+                        destdirectory = PlexMediaTvShowSeries;
+                        break;
+                    case "KTS":
+                        destdirectory = PlexMediaKidsTvShows;
+                        break;
+                    default:
+                        break;
+                }
+                if (episode.AltShowName != "") { shown = episode.AltShowName; } else { shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName); }
+            }
+            else
+            {
+                switch (show.MediaType)
+                {
+                    case "TS":
+                        destdirectory = PlexMediaTvShows;
+                        break;
+                    case "TSS":
+                        destdirectory = PlexMediaTvShowSeries;
+                        break;
+                    case "KTS":
+                        destdirectory = PlexMediaKidsTvShows;
+                        break;
+                    default:
+                        break;
+                }
+                if (show.AltShowName != "") { shown = show.AltShowName; } else { shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName); }
+            }
+
             bool success = false;
             string fullmediapath = Path.Combine(PlexMediaAcquire, mediainfo);
 
@@ -128,21 +173,6 @@ namespace Entities_Lib
             bool isdirectory = false;
             List<string> media = new();
             string[] filesindirectory;
-            string destdirectory = "";
-            switch (episode.MediaType)
-            {
-                case "TS":
-                    destdirectory = PlexMediaTvShows;
-                    break;
-                case "TSS":
-                    destdirectory = PlexMediaTvShowSeries;
-                    break;
-                case "KTS":
-                    destdirectory = PlexMediaKidsTvShows;
-                    break;
-                default:
-                    break;
-            }
 
             atr = File.GetAttributes(fullmediapath);
             if (atr == FileAttributes.Directory) { isdirectory = true; }
@@ -167,9 +197,16 @@ namespace Entities_Lib
             }
 
             if (media.Count == 0) { log.Write($"There was nothing to move {mediainfo}"); }
-            string shown;
-            if (episode.AltShowName != "") { shown = episode.AltShowName; } else { shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName); }
-            string todir = Path.Combine(destdirectory, shown, $"Season {episode.SeasonNum}");
+            string todir = "";
+            if (episode is not null)
+            {
+                todir = Path.Combine(destdirectory, shown, $"Season {episode.SeasonNum}");
+            }
+            else
+            {
+                todir = Path.Combine(destdirectory, shown);
+                //TODO decided of want to extract the season from the mediafile itself
+            }
             if (!Directory.Exists(todir)) { Directory.CreateDirectory(todir); }
 
             foreach (string file in media)

@@ -70,6 +70,10 @@ namespace UpdatePlexAcquired
                 {
                     log.Write($"Could not find episode for Show {show} and Episode String {episode}", "", 2);
                     using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not find episode for Show {show} and Episode String {episode}"); }
+                    Show foundshow = new(appinfo);
+                    foundshow.FillViaTvmaze(showid[0]);
+                    using (MediaFileHandler mfh = new(appinfo)) { mfh.MoveMediaToPlex(acq, null, foundshow); }
+                    foundshow.Reset();
                     continue;
                 }
                 using (Episode epitoupdate = new(appinfo))
