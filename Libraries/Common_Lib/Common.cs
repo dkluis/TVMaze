@@ -70,6 +70,7 @@ namespace Common_Lib
         public static string RemoveSpecialCharsInShowname(string showname)
         {
             showname = showname.Replace(".", " ")
+                               .Replace(",", "")
                                .Replace("   ", " ")
                                .Replace("  ", " ")
                                .Replace("'", "")
