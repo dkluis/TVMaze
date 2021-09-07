@@ -202,22 +202,30 @@ namespace Entities_Lib
                         PremiereDate = Convert.ToDateTime(showjson["premiered"]).ToString("yyyy-MM-dd");
                     }
                 }
-                // Finder
-                // TvmStatus
+
                 CleanedShowName = Common.RemoveSpecialCharsInShowname(ShowName);
-                // AltShowName
-                // UpdateDate
 
                 if (showjson["type"] is not null) { TvmType = showjson["type"].ToString(); }
                 if (showjson["language"] is not null) { TvmLanguage = showjson["language"].ToString(); }
                 if (showjson["officialSite"] is not null) { TvmOfficialSite = showjson["officialSite"].ToString(); }
+
                 if (showjson["network"].ToString() != "")
                 {
                     if (showjson["network"]["name"] is not null) { TvmNetwork = showjson["network"]["name"].ToString(); }
-                    if (showjson["network"]["country"]["name"] is not null) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
+                    if (showjson["network"]["country"] is not null)
+                    {
+                        if (showjson["network"]["country"]["name"] is not null ) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
+                    }
                 }
-                if (showjson["webChannel"] is not null) { TvmNetwork = showjson["webChannel"]["name"].ToString(); }
-                if (showjson["webChannel"]["country"]["name"] is not null) { TvmCountry = showjson["webChannel"]["country"]["name"].ToString(); }
+
+                if (showjson["webChannel"].ToString() != "")
+                {
+                    if (showjson["webChannel"]["name"] is not null) { TvmNetwork = showjson["webChannel"]["name"].ToString(); }
+                    if (showjson["webChannel"]["country"].ToString() != "")
+                    {
+                        if (showjson["webChannel"]["country"]["name"] is not null) { TvmCountry = showjson["webChannel"]["country"]["name"].ToString(); }
+                    }
+                }
 
                 if (showjson["externals"]["imdb"] is not null) { TvmImdb = showjson["externals"]["imdb"].ToString(); }
                 if (showjson["image"].ToString() != "") 
