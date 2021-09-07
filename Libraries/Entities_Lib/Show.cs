@@ -213,26 +213,14 @@ namespace Entities_Lib
                 if (showjson["officialSite"] is not null) { TvmOfficialSite = showjson["officialSite"].ToString(); }
                 if (showjson["network"].ToString() != "")
                 {
-                    if (showjson["network"]["name"] is not null)
-                    {
-                        TvmNetwork = showjson["network"]["name"].ToString();
-                    }
-                    else if (showjson["webChannel"] is not null)
-                    {
-                        TvmNetwork = showjson["webChannel"]["name"].ToString();
-                    }
-                    if (showjson["network"]["country"]["name"] is not null)
-                    {
-                        TvmCountry = showjson["network"]["country"]["name"].ToString();
-                    }
-                    else if (showjson["webChannel"]["country"]["name"] is not null)
-                    {
-                        TvmCountry = showjson["webChannel"]["country"]["name"].ToString();
-                    }
+                    if (showjson["network"]["name"] is not null) { TvmNetwork = showjson["network"]["name"].ToString(); }
+                    if (showjson["network"]["country"]["name"] is not null) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
                 }
+                if (showjson["webChannel"] is not null) { TvmNetwork = showjson["webChannel"]["name"].ToString(); }
+                if (showjson["webChannel"]["country"]["name"] is not null) { TvmCountry = showjson["webChannel"]["country"]["name"].ToString(); }
 
                 if (showjson["externals"]["imdb"] is not null) { TvmImdb = showjson["externals"]["imdb"].ToString(); }
-                if (showjson["image"].ToString() != "")
+                if (showjson["image"].ToString() != "") 
                 {
                     if (showjson["image"]["medium"] is not null) { TvmImage = showjson["image"]["medium"].ToString(); }
                 }
