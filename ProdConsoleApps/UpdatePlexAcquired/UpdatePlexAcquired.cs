@@ -102,7 +102,6 @@ namespace UpdatePlexAcquired
                 {
                     epitoupdate.FillViaTvmaze(epiid);
                     if (epitoupdate.PlexStatus != " ") { log.Write($"Not updating Tvmaze {epitoupdate.TvmEpisodeId} status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2); }
-
                     using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId); }
                     epitoupdate.PlexStatus = "Acquired";
                     epitoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
