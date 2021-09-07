@@ -213,8 +213,22 @@ namespace Entities_Lib
                 if (showjson["officialSite"] is not null) { TvmOfficialSite = showjson["officialSite"].ToString(); }
                 if (showjson["network"].ToString() != "")
                 {
-                    if (showjson["network"]["name"] is not null) { TvmNetwork = showjson["network"]["name"].ToString(); }
-                    if (showjson["network"]["country"]["name"] is not null) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
+                    if (showjson["network"]["name"] is not null)
+                    {
+                        TvmNetwork = showjson["network"]["name"].ToString();
+                    }
+                    else if (showjson["webChannel"] is not null)
+                    {
+                        TvmNetwork = showjson["webChannel"]["name"].ToString();
+                    }
+                    if (showjson["network"]["country"]["name"] is not null)
+                    {
+                        TvmCountry = showjson["network"]["country"]["name"].ToString();
+                    }
+                    else if (showjson["webChannel"]["country"]["name"] is not null)
+                    {
+                        TvmCountry = showjson["webChannel"]["country"]["name"].ToString();
+                    }
                 }
 
                 if (showjson["externals"]["imdb"] is not null) { TvmImdb = showjson["externals"]["imdb"].ToString(); }
@@ -339,9 +353,9 @@ namespace Entities_Lib
                     case "abc kids":
                     case "disney Junior":
                     case "food network":
-                    case "":
+                    //case "":
                         log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}", "", 2);
-                        return  false;
+                        return false;
                 }
             }
 

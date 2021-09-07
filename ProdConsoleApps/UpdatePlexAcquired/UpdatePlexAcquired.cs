@@ -42,16 +42,34 @@ namespace UpdatePlexAcquired
             foreach (string acq in acquired)
             {
                 log.Write($"Processing acquired {acq}");
-                string[] acqinfo = Regex.Split(acq, "[S][0-9]+[E][0-9]+.", RegexOptions.IgnoreCase);
-                string show;
-                string episode;
+                string[] acqinfo = Regex.Split(acq, "S[0-9]+E[0-9]+.", RegexOptions.IgnoreCase);
+                string[] acqseas = Regex.Split(acq, "S[0-9]+.", RegexOptions.IgnoreCase);
+                string show = "";
+                string episode = "";
+                bool isSeason = false;
+                int season = 99;
                 if (acqinfo.Length == 2)
                 {
                     show = acqinfo[0].Replace(".", " ").Trim();
                     episode = acq.Replace(acqinfo[1], "").Replace(acqinfo[0], "").Replace(".", " ").Trim();
-                    log.Write($"Found show {show} episode {episode}", "", 4);
+                    string[] seas = episode.ToLower().Split("e");
+                    season = int.Parse(seas[0].ToString().Replace("s", ""));
+                    log.Write($"Found show {show} episode {episode}, season {season}", "", 4);
                 }
-                else { log.Write($"Could not find a show and episode for {acq}", "", 2); continue; }
+                else 
+                {
+                    if (acqseas.Length == 2)
+                    {
+                        isSeason = true;
+                        show = acqseas[0].Replace(".", " ").Trim();
+                        season = int.Parse(acqseas[0].ToString().ToLower().Replace("s", ""));
+                        log.Write($"Found the show's {show} whole season {season}", "", 4);
+                    }
+                    else
+                    {
+                        log.Write($"Could not find a show and episode for {acq}, is probably a movie #################", "", 2); continue;
+                    }
+                }
 
                 SearchShowsViaNames showtoupdate = new();
                 List<int> showid = showtoupdate.Find(appinfo, show);
@@ -61,10 +79,14 @@ namespace UpdatePlexAcquired
                     using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not determine ShowId for: {show}, found {showid.Count} records"); }
                     continue;
                 }
-
-                EpisodeSearch episodetoupdate = new();
-                int epiid = episodetoupdate.Find(appinfo, int.Parse(showid[0].ToString()), episode);
-                log.Write($"Working on ShowId {showid[0]} and EpisodeId {epiid}");
+                //TODO process all episodes for a season of a show.
+                int epiid = 0;
+                if (isSeason)
+                {
+                    EpisodeSearch episodetoupdate = new();
+                    epiid = episodetoupdate.Find(appinfo, int.Parse(showid[0].ToString()), episode);
+                    log.Write($"Working on ShowId {showid[0]} and EpisodeId {epiid}");
+                }
 
                 if (epiid == 0)
                 {
@@ -72,7 +94,7 @@ namespace UpdatePlexAcquired
                     using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not find episode for Show {show} and Episode String {episode}"); }
                     Show foundshow = new(appinfo);
                     foundshow.FillViaTvmaze(showid[0]);
-                    using (MediaFileHandler mfh = new(appinfo)) { mfh.MoveMediaToPlex(acq, null, foundshow); }
+                    using (MediaFileHandler mfh = new(appinfo)) { mfh.MoveMediaToPlex(acq, null, foundshow, season); }
                     foundshow.Reset();
                     continue;
                 }

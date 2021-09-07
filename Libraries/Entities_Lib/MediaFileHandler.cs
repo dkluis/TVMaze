@@ -84,7 +84,7 @@ namespace Entities_Lib
 
             string seas = $"Season {epi.SeasonNum}";
             string seasonepisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
-            string showname = "";
+            string showname;
             if (epi.AltShowName != "") { showname = epi.AltShowName; } else { showname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(epi.CleanedShowName); }
             string findin = Path.Combine(directory, showname, seas);
             try
@@ -119,7 +119,7 @@ namespace Entities_Lib
             return success;
         }
 
-        public bool MoveMediaToPlex(string mediainfo, Episode episode = null, Show show = null)
+        public bool MoveMediaToPlex(string mediainfo, Episode episode = null, Show show = null, int season = 99)
         {
             if (episode is null && show is null)
             {
@@ -204,14 +204,13 @@ namespace Entities_Lib
             }
             else
             {
-                todir = Path.Combine(destdirectory, shown);
-                //TODO decided of want to extract the season from the mediafile itself
+                todir = Path.Combine(destdirectory, shown, $"Season {season}");
             }
             if (!Directory.Exists(todir)) { Directory.CreateDirectory(todir); }
 
             foreach (string file in media)
             {
-                string fromfile = file.Replace(fullmediapath, "").Replace("/", "");
+                string fromfile = file.Replace(PlexMediaAcquire, "").Replace("/", "");
                 string topath = Path.Combine(todir, fromfile);
                 try
                 {
