@@ -151,8 +151,7 @@ Global
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
 		$0.StandardHeader = $2
 		$0.VersionControlPolicy = $3
-		description = @Shows are 95% done\nReorganized Libraries
-		version = 0.3
+		version = 0.4
 		outputpath = ../../../../../Users/dick/TVMaze/Apps
 	EndGlobalSection
 EndGlobal
