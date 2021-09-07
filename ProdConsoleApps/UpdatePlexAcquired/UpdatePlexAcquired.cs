@@ -81,7 +81,7 @@ namespace UpdatePlexAcquired
                 }
                 //TODO process all episodes for a season of a show.
                 int epiid = 0;
-                if (isSeason)
+                if (!isSeason)
                 {
                     EpisodeSearch episodetoupdate = new();
                     epiid = episodetoupdate.Find(appinfo, int.Parse(showid[0].ToString()), episode);
