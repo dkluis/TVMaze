@@ -69,7 +69,9 @@ namespace Common_Lib
 
         public static string RemoveSpecialCharsInShowname(string showname)
         {
-            showname = showname.Replace(".", " ")
+            showname = showname.Replace("...", "")
+                               .Replace("..", "")
+                               .Replace(".", " ")
                                .Replace(",", "")
                                .Replace("   ", " ")
                                .Replace("  ", " ")
@@ -81,7 +83,8 @@ namespace Common_Lib
                                .Replace("&amp;", "and")
                                .Replace("&", "and")
                                .Trim()
-                               .ToLower();   
+                               .ToLower();
+            showname = showname.Substring(0, showname.Length - 1);  // TODO Fix for strange situation with What If...?   The dots are not handled or seen by the replace or the lenght of the string
             return showname;
         }
 
