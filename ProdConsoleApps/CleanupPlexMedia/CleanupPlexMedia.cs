@@ -56,7 +56,7 @@ namespace CleanupPlexMedia
                 {
                     try
                     {
-                        Directory.Delete(dir, true);
+                        Directory.Delete(dir);
                     }
                     catch (Exception ex)
                     {

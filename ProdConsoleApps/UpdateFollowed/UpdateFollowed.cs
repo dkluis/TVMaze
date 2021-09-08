@@ -51,17 +51,24 @@ namespace UpdateFollowed
 
                     log.Write($"Processing {jtshow}", "", 4);
                     InFollowedTable.GetFollowed(jtshow);
+
                     if (InFollowedTable.inDB)
                     {
                         using (UpdateTvmStatus uts = new()) { uts.ToFollowed(appinfo, jtshow); }
+                        theshow.FillViaTvmaze(jtshow);
                     }
                     else
                     {
-                        InFollowedTable.DbInsert();
                         theshow.FillViaTvmaze(jtshow);
                         theshow.TvmStatus = "Following";
                         if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
+                        using (MariaDB tsu = new(appinfo))
+                        {
+                            tsu.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {theshow.TvmUpdatedEpoch} where `TvmShowId` = {theshow.TvmShowId};");
+                            log.Write($"Updated the TvmShowUpdates table with {theshow.TvmUpdatedEpoch}", "", 4);
+                        }
                         theshow.Reset();
+                        InFollowedTable.DbInsert();
                         using (ShowAndEpisodes sae = new(appinfo))
                         {
                             log.Write($"Working on Refreshing Show {jtshow}", "", 2);

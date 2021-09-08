@@ -40,6 +40,7 @@ namespace Entities_Lib
         public string TvmImdb;
         public string TvmImage;
         public string TvmSummary;
+        public int    TvmUpdatedEpoch;
 
         #endregion
 
@@ -84,6 +85,7 @@ namespace Entities_Lib
             TvmImdb = "";
             TvmImage = "";
             TvmSummary = "";
+            TvmUpdatedEpoch = 1;
 
             isFilled = false;
             isJsonFilled = false;
@@ -240,6 +242,9 @@ namespace Entities_Lib
                     else
                     { TvmSummary = "##Unknow##"; }
                 }
+
+                if (showjson["updated"] is not null) { TvmUpdatedEpoch = int.Parse(showjson["updated"].ToString()); }
+
                 isJsonFilled = true;
                 if (isDBFilled) { isFilled = true; }
             }
@@ -334,6 +339,7 @@ namespace Entities_Lib
                 case "variety":
                 case "game show":
                 case "talk show":
+                case "panel show":
                     log.Write($"Rejected {TvmShowId} due to Type {TvmType}", "", 2);
                     return false;
             }

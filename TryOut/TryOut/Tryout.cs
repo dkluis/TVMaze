@@ -26,11 +26,12 @@ namespace TryOut
             
             using (ShowAndEpisodes sae = new(appinfo))
             {
-                int showid = 73;
+                int showid = 51121;
                 log.Write($"Working on Refreshing Show {showid}", "", 2);
                 sae.Refresh(showid);
             }
             
+
             //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
             /*
             using (Process curl = new())
