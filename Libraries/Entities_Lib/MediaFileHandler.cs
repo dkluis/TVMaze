@@ -87,34 +87,38 @@ namespace Entities_Lib
             string showname;
             if (epi.AltShowName != "") { showname = epi.AltShowName; } else { showname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(epi.CleanedShowName); }
             string findin = Path.Combine(directory, showname, seas);
-            try
+            if (Directory.Exists(findin))
             {
-                string[] files = Directory.GetFiles(findin);
-                foreach (string file in files)
+                try
                 {
-                    string medianame = file.Replace(findin, "").Replace("/", "");
-                    string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", medianame);
-                    log.Write($"File to Delete {medianame} for episode {seasonepisode}", "MediaFileHandler", 4);
-
-                    if (file.ToLower().Contains(seasonepisode.ToLower()))
+                    string[] files = Directory.GetFiles(findin);
+                    foreach (string file in files)
                     {
-                        try
+                        string medianame = file.Replace(findin, "").Replace("/", "");
+                        string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", medianame);
+                        log.Write($"File to Delete {medianame} for episode {seasonepisode}", "MediaFileHandler", 4);
+
+                        if (file.ToLower().Contains(seasonepisode.ToLower()))
                         {
-                            File.Move(file, trashloc);
-                            log.Write($"Delete {medianame}, to {trashloc}", "", 4);
-                        }
-                        catch (Exception e)
-                        {
-                            log.Write($"Something went wrong moving {medianame} to {trashloc}: {e.Message}", "", 0);
-                            using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving {medianame} to {trashloc}: {e.Message}"); }
+                            try
+                            {
+                                File.Move(file, trashloc);
+                                log.Write($"Delete {medianame}, to {trashloc}", "", 4);
+                            }
+                            catch (Exception e)
+                            {
+                                log.Write($"Something went wrong moving {medianame} to {trashloc}: {e.Message}", "", 0);
+                                using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving {medianame} to {trashloc}: {e.Message}"); }
+                            }
                         }
                     }
                 }
+                catch (Exception e)
+                {
+                    log.Write($"Error on getting Files for {Path.Combine(directory, showname, seas)}: {e}");
+                }
             }
-            catch (Exception e)
-            {
-                log.Write($"Error on getting Files for {Path.Combine(directory, showname, seas)}: {e}");
-            }
+            else { log.Write($"Directory {findin} does not exist"); }
 
             return success;
         }
