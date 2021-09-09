@@ -114,10 +114,16 @@ namespace UpdatePlexAcquired
                 using (Episode epitoupdate = new(appinfo))
                 {
                     epitoupdate.FillViaTvmaze(epiid);
-                    if (epitoupdate.PlexStatus != " ") { log.Write($"Not updating Tvmaze {epitoupdate.TvmEpisodeId} status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2); }
-                    using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId); }
-                    epitoupdate.PlexStatus = "Acquired";
-                    epitoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                    if (epitoupdate.PlexStatus != " ")
+                    {
+                        log.Write($"Not updating Tvmaze {epitoupdate.TvmEpisodeId} status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2);
+                    }
+                    else
+                    {
+                        using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId); }
+                        epitoupdate.PlexStatus = "Acquired";
+                        epitoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                    }
                     if (!epitoupdate.DbUpdate()) { log.Write($"Error Updating Episode {epitoupdate.TvmEpisodeId}", "", 0); }
 
                     using (MediaFileHandler mfh = new(appinfo))

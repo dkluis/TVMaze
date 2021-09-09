@@ -85,7 +85,7 @@ namespace Common_Lib
                                .Replace("&", "and")
                                .Trim()
                                .ToLower();
-            showname = showname.Substring(0, showname.Length - 1);  // TODO Fix for strange situation with What If...?   The dots are not handled or seen by the replace or the lenght of the string
+            showname = showname.Substring(0, showname.Length);  // TODO Fix for strange situation with What If...?   The dots are not handled or seen by the replace or the lenght of the string
             return showname;
         }
 
@@ -93,9 +93,11 @@ namespace Common_Lib
         {
             string[] plainyear= Regex.Split(showname, "2[0-2][0-3][0-9]", RegexOptions.IgnoreCase);
             string[] wrappedyear = Regex.Split(showname, "(2[0-2][0-3][0-9])", RegexOptions.IgnoreCase);
+
             if (plainyear.Length == 2) { return plainyear[0]; }
             if (wrappedyear.Length == 2) { return wrappedyear[0]; }
-            return showname;
+            
+            return showname.Replace("(US)", "");
         }
 
         public static string BuildSeasonEpisodeString(int seas_num, int epi_num)

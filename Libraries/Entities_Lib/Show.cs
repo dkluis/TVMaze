@@ -411,7 +411,7 @@ namespace Entities_Lib
             Found = new();
             showname = showname.Replace("'", "''");
             altshowname = altshowname.Replace("'", "''");
-            if (cleanedshowname == "") { cleanedshowname = showname; }
+            if (cleanedshowname == "") { cleanedshowname = Common.RemoveSuffixFromShowname(Common.RemoveSpecialCharsInShowname(showname)); }
             if (altshowname == "") { altshowname = showname; }
             using (MariaDB Mdbr = new(appinfo))
             {
@@ -521,7 +521,7 @@ namespace Entities_Lib
             int records = 0;
             using (MariaDB Mdbr = new(appinfo))
             {
-                MySqlDataReader rdr = Mdbr.ExecQuery($"select count(*) from Followed where `TvmStatus` = 'Following'");
+                MySqlDataReader rdr = Mdbr.ExecQuery($"select count(*) from Followed");
                 if (rdr.HasRows)
                 {
                     while (rdr.Read())

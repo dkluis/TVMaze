@@ -194,7 +194,7 @@ namespace Entities_Lib
             if (BroadcastDate == "") { BroadcastDate = null; }
             if (BroadcastDate is null) { values += $"null, "; } else { values += $"'{BroadcastDate}', "; }
             values += $"'{PlexStatus}', ";
-            if (PlexDate is null) { values += $"null "; } else { values += $"'{PlexDate}', "; }
+            if (PlexDate is null) { values += $"null, "; } else { values += $"'{PlexDate}', "; }
             values += $"'{DateTime.Now.ToString("yyyy-MM-dd")}' ";
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbInsert for Episode: {TvmEpisodeId}", "", 4);
@@ -257,8 +257,11 @@ namespace Entities_Lib
             {
                 using (Episode episode = new(appinfo))
                 {
+                    if (ep is null) { continue; }
                     appinfo.TxtFile.Write($"Working on Episode {ep["id"]}");
                     episode.FillViaTvmaze(int.Parse(ep["id"].ToString()));
+                    if (episode is null) { continue; }
+                    if (episode.Id == 0) { continue; }
                     episodesbyshow.Add(episode);
                 }
             }

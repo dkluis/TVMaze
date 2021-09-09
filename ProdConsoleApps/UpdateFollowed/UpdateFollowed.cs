@@ -49,7 +49,7 @@ namespace UpdateFollowed
                 {
                     jtshow = int.Parse(show["show_id"].ToString());
 
-                    log.Write($"Processing {jtshow}", "", 4);
+                    log.Write($"Processing {jtshow}", "", 3);
                     InFollowedTable.GetFollowed(jtshow);
 
                     if (InFollowedTable.inDB)
