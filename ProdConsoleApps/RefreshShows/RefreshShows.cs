@@ -19,16 +19,17 @@ namespace RefreshShows
 
             MariaDB Mdbr = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
-            rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows where `TvmStatus` = 'Following' order by `TvmShowId` desc;");
+            rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows where `TvmStatus` = 'Following' and PremiereDate > '2014-01-01' and ShowStatus != 'Ended' order by `TvmShowId` desc;");
+            //rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows where `TvmStatus` = 'Following' order by `TvmShowId` desc;");
 
             while (rdr.Read())
             {
-                if (int.Parse(rdr[0].ToString()) > 44036) { continue; }
+                //if (int.Parse(rdr[0].ToString()) > 336) { continue; }
                 using (ShowAndEpisodes sae = new(appinfo))
                 {
                     log.Write($"Working on Show {rdr[0]}", "", 2);
                     sae.Refresh(int.Parse(rdr[0].ToString()));
-                    System.Threading.Thread.Sleep(500);
+                    System.Threading.Thread.Sleep(1000);
                 }
             }
 

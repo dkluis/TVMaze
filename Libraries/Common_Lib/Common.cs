@@ -78,6 +78,7 @@ namespace Common_Lib
                                .Replace("  ", " ")
                                .Replace("'", "")
                                .Replace("\"", "")
+                               .Replace("/", "")
                                .Replace(":", "")
                                .Replace("?", "")
                                .Replace("&#039;", "")

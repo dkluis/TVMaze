@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Entities_Lib
 {
@@ -95,10 +96,21 @@ namespace Entities_Lib
         {
             using (WebAPI je = new(Appinfo))
             {
-                FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
+                //FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
+                HttpResponseMessage tvmepi = je.GetEpisode(episodeid);
+                JObject tvmpepisucccess = new();
+                if (tvmepi.IsSuccessStatusCode) { tvmpepisucccess = je.ConvertHttpToJObject(tvmepi); }
+                if (tvmpepisucccess is not null) { FillViaJson(tvmpepisucccess); } else { this.Reset(); }
                 WebAPI fem = new(Appinfo);
+
                 FillViaDb(episodeid);
-                FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
+
+                //FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
+                HttpResponseMessage tvmepimarks = fem.GetEpisodeMarks(episodeid);
+                JObject tvmepimarkssuccess = new();
+                if (tvmepimarks.IsSuccessStatusCode) { tvmepimarkssuccess = fem.ConvertHttpToJObject(tvmepimarks); }
+                if (tvmepimarkssuccess is not null) { FillEpiMarks(tvmepimarkssuccess);  }
+                
             }   
         }
 
