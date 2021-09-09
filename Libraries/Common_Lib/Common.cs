@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Common_Lib
 {
@@ -90,11 +91,11 @@ namespace Common_Lib
 
         public static string RemoveSuffixFromShowname(string showname)
         {
-            string[] pieces = showname.Split("(");
-            if (pieces.Length > 2)
-                return showname;
-
-            return pieces[0].Trim();
+            string[] plainyear= Regex.Split(showname, "2[0-2][0-3][0-9]", RegexOptions.IgnoreCase);
+            string[] wrappedyear = Regex.Split(showname, "(2[0-2][0-3][0-9])", RegexOptions.IgnoreCase);
+            if (plainyear.Length == 2) { return plainyear[0]; }
+            if (wrappedyear.Length == 2) { return wrappedyear[0]; }
+            return showname;
         }
 
         public static string BuildSeasonEpisodeString(int seas_num, int epi_num)
@@ -145,7 +146,7 @@ namespace Common_Lib
             return date;
         }
 
-        public static string SubtractDaysToDate(string date, int days)
+        public static string SubtractDaysFromDate(string date, int days)
         {
             DateTime calculateddt = ConvertDateToDateTime(date);
             calculateddt = calculateddt.AddDays(-days);

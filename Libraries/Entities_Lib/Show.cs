@@ -409,11 +409,12 @@ namespace Entities_Lib
         public List<int> Find(AppInfo appinfo, string showname, string cleanedshowname = "", string altshowname = "")
         {
             Found = new();
-            if (altshowname == "") { altshowname = showname; }
+            showname = showname.Replace("'", "''");
+            altshowname = altshowname.Replace("'", "''");
             if (cleanedshowname == "") { cleanedshowname = showname; }
+            if (altshowname == "") { altshowname = showname; }
             using (MariaDB Mdbr = new(appinfo))
             {
-                showname = showname.Replace("'", "''");
                 string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}');";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
                 if (rdr is null) { return Found; }
@@ -520,7 +521,7 @@ namespace Entities_Lib
             int records = 0;
             using (MariaDB Mdbr = new(appinfo))
             {
-                MySqlDataReader rdr = Mdbr.ExecQuery($"select count(*) from Followed");
+                MySqlDataReader rdr = Mdbr.ExecQuery($"select count(*) from Followed where `TvmStatus` = 'Following'");
                 if (rdr.HasRows)
                 {
                     while (rdr.Read())

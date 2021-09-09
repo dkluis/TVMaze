@@ -88,11 +88,11 @@ namespace UpdateFollowed
             List<int> ToDelete = followed.ShowsToDelete(AllFollowedShows);
             if (ToDelete.Count > 0)
             {
-                if (ToDelete.Count <= 5)
+                if (ToDelete.Count <= 10)
                 {
                     foreach (int showid in ToDelete)
                     {
-                        log.Write($"Need to Delete {showid}", "", 2);
+                        log.Write($"Deleting {showid}", "", 2);
                         theshow.DbDelete(showid);
                         theshow.Reset();
                         followed.DbDelete(showid);

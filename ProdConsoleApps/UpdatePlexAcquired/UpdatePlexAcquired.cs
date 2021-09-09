@@ -76,8 +76,21 @@ namespace UpdatePlexAcquired
                 if (showid.Count != 1)
                 {
                     log.Write($"Could not determine ShowId for: {show}, found {showid.Count} records", "", 2);
-                    using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not determine ShowId for: {show}, found {showid.Count} records"); }
-                    continue;
+                    if (showid.Count == 0)
+                    {
+                        string reducedShow = Common.RemoveSuffixFromShowname(show);
+                        List<int> reducedShowToUpdate = showtoupdate.Find(appinfo, reducedShow);
+                        if (reducedShowToUpdate.Count == 1)
+                        {
+                            log.Write($"Found {reducedShow} trying this one", "", 2);
+                            showid = reducedShowToUpdate;
+                        }
+                        else
+                        {
+                            using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not determine ShowId for: {show}, found {showid.Count} records"); }
+                            continue;
+                        }
+                    }
                 }
                 //TODO process all episodes for a season of a show.
                 int epiid = 0;
