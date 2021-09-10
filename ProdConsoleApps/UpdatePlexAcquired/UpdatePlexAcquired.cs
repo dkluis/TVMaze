@@ -76,12 +76,25 @@ namespace UpdatePlexAcquired
                 if (showid.Count != 1)
                 {
                     log.Write($"Could not determine ShowId for: {show}, found {showid.Count} records", "", 2);
-                    using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not determine ShowId for: {show}, found {showid.Count} records"); }
-                    continue;
+                    if (showid.Count == 0)
+                    {
+                        string reducedShow = Common.RemoveSuffixFromShowname(show);
+                        List<int> reducedShowToUpdate = showtoupdate.Find(appinfo, reducedShow);
+                        if (reducedShowToUpdate.Count == 1)
+                        {
+                            log.Write($"Found {reducedShow} trying this one", "", 2);
+                            showid = reducedShowToUpdate;
+                        }
+                        else
+                        {
+                            using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not determine ShowId for: {show}, found {showid.Count} records"); }
+                            continue;
+                        }
+                    }
                 }
                 //TODO process all episodes for a season of a show.
                 int epiid = 0;
-                if (isSeason)
+                if (!isSeason)
                 {
                     EpisodeSearch episodetoupdate = new();
                     epiid = episodetoupdate.Find(appinfo, int.Parse(showid[0].ToString()), episode);
@@ -101,11 +114,16 @@ namespace UpdatePlexAcquired
                 using (Episode epitoupdate = new(appinfo))
                 {
                     epitoupdate.FillViaTvmaze(epiid);
-                    if (epitoupdate.PlexStatus != " ") { log.Write($"Not updating Tvmaze {epitoupdate.TvmEpisodeId} status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2); }
-
-                    using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId); }
-                    epitoupdate.PlexStatus = "Acquired";
-                    epitoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                    if (epitoupdate.PlexStatus != " ")
+                    {
+                        log.Write($"Not updating Tvmaze {epitoupdate.TvmEpisodeId} status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2);
+                    }
+                    else
+                    {
+                        using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId); }
+                        epitoupdate.PlexStatus = "Acquired";
+                        epitoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                    }
                     if (!epitoupdate.DbUpdate()) { log.Write($"Error Updating Episode {epitoupdate.TvmEpisodeId}", "", 0); }
 
                     using (MediaFileHandler mfh = new(appinfo))

@@ -75,7 +75,6 @@ namespace Web_Lib
             exectime.Stop();
             log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
 
-            if (_http_response is null) { _http_response = new HttpResponseMessage(); }
             if (!_http_response.IsSuccessStatusCode)
             {
                 log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
@@ -92,7 +91,7 @@ namespace Web_Lib
             catch (Exception e)
             {
                 log.Write($"Exception: {e.Message}", "WebAPI Async", 0);
-                if (e.Message.Contains(" seconds elapsing"))
+                if (e.Message.Contains(" seconds elapsing") || e.Message.Contains("Operation timed out"))
                 {
                     log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
                     try
@@ -112,14 +111,13 @@ namespace Web_Lib
 
             EpisodeMarking em = new(epi, date, type);
             string content = em.GetJson();
+            log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}");
 
             Task t = PerformPutTvmApiAsync(api, content);
             t.Wait();
 
             exectime.Stop();
             log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
-
-            if (_http_response is null) { _http_response = new HttpResponseMessage(); }
 
             if (!_http_response.IsSuccessStatusCode)
             {
@@ -244,7 +242,7 @@ namespace Web_Lib
         {
             SetTvmazeUser();
             string api = $"episodes/{episodeid}";
-            log.Write($"API String = {tvmaze_url}{api}", "WebAPI GM Epi", 4);
+            log.Write($"API String = {tvmaze_user_url}{api}", "WebAPI GM Epi", 4);
             PerformWaitTvmApi(api);
 
             /*

@@ -28,20 +28,21 @@ namespace RefreshShowRss
             int idx = 1;
             foreach (string show in ShowRssShows)
             {
-                // log.Write($"On ShowRss: {show}", "", 4);
-                List<int> foundindb = ssvn.Find(appinfo, show);
-                if (foundindb.Count < 1) { log.Write($"Found {show} on ShowRSS but not in Followed/Shows", "", 2); continue; }
+                log.Write($"On ShowRss: {show}", "", 4);
+                string cleanshow = Common.RemoveSuffixFromShowname(Common.RemoveSpecialCharsInShowname(show));
+                List<int> foundindb = ssvn.Find(appinfo, cleanshow);
+                if (foundindb.Count < 1) { log.Write($"Found {cleanshow} on ShowRSS but not in Followed/Shows", "", 2); continue; }
                 if (foundindb.Count > 1)
                 {
-                    log.Write($"Found multiple shows {show} in DB Show Table");
+                    log.Write($"Found multiple shows {cleanshow} in DB Show Table");
                     foreach (int showid in foundindb)
                     {
-                        log.Write($"TvmShowId {showid}: {show}", "", 0);
+                        log.Write($"TvmShowId {showid}: {cleanshow}", "", 0);
                     }
                     idx--;
                     continue;
                 }
-                log.Write($"Updating {show} to Finder: ShowRss", "", 4);
+                log.Write($"Updating {cleanshow} to Finder: ShowRss", "", 4);
                 UF.ToShowRss(appinfo, Int32.Parse(foundindb[0].ToString()));
                 idx++;
             }

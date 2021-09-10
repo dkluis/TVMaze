@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Common_Lib
 {
@@ -69,29 +70,35 @@ namespace Common_Lib
 
         public static string RemoveSpecialCharsInShowname(string showname)
         {
-            showname = showname.Replace(".", " ")
+            showname = showname.Replace("...", "")
+                               .Replace("..", "")
+                               .Replace(".", " ")
                                .Replace(",", "")
                                .Replace("   ", " ")
                                .Replace("  ", " ")
                                .Replace("'", "")
                                .Replace("\"", "")
+                               .Replace("/", "")
                                .Replace(":", "")
                                .Replace("?", "")
                                .Replace("&#039;", "")
                                .Replace("&amp;", "and")
                                .Replace("&", "and")
                                .Trim()
-                               .ToLower();   
+                               .ToLower();
+            showname = showname.Substring(0, showname.Length);  // TODO Fix for strange situation with What If...?   The dots are not handled or seen by the replace or the lenght of the string
             return showname;
         }
 
         public static string RemoveSuffixFromShowname(string showname)
         {
-            string[] pieces = showname.Split("(");
-            if (pieces.Length > 2)
-                return showname;
+            string[] plainyear= Regex.Split(showname, "2[0-2][0-3][0-9]", RegexOptions.IgnoreCase);
+            string[] wrappedyear = Regex.Split(showname, "(2[0-2][0-3][0-9])", RegexOptions.IgnoreCase);
 
-            return pieces[0].Trim();
+            if (plainyear.Length == 2) { return plainyear[0]; }
+            if (wrappedyear.Length == 2) { return wrappedyear[0]; }
+            
+            return showname.Replace("(US)", "");
         }
 
         public static string BuildSeasonEpisodeString(int seas_num, int epi_num)
@@ -142,7 +149,7 @@ namespace Common_Lib
             return date;
         }
 
-        public static string SubtractDaysToDate(string date, int days)
+        public static string SubtractDaysFromDate(string date, int days)
         {
             DateTime calculateddt = ConvertDateToDateTime(date);
             calculateddt = calculateddt.AddDays(-days);

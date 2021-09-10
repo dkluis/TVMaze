@@ -54,7 +54,14 @@ namespace UpdateShowEpochs
                 using (TvmCommonSql gse = new(appinfo)) { indbepoch = gse.GetShowEpoch(showid); }
                 if (showepoch == indbepoch) { log.Write($"Skipping {showid} since show is already up to date", "", 4); continue; }
 
+                bool isEnded = false;
+                using (TvmCommonSql isE = new(appinfo))
+                {
+                    isEnded = isE.IsShowIdEnded(showid);
+                }
                 tvmshow.FillViaTvmaze(showid);
+                if (tvmshow.TvmStatus == "Ended" && isEnded) { log.Write($"Show {tvmshow.ShowName} is (and already was) Ended - Skipping Update"); continue; }
+
                 log.Write($"TvmShowId: {tvmshow.TvmShowId},  Name: {tvmshow.ShowName}; Tvmaze Epoch: {showepoch}, In DB Epoch {indbepoch}", "", 4);
 
                 if (indbepoch == 0)

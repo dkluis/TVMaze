@@ -38,6 +38,18 @@ namespace DB_Lib
             return isFollowed;
         }
 
+        public bool IsShowIdEnded(int showid)
+        {
+            bool isEnded = false;
+            rdr = db.ExecQuery($"select TvmStatus from Shows where `TvmShowId` = {showid};");
+            while (rdr.Read())
+            {
+                if (rdr["TvmStatus"].ToString() == "Ended") { isEnded = true; };
+            }
+            db.Close();
+            return isEnded;
+        }
+
         public int GetIdViaShowid(int showid)
         {
             int Id = 0;

@@ -75,9 +75,8 @@ namespace DB_Lib
                     {
                         using (Episode epi = new(appinfo))
                         {
-                            using (WebAPI wa = new(appinfo)) { wa.PutEpisodeToWatched(epi.TvmEpisodeId, pwi.WatchedDate); }
-
                             epi.FillViaTvmaze(pwi.TvmEpisodeId);
+                            using (WebAPI wa = new(appinfo)) { wa.PutEpisodeToWatched(epi.TvmEpisodeId, pwi.WatchedDate); }
                             epi.PlexDate = pwi.WatchedDate;
                             epi.PlexStatus = "Watched";
                             epi.DbUpdate();

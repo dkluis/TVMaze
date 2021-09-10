@@ -40,6 +40,7 @@ namespace Entities_Lib
         public string TvmImdb;
         public string TvmImage;
         public string TvmSummary;
+        public int    TvmUpdatedEpoch;
 
         #endregion
 
@@ -84,6 +85,7 @@ namespace Entities_Lib
             TvmImdb = "";
             TvmImage = "";
             TvmSummary = "";
+            TvmUpdatedEpoch = 1;
 
             isFilled = false;
             isJsonFilled = false;
@@ -240,6 +242,9 @@ namespace Entities_Lib
                     else
                     { TvmSummary = "##Unknow##"; }
                 }
+
+                if (showjson["updated"] is not null) { TvmUpdatedEpoch = int.Parse(showjson["updated"].ToString()); }
+
                 isJsonFilled = true;
                 if (isDBFilled) { isFilled = true; }
             }
@@ -266,7 +271,8 @@ namespace Entities_Lib
                         }
                         AltShowName = rdr["AltShowName"].ToString();
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
-                        TvmStatus = rdr["TvmStatus"].ToString();
+                        //TvmStatus = rdr["TvmStatus"].ToString();
+                        MediaType = rdr["MediaType"].ToString();
                     }
                     else
                     {
@@ -334,6 +340,7 @@ namespace Entities_Lib
                 case "variety":
                 case "game show":
                 case "talk show":
+                case "panel show":
                     log.Write($"Rejected {TvmShowId} due to Type {TvmType}", "", 2);
                     return false;
             }
@@ -402,11 +409,12 @@ namespace Entities_Lib
         public List<int> Find(AppInfo appinfo, string showname, string cleanedshowname = "", string altshowname = "")
         {
             Found = new();
+            showname = showname.Replace("'", "''");
+            altshowname = altshowname.Replace("'", "''");
+            if (cleanedshowname == "") { cleanedshowname = Common.RemoveSuffixFromShowname(Common.RemoveSpecialCharsInShowname(showname)); }
             if (altshowname == "") { altshowname = showname; }
-            if (cleanedshowname == "") { cleanedshowname = showname; }
             using (MariaDB Mdbr = new(appinfo))
             {
-                showname = showname.Replace("'", "''");
                 string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}');";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
                 if (rdr is null) { return Found; }

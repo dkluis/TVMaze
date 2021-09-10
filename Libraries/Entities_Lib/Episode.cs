@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Entities_Lib
 {
@@ -95,10 +96,21 @@ namespace Entities_Lib
         {
             using (WebAPI je = new(Appinfo))
             {
-                FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
+                //FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
+                HttpResponseMessage tvmepi = je.GetEpisode(episodeid);
+                JObject tvmpepisucccess = new();
+                if (tvmepi.IsSuccessStatusCode) { tvmpepisucccess = je.ConvertHttpToJObject(tvmepi); }
+                if (tvmpepisucccess is not null) { FillViaJson(tvmpepisucccess); } else { this.Reset(); }
                 WebAPI fem = new(Appinfo);
+
                 FillViaDb(episodeid);
-                FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
+
+                //FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
+                HttpResponseMessage tvmepimarks = fem.GetEpisodeMarks(episodeid);
+                JObject tvmepimarkssuccess = new();
+                if (tvmepimarks.IsSuccessStatusCode) { tvmepimarkssuccess = fem.ConvertHttpToJObject(tvmepimarks); }
+                if (tvmepimarkssuccess is not null) { FillEpiMarks(tvmepimarkssuccess);  }
+                
             }   
         }
 
@@ -166,6 +178,7 @@ namespace Entities_Lib
                 MediaType = rdr["MediaType"].ToString();
                 CleanedShowName = rdr["CleanedShowname"].ToString();
                 AltShowName = rdr["AltShowName"].ToString();
+                UpdateDate = rdr["UpdateDate"].ToString();
                 if (rdr["AutoDelete"].ToString() == "Yes") { isAutoDelete = true; }
                 isDBFilled = true;
             }
@@ -193,8 +206,8 @@ namespace Entities_Lib
             if (BroadcastDate == "") { BroadcastDate = null; }
             if (BroadcastDate is null) { values += $"null, "; } else { values += $"'{BroadcastDate}', "; }
             values += $"'{PlexStatus}', ";
-            if (PlexDate is null) { values += $"null "; } else { values += $"'{PlexDate}' "; }
-            //TODO add updatedate
+            if (PlexDate is null) { values += $"null, "; } else { values += $"'{PlexDate}', "; }
+            values += $"'{DateTime.Now.ToString("yyyy-MM-dd")}' ";
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbInsert for Episode: {TvmEpisodeId}", "", 4);
             Mdb.Close();
@@ -213,7 +226,12 @@ namespace Entities_Lib
             if (BroadcastDate == "") { BroadcastDate = null; }
             if (BroadcastDate is null) { values += $"`BroadcastDate` = null, "; } else { values += $"`BroadcastDate` = '{BroadcastDate}', "; }
             values += $"`PlexStatus` = '{PlexStatus}', ";
-            if (PlexDate is null) { values += $"`PlexDate` = null "; } else { values += $"`PlexDate` = '{PlexDate}' "; }
+            values += $"`Season` = {SeasonNum}, ";
+            values += $"`Episode` = {EpisodeNum}, ";
+            values += $"`SeasonEpisode` = '{SeasonEpisode}', ";
+            if (PlexDate is null) { values += $"`PlexDate` = null, "; } else { values += $"`PlexDate` = '{PlexDate}', "; }
+            values += $"`UpdateDate` = '{DateTime.Now.ToString("yyyy-MM-dd")}' ";
+            
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbUpdate for Episode: {TvmEpisodeId}", "", 4);
             Mdb.Close();
@@ -251,8 +269,11 @@ namespace Entities_Lib
             {
                 using (Episode episode = new(appinfo))
                 {
+                    if (ep is null) { continue; }
                     appinfo.TxtFile.Write($"Working on Episode {ep["id"]}");
                     episode.FillViaTvmaze(int.Parse(ep["id"].ToString()));
+                    if (episode is null) { continue; }
+                    if (episode.Id == 0) { continue; }
                     episodesbyshow.Add(episode);
                 }
             }

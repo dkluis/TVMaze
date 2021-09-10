@@ -49,19 +49,25 @@ namespace UpdateFollowed
                 {
                     jtshow = int.Parse(show["show_id"].ToString());
 
-                    log.Write($"Processing {jtshow}", "", 4);
+                    log.Write($"Processing {jtshow}", "", 3);
                     InFollowedTable.GetFollowed(jtshow);
+
                     if (InFollowedTable.inDB)
                     {
                         using (UpdateTvmStatus uts = new()) { uts.ToFollowed(appinfo, jtshow); }
                     }
                     else
                     {
-                        InFollowedTable.DbInsert();
                         theshow.FillViaTvmaze(jtshow);
                         theshow.TvmStatus = "Following";
                         if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
+                        using (MariaDB tsu = new(appinfo))
+                        {
+                            tsu.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {theshow.TvmUpdatedEpoch} where `TvmShowId` = {theshow.TvmShowId};");
+                            log.Write($"Updated the TvmShowUpdates table with {theshow.TvmUpdatedEpoch}", "", 4);
+                        }
                         theshow.Reset();
+                        InFollowedTable.DbInsert();
                         using (ShowAndEpisodes sae = new(appinfo))
                         {
                             log.Write($"Working on Refreshing Show {jtshow}", "", 2);
@@ -81,11 +87,11 @@ namespace UpdateFollowed
             List<int> ToDelete = followed.ShowsToDelete(AllFollowedShows);
             if (ToDelete.Count > 0)
             {
-                if (ToDelete.Count <= 5)
+                if (ToDelete.Count <= 10)
                 {
                     foreach (int showid in ToDelete)
                     {
-                        log.Write($"Need to Delete {showid}", "", 2);
+                        log.Write($"Deleting {showid}", "", 2);
                         theshow.DbDelete(showid);
                         theshow.Reset();
                         followed.DbDelete(showid);
