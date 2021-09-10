@@ -108,6 +108,7 @@ namespace Entities_Lib
             Mdb.success = true;
             string updfields = "";
             string sqlpre = $"update shows set ";
+            if (TvmStatus == "Reviewing") { TvmStatus = "New"; }
             updfields += $"`TvmStatus` = '{TvmStatus}', ";
             updfields += $"`Finder` = '{Finder}', ";
             updfields += $"`MediaType` = '{MediaType}', ";
