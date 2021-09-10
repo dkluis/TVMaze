@@ -55,7 +55,6 @@ namespace UpdateFollowed
                     if (InFollowedTable.inDB)
                     {
                         using (UpdateTvmStatus uts = new()) { uts.ToFollowed(appinfo, jtshow); }
-                        theshow.FillViaTvmaze(jtshow);
                     }
                     else
                     {

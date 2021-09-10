@@ -271,7 +271,7 @@ namespace Entities_Lib
                         }
                         AltShowName = rdr["AltShowName"].ToString();
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
-                        TvmStatus = rdr["TvmStatus"].ToString();
+                        //TvmStatus = rdr["TvmStatus"].ToString();
                         MediaType = rdr["MediaType"].ToString();
                     }
                     else
