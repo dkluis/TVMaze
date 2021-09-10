@@ -23,27 +23,19 @@ namespace TryOut
             log.Start();
 
             // Refresh a single show ///////////////
-            
+            /*
             using (ShowAndEpisodes sae = new(appinfo))
             {
                 int showid = 51121;
                 log.Write($"Working on Refreshing Show {showid}", "", 2);
                 sae.Refresh(showid);
             }
-            
-
-            //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
-            /*
-            using (Process curl = new())
-            {
-                curl.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/tvm_curl.sh - d '{episode_id:27,\"marked_at\":0,\"type\": 2}' 'https://api.tvmaze.com/v1/user/episodes/2154680'";
-                curl.StartInfo.Arguments = ("-d '{episode_id:27,\"marked_at\":0,\"type\": 2}' 'https://api.tvmaze.com/v1/user/episodes/2154680'");
-                curl.StartInfo.UseShellExecute = true;
-                curl.Start();
-                curl.WaitForExit();
-                //Console.ReadLine();
-            }
             */
+
+            WebAPI showRss = new(appinfo);
+            HttpClientHandler hch = showRss.ShowRssLogin("user", "password");
+
+
 
             /*
             using (Process python = new())

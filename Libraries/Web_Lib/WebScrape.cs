@@ -269,6 +269,15 @@ namespace Web_Lib
             return Titles;
         }
 
+        public bool ShowRssLogin()
+        {
+            bool success = false;
+
+
+
+            return success;
+        }
+
         #endregion
 
         public void Dispose()
