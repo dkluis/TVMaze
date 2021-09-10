@@ -2,6 +2,7 @@
 using Common_Lib;
 using Entities_Lib;
 using Web_Lib;
+using DB_Lib;
 
 using System.Collections.Generic;
 using System.IO;
@@ -34,8 +35,6 @@ namespace TryOut
 
             WebAPI showRss = new(appinfo);
             HttpClientHandler hch = showRss.ShowRssLogin("user", "password");
-
-
 
             /*
             using (Process python = new())

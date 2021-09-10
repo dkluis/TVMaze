@@ -41,10 +41,10 @@ namespace DB_Lib
         public bool IsShowIdEnded(int showid)
         {
             bool isEnded = false;
-            rdr = db.ExecQuery($"select TvmStatus from Shows where `TvmShowId` = {showid};");
+            rdr = db.ExecQuery($"select ShowStatus from Shows where `TvmShowId` = {showid};");
             while (rdr.Read())
             {
-                if (rdr["TvmStatus"].ToString() == "Ended") { isEnded = true; };
+                if (rdr["ShowStatus"].ToString() == "Ended") { isEnded = true; };
             }
             db.Close();
             return isEnded;
