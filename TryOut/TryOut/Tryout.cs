@@ -23,18 +23,19 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            // Refresh a single show ///////////////
-            /*
+
+
             using (ShowAndEpisodes sae = new(appinfo))
             {
-                int showid = 51121;
+                int showid = 57345;
                 log.Write($"Working on Refreshing Show {showid}", "", 2);
                 sae.Refresh(showid);
             }
-            */
 
+            /*
             WebAPI showRss = new(appinfo);
             HttpClientHandler hch = showRss.ShowRssLogin("user", "password");
+            */
 
             /*
             using (Process python = new())

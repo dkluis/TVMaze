@@ -115,6 +115,7 @@ namespace Entities_Lib
             updfields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";
             updfields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
             updfields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
+            updfields += $"`PremiereDate` = '{PremiereDate}', ";
             updfields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
             int rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
@@ -272,7 +273,6 @@ namespace Entities_Lib
                         }
                         AltShowName = rdr["AltShowName"].ToString();
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
-                        //TvmStatus = rdr["TvmStatus"].ToString();
                         MediaType = rdr["MediaType"].ToString();
                     }
                     else
