@@ -267,9 +267,9 @@ namespace Entities_Lib
                         if ( rdr["TvmStatus"].ToString() == "New")
                         {
                             CheckTvm ct = new();
-                            bool Followed = ct.IsFollowedShow(Appinfo, showid);
-                            if (Followed) { TvmStatus = "Followed"; }
-                            isFollowed = Followed;
+                            bool Following = ct.IsFollowedShow(Appinfo, showid);
+                            if (Following) { TvmStatus = "Following"; }
+                            isFollowed = Following;
                         }
                         AltShowName = rdr["AltShowName"].ToString();
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
