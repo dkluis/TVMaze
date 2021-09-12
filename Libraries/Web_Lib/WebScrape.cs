@@ -157,7 +157,7 @@ namespace Web_Lib
             {
                 string magnet = show["download"];
                 prio = PrioritizeMagnet(magnet, "RarbgAPI");
-                log.Write($"Magnet found: {magnet}");
+                //log.Write($"Magnet found: {magnet}");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
                     //TODO still need the compare string check
@@ -201,21 +201,25 @@ namespace Web_Lib
                 prio += 65;
             }
             // Resolution values
-            if (magnet.ToLower().Contains("1080p"))
+            if (magnet.ToLower().Contains("1080p."))
             {
                 prio += 15;
             }
-            else if (magnet.ToLower().Contains("hdtv"))
+            else if (magnet.ToLower().Contains("hdtv."))
             {
                 prio += 14;
             }
-            else if (magnet.ToLower().Contains("720p"))
+            else if (magnet.ToLower().Contains("720p."))
             {
                 prio += 10;
             }
-            else if (magnet.ToLower().Contains("480p"))
+            else if (magnet.ToLower().Contains("480p."))
             {
                 prio += 3;
+            }
+            else if (magnet.ToLower().Contains("2160p."))
+            {
+                prio -= 75;
             }
             // Container values
             if (magnet.ToLower().Contains(".mkv"))
@@ -229,6 +233,12 @@ namespace Web_Lib
             else if (magnet.ToLower().Contains(".avi"))
             {
                 prio += 3;
+            }
+
+            // Wrong Languages
+            if (magnet.ToLower().Contains(".italian."))
+            {
+                prio -= 75;
             }
 
             return prio;
@@ -325,7 +335,10 @@ namespace Web_Lib
 
                 if (seasonscrape.magnets.Count > 0)
                 {
-                    return seasonscrape.magnets[0];
+                    log.Write($"Total Magnets found {seasonscrape.magnets.Count}", "Getters", 4);
+                    string[] temp = seasonscrape.magnets[0].Split("#$#");
+                    string magnet = temp[1];
+                    return magnet;
                 }
             }
 
@@ -342,7 +355,9 @@ namespace Web_Lib
                     if (episodescrape.magnets.Count > 0)
                     {
                         log.Write($"Total Magnets found {episodescrape.magnets.Count}", "Getters", 4);
-                        return episodescrape.magnets[0];
+                        string[] temp = episodescrape.magnets[0].Split("#$#");
+                        string magnet = temp[1];
+                        return magnet;
                     }
                     else
                     {

@@ -96,20 +96,19 @@ namespace Entities_Lib
         {
             using (WebAPI je = new(Appinfo))
             {
-                //FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
-                HttpResponseMessage tvmepi = je.GetEpisode(episodeid);
-                JObject tvmpepisucccess = new();
-                if (tvmepi.IsSuccessStatusCode) { tvmpepisucccess = je.ConvertHttpToJObject(tvmepi); }
-                if (tvmpepisucccess is not null) { FillViaJson(tvmpepisucccess); } else { this.Reset(); }
-                WebAPI fem = new(Appinfo);
+                FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
+                //HttpResponseMessage tvmepi = je.GetEpisode(episodeid);
+                //JObject tvmpepisucccess = new();
+                //if (tvmepi.IsSuccessStatusCode) { tvmpepisucccess = je.ConvertHttpToJObject(tvmepi); }
+                //if (tvmpepisucccess is not null) { FillViaJson(tvmpepisucccess); } else { this.Reset(); }
 
                 FillViaDb(episodeid);
-
-                //FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
-                HttpResponseMessage tvmepimarks = fem.GetEpisodeMarks(episodeid);
-                JObject tvmepimarkssuccess = new();
-                if (tvmepimarks.IsSuccessStatusCode) { tvmepimarkssuccess = fem.ConvertHttpToJObject(tvmepimarks); }
-                if (tvmepimarkssuccess is not null) { FillEpiMarks(tvmepimarkssuccess);  }
+                WebAPI fem = new(Appinfo);
+                FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
+                //HttpResponseMessage tvmepimarks = fem.GetEpisodeMarks(episodeid);
+                //JObject tvmepimarkssuccess = new();
+                //if (tvmepimarks.IsSuccessStatusCode) { tvmepimarkssuccess = fem.ConvertHttpToJObject(tvmepimarks); }
+                //if (tvmepimarkssuccess is not null) { FillEpiMarks(tvmepimarkssuccess);  }
                 
             }   
         }
@@ -272,8 +271,8 @@ namespace Entities_Lib
                     if (ep is null) { continue; }
                     appinfo.TxtFile.Write($"Working on Episode {ep["id"]}");
                     episode.FillViaTvmaze(int.Parse(ep["id"].ToString()));
-                    if (episode is null) { continue; }
-                    if (episode.Id == 0) { continue; }
+                    //if (episode is null) { continue; }
+                    //if (episode.Id == 0) { continue; }
                     episodesbyshow.Add(episode);
                 }
             }
@@ -288,7 +287,6 @@ namespace Entities_Lib
         {
             int epiid = 0;
             MariaDB Mdb = new(appinfo);
-            TextFileHandler log = appinfo.TxtFile;
 
             MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showid} and `SeasonEpisode` = '{seasonepisode}'; ");
             while (rdr.Read())
@@ -305,4 +303,18 @@ namespace Entities_Lib
         }
     }
 
+    public class GetEpisodesToBeAcquired :IDisposable
+    {
+        public MySqlDataReader Find(AppInfo appinfo)
+        {
+            MariaDB Mdb = new(appinfo);
+            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodestoacquire");
+            return rdr;
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+    }
 }

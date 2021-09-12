@@ -27,7 +27,7 @@ namespace TryOut
 
             using (ShowAndEpisodes sae = new(appinfo))
             {
-                int showid = 57345;
+                int showid = 51332;
                 log.Write($"Working on Refreshing Show {showid}", "", 2);
                 sae.Refresh(showid);
             }
