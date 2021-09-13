@@ -308,7 +308,7 @@ namespace Entities_Lib
         public MySqlDataReader Find(AppInfo appinfo)
         {
             MariaDB Mdb = new(appinfo);
-            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodestoacquire");
+            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodestoacquire order by `TvmShowId`, `Season`, `Episode`");
             return rdr;
         }
 

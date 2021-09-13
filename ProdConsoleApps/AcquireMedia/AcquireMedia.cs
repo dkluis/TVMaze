@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Common_Lib;
 using Web_Lib;
 using Entities_Lib;
+using DB_Lib;
 using MySqlConnector;
 
 namespace AcquireMedia
@@ -27,16 +28,31 @@ namespace AcquireMedia
                 rdr = gea.Find(appinfo);
 
             string magnet;
+            Tuple<bool, string> result;
+            bool isSeason = false;
+            int showid = 0;
+            int season = 0;
+
             while (rdr.Read())
             {
-                magnet = media.PerformShowEpisodeMagnetsSearch(rdr["ShowName"].ToString(), int.Parse(rdr["Season"].ToString()), int.Parse(rdr["Episode"].ToString()), log);
+                if (isSeason && showid == int.Parse(rdr["TvmShowId"].ToString())) { continue; } else { isSeason = false; showid = 0; }
+
+                result = media.PerformShowEpisodeMagnetsSearch(rdr["ShowName"].ToString(), int.Parse(rdr["Season"].ToString()), int.Parse(rdr["Episode"].ToString()), log);
                 int episodeid = int.Parse(rdr["TvmEpisodeId"].ToString());
+                magnet = result.Item2;
+                isSeason = result.Item1;
 
-                log.EmptyLine();
-                log.Write($"Found Magnet: {magnet}");
-                log.EmptyLine();
-
-                if (magnet == "") { continue; }
+                if (magnet != "")
+                {
+                    string[] temp = magnet.Split("tr=");
+                    //temp = temp[1].Split("dn=");
+                    log.Write($"Found Magnet for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]} Processin Whole Season is {isSeason}: {temp[0]}");
+                }
+                else
+                {
+                    log.Write($"Magnet Not Found for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]}");
+                    continue;
+                }
 
                 using (Process AcquireMediaScript = new())
                 {
@@ -48,15 +64,38 @@ namespace AcquireMedia
                     AcquireMediaScript.WaitForExit();
                 }
 
-                using (Episode episode = new(appinfo))
+                if (!isSeason)
                 {
-                    episode.FillViaTvmaze(episodeid);
-                    episode.PlexStatus = "Acquired";
-                    episode.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
-                    episode.DbUpdate();
+                    using (Episode episode = new(appinfo))
+                    {
+                        episode.FillViaTvmaze(episodeid);
+                        episode.PlexStatus = "Acquired";
+                        episode.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        episode.DbUpdate();
+                    }
+                    using (WebAPI wai = new(appinfo)) { wai.PutEpisodeToAcquired(episodeid); }
                 }
-
-                using (WebAPI wai = new(appinfo)) { wai.PutEpisodeToAcquired(episodeid); }
+                else
+                {
+                    showid = int.Parse(rdr["TvmShowId"].ToString());
+                    season = int.Parse(rdr["Season"].ToString());
+                    using (MariaDB Mdb = new(appinfo))
+                    {
+                        MySqlDataReader seasrdr = Mdb.ExecQuery($"select * from Episodes where `TvmShowId` = {showid} and `Season` = {season}");
+                        while (seasrdr.Read())
+                        {
+                            int seasepiid = int.Parse(seasrdr["TvmEpisodeId"].ToString());
+                            using (Episode seasepi = new(appinfo))
+                            {
+                                seasepi.FillViaTvmaze(seasepiid);
+                                seasepi.PlexStatus = "Acquired";
+                                seasepi.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                                seasepi.DbUpdate();
+                            }
+                            using (WebAPI wai = new(appinfo)) { wai.PutEpisodeToAcquired(seasepiid); }
+                        }
+                    }
+                }
             }
 
             log.Stop();

@@ -66,7 +66,7 @@ namespace Web_Lib
             showname = Common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //eztv seach char.
             eztv_url += showname;
-            log.Write($"URL MagnetDL is {eztv_url}", "Eztv", 4);
+            log.Write($"URL EZTV is {eztv_url}", "Eztv", 4);
             return eztv_url;
         }
 
@@ -119,7 +119,7 @@ namespace Web_Lib
             showname = Common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //MagnetDL seach char.
             url = url + "/" + showname[0].ToString().ToLower() + "/" + showname + "/";
-            log.Write($"URL MagnetDL is {url}", "MagnetDL", 3);
+            log.Write($"URL MagnetDL is {url}", "MagnetDL", 4);
             return url;
         }
 
@@ -308,22 +308,31 @@ namespace Web_Lib
             appinfo = info;
         }
 
-#pragma warning disable CA1822 // Mark members as static
-        public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, TextFileHandler logger)
-#pragma warning restore CA1822 // Mark members as static
+        public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, TextFileHandler logger)
         {
             TextFileHandler log = logger;
             string seasepi;
-            if (epi_num == 1)
+            string magnet = "";
+            Tuple<bool, string> result = new(false, "");
+
+            if (epi_num == 1) //Search for whole season first
             {
-                //Search for whole season first
                 seasepi = Common.BuildSeasonOnly(seas_num);
-            }
-            else
-            {
-                seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
+                magnet = PerformFindMagnet(showname, seasepi, log);
+                result = new(true, magnet);
             }
 
+            if (magnet == "") //Search if no season found for all other episodes
+            {
+                seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
+                magnet = PerformFindMagnet(showname, seasepi, log);
+                result = new(false, magnet);
+            }
+            return result;
+        }
+
+        public string PerformFindMagnet(string showname, string seasepi, TextFileHandler log)
+        {
             using WebScrape seasonscrape = new(appinfo);
             {
                 seasonscrape.magnets = new();
@@ -341,36 +350,7 @@ namespace Web_Lib
                     return magnet;
                 }
             }
-
-            if (epi_num == 1) // Nothing found while search for the Season
-            {
-                using WebScrape episodescrape = new(appinfo);
-                {
-                    episodescrape.magnets = new();
-                    seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
-                    episodescrape.GetRarbgMagnets(showname, seasepi);
-                    episodescrape.GetEZTVMagnets(showname, seasepi);
-                    episodescrape.GetMagnetDLMagnets(showname, seasepi);
-
-                    if (episodescrape.magnets.Count > 0)
-                    {
-                        log.Write($"Total Magnets found {episodescrape.magnets.Count}", "Getters", 4);
-                        string[] temp = episodescrape.magnets[0].Split("#$#");
-                        string magnet = temp[1];
-                        return magnet;
-                    }
-                    else
-                    {
-
-                        log.Write("No Magnets found", "Getters", 4);
-                        return "";
-                    }
-                }
-            }
-            else
-            {
-                return "";  // Nothing found
-            }
+            return "";
         }
 
         #endregion
