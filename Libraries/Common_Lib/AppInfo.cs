@@ -44,11 +44,7 @@ namespace Common_Lib
             { HomeDir = Environment.GetEnvironmentVariable("HOME"); }
             HomeDir = Path.Combine(HomeDir, Application);
 
-#if DEBUG
-            ConfigFileName = Application + "Debug.cnf";
-#else
             ConfigFileName = Application + ".cnf";
-#endif
             ConfigPath = HomeDir;
             ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
             if (!File.Exists(ConfigFullPath)) { Console.WriteLine($"Log File Does not Exist {ConfigFullPath}"); Environment.Exit(666); }
