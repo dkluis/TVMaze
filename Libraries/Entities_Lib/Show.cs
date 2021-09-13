@@ -416,7 +416,7 @@ namespace Entities_Lib
             if (altshowname == "") { altshowname = showname; }
             using (MariaDB Mdbr = new(appinfo))
             {
-                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}');";
+                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}') and `ShowStatus` = 'Running';";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
                 if (rdr is null) { return Found; }
                 if (!rdr.HasRows) { return Found; }

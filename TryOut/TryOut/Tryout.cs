@@ -24,28 +24,26 @@ namespace TryOut
             log.Start();
 
 
-
+            /*
             using (ShowAndEpisodes sae = new(appinfo))
             {
                 int showid = 56906;
                 log.Write($"Working on Refreshing Show {showid}", "", 2);
                 sae.Refresh(showid);
             }
+            */
+
+            string name = "kung fu (2018)";
+            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
+            name = "kung fu 2018";
+            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
+            name = "kung fu (us)";
+            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
+
 
             /*
             WebAPI showRss = new(appinfo);
             HttpClientHandler hch = showRss.ShowRssLogin("user", "password");
-            */
-
-            /*
-            using (Process python = new())
-            {
-                python.StartInfo.FileName = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/Scripts/tvmaze.sh";
-                python.StartInfo.UseShellExecute = true;
-                python.StartInfo.RedirectStandardOutput = false;
-                bool started = python.Start();
-                python.WaitForExit();
-            }
             */
 
             log.Stop();
