@@ -111,6 +111,7 @@ namespace Entities_Lib
             if (TvmStatus == "Reviewing") { TvmStatus = "New"; }
             updfields += $"`TvmStatus` = '{TvmStatus}', ";
             updfields += $"`Finder` = '{Finder}', ";
+            updfields += $"`ShowStatus` = '{ShowStatus}', ";
             updfields += $"`MediaType` = '{MediaType}', ";
             updfields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";
             updfields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
@@ -416,7 +417,7 @@ namespace Entities_Lib
             if (altshowname == "") { altshowname = showname; }
             using (MariaDB Mdbr = new(appinfo))
             {
-                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}') and `ShowStatus` = 'Running';";
+                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}');";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
                 if (rdr is null) { return Found; }
                 if (!rdr.HasRows) { return Found; }

@@ -24,21 +24,21 @@ namespace TryOut
             log.Start();
 
 
-            /*
-            using (ShowAndEpisodes sae = new(appinfo))
+            using (MariaDB Mdb = new(appinfo))
             {
-                int showid = 56906;
-                log.Write($"Working on Refreshing Show {showid}", "", 2);
-                sae.Refresh(showid);
+                MySqlConnector.MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmShowId` from Shows where `Finder` ='ShowRss'");
+                while (rdr.Read())
+                {
+                    using (Show show = new(appinfo))
+                    {
+                        //int showid = 32791;
+                        int showid = int.Parse(rdr["TvmShowId"].ToString());
+                        log.Write($"Working on Refreshing Show {showid}", "", 2);
+                        show.FillViaTvmaze(showid);
+                        show.DbUpdate();
+                    }
+                }
             }
-            */
-
-            string name = "kung fu (2018)";
-            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
-            name = "kung fu 2018";
-            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
-            name = "kung fu (us)";
-            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
 
 
             /*
