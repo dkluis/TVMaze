@@ -92,13 +92,15 @@ namespace Common_Lib
 
         public static string RemoveSuffixFromShowname(string showname)
         {
-            string[] plainyear= Regex.Split(showname, "2[0-2][0-3][0-9]", RegexOptions.IgnoreCase);
-            string[] wrappedyear = Regex.Split(showname, "(2[0-2][0-3][0-9])", RegexOptions.IgnoreCase);
-
-            if (plainyear.Length == 2) { return plainyear[0]; }
+            string[] wrappedyear = Regex.Split(showname, "[(]2[0-2][0-3][0-9][)]", RegexOptions.IgnoreCase);
             if (wrappedyear.Length == 2) { return wrappedyear[0]; }
-            
-            return showname.Replace("(US)", "");
+
+            string[] plainyear = Regex.Split(showname, "2[0-2][0-3][0-9]", RegexOptions.IgnoreCase);
+            if (plainyear.Length == 2) { return plainyear[0]; }
+
+            string[] wrappedcountry = Regex.Split(showname, "[(][a-z][a-z][)]", RegexOptions.IgnoreCase);
+            if (wrappedcountry.Length == 2) { return wrappedcountry[0]; }
+            return showname;
         }
 
         public static string BuildSeasonEpisodeString(int seas_num, int epi_num)

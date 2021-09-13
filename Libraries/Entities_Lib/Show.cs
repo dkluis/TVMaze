@@ -108,12 +108,14 @@ namespace Entities_Lib
             Mdb.success = true;
             string updfields = "";
             string sqlpre = $"update shows set ";
+            if (TvmStatus == "Reviewing") { TvmStatus = "New"; }
             updfields += $"`TvmStatus` = '{TvmStatus}', ";
             updfields += $"`Finder` = '{Finder}', ";
             updfields += $"`MediaType` = '{MediaType}', ";
             updfields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";
             updfields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
             updfields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
+            updfields += $"`PremiereDate` = '{PremiereDate}', ";
             updfields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
             int rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf);
@@ -265,13 +267,12 @@ namespace Entities_Lib
                         if ( rdr["TvmStatus"].ToString() == "New")
                         {
                             CheckTvm ct = new();
-                            bool Followed = ct.IsFollowedShow(Appinfo, showid);
-                            if (Followed) { TvmStatus = "Followed"; }
-                            isFollowed = Followed;
+                            bool Following = ct.IsFollowedShow(Appinfo, showid);
+                            if (Following) { TvmStatus = "Following"; }
+                            isFollowed = Following;
                         }
                         AltShowName = rdr["AltShowName"].ToString();
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
-                        //TvmStatus = rdr["TvmStatus"].ToString();
                         MediaType = rdr["MediaType"].ToString();
                     }
                     else
@@ -415,7 +416,7 @@ namespace Entities_Lib
             if (altshowname == "") { altshowname = showname; }
             using (MariaDB Mdbr = new(appinfo))
             {
-                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}');";
+                string sql = $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showname}' or `CleanedShowName` = '{cleanedshowname}' or `AltShowName` = '{altshowname}') and `ShowStatus` = 'Running';";
                 MySqlDataReader rdr = Mdbr.ExecQuery(sql);
                 if (rdr is null) { return Found; }
                 if (!rdr.HasRows) { return Found; }

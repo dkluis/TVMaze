@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -60,6 +61,13 @@ namespace Web_Lib
             }
             JArray jarray = JArray.Parse(content);
             return jarray;
+        }
+
+        public HttpClientHandler ShowRssLogin(string user, string password)
+        {
+            HttpClientHandler hch = new();
+            hch.Credentials = new NetworkCredential(user, password);
+            return hch;
         }
 
         #region TVMaze Show APIs

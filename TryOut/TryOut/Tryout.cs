@@ -2,6 +2,7 @@
 using Common_Lib;
 using Entities_Lib;
 using Web_Lib;
+using DB_Lib;
 
 using System.Collections.Generic;
 using System.IO;
@@ -22,38 +23,27 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            // Refresh a single show ///////////////
-            
+
+            /*
             using (ShowAndEpisodes sae = new(appinfo))
             {
-                int showid = 51121;
+                int showid = 56906;
                 log.Write($"Working on Refreshing Show {showid}", "", 2);
                 sae.Refresh(showid);
             }
-            
-
-            //using (WebAPI uts = new(appinfo)) { HttpResponseMessage hs = uts.PutEpisodeToAcquired(2154680); }
-            /*
-            using (Process curl = new())
-            {
-                curl.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/tvm_curl.sh - d '{episode_id:27,\"marked_at\":0,\"type\": 2}' 'https://api.tvmaze.com/v1/user/episodes/2154680'";
-                curl.StartInfo.Arguments = ("-d '{episode_id:27,\"marked_at\":0,\"type\": 2}' 'https://api.tvmaze.com/v1/user/episodes/2154680'");
-                curl.StartInfo.UseShellExecute = true;
-                curl.Start();
-                curl.WaitForExit();
-                //Console.ReadLine();
-            }
             */
 
+            string name = "kung fu (2018)";
+            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
+            name = "kung fu 2018";
+            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
+            name = "kung fu (us)";
+            Console.WriteLine(Common.RemoveSuffixFromShowname(name));
+
+
             /*
-            using (Process python = new())
-            {
-                python.StartInfo.FileName = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/Scripts/tvmaze.sh";
-                python.StartInfo.UseShellExecute = true;
-                python.StartInfo.RedirectStandardOutput = false;
-                bool started = python.Start();
-                python.WaitForExit();
-            }
+            WebAPI showRss = new(appinfo);
+            HttpClientHandler hch = showRss.ShowRssLogin("user", "password");
             */
 
             log.Stop();

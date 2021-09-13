@@ -66,7 +66,7 @@ namespace Web_Lib
             showname = Common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //eztv seach char.
             eztv_url += showname;
-            log.Write($"URL MagnetDL is {eztv_url}", "Eztv", 4);
+            log.Write($"URL EZTV is {eztv_url}", "Eztv", 4);
             return eztv_url;
         }
 
@@ -119,7 +119,7 @@ namespace Web_Lib
             showname = Common.RemoveSpecialCharsInShowname(showname);
             showname = showname.Replace(" ", "-");  //MagnetDL seach char.
             url = url + "/" + showname[0].ToString().ToLower() + "/" + showname + "/";
-            log.Write($"URL MagnetDL is {url}", "MagnetDL", 3);
+            log.Write($"URL MagnetDL is {url}", "MagnetDL", 4);
             return url;
         }
 
@@ -157,7 +157,7 @@ namespace Web_Lib
             {
                 string magnet = show["download"];
                 prio = PrioritizeMagnet(magnet, "RarbgAPI");
-                log.Write($"Magnet found: {magnet}");
+                //log.Write($"Magnet found: {magnet}");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
                     //TODO still need the compare string check
@@ -201,21 +201,25 @@ namespace Web_Lib
                 prio += 65;
             }
             // Resolution values
-            if (magnet.ToLower().Contains("1080p"))
+            if (magnet.ToLower().Contains("1080p."))
             {
                 prio += 15;
             }
-            else if (magnet.ToLower().Contains("hdtv"))
+            else if (magnet.ToLower().Contains("hdtv."))
             {
                 prio += 14;
             }
-            else if (magnet.ToLower().Contains("720p"))
+            else if (magnet.ToLower().Contains("720p."))
             {
                 prio += 10;
             }
-            else if (magnet.ToLower().Contains("480p"))
+            else if (magnet.ToLower().Contains("480p."))
             {
                 prio += 3;
+            }
+            else if (magnet.ToLower().Contains("2160p."))
+            {
+                prio -= 75;
             }
             // Container values
             if (magnet.ToLower().Contains(".mkv"))
@@ -229,6 +233,12 @@ namespace Web_Lib
             else if (magnet.ToLower().Contains(".avi"))
             {
                 prio += 3;
+            }
+
+            // Wrong Languages
+            if (magnet.ToLower().Contains(".italian."))
+            {
+                prio -= 75;
             }
 
             return prio;
@@ -269,6 +279,15 @@ namespace Web_Lib
             return Titles;
         }
 
+        public bool ShowRssLogin()
+        {
+            bool success = false;
+
+
+
+            return success;
+        }
+
         #endregion
 
         public void Dispose()
@@ -289,22 +308,31 @@ namespace Web_Lib
             appinfo = info;
         }
 
-#pragma warning disable CA1822 // Mark members as static
-        public string PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, TextFileHandler logger)
-#pragma warning restore CA1822 // Mark members as static
+        public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num, TextFileHandler logger)
         {
             TextFileHandler log = logger;
             string seasepi;
-            if (epi_num == 1)
+            string magnet = "";
+            Tuple<bool, string> result = new(false, "");
+
+            if (epi_num == 1) //Search for whole season first
             {
-                //Search for whole season first
                 seasepi = Common.BuildSeasonOnly(seas_num);
-            }
-            else
-            {
-                seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
+                magnet = PerformFindMagnet(showname, seasepi, log);
+                result = new(true, magnet);
             }
 
+            if (magnet == "") //Search if no season found for all other episodes
+            {
+                seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
+                magnet = PerformFindMagnet(showname, seasepi, log);
+                result = new(false, magnet);
+            }
+            return result;
+        }
+
+        public string PerformFindMagnet(string showname, string seasepi, TextFileHandler log)
+        {
             using WebScrape seasonscrape = new(appinfo);
             {
                 seasonscrape.magnets = new();
@@ -316,37 +344,13 @@ namespace Web_Lib
 
                 if (seasonscrape.magnets.Count > 0)
                 {
-                    return seasonscrape.magnets[0];
+                    log.Write($"Total Magnets found {seasonscrape.magnets.Count}", "Getters", 4);
+                    string[] temp = seasonscrape.magnets[0].Split("#$#");
+                    string magnet = temp[1];
+                    return magnet;
                 }
             }
-
-            if (epi_num == 1) // Nothing found while search for the Season
-            {
-                using WebScrape episodescrape = new(appinfo);
-                {
-                    episodescrape.magnets = new();
-                    seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
-                    episodescrape.GetRarbgMagnets(showname, seasepi);
-                    episodescrape.GetEZTVMagnets(showname, seasepi);
-                    episodescrape.GetMagnetDLMagnets(showname, seasepi);
-
-                    if (episodescrape.magnets.Count > 0)
-                    {
-                        log.Write($"Total Magnets found {episodescrape.magnets.Count}", "Getters", 4);
-                        return episodescrape.magnets[0];
-                    }
-                    else
-                    {
-
-                        log.Write("No Magnets found", "Getters", 4);
-                        return "";
-                    }
-                }
-            }
-            else
-            {
-                return "";  // Nothing found
-            }
+            return "";
         }
 
         #endregion
