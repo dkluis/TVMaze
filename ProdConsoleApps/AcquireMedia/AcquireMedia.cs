@@ -30,6 +30,8 @@ namespace AcquireMedia
             while (rdr.Read())
             {
                 magnet = media.PerformShowEpisodeMagnetsSearch(rdr["ShowName"].ToString(), int.Parse(rdr["Season"].ToString()), int.Parse(rdr["Episode"].ToString()), log);
+                int episodeid = int.Parse(rdr["TvmEpisodeId"].ToString());
+
                 log.EmptyLine();
                 log.Write($"Found Magnet: {magnet}");
                 log.EmptyLine();
@@ -45,6 +47,16 @@ namespace AcquireMedia
                     bool started = AcquireMediaScript.Start();
                     AcquireMediaScript.WaitForExit();
                 }
+
+                using (Episode episode = new(appinfo))
+                {
+                    episode.FillViaTvmaze(episodeid);
+                    episode.PlexStatus = "Acquired";
+                    episode.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                    episode.DbUpdate();
+                }
+
+                using (WebAPI wai = new(appinfo)) { wai.PutEpisodeToAcquired(episodeid); }
             }
 
             log.Stop();
