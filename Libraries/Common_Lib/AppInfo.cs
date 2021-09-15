@@ -68,9 +68,6 @@ namespace Common_Lib
             string ME = rkffo.FindInArray(ConfigFullPath, "MediaExtensions");
             MediaExtensions = ME.Split(", ");
 
-#if DEBUG
-            ActiveDBConn = DbAltConn;
-#else
             switch (dbconnection)
             {
                 case "DbProduction":
@@ -86,8 +83,6 @@ namespace Common_Lib
                     ActiveDBConn = "";
                     break;
             }
-#endif
-
         }
 
     }

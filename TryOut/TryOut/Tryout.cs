@@ -10,6 +10,9 @@ using System.Net.Http;
 using System.Diagnostics;
 using System.Threading;
 
+using CodeHollow.FeedReader;
+using System.Threading.Tasks;
+
 namespace TryOut
 {
     class TryingOut
@@ -23,7 +26,7 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-
+            /*
             using (MariaDB Mdb = new(appinfo))
             {
                 MySqlConnector.MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmShowId` from Shows where `Finder` ='ShowRss'");
@@ -39,7 +42,7 @@ namespace TryOut
                     }
                 }
             }
-
+            */
 
             /*
             WebAPI showRss = new(appinfo);

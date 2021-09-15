@@ -58,7 +58,8 @@ namespace UpdatePlexAcquired
                     {
                         isSeason = true;
                         show = acqseas[0].Replace(".", " ").Trim();
-                        season = int.Parse(acqseas[0].ToString().ToLower().Replace("s", ""));
+                        season = int.Parse(acq.Replace(acqseas[0], "").Replace(acqseas[1], "").Replace(".", "").ToLower().Replace("s", ""));
+                        //season = int.Parse(acqseas[0].ToString().ToLower().Replace("s", ""));
                         log.Write($"Found the show's {show} whole season {season}", "", 4);
                     }
                     else
