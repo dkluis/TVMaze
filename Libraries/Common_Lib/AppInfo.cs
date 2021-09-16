@@ -44,11 +44,7 @@ namespace Common_Lib
             { HomeDir = Environment.GetEnvironmentVariable("HOME"); }
             HomeDir = Path.Combine(HomeDir, Application);
 
-#if DEBUG
-            ConfigFileName = Application + "Debug.cnf";
-#else
             ConfigFileName = Application + ".cnf";
-#endif
             ConfigPath = HomeDir;
             ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
             if (!File.Exists(ConfigFullPath)) { Console.WriteLine($"Log File Does not Exist {ConfigFullPath}"); Environment.Exit(666); }
@@ -72,9 +68,6 @@ namespace Common_Lib
             string ME = rkffo.FindInArray(ConfigFullPath, "MediaExtensions");
             MediaExtensions = ME.Split(", ");
 
-#if DEBUG
-            ActiveDBConn = DbAltConn;
-#else
             switch (dbconnection)
             {
                 case "DbProduction":
@@ -90,8 +83,6 @@ namespace Common_Lib
                     ActiveDBConn = "";
                     break;
             }
-#endif
-
         }
 
     }

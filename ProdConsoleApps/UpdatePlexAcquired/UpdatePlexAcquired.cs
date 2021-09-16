@@ -20,8 +20,7 @@ namespace UpdatePlexAcquired
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            //string PlexAcquired = Path.Combine(appinfo.ConfigPath, "Inputs", "PlexAcquired.log");  TODO Fix the hardcoding below...
-            string PlexAcquired = "/Volumes/HD-Data-CA-Server/PlexMedia/PlexProcessing/TVMaze/Logs/PlexAcquired.log";
+            string PlexAcquired = Path.Combine(appinfo.ConfigPath, "Inputs", "PlexAcquired.log");
             if (!File.Exists(PlexAcquired))
             {
                 log.Write($"Plex Acquired Log File Does not Exist {PlexAcquired}");
@@ -30,15 +29,12 @@ namespace UpdatePlexAcquired
                 Environment.Exit(0);
             }
 
-            // TODO add whole season processing
-
             string[] acquired = File.ReadAllLines(PlexAcquired);
             string AllAcquired = Path.Combine(appinfo.ConfigPath, "Inputs", "AllAcquired.log");
             File.AppendAllLinesAsync(AllAcquired, acquired);
             File.Delete(PlexAcquired);
             log.Write($"Found {acquired.Length} records in {PlexAcquired}");
 
-            // Process each acquisition (either directory or file)
             foreach (string acq in acquired)
             {
                 log.Write($"Processing acquired {acq}");
@@ -62,7 +58,8 @@ namespace UpdatePlexAcquired
                     {
                         isSeason = true;
                         show = acqseas[0].Replace(".", " ").Trim();
-                        season = int.Parse(acqseas[0].ToString().ToLower().Replace("s", ""));
+                        season = int.Parse(acq.Replace(acqseas[0], "").Replace(acqseas[1], "").Replace(".", "").ToLower().Replace("s", ""));
+                        //season = int.Parse(acqseas[0].ToString().ToLower().Replace("s", ""));
                         log.Write($"Found the show's {show} whole season {season}", "", 4);
                     }
                     else
@@ -92,7 +89,7 @@ namespace UpdatePlexAcquired
                         }
                     }
                 }
-                //TODO process all episodes for a season of a show.
+
                 int epiid = 0;
                 if (!isSeason)
                 {

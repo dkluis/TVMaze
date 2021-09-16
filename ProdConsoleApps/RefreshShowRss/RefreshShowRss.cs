@@ -37,6 +37,16 @@ namespace RefreshShowRss
                     log.Write($"Found multiple shows {cleanshow} in DB Show Table");
                     foreach (int showid in foundindb)
                     {
+                        using (Show showdup = new(appinfo))
+                        {
+                            showdup.FillViaTvmaze(showid);
+                            if (showdup.ShowStatus == "Running")
+                            {
+                                log.Write($"Selected to Update {cleanshow}: {showdup.TvmShowId} to Finder: ShowRss", "", 3);
+                                UF.ToShowRss(appinfo, showdup.TvmShowId);
+                                idx++;
+                            }
+                        }
                         log.Write($"TvmShowId {showid}: {cleanshow}", "", 0);
                     }
                     idx--;
