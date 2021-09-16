@@ -172,8 +172,8 @@ Global
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
 		$0.StandardHeader = $2
 		$0.VersionControlPolicy = $3
-		version = 0.9
+		version = 1.0.0
 		outputpath = ../../../../../Users/dick/TVMaze/Apps
-		description = Plex, Tvmaze and Media Acquisition all working together.
+		description = @Production of Console Apps, no Web UI (yet)\n\nAll console apps are setup and running as an app as well as through crontab
 	EndGlobalSection
 EndGlobal
