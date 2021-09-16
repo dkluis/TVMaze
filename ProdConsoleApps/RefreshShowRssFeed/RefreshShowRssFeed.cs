@@ -24,17 +24,13 @@ namespace RefreshShowRssFeed
             Task<Feed> ShowRssFeed = FeedReader.ReadAsync("http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
             ShowRssFeed.Wait();
             Feed Result = ShowRssFeed.Result;
-            log.Write("Feed Title: " + Result.Title);
-            log.Write("Feed Description: " + Result.Description);
-            log.Write("Feed Image: " + Result.ImageUrl);
+
             MariaDB Mdb = new(appinfo);
             string sql = "";
             int row = 0;
 
             foreach (var Show in Result.Items)
             {
-                // Check if already processed this item;
-
                 if (CheckIfProcessed(appinfo, Show.Title))
                 {
                     continue;
@@ -49,6 +45,7 @@ namespace RefreshShowRssFeed
                     bool started = AcquireMediaScript.Start();
                     AcquireMediaScript.WaitForExit();
                 }
+                log.Write($"Added {Show.Title} to Transmission");
 
                 sql = "insert ShowRssFeed values (";
                 sql += $"0, ";
@@ -58,7 +55,7 @@ namespace RefreshShowRssFeed
                 sql += $"'{DateTime.Now.ToString("yyyy-MM-dd")}') ";
                 row = Mdb.ExecNonQuery(sql);
                 Mdb.Close();
-                if (row != 1) { log.Write($"Insert of Episode {Show.Title} Failed"); } else { log.Write($"Inserted of Episode {Show.Title} successfully"); }
+                if (row != 1) { log.Write($"Insert of Episode {Show.Title} Failed", "", 4); } else { log.Write($"Inserted of Episode {Show.Title} successfully", "", 4); }
             }
 
 
