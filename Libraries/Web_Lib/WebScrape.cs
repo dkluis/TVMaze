@@ -29,7 +29,7 @@ namespace Web_Lib
 
         public void GetEZTVMagnets(string showname, string seasepi)
         {
-            string html = BuildEztvURL(showname);
+            string html = BuildEztvURL($"{showname}-{seasepi}");
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             log.Write($"Compare string = {comparewithmagnet}", "Eztv", 4);
@@ -76,7 +76,7 @@ namespace Web_Lib
 
         public void GetMagnetDLMagnets(string showname, string seasepi)
         {
-            string html = BuildMagnetDLURL(showname);
+            string html = BuildMagnetDLURL($"{showname}-{seasepi}");
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 4);
