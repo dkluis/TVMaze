@@ -30,7 +30,7 @@ namespace UpdateFollowed
 
             WebAPI tvmapi = new(appinfo);
             JArray FollowedShowOnTvmaze = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
-            log.Write($"Found {FollowedShowOnTvmaze.Count} Followed Shows Tvmaze");
+            log.Write($"Found {FollowedShowOnTvmaze.Count} Followed Shows Tvmaze", "", 2);
 
             CheckDb cdb = new();
             int records = cdb.FollowedCount(appinfo);
@@ -38,6 +38,7 @@ namespace UpdateFollowed
 
             Show theshow = new(appinfo);
             int idx = 0;
+            int delidx = 0;
             List<int> AllFollowedShows = new();
 
             using (MariaDB Mdbw = new(appinfo))
@@ -49,12 +50,13 @@ namespace UpdateFollowed
                 {
                     jtshow = int.Parse(show["show_id"].ToString());
 
-                    log.Write($"Processing {jtshow}", "", 3);
+                    log.Write($"Processing {jtshow}", "", 4);
                     InFollowedTable.GetFollowed(jtshow);
 
                     if (InFollowedTable.inDB)
                     {
                         using (UpdateTvmStatus uts = new()) { uts.ToFollowed(appinfo, jtshow); }
+                        idx++;
                     }
                     else
                     {
@@ -64,23 +66,22 @@ namespace UpdateFollowed
                         using (MariaDB tsu = new(appinfo))
                         {
                             tsu.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {theshow.TvmUpdatedEpoch} where `TvmShowId` = {theshow.TvmShowId};");
-                            log.Write($"Updated the TvmShowUpdates table with {theshow.TvmUpdatedEpoch}", "", 4);
+                            log.Write($"Updated the TvmShowUpdates table with {theshow.TvmUpdatedEpoch}", "", 3);
                         }
                         theshow.Reset();
                         InFollowedTable.DbInsert();
                         using (ShowAndEpisodes sae = new(appinfo))
                         {
-                            log.Write($"Working on Refreshing Show {jtshow}", "", 2);
+                            log.Write($"Working on Refreshing Show {jtshow}", "", 3);
                             sae.Refresh(jtshow);
                         }
+                        idx++;
                     }
                     InFollowedTable.Reset();
-
                     AllFollowedShows.Add(int.Parse(show["show_id"].ToString()));
-                    idx++;
                     Mdbw.Close();
                 }
-                log.Write($"Updated or Inserted {idx} Followed Shows");
+                log.Write($"Updated or Inserted {idx} Shows", "", 2);
             }
 
             Followed followed = new(appinfo);
@@ -96,11 +97,13 @@ namespace UpdateFollowed
                         theshow.Reset();
                         followed.DbDelete(showid);
                         followed.Reset();
-
+                        delidx++;
                     }
                 }
                 else { log.Write($"Too Many Shows are flagged for deletion {ToDelete.Count}", "", 0); }
+                log.Write($"Deleted {delidx} Shows", "", 1);
             }
+
 
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");

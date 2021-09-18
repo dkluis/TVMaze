@@ -172,11 +172,22 @@ namespace Entities_Lib
 
             bool success = false;
             string fullmediapath = Path.Combine(PlexMediaAcquire, mediainfo);
-
-            FileAttributes atr = File.GetAttributes(fullmediapath);
             bool isdirectory = false;
             List<string> media = new();
             string[] filesindirectory;
+            FileAttributes atr = new();
+
+            /*      Implement when another abort happens
+            try
+            {
+                if (Directory.Exists(fullmediapath) || File.Exists(fullmediapath)) { log.Write($"Could not find {fullmediapath} anywhere"); return success; }
+            }
+            catch (Exception ex)
+            {
+                log.Write($"Got an error {ex} trying to access {fullmediapath}");
+                return success;
+            }
+            */
 
             atr = File.GetAttributes(fullmediapath);
             if (atr == FileAttributes.Directory) { isdirectory = true; }

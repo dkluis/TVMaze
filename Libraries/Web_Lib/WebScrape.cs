@@ -91,7 +91,7 @@ namespace Web_Lib
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
             if (table is null)
             {
-                log.Write($"No result return from the webscape", "MagnetDL", 3);
+                log.Write($"No result return from the webscape", "MagnetDL", 4);
                 return;
             }
             foreach (HtmlNode node in table)

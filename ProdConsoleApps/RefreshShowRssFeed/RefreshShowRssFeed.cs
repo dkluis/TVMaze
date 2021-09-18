@@ -28,14 +28,21 @@ namespace RefreshShowRssFeed
             MariaDB Mdb = new(appinfo);
             string sql = "";
             int row = 0;
+            int idx = 0;
 
             foreach (var Show in Result.Items)
             {
+                idx++;
                 if (CheckIfProcessed(appinfo, Show.Title))
                 {
                     continue;
                 }
-                
+
+                if (Show.Title.ToLower().Contains("proper") || Show.Title.ToLower().Contains("repack"))
+                {
+                    log.Write($"Found Repack or Proper Version: {Show.Title}");
+                }
+
                 using (Process AcquireMediaScript = new())
                 {
                     AcquireMediaScript.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/AcquireMediaViaTransmission.sh";
@@ -55,10 +62,10 @@ namespace RefreshShowRssFeed
                 sql += $"'{DateTime.Now.ToString("yyyy-MM-dd")}') ";
                 row = Mdb.ExecNonQuery(sql);
                 Mdb.Close();
-                if (row != 1) { log.Write($"Insert of Episode {Show.Title} Failed", "", 4); } else { log.Write($"Inserted of Episode {Show.Title} successfully", "", 4); }
+                if (row != 1) { log.Write($"Insert of Episode {Show.Title} Failed", "", 4); } else { log.Write($"Inserted Episode {Show.Title} successfully", "", 4); }
             }
 
-
+            log.Write($"Processed {idx} records from ShowRss");
             log.Stop();
             Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }

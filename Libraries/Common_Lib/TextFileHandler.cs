@@ -37,16 +37,13 @@ namespace Common_Lib
         public void Start()
         {
             EmptyLine();
-            Write($"{app} Started  ##########################################", app, 0);
-            EmptyLine();
+            Write($"{app} Started  ########################################################################################", app, 0);
         }
 
         public void Stop()
         {
             timer.Stop();
-            EmptyLine();
-            Write($"{app} Finished ###################  in {timer.ElapsedMilliseconds} mSec  #######################", app, 0);
-            EmptyLine();
+            Write($"{app} Finished ####################################  in {timer.ElapsedMilliseconds} mSec  ####################################", app, 0);
         }
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
