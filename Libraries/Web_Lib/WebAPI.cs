@@ -119,7 +119,7 @@ namespace Web_Lib
 
             EpisodeMarking em = new(epi, date, type);
             string content = em.GetJson();
-            log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}");
+            log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}", "", 4);
 
             Task t = PerformPutTvmApiAsync(api, content);
             t.Wait();

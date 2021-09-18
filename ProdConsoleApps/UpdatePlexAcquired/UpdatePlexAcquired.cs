@@ -14,9 +14,8 @@ namespace UpdatePlexAcquired
         static void Main(string[] args)
         {
             string This_Program = "Update Plex Acquired";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -25,7 +24,6 @@ namespace UpdatePlexAcquired
             {
                 log.Write($"Plex Acquired Log File Does not Exist {PlexAcquired}");
                 log.Stop();
-                Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
                 Environment.Exit(0);
             }
 
@@ -131,7 +129,6 @@ namespace UpdatePlexAcquired
             }
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }

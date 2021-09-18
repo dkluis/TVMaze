@@ -24,9 +24,8 @@ namespace DB_Lib
         static void Main()
         {
             string This_Program = "Update Plex Watched";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
 
             log.Start();
@@ -80,7 +79,7 @@ namespace DB_Lib
                             epi.PlexDate = pwi.WatchedDate;
                             epi.PlexStatus = "Watched";
                             epi.DbUpdate();
-                            log.Write($"Update Episode Record {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
+                            log.Write($"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
 
                             pwi.ProcessedToTvmaze = true;
                             pwi.DbUpdate(appinfo);
@@ -88,7 +87,7 @@ namespace DB_Lib
 
                             if (epi.isAutoDelete)
                             {
-                                log.Write($"Deleting this episode {epi.TvmEpisodeId} file", "", 3);
+                                log.Write($"Deleting this episode for {pwi.ShowName} - {pwi.SeasonEpisode} file", "", 3);
                                 using (MediaFileHandler mfh = new(appinfo))
                                 {
                                     _ = mfh.DeleteEpisodeFiles(epi);
@@ -104,7 +103,6 @@ namespace DB_Lib
             }
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }

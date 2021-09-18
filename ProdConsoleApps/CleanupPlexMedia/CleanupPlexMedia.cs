@@ -12,9 +12,8 @@ namespace CleanupPlexMedia
         static void Main()
         {
             string This_Program = "Cleanup Plex Media";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -67,7 +66,6 @@ namespace CleanupPlexMedia
             }
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }

@@ -15,9 +15,8 @@ namespace RefreshShowRssFeed
         static void Main(string[] args)
         {
             string This_Program = "Refresh ShowRss Feed";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}: {This_Program} ");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -67,7 +66,6 @@ namespace RefreshShowRssFeed
 
             log.Write($"Processed {idx} records from ShowRss");
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
 
         static bool CheckIfProcessed(AppInfo appinfo, string showname)

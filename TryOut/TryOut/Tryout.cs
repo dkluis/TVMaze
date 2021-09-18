@@ -20,9 +20,7 @@ namespace TryOut
         static void Main()
         {
             string This_Program = "Trying Out";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -50,7 +48,6 @@ namespace TryOut
             */
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }
