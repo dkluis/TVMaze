@@ -88,7 +88,7 @@ namespace DB_Lib
             ProcessedToTvmaze = true;
             if (DbInsert(appinfo))
             {
-                //Do the Tvmaze Update
+                //TODO Do the Tvmaze Update
             }
         }
 
@@ -100,7 +100,7 @@ namespace DB_Lib
             {
                 string sql = $"insert into `PlexWatchedEpisodes` values (";
                 sql +=  $"0, {TvmShowId}, {TvmEpisodeId}, ";
-                sql += $"'{ShowName}', {Season}, {Episode}, ";
+                sql += $"'{ShowName.Replace("'", "''")}', {Season}, {Episode}, ";
                 sql += $"'{SeasonEpisode}', '{WatchedDate}', ";
                 sql += $"0, '{DateTime.Now.ToString("yyyy-MM-dd")}' ); ";
                 rows = Mdbw.ExecNonQuery(sql, true);

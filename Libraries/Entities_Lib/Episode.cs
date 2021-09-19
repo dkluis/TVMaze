@@ -269,7 +269,7 @@ namespace Entities_Lib
                 using (Episode episode = new(appinfo))
                 {
                     if (ep is null) { continue; }
-                    appinfo.TxtFile.Write($"Working on Episode {ep["id"]}");
+                    appinfo.TxtFile.Write($"Working on Episode {ep["id"]}", "", 4);
                     episode.FillViaTvmaze(int.Parse(ep["id"].ToString()));
                     //if (episode is null) { continue; }
                     //if (episode.Id == 0) { continue; }

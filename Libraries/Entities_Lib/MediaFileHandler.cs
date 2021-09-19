@@ -230,7 +230,7 @@ namespace Entities_Lib
                 try
                 {
                     File.Move(file, topath);
-                    log.Write($"Moved from {file} to {topath}");
+                    log.Write($"Moved To: {topath}");
                 }
                 catch (Exception ex)
                 {

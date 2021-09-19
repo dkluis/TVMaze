@@ -93,7 +93,7 @@ namespace UpdatePlexAcquired
                 {
                     EpisodeSearch episodetoupdate = new();
                     epiid = episodetoupdate.Find(appinfo, int.Parse(showid[0].ToString()), episode);
-                    log.Write($"Working on ShowId {showid[0]} and EpisodeId {epiid}");
+                    log.Write($"Working on ShowId {showid[0]} and EpisodeId {epiid}", "", 4);
                 }
 
                 if (epiid == 0)
@@ -111,7 +111,7 @@ namespace UpdatePlexAcquired
                     epitoupdate.FillViaTvmaze(epiid);
                     if (epitoupdate.PlexStatus != " ")
                     {
-                        log.Write($"Not updating Tvmaze {epitoupdate.TvmEpisodeId} status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2);
+                        log.Write($"Not updating Tvmaze status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2);
                     }
                     else
                     {
