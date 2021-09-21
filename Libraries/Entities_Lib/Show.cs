@@ -156,6 +156,7 @@ namespace Entities_Lib
             values += $"'{Finder}', ";
             values += $"'{MediaType}', ";
             values += $"'{CleanedShowName.Replace("'", "''")}', ";
+            if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); } 
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
@@ -275,6 +276,7 @@ namespace Entities_Lib
                             isFollowed = Following;
                         }
                         AltShowName = rdr["AltShowName"].ToString();
+                        if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); }
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
                         MediaType = rdr["MediaType"].ToString();
                     }
@@ -287,6 +289,7 @@ namespace Entities_Lib
                         ShowStatus = rdr["ShowStatus"].ToString();
                         PremiereDate = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
                         CleanedShowName = rdr["CleanedShowName"].ToString();
+                        if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); }
                     }
                     if (isJsonFilled) { isFilled = true; }
                 }

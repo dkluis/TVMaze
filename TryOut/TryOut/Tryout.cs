@@ -24,28 +24,20 @@ namespace TryOut
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            /*
-            using (MariaDB Mdb = new(appinfo))
+            MariaDB Mdbr = new(appinfo);
+            MySqlConnector.MySqlDataReader rdr;
+
+            rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where ShowName like '%:%' order by `TvmShowId` desc");
+
+            while (rdr.Read())
             {
-                MySqlConnector.MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmShowId` from Shows where `Finder` ='ShowRss'");
-                while (rdr.Read())
+                using (ShowAndEpisodes sae = new(appinfo))
                 {
-                    using (Show show = new(appinfo))
-                    {
-                        //int showid = 32791;
-                        int showid = int.Parse(rdr["TvmShowId"].ToString());
-                        log.Write($"Working on Refreshing Show {showid}", "", 2);
-                        show.FillViaTvmaze(showid);
-                        show.DbUpdate();
-                    }
+                    log.Write($"Working on Show {rdr[0]} {rdr[1]}", "", 2);
+                    sae.Refresh(int.Parse(rdr[0].ToString()));
+                    System.Threading.Thread.Sleep(1000);
                 }
             }
-            */
-
-            /*
-            WebAPI showRss = new(appinfo);
-            HttpClientHandler hch = showRss.ShowRssLogin("user", "password");
-            */
 
             log.Stop();
         }

@@ -36,7 +36,7 @@ namespace AcquireMedia
             while (rdr.Read())
             {
                 if (isSeason && showid == int.Parse(rdr["TvmShowId"].ToString())) { continue; } else { isSeason = false; showid = 0; }
-                if (rdr["AltShowName"].ToString() != "") { showname = rdr["AltShowName"].ToString();  } else { showname = rdr["ShowName"].ToString(); }
+                if (rdr["AltShowName"].ToString() != "") { showname = rdr["AltShowName"].ToString().Replace("(", "").Replace(")", "");  } else { showname = rdr["ShowName"].ToString(); }
                 result = media.PerformShowEpisodeMagnetsSearch(showname, int.Parse(rdr["Season"].ToString()), int.Parse(rdr["Episode"].ToString()), log);
                 int episodeid = int.Parse(rdr["TvmEpisodeId"].ToString());
                 magnet = result.Item2;

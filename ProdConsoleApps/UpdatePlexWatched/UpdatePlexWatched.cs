@@ -83,16 +83,15 @@ namespace DB_Lib
 
                             pwi.ProcessedToTvmaze = true;
                             pwi.DbUpdate(appinfo);
-                            pwi.Reset();
-
                             if (epi.isAutoDelete)
                             {
-                                log.Write($"Deleting this episode for {pwi.ShowName} - {pwi.SeasonEpisode} file", "", 3);
+                                log.Write($"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file", "", 3);
                                 using (MediaFileHandler mfh = new(appinfo))
                                 {
                                     _ = mfh.DeleteEpisodeFiles(epi);
                                 }
                             }
+                            pwi.Reset();
                         }
                     } 
                 }
