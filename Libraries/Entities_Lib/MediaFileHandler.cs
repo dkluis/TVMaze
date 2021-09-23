@@ -123,6 +123,21 @@ namespace Entities_Lib
             return success;
         }
 
+        public bool MoveNonTvMediaToPlex(string mediainfo)
+        {
+            bool success = false;
+            bool isMovie = false;
+            bool isMusic = false;
+            bool isAudible = false;
+
+            //Figure out if Movie -> means it is a mkv, mp4, etc
+            //Figure out if Music -> means it is mp3, m4a, m4p, etc
+            //Figure out if Audible -> means it is m4b, m4a, Maybe just stage Music and Audible instead???
+
+
+            return success;
+        }
+
         public bool MoveMediaToPlex(string mediainfo, Episode episode = null, Show show = null, int season = 99)
         {
             if (episode is null && show is null)

@@ -27,7 +27,7 @@ namespace TryOut
             MariaDB Mdbr = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
 
-            rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where ShowName like '%:%' order by `TvmShowId` desc");
+            rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = 34496 order by `TvmShowId` desc");
 
             while (rdr.Read())
             {

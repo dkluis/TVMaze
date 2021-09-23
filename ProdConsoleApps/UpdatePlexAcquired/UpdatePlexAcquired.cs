@@ -62,7 +62,12 @@ namespace UpdatePlexAcquired
                     }
                     else
                     {
-                        log.Write($"Could not find a show and episode for {acq}, is probably a movie #################", "", 2); continue;
+                        log.Write($"Could not find a show and episode for {acq}, is probably a movie or music #################", "", 2);
+                        using (MediaFileHandler mfh = new(appinfo))
+                        {
+                            mfh.MoveNonTvMediaToPlex(acq);
+                        }
+                        continue;
                     }
                 }
 

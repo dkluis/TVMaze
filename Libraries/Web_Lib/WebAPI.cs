@@ -26,6 +26,8 @@ namespace Web_Lib
         private string RarbgAPI_url_suf;
         private readonly string TvmazeSecurity;
 
+        private bool isTimedOut;
+
         private readonly TextFileHandler log;
 
         public WebAPI(AppInfo appinfo)
@@ -83,7 +85,12 @@ namespace Web_Lib
             exectime.Stop();
             log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
 
-            if (!_http_response.IsSuccessStatusCode)
+            if (isTimedOut)
+            {
+                log.Write($"TimedOut --> Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 3);
+                _http_response = new HttpResponseMessage();
+            }
+            else if (!_http_response.IsSuccessStatusCode)
             {
                 log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
                 _http_response = new HttpResponseMessage();
@@ -95,6 +102,7 @@ namespace Web_Lib
             try
             {
                 _http_response = await client.GetAsync(api).ConfigureAwait(false);
+                isTimedOut = false;
             }
             catch (Exception e)
             {
@@ -108,6 +116,7 @@ namespace Web_Lib
                         _http_response = await client.GetAsync(api).ConfigureAwait(false);
                     }
                     catch (Exception ee) { log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0); }
+                    isTimedOut = true;
                 }
             }
         }
