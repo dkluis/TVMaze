@@ -160,7 +160,6 @@ namespace Web_Lib
                 //log.Write($"Magnet found: {magnet}");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
-                    //TODO still need the compare string check
                     magnets.Add(prio + "#$# " + magnet);
                     log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 4);
                 }

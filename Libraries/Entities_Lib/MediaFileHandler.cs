@@ -254,9 +254,7 @@ namespace Entities_Lib
 
             }
 
-            //TODO generalize the Processed or just delete when everything is fully tested
             if (isdirectory) { Directory.Move(fullmediapath, $"{PlexMediaAcquire}/Processed/{mediainfo}"); }
-
             return success;
         }
 
