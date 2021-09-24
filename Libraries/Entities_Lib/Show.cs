@@ -128,11 +128,11 @@ namespace Entities_Lib
             return Mdb.success;
         }
 
-        public bool DbInsert()
+        public bool DbInsert(bool OverRide = false)
         {
-            if (!isForReview && !isFollowed)
+            if (!isForReview && !isFollowed && !OverRide)
             {
-                log.Write($"New Show {TvmUrl} because isForReview and isFollowed are set to false");
+                log.Write($"New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false");
                 Mdb.success = true;
                 return Mdb.success;
             }

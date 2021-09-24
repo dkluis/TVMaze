@@ -13,21 +13,23 @@ using System.Threading;
 using CodeHollow.FeedReader;
 using System.Threading.Tasks;
 
-namespace TryOut
+namespace RefreshOneShow
 {
-    class TryingOut
+    class RefreshOneShow
     {
         static void Main()
         {
-            string This_Program = "Trying Out";
+            string This_Program = "Refresh One Show";
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
+            int TheShowToRefresh = 3039;
+
             MariaDB Mdbr = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
 
-            rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = 34496 order by `TvmShowId` desc");
+            rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {TheShowToRefresh} order by `TvmShowId` desc");
 
             while (rdr.Read())
             {
@@ -35,7 +37,6 @@ namespace TryOut
                 {
                     log.Write($"Working on Show {rdr[0]} {rdr[1]}", "", 2);
                     sae.Refresh(int.Parse(rdr[0].ToString()));
-                    System.Threading.Thread.Sleep(1000);
                 }
             }
 

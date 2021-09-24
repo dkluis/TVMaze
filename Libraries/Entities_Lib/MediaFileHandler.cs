@@ -126,9 +126,9 @@ namespace Entities_Lib
         public bool MoveNonTvMediaToPlex(string mediainfo)
         {
             bool success = false;
-            bool isMovie = false;
-            bool isMusic = false;
-            bool isAudible = false;
+            //bool isMovie = false;
+            //bool isMusic = false;
+            //bool isAudible = false;
 
             //Figure out if Movie -> means it is a mkv, mp4, etc
             //Figure out if Music -> means it is mp3, m4a, m4p, etc

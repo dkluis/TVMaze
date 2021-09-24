@@ -61,14 +61,14 @@ namespace UpdateFollowed
                     {
                         theshow.FillViaTvmaze(jtshow);
                         theshow.TvmStatus = "Following";
-                        if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(); }
+                        if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(true); }
                         using (MariaDB tsu = new(appinfo))
                         {
                             tsu.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {theshow.TvmUpdatedEpoch} where `TvmShowId` = {theshow.TvmShowId};");
                             log.Write($"Updated the TvmShowUpdates table with {theshow.TvmUpdatedEpoch}", "", 3);
                         }
                         theshow.Reset();
-                        InFollowedTable.DbInsert();
+                        InFollowedTable.DbInsert(true);
                         using (ShowAndEpisodes sae = new(appinfo))
                         {
                             log.Write($"Working on Refreshing Show {jtshow}", "", 3);

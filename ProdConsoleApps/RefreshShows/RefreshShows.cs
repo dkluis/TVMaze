@@ -24,13 +24,25 @@ namespace RefreshShows
                 $"or (ShowStatus = 'Ended' and (date(PremiereDate) = '1900-01-01' and UpdateDate < CURDATE() - 6)) " +
                 $"order by `TvmShowId` desc");
             
-            //rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows where `TvmStatus` = 'Following' order by `TvmShowId` desc;");
             while (rdr.Read())
             {
-                // if (int.Parse(rdr[0].ToString()) != 57373) { continue; }
                 using (ShowAndEpisodes sae = new(appinfo))
                 {
-                    log.Write($"Working on Show {rdr[0]}", "", 2);
+                    log.Write($"Working on Show not updated in 7 days {rdr[0]}", "", 2);
+                    sae.Refresh(int.Parse(rdr[0].ToString()));
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
+
+            Mdbr.Close();
+
+
+            rdr = Mdbr.ExecQuery($"select distinct `TvmShowId` from episodestoacquire order by `TvmShowId` desc;");
+            while (rdr.Read())
+            {
+                using (ShowAndEpisodes sae = new(appinfo))
+                {
+                    log.Write($"Working on Today's Show {rdr[0]}", "", 2);
                     sae.Refresh(int.Parse(rdr[0].ToString()));
                     System.Threading.Thread.Sleep(1000);
                 }
