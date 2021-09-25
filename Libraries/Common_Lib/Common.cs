@@ -84,6 +84,7 @@ namespace Common_Lib
                                .Replace("&#039;", "")
                                .Replace("&amp;", "and")
                                .Replace("&", "and")
+                               .Replace("°", "")
                                .Trim()
                                .ToLower();
             // TODO Was put in for the What If...? situation: showname = showname.Substring(0, showname.Length);

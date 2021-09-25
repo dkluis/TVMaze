@@ -4,6 +4,7 @@ using Entities_Lib;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using Web_Lib;
 
 
@@ -28,7 +29,13 @@ namespace UpdateFollowed
             log.Start();
 
             WebAPI tvmapi = new(appinfo);
-            JArray FollowedShowOnTvmaze = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
+            HttpResponseMessage gfs = tvmapi.GetFollowedShows();
+            if (tvmapi.isTimedOut)
+            {
+                log.Write($"Getting an Time Out twice on the GetFollowedShows call to TVMaze");
+                Environment.Exit(99);
+            }
+            JArray FollowedShowOnTvmaze = tvmapi.ConvertHttpToJArray(gfs);
             log.Write($"Found {FollowedShowOnTvmaze.Count} Followed Shows Tvmaze", "", 2);
 
             CheckDb cdb = new();

@@ -26,7 +26,7 @@ namespace Web_Lib
         private string RarbgAPI_url_suf;
         private readonly string TvmazeSecurity;
 
-        private bool isTimedOut;
+        public bool isTimedOut;
 
         private readonly TextFileHandler log;
 
@@ -112,7 +112,6 @@ namespace Web_Lib
                     log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
                     try
                     {
-                        log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
                         _http_response = await client.GetAsync(api).ConfigureAwait(false);
                     }
                     catch (Exception ee) { log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0); }
