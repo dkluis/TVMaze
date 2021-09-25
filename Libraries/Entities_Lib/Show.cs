@@ -96,10 +96,12 @@ namespace Entities_Lib
 
         public void FillViaTvmaze(int showid)
         {
+            int LastEvaluatedShow;
+            using (TvmCommonSql ge = new(Appinfo)) { LastEvaluatedShow = ge.GetLastEvaluatedShow(); }
             using WebAPI js = new(Appinfo);
             FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
             FillViaDB(showid, true);
-            if (!isFollowed && !isDBFilled) { ValidateForReview(); }
+            if (!isFollowed && !isDBFilled) { ValidateForReview(LastEvaluatedShow); }
         }
 
         public bool DbUpdate()
@@ -126,11 +128,11 @@ namespace Entities_Lib
             return Mdb.success;
         }
 
-        public bool DbInsert()
+        public bool DbInsert(bool OverRide = false)
         {
-            if (!isForReview && !isFollowed)
+            if (!isForReview && !isFollowed && !OverRide)
             {
-                log.Write($"New Show {TvmUrl} because isForReview and isFollowed are set to false");
+                log.Write($"New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false");
                 Mdb.success = true;
                 return Mdb.success;
             }
@@ -154,6 +156,7 @@ namespace Entities_Lib
             values += $"'{Finder}', ";
             values += $"'{MediaType}', ";
             values += $"'{CleanedShowName.Replace("'", "''")}', ";
+            if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); } 
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
@@ -273,6 +276,7 @@ namespace Entities_Lib
                             isFollowed = Following;
                         }
                         AltShowName = rdr["AltShowName"].ToString();
+                        if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); }
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
                         MediaType = rdr["MediaType"].ToString();
                     }
@@ -285,15 +289,18 @@ namespace Entities_Lib
                         ShowStatus = rdr["ShowStatus"].ToString();
                         PremiereDate = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
                         CleanedShowName = rdr["CleanedShowName"].ToString();
+                        if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); }
                     }
                     if (isJsonFilled) { isFilled = true; }
                 }
             }
         }
 
-        private bool ValidateForReview()
+        private bool ValidateForReview(int lastshowevaluated)
         {
             isForReview = false;
+            if (TvmShowId <= lastshowevaluated) { return isForReview; }
+
             if (TvmNetwork is not null)
             {
                 if (TvmNetwork.ToLower() is not "netflix" and
@@ -307,7 +314,7 @@ namespace Entities_Lib
                     {
                         if (TvmLanguage is not "English" and not "Dutch")
                         {
-                            log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 2);
+                            log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
                             return false;
                         }
                     }
@@ -319,7 +326,7 @@ namespace Entities_Lib
                 {
                     if (TvmLanguage is not "English" and not "Dutch")
                     {
-                        log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", "", 2);
+                        log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
                         return false;
                     }
                 }
@@ -330,7 +337,7 @@ namespace Entities_Lib
                 string compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
                 if (!PremiereDate.Contains(compdate) && PremiereDate != "1900-01-01")
                 {
-                    log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}", "", 2);
+                    log.Write($"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}");
                     return false;
                 }
             }
@@ -343,7 +350,7 @@ namespace Entities_Lib
                 case "game show":
                 case "talk show":
                 case "panel show":
-                    log.Write($"Rejected {TvmShowId} due to Type {TvmType}", "", 2);
+                    log.Write($"Rejected {TvmShowId} due to Type {TvmType}");
                     return false;
             }
             if (TvmNetwork is not null)
@@ -359,7 +366,7 @@ namespace Entities_Lib
                     case "disney Junior":
                     case "food network":
                     //case "":
-                        log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}", "", 2);
+                        log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                         return false;
                 }
             }

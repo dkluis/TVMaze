@@ -123,6 +123,21 @@ namespace Entities_Lib
             return success;
         }
 
+        public bool MoveNonTvMediaToPlex(string mediainfo)
+        {
+            bool success = false;
+            //bool isMovie = false;
+            //bool isMusic = false;
+            //bool isAudible = false;
+
+            //Figure out if Movie -> means it is a mkv, mp4, etc
+            //Figure out if Music -> means it is mp3, m4a, m4p, etc
+            //Figure out if Audible -> means it is m4b, m4a, Maybe just stage Music and Audible instead???
+
+
+            return success;
+        }
+
         public bool MoveMediaToPlex(string mediainfo, Episode episode = null, Show show = null, int season = 99)
         {
             if (episode is null && show is null)
@@ -172,11 +187,22 @@ namespace Entities_Lib
 
             bool success = false;
             string fullmediapath = Path.Combine(PlexMediaAcquire, mediainfo);
-
-            FileAttributes atr = File.GetAttributes(fullmediapath);
             bool isdirectory = false;
             List<string> media = new();
             string[] filesindirectory;
+            FileAttributes atr = new();
+
+            /*      Implement when another abort happens
+            try
+            {
+                if (Directory.Exists(fullmediapath) || File.Exists(fullmediapath)) { log.Write($"Could not find {fullmediapath} anywhere"); return success; }
+            }
+            catch (Exception ex)
+            {
+                log.Write($"Got an error {ex} trying to access {fullmediapath}");
+                return success;
+            }
+            */
 
             atr = File.GetAttributes(fullmediapath);
             if (atr == FileAttributes.Directory) { isdirectory = true; }
@@ -219,7 +245,7 @@ namespace Entities_Lib
                 try
                 {
                     File.Move(file, topath);
-                    log.Write($"Moved from {file} to {topath}");
+                    log.Write($"Moved To: {topath}");
                 }
                 catch (Exception ex)
                 {
@@ -228,9 +254,7 @@ namespace Entities_Lib
 
             }
 
-            //TODO generalize the Processed or just delete when everything is fully tested
             if (isdirectory) { Directory.Move(fullmediapath, $"{PlexMediaAcquire}/Processed/{mediainfo}"); }
-
             return success;
         }
 

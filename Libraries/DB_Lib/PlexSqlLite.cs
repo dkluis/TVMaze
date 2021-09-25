@@ -13,7 +13,7 @@ namespace DB_Lib
         public List<PlexWatchedInfo> PlexWatched(AppInfo appinfo)
         {
             string PlexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
-                "where miv.parent_index > 0 and miv.metadata_type = 4 and miv.viewed_at > date('now', '-1 day') " +
+                "where miv.parent_index > 0 and miv.metadata_type = 4 and miv.viewed_at > date('now', '-1 day') and miv.account_id = 1 " +
                 "order by miv.grandparent_title, miv.parent_index, miv.`index`; ";
             string PlexDBLocation = "Data Source=/Users/dick/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db";
             TextFileHandler log = appinfo.TxtFile;
@@ -83,15 +83,6 @@ namespace DB_Lib
             CleanedShowName = Common.RemoveSpecialCharsInShowname(showname);
         }
 
-        public void UpdateTvmaze(AppInfo appinfo)
-        {
-            ProcessedToTvmaze = true;
-            if (DbInsert(appinfo))
-            {
-                //Do the Tvmaze Update
-            }
-        }
-
         public bool DbInsert(AppInfo appinfo)
         {
             int rows;
@@ -100,7 +91,7 @@ namespace DB_Lib
             {
                 string sql = $"insert into `PlexWatchedEpisodes` values (";
                 sql +=  $"0, {TvmShowId}, {TvmEpisodeId}, ";
-                sql += $"'{ShowName}', {Season}, {Episode}, ";
+                sql += $"'{ShowName.Replace("'", "''")}', {Season}, {Episode}, ";
                 sql += $"'{SeasonEpisode}', '{WatchedDate}', ";
                 sql += $"0, '{DateTime.Now.ToString("yyyy-MM-dd")}' ); ";
                 rows = Mdbw.ExecNonQuery(sql, true);

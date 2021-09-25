@@ -26,6 +26,8 @@ namespace Web_Lib
         private string RarbgAPI_url_suf;
         private readonly string TvmazeSecurity;
 
+        public bool isTimedOut;
+
         private readonly TextFileHandler log;
 
         public WebAPI(AppInfo appinfo)
@@ -83,7 +85,12 @@ namespace Web_Lib
             exectime.Stop();
             log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
 
-            if (!_http_response.IsSuccessStatusCode)
+            if (isTimedOut)
+            {
+                log.Write($"TimedOut --> Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 3);
+                _http_response = new HttpResponseMessage();
+            }
+            else if (!_http_response.IsSuccessStatusCode)
             {
                 log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
                 _http_response = new HttpResponseMessage();
@@ -95,6 +102,7 @@ namespace Web_Lib
             try
             {
                 _http_response = await client.GetAsync(api).ConfigureAwait(false);
+                isTimedOut = false;
             }
             catch (Exception e)
             {
@@ -104,10 +112,10 @@ namespace Web_Lib
                     log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
                     try
                     {
-                        log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
                         _http_response = await client.GetAsync(api).ConfigureAwait(false);
                     }
                     catch (Exception ee) { log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0); }
+                    isTimedOut = true;
                 }
             }
         }
@@ -119,7 +127,7 @@ namespace Web_Lib
 
             EpisodeMarking em = new(epi, date, type);
             string content = em.GetJson();
-            log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}");
+            log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}", "", 4);
 
             Task t = PerformPutTvmApiAsync(api, content);
             t.Wait();

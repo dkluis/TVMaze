@@ -11,9 +11,8 @@ namespace InitializeEpisodes
         static void Main()
         {
             string This_Program = "Init Episode Table";
-            Console.WriteLine($"{DateTime.Now}:  {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}:  {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}:  {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -47,7 +46,6 @@ namespace InitializeEpisodes
 
             log.Write($"Number of All Episodes for All Shows: {idxalleps}");
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }

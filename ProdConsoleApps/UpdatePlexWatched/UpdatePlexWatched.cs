@@ -24,9 +24,8 @@ namespace DB_Lib
         static void Main()
         {
             string This_Program = "Update Plex Watched";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
 
             log.Start();
@@ -59,7 +58,7 @@ namespace DB_Lib
                                 ais.DbInsert($"Multiple ShowIds found for {pwi.ShowName} is: {showid}", true);
                             }
                         }
-                        break;
+                        continue;
                     }
                     else
                     {
@@ -68,7 +67,7 @@ namespace DB_Lib
                         {
                             ai.DbInsert($"Did not find any ShowIds for {pwi.ShowName}", true);
                         }
-                        break;
+                        continue;
                     }
                     log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
                     if (pwi.DbInsert(appinfo))
@@ -80,20 +79,19 @@ namespace DB_Lib
                             epi.PlexDate = pwi.WatchedDate;
                             epi.PlexStatus = "Watched";
                             epi.DbUpdate();
-                            log.Write($"Update Episode Record {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
+                            log.Write($"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
 
                             pwi.ProcessedToTvmaze = true;
                             pwi.DbUpdate(appinfo);
-                            pwi.Reset();
-
                             if (epi.isAutoDelete)
                             {
-                                log.Write($"Deleting this episode {epi.TvmEpisodeId} file", "", 3);
+                                log.Write($"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file", "", 3);
                                 using (MediaFileHandler mfh = new(appinfo))
                                 {
                                     _ = mfh.DeleteEpisodeFiles(epi);
                                 }
                             }
+                            pwi.Reset();
                         }
                     } 
                 }
@@ -104,7 +102,6 @@ namespace DB_Lib
             }
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }

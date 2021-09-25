@@ -84,9 +84,14 @@ namespace Common_Lib
                                .Replace("&#039;", "")
                                .Replace("&amp;", "and")
                                .Replace("&", "and")
+                               .Replace("°", "")
                                .Trim()
                                .ToLower();
-            showname = showname.Substring(0, showname.Length);  // TODO Fix for strange situation with What If...?   The dots are not handled or seen by the replace or the lenght of the string
+            // TODO Was put in for the What If...? situation: showname = showname.Substring(0, showname.Length);
+            if (showname.Length > 7)
+            {
+                if (showname.ToLower().Substring(0, 7) == "what if") { showname = "What If"; }
+            }
             return showname;
         }
 

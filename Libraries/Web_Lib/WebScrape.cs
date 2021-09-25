@@ -29,7 +29,7 @@ namespace Web_Lib
 
         public void GetEZTVMagnets(string showname, string seasepi)
         {
-            string html = BuildEztvURL(showname);
+            string html = BuildEztvURL($"{showname}-{seasepi}");
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             log.Write($"Compare string = {comparewithmagnet}", "Eztv", 4);
@@ -76,7 +76,7 @@ namespace Web_Lib
 
         public void GetMagnetDLMagnets(string showname, string seasepi)
         {
-            string html = BuildMagnetDLURL(showname);
+            string html = BuildMagnetDLURL($"{showname}-{seasepi}");
 
             string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 4);
@@ -91,7 +91,7 @@ namespace Web_Lib
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
             if (table is null)
             {
-                log.Write($"No result return from the webscape", "MagnetDL", 3);
+                log.Write($"No result return from the webscape", "MagnetDL", 4);
                 return;
             }
             foreach (HtmlNode node in table)
@@ -160,7 +160,6 @@ namespace Web_Lib
                 //log.Write($"Magnet found: {magnet}");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
-                    //TODO still need the compare string check
                     magnets.Add(prio + "#$# " + magnet);
                     log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 4);
                 }

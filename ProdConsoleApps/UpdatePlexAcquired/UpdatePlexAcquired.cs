@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
+using MySqlConnector;
 using Web_Lib;
 
 namespace UpdatePlexAcquired
@@ -14,9 +15,8 @@ namespace UpdatePlexAcquired
         static void Main(string[] args)
         {
             string This_Program = "Update Plex Acquired";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -25,7 +25,6 @@ namespace UpdatePlexAcquired
             {
                 log.Write($"Plex Acquired Log File Does not Exist {PlexAcquired}");
                 log.Stop();
-                Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
                 Environment.Exit(0);
             }
 
@@ -44,6 +43,7 @@ namespace UpdatePlexAcquired
                 string episode = "";
                 bool isSeason = false;
                 int season = 99;
+                List<int> epstoupdate = new();
                 if (acqinfo.Length == 2)
                 {
                     show = acqinfo[0].Replace(".", " ").Trim();
@@ -52,7 +52,7 @@ namespace UpdatePlexAcquired
                     season = int.Parse(seas[0].ToString().Replace("s", ""));
                     log.Write($"Found show {show} episode {episode}, season {season}", "", 4);
                 }
-                else 
+                else
                 {
                     if (acqseas.Length == 2)
                     {
@@ -64,7 +64,12 @@ namespace UpdatePlexAcquired
                     }
                     else
                     {
-                        log.Write($"Could not find a show and episode for {acq}, is probably a movie #################", "", 2); continue;
+                        log.Write($"Could not find a show and episode for {acq}, is probably a movie or music #################", "", 2);
+                        using (MediaFileHandler mfh = new(appinfo))
+                        {
+                            mfh.MoveNonTvMediaToPlex(acq);
+                        }
+                        continue;
                     }
                 }
 
@@ -95,10 +100,11 @@ namespace UpdatePlexAcquired
                 {
                     EpisodeSearch episodetoupdate = new();
                     epiid = episodetoupdate.Find(appinfo, int.Parse(showid[0].ToString()), episode);
-                    log.Write($"Working on ShowId {showid[0]} and EpisodeId {epiid}");
+                    epstoupdate.Add(epiid);
+                    log.Write($"Working on ShowId {showid[0]} and EpisodeId {epiid}", "", 4);
                 }
 
-                if (epiid == 0)
+                if (!isSeason && epiid == 0)
                 {
                     log.Write($"Could not find episode for Show {show} and Episode String {episode}", "", 2);
                     using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Could not find episode for Show {show} and Episode String {episode}"); }
@@ -108,30 +114,71 @@ namespace UpdatePlexAcquired
                     foundshow.Reset();
                     continue;
                 }
-                using (Episode epitoupdate = new(appinfo))
+
+                if (isSeason)
                 {
-                    epitoupdate.FillViaTvmaze(epiid);
-                    if (epitoupdate.PlexStatus != " ")
+                    using (MariaDB Mdbe = new(appinfo))
                     {
-                        log.Write($"Not updating Tvmaze {epitoupdate.TvmEpisodeId} status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2);
+                        MySqlDataReader rdre = Mdbe.ExecQuery($"select TvmEpisodeId from Episodes where `TvmShowId` = {showid[0]} and `Season` = {season}");
+                        while (rdre.Read())
+                        {
+                            epstoupdate.Add(int.Parse(rdre[0].ToString()));
+                        }
                     }
-                    else
+                }
+
+                if (!isSeason)
+                {
+                    using (Episode epitoupdate = new(appinfo))
                     {
-                        using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId); }
-                        epitoupdate.PlexStatus = "Acquired";
-                        epitoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        epitoupdate.FillViaTvmaze(epiid);
+                        if (epitoupdate.PlexStatus != " ")
+                        {
+                            log.Write($"Not updating Tvmaze status already is {epitoupdate.PlexStatus} on {epitoupdate.PlexDate}", "", 2);
+                        }
+                        else
+                        {
+                            using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId); }
+                            epitoupdate.PlexStatus = "Acquired";
+                            epitoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        if (!epitoupdate.DbUpdate()) { log.Write($"Error Updating Episode {epitoupdate.TvmEpisodeId}", "", 0); }
+
+                        using (MediaFileHandler mfh = new(appinfo))
+                        {
+                            mfh.MoveMediaToPlex(acq, epitoupdate);
+                        }
                     }
-                    if (!epitoupdate.DbUpdate()) { log.Write($"Error Updating Episode {epitoupdate.TvmEpisodeId}", "", 0); }
+                }
+                else
+                {
+                    Episode firstEpi = new(appinfo);
+                    firstEpi.FillViaTvmaze(epstoupdate[0]);
+                    foreach (int epi in epstoupdate)
+                    {
+                        Episode eptoupdate = new(appinfo);
+                        if (firstEpi.TvmEpisodeId != epi) { eptoupdate.FillViaTvmaze(epi); } else { eptoupdate = firstEpi; }
+                        if (eptoupdate.PlexStatus != " ")
+                        {
+                            log.Write($"Not updating Tvmaze status already is {eptoupdate.PlexStatus} on {eptoupdate.PlexDate}", "", 2);
+                        }
+                        else
+                        {
+                            using (WebAPI uts = new(appinfo)) { uts.PutEpisodeToAcquired(eptoupdate.TvmEpisodeId); }
+                            eptoupdate.PlexStatus = "Acquired";
+                            eptoupdate.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+                        if (!eptoupdate.DbUpdate()) { log.Write($"Error Updating Episode {eptoupdate.TvmEpisodeId}", "", 0); }
+                    }
 
                     using (MediaFileHandler mfh = new(appinfo))
                     {
-                        mfh.MoveMediaToPlex(acq, epitoupdate);
+                        mfh.MoveMediaToPlex(acq, firstEpi);
                     }
                 }
             }
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }

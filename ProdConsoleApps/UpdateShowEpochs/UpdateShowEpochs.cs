@@ -25,10 +25,8 @@ namespace UpdateShowEpochs
         static void Main()
         {
             string This_Program = "Update Show Epochs";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Started");
+            Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Progress can be followed in {appinfo.FullPath}");
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
@@ -37,12 +35,12 @@ namespace UpdateShowEpochs
             int LastEvaluatedShow;
             using (TvmCommonSql ge = new(appinfo)) { LastEvaluatedShow = ge.GetLastEvaluatedShow(); }
             int HighestShowId = LastEvaluatedShow;
-            log.Write($"Last Evaluated ShowId = {LastEvaluatedShow}");
+            log.Write($"Last Evaluated ShowId = {LastEvaluatedShow}", "", 2);
 
             // Get the last 24 hours of Shows that changes on TVMaze
             WebAPI tvmapi = new(appinfo);
             JObject jsoncontent = tvmapi.ConvertHttpToJObject(tvmapi.GetShowUpdateEpochs("day"));
-            log.Write($"Found {jsoncontent.Count} updates on Tvmaze", This_Program, 0);
+            log.Write($"Found {jsoncontent.Count} updates on Tvmaze", This_Program, 2);
 
             Show tvmshow = new(appinfo);
             int indbepoch;
@@ -70,7 +68,7 @@ namespace UpdateShowEpochs
                     log.Write($"Inserted Epoch Record {showid} {tvmshow.ShowName}", "", 4);
                     if (showid > LastEvaluatedShow)
                     {
-                        if (showid > HighestShowId) { HighestShowId = showid; }
+                        if (showid > HighestShowId) { HighestShowId = showid; } 
                         if (!tvmshow.isForReview) { log.Write($"Show {showid} is rejected because of review rules {tvmshow.TvmUrl}"); continue; }
                     }
                     else
@@ -80,7 +78,7 @@ namespace UpdateShowEpochs
 
                     if (!tvmshow.DbInsert())
                     {
-                        log.Write($"Insert of Show {showid} Failed", "", 2);
+                        log.Write($"Insert of Show {showid} Failed #############################", "", 0);
                     }
                     else
                     {
@@ -91,8 +89,8 @@ namespace UpdateShowEpochs
                             List<Episode> ebs = epsbyshow.Find(appinfo, showid);
                             foreach (Episode eps in ebs)
                             {
-                                if (!eps.DbInsert()) { log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}"); }
-                                else { log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}", "", 4); }
+                                if (!eps.DbInsert()) { log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} #######################", "", 0); }
+                                else { log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}", "", 3); }
                                 idxepsbyshow++;
                             }
                         }
@@ -105,7 +103,7 @@ namespace UpdateShowEpochs
                     if (!tvmshow.isDBFilled) { continue;  }
                     if (!tvmshow.DbUpdate())
                     {
-                        log.Write($"Update of Show {showid} Failed", "", 0);
+                        log.Write($"Update of Show {showid} Failed ###################", "", 0);
                         using ( ActionItems ai = new(appinfo)) { ai.DbInsert($"Update of Show {showid} Failed"); }
                     }
                     else
@@ -121,7 +119,7 @@ namespace UpdateShowEpochs
                                 {
                                     if (!eps.DbInsert())
                                     {
-                                        log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 0);
+                                        log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ##################", "", 0);
                                         using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}"); }
                                     }
                                     else { log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}"); }
@@ -130,7 +128,7 @@ namespace UpdateShowEpochs
                                 {
                                     if (!eps.DbUpdate())
                                     {
-                                        log.Write($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 0);
+                                        log.Write($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ####################", "", 0);
                                         using (ActionItems ai = new(appinfo)) { ai.DbInsert($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}"); }
                                     }
                                 }
@@ -148,7 +146,6 @@ namespace UpdateShowEpochs
             using (TvmCommonSql se = new(appinfo)) { se.SetLastEvaluatedShow(HighestShowId); }
 
             log.Stop();
-            Console.WriteLine($"{DateTime.Now}: {This_Program} Finished");
         }
     }
 }
