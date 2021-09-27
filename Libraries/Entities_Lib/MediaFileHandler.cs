@@ -191,18 +191,22 @@ namespace Entities_Lib
             List<string> media = new();
             string[] filesindirectory;
             FileAttributes atr = new();
+            bool founddir = false;
+            bool foundfile = false;
 
-            /*      Implement when another abort happens
             try
             {
-                if (Directory.Exists(fullmediapath) || File.Exists(fullmediapath)) { log.Write($"Could not find {fullmediapath} anywhere"); return success; }
+
+                if (Directory.Exists(fullmediapath)) { founddir = true; }
+                if (File.Exists(fullmediapath)) { foundfile = true; }
             }
             catch (Exception ex)
             {
                 log.Write($"Got an error {ex} trying to access {fullmediapath}");
                 return success;
             }
-            */
+
+            if (!founddir && !foundfile) { log.Write($"Could not find dir {founddir} or file {foundfile} for {fullmediapath}", "", 0); return success; }
 
             atr = File.GetAttributes(fullmediapath);
             if (atr == FileAttributes.Directory) { isdirectory = true; }
@@ -240,7 +244,15 @@ namespace Entities_Lib
 
             foreach (string file in media)
             {
-                string fromfile = file.Replace(PlexMediaAcquire, "").Replace("/", "");
+                string fromfile = "";
+                if (!isdirectory)
+                {
+                    fromfile = file.Replace(PlexMediaAcquire, "").Replace("/", "");
+                }
+                else
+                {
+                    fromfile = file.Replace(fullmediapath, "").Replace("/", "");
+                }
                 string topath = Path.Combine(todir, fromfile);
                 try
                 {
