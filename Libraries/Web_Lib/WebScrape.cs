@@ -58,6 +58,7 @@ namespace Web_Lib
                     }
                 }
             }
+            else { log.Write($"Error loading {html} occurred returned null table", "Eztv", 0); return; }
 
             magnets.Sort();
             magnets.Reverse();
@@ -94,7 +95,7 @@ namespace Web_Lib
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
             if (table is null)
             {
-                log.Write($"No result return from the webscape", "MagnetDL", 4);
+                log.Write($"No result return from the webscape", "MagnetDL", 0);
                 return;
             }
             foreach (HtmlNode node in table)
@@ -143,7 +144,7 @@ namespace Web_Lib
             log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 4);
             if (!result.IsSuccessStatusCode)
             {
-                log.Write($"No Result returned from the API", "RarbgAPI", 4);
+                log.Write($"No Result returned from the API", "RarbgAPI", 0);
                 return;
             }
 
@@ -160,7 +161,6 @@ namespace Web_Lib
             {
                 string magnet = show["download"];
                 prio = PrioritizeMagnet(magnet, "RarbgAPI");
-                //log.Write($"Magnet found: {magnet}");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
                     magnets.Add(prio + "#$# " + magnet);
