@@ -41,17 +41,20 @@ namespace Web_Lib
             HtmlDocument htmlDoc = web.Load(html);
             HtmlNodeCollection table = htmlDoc.DocumentNode.SelectNodes("//td/a");
 
-            foreach (HtmlNode node in table)
+            if (table is not null)
             {
-                if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
-                    node.Attributes["href"].Value.ToLower().Contains(comparewithmagnet))
+                foreach (HtmlNode node in table)
                 {
-                    priority = PrioritizeMagnet(node.Attributes["href"].Value, "Eztv");
-                    if (priority > 130)
+                    if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
+                        node.Attributes["href"].Value.ToLower().Contains(comparewithmagnet))
                     {
-                        prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                        log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "Eztv", 4);
-                        magnets.Add(prioritizedmagnet);
+                        priority = PrioritizeMagnet(node.Attributes["href"].Value, "Eztv");
+                        if (priority > 130)
+                        {
+                            prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
+                            log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "Eztv", 4);
+                            magnets.Add(prioritizedmagnet);
+                        }
                     }
                 }
             }
