@@ -1,3 +1,6 @@
+The author of this library are in no way responsible for any copyright infiringements caused by using this library or software using this library. There are many legitimate use-cases for torrents outside of piracy. This library was written as a training/education excerside for the author and with the intention to be used for such legal purposes.
+
+
 # TVMaze Local
 
 
