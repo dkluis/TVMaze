@@ -1,3 +1,5 @@
+The author of the code in this repository is in no way responsible for any copyright infiringements caused by using this library or software using this parts of this repository. There are many legitimate use-cases for torrents outside of piracy. This library was written as a training/education excercise for the author and with the intention to be use the lessons learned for such legal purposes.
+
 # TVMaze Local
 
 
