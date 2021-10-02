@@ -24,7 +24,6 @@ namespace DB_Lib
             exception = new Exception();
             try
             {
-                //string connstr = Common.ReadConfig(appinfo.DbConnection);
                 conn = new MySqlConnection(appinfo.ActiveDBConn);
                 success = true;
             }
@@ -72,7 +71,6 @@ namespace DB_Lib
         public MySqlCommand Command(string sql)
         {
             success = true;
-            // exception = new Exception();
             try
             {
                 if (!connOpen) { Open(); };

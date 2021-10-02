@@ -28,7 +28,7 @@ namespace InitializeShowEpochs
                 if (show["show_id"] is not null)
                 {
                     int showid = Int32.Parse(show["show_id"].ToString());
-                    //log.Write($"insert into TvmShowUpdates values (0, {showid}, 0, '{DateTime.Now:yyyy-MM-dd}');");
+                    log.Write($"insert into TvmShowUpdates values (0, {showid}, 0, '{DateTime.Now:yyyy-MM-dd}');", "", 4);
                     int rows = Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {showid}, 1, '{DateTime.Now:yyyy-MM-dd}');");
                     if (rows == 0) { log.Write($"Insert went wrong for {showid}"); }
                 }

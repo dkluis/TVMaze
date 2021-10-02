@@ -106,7 +106,6 @@ namespace Entities_Lib
 
         public bool DbUpdate()
         {
-            // updfields += $"`` = '{}', ";
             Mdb.success = true;
             string updfields = "";
             string sqlpre = $"update shows set ";
@@ -128,7 +127,7 @@ namespace Entities_Lib
             return Mdb.success;
         }
 
-        public bool DbInsert(bool OverRide = false)
+        public bool DbInsert(bool OverRide = false, bool isShowEpoch = false)
         {
             if (!isForReview && !isFollowed && !OverRide)
             {
@@ -137,18 +136,16 @@ namespace Entities_Lib
                 return Mdb.success;
             }
 
+
             Mdb.success = true;
 
             string values = "";
             string sqlpre = $"insert into shows values (";
             string sqlsuf = $");";
 
-            // values += $"'{}', ";  for strings
-            // values += $"{}, ";    for ints
-            // values += $".... );"' for last value
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
-            if (isFollowed) { values += $"'Following', "; } else { values += $"'New', "; }
+            if (isFollowed && !isShowEpoch) { values += $"'Following', "; } else { values += $"'New', "; }
             values += $"'{TvmUrl}', ";
             values += $"'{ShowName.Replace("'", "''")}', ";
             values += $"'{ShowStatus}', ";
@@ -365,7 +362,6 @@ namespace Entities_Lib
                     case "abc kids":
                     case "disney Junior":
                     case "food network":
-                    //case "":
                         log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                         return false;
                 }

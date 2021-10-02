@@ -87,7 +87,7 @@ namespace Common_Lib
                                .Replace("°", "")
                                .Trim()
                                .ToLower();
-            // TODO Was put in for the What If...? situation: showname = showname.Substring(0, showname.Length);
+            // Was put in for the What If...? situation: showname = showname.Substring(0, showname.Length);
             if (showname.Length > 7)
             {
                 if (showname.ToLower().Substring(0, 7) == "what if") { showname = "What If"; }
