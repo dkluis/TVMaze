@@ -45,7 +45,6 @@ namespace AcquireMedia
                 if (magnet != "")
                 {
                     string[] temp = magnet.Split("tr=");
-                    //temp = temp[1].Split("dn=");
                     log.Write($"Found Magnet for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]} Processin Whole Season is {isSeason}: {temp[0]}");
                 }
                 else
