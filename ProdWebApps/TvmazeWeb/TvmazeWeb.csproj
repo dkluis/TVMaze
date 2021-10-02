@@ -8,4 +8,10 @@
   <ItemGroup>
     <Content Remove="wwwroot\favicon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="MudBlazor" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="5.1.5" />
+  </ItemGroup>
 </Project>

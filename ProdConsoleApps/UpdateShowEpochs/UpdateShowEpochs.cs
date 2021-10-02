@@ -37,7 +37,6 @@ namespace UpdateShowEpochs
             int HighestShowId = LastEvaluatedShow;
             log.Write($"Last Evaluated ShowId = {LastEvaluatedShow}", "", 2);
 
-            // Get the last 24 hours of Shows that changes on TVMaze
             WebAPI tvmapi = new(appinfo);
             JObject jsoncontent = tvmapi.ConvertHttpToJObject(tvmapi.GetShowUpdateEpochs("day"));
             log.Write($"Found {jsoncontent.Count} updates on Tvmaze", This_Program, 2);
@@ -76,7 +75,7 @@ namespace UpdateShowEpochs
                         log.Write($"This show is evaluated already", "", 4); continue;
                     }
 
-                    if (!tvmshow.DbInsert())
+                    if (!tvmshow.DbInsert(false, true))
                     {
                         log.Write($"Insert of Show {showid} Failed #############################", "", 0);
                     }

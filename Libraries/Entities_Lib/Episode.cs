@@ -15,9 +15,9 @@ namespace Entities_Lib
     {
         #region DB Record Definition
 
-        public Int32  Id = 0;
-        public Int32  TvmShowId = 0;
-        public Int32  TvmEpisodeId = 0;
+        public int    Id = 0;
+        public int    TvmShowId = 0;
+        public int    TvmEpisodeId = 0;
         public string TvmUrl = "";
         public string ShowName = "";
         public string SeasonEpisode = "";
@@ -97,18 +97,9 @@ namespace Entities_Lib
             using (WebAPI je = new(Appinfo))
             {
                 FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeid)));
-                //HttpResponseMessage tvmepi = je.GetEpisode(episodeid);
-                //JObject tvmpepisucccess = new();
-                //if (tvmepi.IsSuccessStatusCode) { tvmpepisucccess = je.ConvertHttpToJObject(tvmepi); }
-                //if (tvmpepisucccess is not null) { FillViaJson(tvmpepisucccess); } else { this.Reset(); }
-
                 FillViaDb(episodeid);
                 WebAPI fem = new(Appinfo);
                 FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
-                //HttpResponseMessage tvmepimarks = fem.GetEpisodeMarks(episodeid);
-                //JObject tvmepimarkssuccess = new();
-                //if (tvmepimarks.IsSuccessStatusCode) { tvmepimarkssuccess = fem.ConvertHttpToJObject(tvmepimarks); }
-                //if (tvmepimarkssuccess is not null) { FillEpiMarks(tvmepimarkssuccess);  }
                 
             }   
         }
@@ -192,9 +183,6 @@ namespace Entities_Lib
             string sqlpre = $"insert into episodes values (";
             string sqlsuf = $");";
 
-            // values += $"'{}', ";  for strings
-            // values += $"{}, ";    for ints
-            // values += $".... );"' for last value
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
             values += $"{TvmEpisodeId}, ";
@@ -271,8 +259,6 @@ namespace Entities_Lib
                     if (ep is null) { continue; }
                     appinfo.TxtFile.Write($"Working on Episode {ep["id"]}", "", 4);
                     episode.FillViaTvmaze(int.Parse(ep["id"].ToString()));
-                    //if (episode is null) { continue; }
-                    //if (episode.Id == 0) { continue; }
                     episodesbyshow.Add(episode);
                 }
             }

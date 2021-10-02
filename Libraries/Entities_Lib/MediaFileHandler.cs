@@ -15,9 +15,6 @@ namespace Entities_Lib
         public string PlexMediaTvShows;
         public string PlexMediaTvShowSeries;
         public string PlexMediaKidsTvShows;
-        // public string PlexMediaMovies;
-        // public string PlexMediaMovieSeries;
-        // public string PlexMediaKidsMovies;
         public string PlexMediaAcquire;
 
         public List<string> TvShowsInSeries;
@@ -126,14 +123,7 @@ namespace Entities_Lib
         public bool MoveNonTvMediaToPlex(string mediainfo)
         {
             bool success = false;
-            //bool isMovie = false;
-            //bool isMusic = false;
-            //bool isAudible = false;
-
-            //Figure out if Movie -> means it is a mkv, mp4, etc
-            //Figure out if Music -> means it is mp3, m4a, m4p, etc
-            //Figure out if Audible -> means it is m4b, m4a, Maybe just stage Music and Audible instead???
-
+            //TODO handle non TVShow media
 
             return success;
         }

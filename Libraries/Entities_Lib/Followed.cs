@@ -40,8 +40,6 @@ namespace Entities_Lib
             string sqlpre = $"insert into Followed values (";
             string sqlsuf = $");";
 
-            // values += $"'{}', ";  for strings
-            // values += $"{}, ";    for ints
             values += $"{Id} ,";
             values += $"'{TvmShowId}', ";
             values += $"'{UpdateDate}' ";
@@ -55,13 +53,14 @@ namespace Entities_Lib
 
         public bool DbUpdate(bool ignore = false)
         {
-            // updfields += $"`` = '{}', ";
             string updfields = "";
             string sqlpre = $"update Followed set ";
+
             updfields += $"`Id` = {Id}, ";
             updfields += $"`TvmShowId` = '{TvmShowId}', ";
             updfields += $"`UpdateDate` = '{DateTime.Now.ToString("yyyy-MM-dd")}' ";
             string sqlsuf = $"where `TvmShowId` = {TvmShowId};";
+
             int rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf, ignore);
             Mdb.Close();
             if (rows == 0) { return false;  }
