@@ -74,7 +74,7 @@ namespace UpdateShowEpochs
                     {
                         log.Write($"This show is evaluated already", "", 4); continue;
                     }
-
+                    tvmshow.TvmStatus = "New";
                     if (!tvmshow.DbInsert(false, true))
                     {
                         log.Write($"Insert of Show {showid} Failed #############################", "", 0);

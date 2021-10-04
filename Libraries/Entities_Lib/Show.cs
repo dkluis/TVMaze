@@ -145,7 +145,8 @@ namespace Entities_Lib
 
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
-            if (isFollowed && !isShowEpoch) { values += $"'Following', "; } else { values += $"'New', "; }
+            if (isShowEpoch) { isFollowed = false; }
+            if (isFollowed) { values += $"'Following', "; } else { values += $"'New', "; }
             values += $"'{TvmUrl}', ";
             values += $"'{ShowName.Replace("'", "''")}', ";
             values += $"'{ShowStatus}', ";
