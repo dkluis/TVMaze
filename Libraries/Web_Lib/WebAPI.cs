@@ -90,6 +90,11 @@ namespace Web_Lib
                 log.Write($"TimedOut --> Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 3);
                 _http_response = new HttpResponseMessage();
             }
+            else if (_http_response is null)
+            {
+                log.Write($"Http Response Code is: NULL for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
+                _http_response = new HttpResponseMessage();
+            }
             else if (!_http_response.IsSuccessStatusCode)
             {
                 log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
