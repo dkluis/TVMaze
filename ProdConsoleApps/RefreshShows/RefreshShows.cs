@@ -19,12 +19,7 @@ namespace RefreshShows
             MariaDB Mdbr = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
 
-            rdr = Mdbr.ExecQuery($"select `TvmShowId` from Shows where " +
-                $"(ShowStatus != 'Ended' and (date(PremiereDate) = '1900-01-01' or date(PremiereDate) > '2014-01-01') and UpdateDate < CURDATE() - 6) " +
-                $"or (ShowStatus = 'Ended' and (date(PremiereDate) = '1900-01-01' and UpdateDate < CURDATE() - 6)) " +
-                $"or (ShowStatus = 'Running' and UpdateDate <  CURDATE() - 6) and date(PremiereDate) <= '2014-01-01' " +
-                $"order by `TvmShowId` desc " +
-                $"limit 250");
+            rdr = Mdbr.ExecQuery($"select `TvmShowId` from showstorefresh limit 175");
             
             while (rdr.Read())
             {

@@ -20,9 +20,20 @@ namespace RefreshShowRssFeed
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            Task<Feed> ShowRssFeed = FeedReader.ReadAsync("http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
-            ShowRssFeed.Wait();
-            Feed Result = ShowRssFeed.Result;
+            Feed Result = new();
+            try
+            {
+                Task<Feed> ShowRssFeed = FeedReader.ReadAsync("http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
+                ShowRssFeed.Wait();
+                Result = ShowRssFeed.Result;
+            }
+            catch (Exception ex)
+            {
+                log.Write($"########################################## Exception duing FeedReading: {ex}", "", 0);
+                log.Stop();
+                Environment.Exit(99);
+
+            }
 
             MariaDB Mdb = new(appinfo);
             string sql = "";

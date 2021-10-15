@@ -57,14 +57,14 @@ namespace UpdateShowEpochs
                     isEnded = isE.IsShowIdEnded(showid);
                 }
                 tvmshow.FillViaTvmaze(showid);
-                if (tvmshow.TvmStatus == "Ended" && isEnded) { log.Write($"Show {tvmshow.ShowName} is (and already was) Ended - Skipping Update"); continue; }
+                // if (tvmshow.TvmStatus == "Ended" && isEnded) { log.Write($"Show {tvmshow.ShowName} is (and already was) Ended - Skipping Update"); continue; }
 
                 log.Write($"TvmShowId: {tvmshow.TvmShowId},  Name: {tvmshow.ShowName}; Tvmaze Epoch: {showepoch}, In DB Epoch {indbepoch}", "", 4);
 
                 if (indbepoch == 0)
                 {
                     using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"insert into TvmShowUpdates values (0, {showid}, {showepoch}, '{DateTime.Now:yyyy-MM-dd}');"); Mdbw.Close(); }
-                    log.Write($"Inserted Epoch Record {showid} {tvmshow.ShowName}", "", 4);
+                    log.Write($"Inserted Epoch Record {showid} {tvmshow.ShowName}", "", 3);
                     if (showid > LastEvaluatedShow)
                     {
                         if (showid > HighestShowId) { HighestShowId = showid; } 
@@ -72,10 +72,11 @@ namespace UpdateShowEpochs
                     }
                     else
                     {
-                        log.Write($"This show is evaluated already", "", 4); continue;
+                        log.Write($"This show is evaluated already", "", 3); continue;
                     }
-
-                    if (!tvmshow.DbInsert(false, true))
+                    tvmshow.TvmStatus = "New";
+                    tvmshow.isFollowed = false;
+                    if (!tvmshow.DbInsert(false, "UpdateShowEpochs"))
                     {
                         log.Write($"Insert of Show {showid} Failed #############################", "", 0);
                     }

@@ -90,9 +90,14 @@ namespace Web_Lib
                 log.Write($"TimedOut --> Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 3);
                 _http_response = new HttpResponseMessage();
             }
+            else if (_http_response is null)
+            {
+                log.Write($"NULL --> Http Response Code is: NULL for API {client.BaseAddress}{api}", "WebAPI Exec", 3);
+                _http_response = new HttpResponseMessage();
+            }
             else if (!_http_response.IsSuccessStatusCode)
             {
-                log.Write($"Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
+                log.Write($"Status Code --> Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 3);
                 _http_response = new HttpResponseMessage();
             }
         }
@@ -106,15 +111,15 @@ namespace Web_Lib
             }
             catch (Exception e)
             {
-                log.Write($"Exception: {e.Message}", "WebAPI Async", 0);
+                log.Write($"Exception: {e.Message}", "WebAPI Async", 3);
                 if (e.Message.Contains(" seconds elapsing") || e.Message.Contains("Operation timed out"))
                 {
-                    log.Write($"Retrying Now: {api}", "WebAPI Async", 0);
+                    log.Write($"Retrying Now: {api}", "WebAPI Async", 3);
                     try
                     {
                         _http_response = await client.GetAsync(api).ConfigureAwait(false);
                     }
-                    catch (Exception ee) { log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 0); }
+                    catch (Exception ee) { log.Write($"2nd Exception: {ee.Message}", "WebAPI Async", 3); }
                     isTimedOut = true;
                 }
             }
@@ -148,7 +153,7 @@ namespace Web_Lib
             log.Write($"json content now is {json} for api {client.BaseAddress + api}", "WebAPI PPTAA", 4);
 
             try { _http_response = await client.PutAsync(client.BaseAddress + api, httpcontent).ConfigureAwait(false); }
-            catch (Exception e) { log.Write($"Exception: {e.Message}", "WebAPI Put Async", 0); }
+            catch (Exception e) { log.Write($"Exception: {e.Message} for {api}", "WebAPI Put Async", 3); }
         }
 
         private void SetTvmaze()

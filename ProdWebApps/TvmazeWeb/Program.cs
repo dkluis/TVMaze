@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace TvmazeWeb
+namespace TVMazeWeb
 {
     public class Program
     {
@@ -21,6 +21,8 @@ namespace TvmazeWeb
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls("http://localhost:5000", "http://192.168.142.80:5000", "http://ca-server.local:5000");
                 });
     }
 }
+

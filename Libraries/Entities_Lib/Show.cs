@@ -127,7 +127,7 @@ namespace Entities_Lib
             return Mdb.success;
         }
 
-        public bool DbInsert(bool OverRide = false, bool isShowEpoch = false)
+        public bool DbInsert(bool OverRide = false, string callingApp = "")
         {
             if (!isForReview && !isFollowed && !OverRide)
             {
@@ -145,7 +145,11 @@ namespace Entities_Lib
 
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
-            if (isFollowed && !isShowEpoch) { values += $"'Following', "; } else { values += $"'New', "; }
+
+            if (callingApp == "UpdateShowEpochs") { values += $"'New', "; }
+            else if (isFollowed) { values += $"'Following', "; }
+            else { values += $"'New', "; }
+
             values += $"'{TvmUrl}', ";
             values += $"'{ShowName.Replace("'", "''")}', ";
             values += $"'{ShowStatus}', ";
