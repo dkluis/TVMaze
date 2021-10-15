@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ReleaseVersion>1.0.5</ReleaseVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Web_Lib" />
+    <None Remove="DB_Lib" />
+    <None Remove="Entities_Lib" />
+    <None Remove="Common_Lib" />
+  </ItemGroup>
+
+</Project>
