@@ -172,8 +172,8 @@ Global
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
 		$0.StandardHeader = $2
 		$0.VersionControlPolicy = $3
-		version = 1.0.5
+		version = 1.1.0
 		outputpath = ../../../../../Users/dick/TVMaze/Apps
-		description = @Production of Console Apps, no Web UI (yet)\n\nAll console apps are setup and running as an app as well as through crontab
+		description = @Production of Console Apps, framework of WebUI\n\nAll console apps are setup and running as an app as well as through crontab
 	EndGlobalSection
 EndGlobal
