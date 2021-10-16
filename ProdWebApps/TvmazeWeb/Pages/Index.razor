@@ -1,4 +1,74 @@
 ﻿@page "/"
 
-<h1>Welcome to TVMaze and Plex Media System</h1>
 
+@{
+    AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
+
+    string showCount = $"select count(*) from Shows";
+    string episodeCount = $"select count(*) from Episodes";
+    string followedCount = $"select count(*) from Followed";
+    string followedShowsCount = $"select count(*) from Shows where `TvmStatus` = 'Following'";
+    string reviewingShowsCount = $"select count(*) from Shows where `TvmStatus` = 'Reviewing'";
+    string newShowsCount = $"select count(*) from Shows where `TvmStatus` = 'New'";
+    string numShows = "";
+    string numEpisodes = "";
+    string numFollowed = "";
+    string numFollowedShows = "";
+    string numReviewingShows = "";
+    string numNewShows = "";
+
+    MariaDB mdb = new(appInfo);
+    MySqlConnector.MySqlDataReader rdr;
+
+    rdr = mdb.ExecQuery(showCount);
+    while (rdr.Read())
+    {
+        numShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+    }
+    mdb.Close();
+
+    rdr = mdb.ExecQuery(episodeCount);
+    while (rdr.Read())
+    {
+        numEpisodes = int.Parse(rdr[0].ToString()).ToString("###,###");
+    }
+    mdb.Close();
+
+    rdr = mdb.ExecQuery(followedCount);
+    while (rdr.Read())
+    {
+        numFollowed = int.Parse(rdr[0].ToString()).ToString("###,###");
+    }
+    mdb.Close();
+
+    rdr = mdb.ExecQuery(followedShowsCount);
+    while (rdr.Read())
+    {
+        numFollowedShows = rdr[0].ToString();
+    }
+    mdb.Close();
+
+    rdr = mdb.ExecQuery(reviewingShowsCount);
+    while (rdr.Read())
+    {
+        numReviewingShows = rdr[0].ToString();
+    }
+    mdb.Close();
+
+    rdr = mdb.ExecQuery(newShowsCount);
+    while (rdr.Read())
+    {
+        numNewShows = rdr[0].ToString();
+    }
+    mdb.Close();
+}
+
+<h1>Welcome to TVMaze and Plex Media System</h1>
+<div>
+    Number of records in Shows Table: @numShows<br />
+    Number of records in Episodes Table @numEpisodes<br />
+    Number of records in Followed Table @numFollowed<br />
+    Number of Shows in Followed Status @numFollowedShows<br />
+    Number of Shows in Reviewing Status @numReviewingShows<br />
+    Number of Shows in New Status @numNewShows<br />
+</div>
