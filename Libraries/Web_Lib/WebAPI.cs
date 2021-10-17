@@ -97,7 +97,7 @@ namespace Web_Lib
             }
             else if (!_http_response.IsSuccessStatusCode)
             {
-                log.Write($"Status Code --> Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 3);
+                log.Write($"Status Code --> Http Response Code is: {_http_response.StatusCode} for API {client.BaseAddress}{api}", "WebAPI Exec", 4);
                 _http_response = new HttpResponseMessage();
             }
         }

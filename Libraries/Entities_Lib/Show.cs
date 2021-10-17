@@ -109,7 +109,7 @@ namespace Entities_Lib
             Mdb.success = true;
             string updfields = "";
             string sqlpre = $"update shows set ";
-            if (TvmStatus == "Reviewing") { TvmStatus = "New"; }
+            if (TvmStatus == "Reviewing" && !TvmSummary.ToLower().Contains("we don't have a summary for")) { TvmStatus = "New"; }
             updfields += $"`TvmStatus` = '{TvmStatus}', ";
             updfields += $"`Finder` = '{Finder}', ";
             updfields += $"`ShowStatus` = '{ShowStatus}', ";

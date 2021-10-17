@@ -110,6 +110,14 @@ namespace UpdateFollowed
                 log.Write($"Deleted {delidx} Shows", "", 1);
             }
 
+            MariaDB mdb = new(appinfo);
+            MariaDB mdbw = new(appinfo);
+            MySqlConnector.MySqlDataReader rdr = mdb.ExecQuery("select ShowsTvmShowId from notinfollowed where `Status` = 'Following'");
+            while (rdr.Read())
+            {
+                mdbw.ExecQuery($"update Shows set `TvmStatus` = 'New' where `TvmShowid` = {int.Parse(rdr[0].ToString())}");
+                log.Write($"Reset {rdr[0]} to New ---> Should not occur ###################", "", 0);
+            }
 
             log.Stop();
         }
