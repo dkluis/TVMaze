@@ -10,12 +10,20 @@
     string followedShowsCount = $"select count(*) from Shows where `TvmStatus` = 'Following'";
     string reviewingShowsCount = $"select count(*) from Shows where `TvmStatus` = 'Reviewing'";
     string newShowsCount = $"select count(*) from Shows where `TvmStatus` = 'New'";
+    string RunningShowsCount = $"select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
+    string TBDShowsCount = $"select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
+    string InDevShowsCount = $"select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
+    string EndedShowsCount = $"select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
     string numShows = "";
     string numEpisodes = "";
     string numFollowed = "";
     string numFollowedShows = "";
     string numReviewingShows = "";
     string numNewShows = "";
+    string numRunningShows = "";
+    string numTBDShows = "";
+    string numInDevShows = "";
+    string numEndedShows = "";
 
     MariaDB mdb = new(appInfo);
     MySqlConnector.MySqlDataReader rdr;
@@ -44,71 +52,131 @@
     rdr = mdb.ExecQuery(followedShowsCount);
     while (rdr.Read())
     {
-        numFollowedShows = rdr[0].ToString();
+        numFollowedShows = int.Parse(rdr[0].ToString()).ToString("###,###");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(reviewingShowsCount);
     while (rdr.Read())
     {
-        numReviewingShows = rdr[0].ToString();
+        numReviewingShows = int.Parse(rdr[0].ToString()).ToString("###,###");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(newShowsCount);
     while (rdr.Read())
     {
-        numNewShows = rdr[0].ToString();
+        numNewShows = int.Parse(rdr[0].ToString()).ToString("###,###");
     }
     mdb.Close();
 
-    <h1>Welcome to TVMaze and Plex Media System</h1>
+    rdr = mdb.ExecQuery(RunningShowsCount);
+    while (rdr.Read())
+    {
+        numRunningShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+    }
+    mdb.Close();
 
-    <p><h6>Start of Table</h6></p>
+    rdr = mdb.ExecQuery(TBDShowsCount);
+    while (rdr.Read())
+    {
+        numTBDShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+    }
+    mdb.Close();
 
-    <p>@numShows, @numEpisodes</p>
+    rdr = mdb.ExecQuery(InDevShowsCount);
+    while (rdr.Read())
+    {
+        numInDevShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+    }
+    mdb.Close();
 
-    <div>
-        <h4>Statistics Table</h4>
-        <table style="width: 50%" , border="1">
+    rdr = mdb.ExecQuery(EndedShowsCount);
+    while (rdr.Read())
+    {
+        numEndedShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+    }
+    mdb.Close();
+}
+
+<h1>Welcome to TVMaze and Plex Media System</h1>
+
+<div>
+    <h4>Shows Statistics</h4>
+    <table class="table table-striped" style="width: 50%">
+        <thead>
             <tr>
-                <th>Table</th>
+                <th>Type</th>
                 <th>Description</th>
-                <th>Number</th>
+                <th># of Records</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Shows Table</td>
+                <td>Total</td>
+                <td>@numShows</td>
             </tr>
             <tr>
-                <td>Shows</td>
-                <td># of Records</td>
-                <!--<td>@numShows</td>-->
+                <td>...Shows</td>
+                <td>Status: New</td>
+                <td>@numNewShows</td>
             </tr>
             <tr>
-                <td>Shows</td>
-                <td># of New</td>
-                <!--<td>@numNewShows</td>-->
+                <td>...Shows</td>
+                <td>Status: Reviewing</td>
+                <td>@numReviewingShows</td>
             </tr>
             <tr>
-                <td>Shows</td>
-                <td># of Reviewing</td>
-                <!--<td>@numReviewingShows</td>-->
+                <td>...Shows</td>
+                <td>Status: Following</td>
+                <td>@numFollowedShows</td>
             </tr>
             <tr>
-                <td>Shows</td>
-                <td># of Followed</td>
-                <!--<td>@numFollowedShows</td>-->
+                <td>Followed Table</td>
+                <td>Total</td>
+                <td>@numFollowed</td>
             </tr>
             <tr>
-                <td>Followed</td>
-                <td># of Records</td>
-                <!--<td>@numFollowed</td>-->
+                <td>...Shows (Following)</td>
+                <td>Show Status: Running</td>
+                <td>@numRunningShows</td>
             </tr>
+            <tr>
+                <td>...Shows (Following)</td>
+                <td>Show Status: To Be Decided</td>
+                <td>@numTBDShows</td>
+            </tr>
+            <tr>
+                <td>...Shows (Following)</td>
+                <td>Show Status: In Development</td>
+                <td>@numInDevShows</td>
+            </tr>
+            <tr>
+                <td>...Shows (Following)</td>
+                <td>Show Status: Ended</td>
+                <td>@numEndedShows</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <h4>Episodes Statistics</h4>
+    <table class="table table-striped" style="width: 50%">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Description</th>
+                <th># of Records</th>
+            </tr>
+        </thead>
+        <tbody>
             <tr>
                 <td>Episodes</td>
-                <td># of Records</td>
-                <!--<td>@numEpisodes</td>-->
+                <td>Total</td>
+                <td>@numEpisodes</td>
             </tr>
-        </table>
-    </div>
-
-    <p><h6>End of Table</h6></p>
-
-}
+        </tbody>
+    </table>
+</div>
