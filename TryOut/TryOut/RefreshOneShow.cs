@@ -24,7 +24,7 @@ namespace RefreshOneShow
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            int TheShowToRefresh = 57079;
+            int TheShowToRefresh = 55012;
 
             MariaDB Mdbr = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;

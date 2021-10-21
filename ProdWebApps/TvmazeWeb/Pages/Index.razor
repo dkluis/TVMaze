@@ -44,110 +44,110 @@
     rdr = mdb.ExecQuery(showCount);
     while (rdr.Read())
     {
-        numShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedCount);
     while (rdr.Read())
     {
-        numFollowed = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numFollowed = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedShowsCount);
     while (rdr.Read())
     {
-        numFollowedShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numFollowedShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(reviewingShowsCount);
     while (rdr.Read())
     {
-        numReviewingShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numReviewingShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(newShowsCount);
     while (rdr.Read())
     {
-        numNewShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numNewShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(RunningShowsCount);
     while (rdr.Read())
     {
-        numRunningShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numRunningShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(TBDShowsCount);
     while (rdr.Read())
     {
-        numTBDShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numTBDShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(InDevShowsCount);
     while (rdr.Read())
     {
-        numInDevShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numInDevShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(EndedShowsCount);
     while (rdr.Read())
     {
-        numEndedShows = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numEndedShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeCount);
     while (rdr.Read())
     {
-        numEpisodes = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeWatchedCount);
     while (rdr.Read())
     {
-        numWatchedEpisodes = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numWatchedEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeAcquiredCount);
     while (rdr.Read())
     {
-        numAcquiredEpisodes = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numAcquiredEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeSkippedCount);
     while (rdr.Read())
     {
-        numSkippedEpisodes = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numSkippedEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureCount);
     while (rdr.Read())
     {
-        numFutureEpisodes = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numFutureEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureUnknownCount);
     while (rdr.Read())
     {
-        numFutureUnknownEpisodes = int.Parse(rdr[0].ToString()).ToString("###,###");
+        numFutureUnknownEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 }
 
-<h1>Welcome to TVMaze and Plex Media System</h1>
+<h1>Main Page</h1>
 
 <div>
     <h4>Shows Statistics</h4>
