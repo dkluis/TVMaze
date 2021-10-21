@@ -1,17 +1,80 @@
 ﻿@page "/shows"
 
-<h1>Shows Page</h1>
 
-<p>Current count: @currentCount</p>
+@using TVMazeWeb.Data
+@inject WebShows WebShowsService
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
-    private int currentCount = 0;
+    AppInfo appinfo = new("Tvmaze", "We", "DbAlternate");
+    private List<ShowsInfo> showsInfoList = new();
 
-    private void IncrementCount()
+
+    private void ReviewNewShows()
     {
-        currentCount++;
+        showsInfoList = WebShowsService.GetShowsByTvmStatus(appinfo, "New");
     }
+
+    private void ReviewReviewShows()
+    {
+        showsInfoList = WebShowsService.GetShowsByTvmStatus(appinfo, "Reviewing");
+    }
+
+    private void FindShows()
+    {
+        showsInfoList = WebShowsService.FindShows(appinfo, "%marvel%");
+    }
+
+    private void ButtonClicked()
+    {
+        string a = "";
+    }
+
 }
+
+<h1>Shows</h1>
+
+<button class="btn btn-primary" @onclick="ReviewNewShows">New Shows</button>
+<button class="btn btn-primary" @onclick="ReviewReviewShows">Review Shows</button>
+
+<button class="btn btn-primary" @onclick="FindShows">Find Shows</button>
+<p></p>
+<p>Use Buttons to select Shows</p>
+
+<div>
+    <h6>Shows - Table</h6>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Show Id</th>
+                <th>Name</th>
+                <th>Url</th>
+                <th>Alt Name</th>
+                <th>Finder</th>
+                <th>Media Type</th>
+                <th>Status</th>
+                <th>Update Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ShowsInfo si in showsInfoList)
+            {
+            <tr>
+                <td>@si.TvmShowId</td>
+                <td>@si.ShowName</td>
+                <td> <a href="@si.TvmUrl">TVMaze</a> </td>
+                <td>@si.AltShowName</td>
+                <td>@si.Finder</td>
+                <td>@si.MediaType</td>
+                <td>@si.TvmStatus</td>
+                <td>@si.UpdateDate</td>
+                <td><button class="btn btn-secondary" @onclick="ButtonClicked">Edit</button>
+                    <button class="btn btn-secondary" @onclick="ButtonClicked">Delete</button></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
 
