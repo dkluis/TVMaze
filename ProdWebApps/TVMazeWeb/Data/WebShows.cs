@@ -9,7 +9,7 @@ namespace TVMazeWeb.Data
     {
         public WebShows()
         {
-            AppInfo appinfo = new("Tvmaze", "We", "DbAlternate");
+            AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
         }
 
         public List<ShowsInfo> GetShowsByTvmStatus(AppInfo appinfo, string tvmstatus)
@@ -42,7 +42,7 @@ namespace TVMazeWeb.Data
             MariaDB mdbshows = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
             List<ShowsInfo> newShows = new();
-            string sql = $"select * from Shows where `ShowName` like '{showname}' or `AltShowName` like '{showname}'";
+            string sql = $"select * from Shows where `ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%' order by `TvmShowId` desc";
             rdr = mdbshows.ExecQuery(sql);
             while (rdr.Read())
             {
@@ -51,6 +51,7 @@ namespace TVMazeWeb.Data
                 rec.TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
                 rec.ShowName = rdr["ShowName"].ToString();
                 rec.TvmStatus = rdr["TvmStatus"].ToString();
+                rec.ShowStatus = rdr["ShowStatus"].ToString();
                 rec.TvmUrl = rdr["TvmUrl"].ToString();
                 rec.Finder = rdr["Finder"].ToString();
                 rec.AltShowName = rdr["AltShowName"].ToString();
@@ -60,6 +61,14 @@ namespace TVMazeWeb.Data
                 newShows.Add(rec);
             }
             return newShows;
+        }
+
+        public bool DeleteShow(AppInfo appinfo, int showid)
+        {
+            MariaDB mdbshows = new(appinfo);
+            string sql = $"delete from Shows where `TvmShowId` = {showid}";
+            int resultrows = mdbshows.ExecNonQuery(sql);
+            if (resultrows > 0) { return true; } else { return false; }
         }
     }
 

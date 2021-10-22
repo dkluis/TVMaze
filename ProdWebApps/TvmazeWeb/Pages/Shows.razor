@@ -6,9 +6,9 @@
 
 
 @code {
-    AppInfo appinfo = new("Tvmaze", "We", "DbAlternate");
+    AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
     private List<ShowsInfo> showsInfoList = new();
-
+    string SearchString;
 
     private void ReviewNewShows()
     {
@@ -22,12 +22,19 @@
 
     private void FindShows()
     {
-        showsInfoList = WebShowsService.FindShows(appinfo, "%marvel%");
+        showsInfoList = WebShowsService.FindShows(appinfo, SearchString);
     }
 
     private void ButtonClicked()
     {
         string a = "";
+    }
+
+    private void DeleteShow(ShowsInfo si)
+    {
+        appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
+        WebShowsService.DeleteShow(appinfo, si.TvmShowId);
+        ReviewNewShows();
     }
 
 }
@@ -37,9 +44,20 @@
 <button class="btn btn-primary" @onclick="ReviewNewShows">New Shows</button>
 <button class="btn btn-primary" @onclick="ReviewReviewShows">Review Shows</button>
 
-<button class="btn btn-primary" @onclick="FindShows">Find Shows</button>
+<div>
+    <div class="input-group mb-3">
+        <button class="btn btn-primary" @onclick="FindShows">Find Shows</button>
+        <div class="input-group-prepend">
+            <span class="input-group-text">%</span>
+        </div>
+        <input @bind="SearchString" />
+        <div class="input-group-append">
+            <span class="input-group-text">%</span>
+        </div>
+    </div>
+</div>
+
 <p></p>
-<p>Use Buttons to select Shows</p>
 
 <div>
     <h6>Shows - Table</h6>
@@ -53,6 +71,7 @@
                 <th>Finder</th>
                 <th>Media Type</th>
                 <th>Status</th>
+                <th>ShowStatus</th>
                 <th>Update Date</th>
                 <th>Actions</th>
             </tr>
@@ -60,18 +79,22 @@
         <tbody>
             @foreach (ShowsInfo si in showsInfoList)
             {
-            <tr>
-                <td>@si.TvmShowId</td>
-                <td>@si.ShowName</td>
-                <td> <a href="@si.TvmUrl">TVMaze</a> </td>
-                <td>@si.AltShowName</td>
-                <td>@si.Finder</td>
-                <td>@si.MediaType</td>
-                <td>@si.TvmStatus</td>
-                <td>@si.UpdateDate</td>
-                <td><button class="btn btn-secondary" @onclick="ButtonClicked">Edit</button>
-                    <button class="btn btn-secondary" @onclick="ButtonClicked">Delete</button></td>
-            </tr>
+                <tr>
+                    <td>@si.TvmShowId</td>
+                    <td>@si.ShowName</td>
+                    <td> <a href="@si.TvmUrl">TVMaze</a> </td>
+                    <td>@si.AltShowName</td>
+                    <td>@si.Finder</td>
+                    <td>@si.MediaType</td>
+                    <td>@si.TvmStatus</td>
+                    <td>@si.ShowStatus</td>
+                    <td>@si.UpdateDate</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="ButtonClicked">Edit</button>
+                        @if (@si.TvmStatus != "Following")
+                        {<button class="btn btn-secondary" @onclick="@(() => DeleteShow(si))">Delete</button>}
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
