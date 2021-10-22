@@ -27,14 +27,15 @@
 
     private void ButtonClicked()
     {
-        string a = "";
+        SearchString = "";
     }
 
     private void DeleteShow(ShowsInfo si)
     {
         appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
-        WebShowsService.DeleteShow(appinfo, si.TvmShowId);
+        bool result = WebShowsService.DeleteShow(appinfo, si.TvmShowId);
         ReviewNewShows();
+        //StateHasChanged();
     }
 
 }
@@ -43,7 +44,6 @@
 
 <button class="btn btn-primary" @onclick="ReviewNewShows">New Shows</button>
 <button class="btn btn-primary" @onclick="ReviewReviewShows">Review Shows</button>
-
 <div>
     <div class="input-group mb-3">
         <button class="btn btn-primary" @onclick="FindShows">Find Shows</button>
@@ -82,13 +82,13 @@
                 <tr>
                     <td>@si.TvmShowId</td>
                     <td>@si.ShowName</td>
-                    <td> <a href="@si.TvmUrl">TVMaze</a> </td>
+                    <td> <a href="@si.TvmUrl" target="_blank">TVMaze</a> </td>
                     <td>@si.AltShowName</td>
                     <td>@si.Finder</td>
                     <td>@si.MediaType</td>
                     <td>@si.TvmStatus</td>
                     <td>@si.ShowStatus</td>
-                    <td>@si.UpdateDate</td>
+                    <td>@si.UpdateDate.Substring(0, 10)</td>
                     <td>
                         <button class="btn btn-secondary" @onclick="ButtonClicked">Edit</button>
                         @if (@si.TvmStatus != "Following")
