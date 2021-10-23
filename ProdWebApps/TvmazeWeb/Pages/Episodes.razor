@@ -1,24 +1,26 @@
 ﻿@page "/episodes"
 
 @using TVMazeWeb.Data
-@inject WebShows WebShowsService
+@inject WebEpisodes WebEpisodesService
 
 @code{
     AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
-    //private List<EpisodeInfo> EpisodesInfoList = new();
+    private List<EpisodeInfo> EpisodesInfoList = new();
     string SearchString;
-    string SeasonInt;
-    string EpisodeInt;
+    string SeasonString;
+    string EpisodeString;
 
     private void FindEpisodes()
     {
-        //EpisodesInfoList = WebEpisodesService.FindEpisodes(appinfo, SearchString);
+        if (SeasonString is null) { SeasonString = ""; }
+        if (EpisodeString is null) { EpisodeString = ""; }
+        if (SearchString is null) { SearchString = ""; }
+        EpisodesInfoList = WebEpisodesService.GetEpisodes(appinfo, SearchString, SeasonString, EpisodeString);
     }
 }
 
 <h1>Episodes</h1>
 <em>To manually set Watched, Acquired or Skipped use TVMaze Episode Url</em>
-<br />
 <div>
 
     <div class="input-group mb-3">
@@ -32,11 +34,11 @@
         <div class="input-group-prepend">
             <span class="input-group-text">Season</span>
         </div>
-        <input @bind="SeasonInt" />
+        <input @bind="SeasonString" />
         <div class="input-group-prepend">
             <span class="input-group-text">Episode</span>
         </div>
-        <input @bind="EpisodeInt" />
+        <input @bind="EpisodeString" />
         &#8195;<button class="btn btn-primary" @onclick="FindEpisodes">Find Episodes</button>
     </div>
 </div>
@@ -61,5 +63,28 @@
                 <th>Update Date</th>
             </tr>
         </thead>
+        <tbody>
+            @if (EpisodesInfoList.Count() == 0)
+            {
+                <tr>No Episode Information Found</tr>
+            }
+            else
+            {
+                foreach (EpisodeInfo ei in EpisodesInfoList)
+                {
+                    <tr>
+                        <td>@ei.TvmShowId</td>
+                        <td>@ei.ShowName</td>
+                        <td>@ei.Season</td>
+                        <td>@ei.Episode</td>
+                        <td>@ei.BroadcastDate</td>
+                        <td> <a href="@ei.TvmUrl" target="_blank">TVMaze</a> </td>
+                        <td>@ei.PlexStatus</td>
+                        <td>@ei.PlexDate</td>
+                        <td>@ei.UpdateDate</td>
+                    </tr>
+                }
+            }
+        </tbody>
     </table>
 </div>
