@@ -51,29 +51,28 @@
     {
         appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
         bool result = WebShowsService.DeleteShow(appinfo, si.TvmShowId);
-        SearchString = si.ShowName;
-        FindShows();
+        if (si.TvmStatus == "New") { ReviewNewShows(); } else { ReviewReviewShows();  }
         SearchString = "";
     }
 
 }
 
 <h1>Shows</h1>
-<em>To Follow or Unfollow a show use the TVMaze link</em>
+<em>To Follow or Unfollow a show use the TVMaze Show Url</em>
 <br />
-<button class="btn btn-primary" @onclick="ReviewNewShows">New Shows</button>
-<button class="btn btn-primary" @onclick="ReviewReviewShows">Review Shows</button>
-<div>
-    <div class="input-group mb-3">
-        <button class="btn btn-primary" @onclick="FindShows">Find Shows</button>
-        <div class="input-group-prepend">
-            <span class="input-group-text">%</span>
-        </div>
-        <input @bind="SearchString" />
-        <div class="input-group-append">
-            <span class="input-group-text">%</span>
-        </div>
+
+
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <span class="input-group-text">%</span>
     </div>
+    <input @bind="SearchString" />
+    <div class="input-group-append">
+        <span class="input-group-text">%</span>
+    </div>
+    &#8195;<button class="btn btn-primary" @onclick="FindShows">Find Shows</button>
+    &#8195;<button class="btn btn-primary" @onclick="ReviewNewShows">New Shows</button>
+    &#8195;<button class="btn btn-primary" @onclick="ReviewReviewShows">Review Shows</button>
 </div>
 
 <p></p>
@@ -85,7 +84,7 @@
             <tr>
                 <th>Show Id</th>
                 <th>Name</th>
-                <th>Url</th>
+                <th>Show Url</th>
                 <th>Alt Name</th>
                 <th>Finder</th>
                 <th>Media Type</th>
@@ -102,9 +101,19 @@
                     <td>@si.TvmShowId</td>
                     <td>@si.ShowName</td>
                     <td> <a href="@si.TvmUrl" target="_blank">TVMaze</a> </td>
-                    <td>@if (si.TvmStatus == "Following") {<input @bind="si.AltShowName" size="60" /> } else {@si.AltShowName}</td>
+                    <td>
+                        @if (si.TvmStatus == "Following")
+                        {<input @bind="si.AltShowName" size="60" /> }
+                        else
+                        {@si.AltShowName}
+                    </td>
                     <td>@si.Finder</td>
-                    <td>@if (si.TvmStatus == "Following") {<input @bind="@si.MediaType" size="6" /> } else {@si.MediaType}</td>
+                    <td>
+                        @if (si.TvmStatus == "Following")
+                        {<input @bind="@si.MediaType" size="6" /> }
+                        else
+                        {@si.MediaType}
+                    </td>
                     <td>@si.TvmStatus</td>
                     <td>@si.ShowStatus</td>
                     <td>@si.UpdateDate.Substring(0, 10)</td>

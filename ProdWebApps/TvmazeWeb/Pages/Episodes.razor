@@ -1,47 +1,65 @@
 ﻿@page "/episodes"
 
 @using TVMazeWeb.Data
-@inject WeatherForecastService ForecastService
+@inject WebShows WebShowsService
 
-<h1>Episode Page</h1>
+@code{
+    AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
+    //private List<EpisodeInfo> EpisodesInfoList = new();
+    string SearchString;
+    string SeasonInt;
+    string EpisodeInt;
 
-<p>This component demonstrates fetching data from a service.</p>
-
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-@code {
-    private WeatherForecast[] forecasts;
-
-    protected override async Task OnInitializedAsync()
+    private void FindEpisodes()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        //EpisodesInfoList = WebEpisodesService.FindEpisodes(appinfo, SearchString);
     }
 }
 
+<h1>Episodes</h1>
+<em>To manually set Watched, Acquired or Skipped use TVMaze Episode Url</em>
+<br />
+<div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">ShowName %</span>
+        </div>
+        <input @bind="SearchString" />
+        <div class="input-group-append">
+            <span class="input-group-text">%</span>
+        </div>
+        <div class="input-group-prepend">
+            <span class="input-group-text">Season</span>
+        </div>
+        <input @bind="SeasonInt" />
+        <div class="input-group-prepend">
+            <span class="input-group-text">Episode</span>
+        </div>
+        <input @bind="EpisodeInt" />
+        &#8195;<button class="btn btn-primary" @onclick="FindEpisodes">Find Episodes</button>
+    </div>
+</div>
+
+<p></p>
+
+<p></p>
+
+<div>
+    <h6>Shows - Table</h6>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Show Id</th>
+                <th>Name</th>
+                <th>Season</th>
+                <th>Episode</th>
+                <th>Broadcast Date</th>
+                <th>Episode Url</th>
+                <th>Status</th>
+                <th>Status Date</th>
+                <th>Update Date</th>
+            </tr>
+        </thead>
+    </table>
+</div>
