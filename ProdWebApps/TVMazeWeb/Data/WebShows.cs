@@ -17,7 +17,7 @@ namespace TVMazeWeb.Data
             MariaDB mdbshows = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
             List<ShowsInfo> newShows = new();
-            string sql = $"select * from Shows where `TvmStatus` = '{tvmstatus}'";
+            string sql = $"select * from Shows where `TvmStatus` = '{tvmstatus}' order by `TvmShowId` desc";
             rdr = mdbshows.ExecQuery(sql);
             while (rdr.Read())
             {
@@ -69,6 +69,22 @@ namespace TVMazeWeb.Data
             string sql = $"delete from Shows where `TvmShowId` = {showid}";
             int resultrows = mdbshows.ExecNonQuery(sql);
             if (resultrows > 0) { return true; } else { return false; }
+        }
+
+        public bool SetTvmStatusShow(AppInfo appinfo, int showid, string newstatus)
+        {
+            MariaDB mdbshows = new(appinfo);
+            string sql = $"update shows set `TvmStatus` = '{newstatus}' where `TvmShowId` = {showid}";
+            int resultrows = mdbshows.ExecNonQuery(sql);
+            if (resultrows > 0) { return true; } else { return false; }
+        }
+
+        public bool SetMtAndAsnShow(AppInfo appinfo, int showid, string mediatype, string altshowname)
+        {
+            MariaDB mdbshows = new(appinfo);
+            string sql = $"update shows set `AltShowName` = '{altshowname}', `MediaType` = '{mediatype}' where `TvmShowId` = {showid}";
+            int resultrows = mdbshows.ExecNonQuery(sql);
+            if (resultrows > 0) { return true; } else { appinfo.TxtFile.Write($"Edit Showname and MediaType unsuccesfull:  MediaType = {mediatype}"); return false; }
         }
     }
 
