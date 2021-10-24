@@ -2,27 +2,38 @@
 
 @using TVMazeWeb.Data
 @inject WebEpisodes WebEpisodesService
+@inject DataExchange DataExchangeService
 
 @code{
-    AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
     private List<EpisodeInfo> EpisodesInfoList = new();
     string SearchString;
     string SeasonString;
     string EpisodeString;
+    int idx;
 
     private void FindEpisodes()
     {
         if (SeasonString is null) { SeasonString = ""; }
         if (EpisodeString is null) { EpisodeString = ""; }
         if (SearchString is null) { SearchString = ""; }
-        EpisodesInfoList = WebEpisodesService.GetEpisodes(appinfo, SearchString, SeasonString, EpisodeString);
+        WebEpisodesService.appinfo.TxtFile.Write($"Executing Find Episodes for show {SearchString},  {SeasonString}, {EpisodeString}", "", 4);
+        EpisodesInfoList = WebEpisodesService.GetEpisodes(SearchString, SeasonString, EpisodeString);
+        DataExchangeService.Reset();
+    }
+}
+
+@{if (DataExchangeService.SendingPage == "Shows" && DataExchangeService.IntendedPage == "Episodes")
+    {
+        WebEpisodesService.appinfo.TxtFile.Write($"Request to Find Episode for show {DataExchangeService.ShowName} from page {DataExchangeService.SendingPage}", "", 3);
+        SearchString = DataExchangeService.ShowName;
+        FindEpisodes();
+        SearchString = "";
     }
 }
 
 <h1>Episodes</h1>
 <em>To manually set Watched, Acquired or Skipped use TVMaze Episode Url</em>
 <div>
-
     <div class="input-group mb-3">
         <div class="input-group-prepend">
             <span class="input-group-text">ShowName %</span>
@@ -64,27 +75,23 @@
             </tr>
         </thead>
         <tbody>
-            @if (EpisodesInfoList.Count() == 0)
+            @if (idx != 0) { idx = 0; }
+            @foreach (EpisodeInfo ei in EpisodesInfoList)
             {
-                <tr>No Episode Information Found</tr>
-            }
-            else
-            {
-                foreach (EpisodeInfo ei in EpisodesInfoList)
-                {
-                    <tr>
-                        <td>@ei.TvmShowId</td>
-                        <td>@ei.ShowName</td>
-                        <td>@ei.Season</td>
-                        <td>@ei.Episode</td>
-                        <td>@ei.BroadcastDate</td>
-                        <td> <a href="@ei.TvmUrl" target="_blank">TVMaze</a> </td>
-                        <td>@ei.PlexStatus</td>
-                        <td>@ei.PlexDate</td>
-                        <td>@ei.UpdateDate</td>
-                    </tr>
-                }
+                <tr>
+                    <td>@ei.TvmShowId</td>
+                    <td>@ei.ShowName</td>
+                    <td>@ei.Season</td>
+                    <td>@ei.Episode</td>
+                    <td>@ei.BroadcastDate</td>
+                    <td> <a href="@ei.TvmUrl" target="_blank">TVMaze</a> </td>
+                    <td>@ei.PlexStatus</td>
+                    <td>@ei.PlexDate</td>
+                    <td>@ei.UpdateDate</td>
+                </tr>
+                idx++;
             }
         </tbody>
     </table>
+    <div><em>Output has @idx records</em></div> 
 </div>

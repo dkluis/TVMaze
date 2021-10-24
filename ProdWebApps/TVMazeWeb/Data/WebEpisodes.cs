@@ -7,22 +7,20 @@ namespace TVMazeWeb.Data
 {
     public class WebEpisodes
     {
-        public WebEpisodes()
-        {
-            //AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
-        }
+        public AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
 
-        public List<EpisodeInfo> GetEpisodes(AppInfo appinfo, string showname, string season, string episode)
+        public List<EpisodeInfo> GetEpisodes(string showname, string season, string episode)
         {
             MariaDB mdbepisodes = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
             List<EpisodeInfo> episodeinfolist = new();
             int seasonint;
             int episodeint;
-            string sql = $"select * from episodesfullinfo where `ShowName` like '%{showname}%'";
+            showname = showname.Replace("'", "''");
+            string sql = $"select * from episodesfullinfo where (`ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%')";
             if (int.TryParse(season, out seasonint)) { sql = sql + $" and `Season` = {seasonint}"; }
             if (int.TryParse(episode, out episodeint)) { sql = sql + $" and `Episode` = {episodeint}"; }
-
+            sql = sql + " limit 150";
             
             rdr = mdbepisodes.ExecQuery(sql);
             while (rdr.Read())
@@ -44,7 +42,6 @@ namespace TVMazeWeb.Data
             }
 
             appinfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeinfolist.Count} records", "", 4);
-
             return episodeinfolist;
 
         }

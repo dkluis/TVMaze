@@ -7,12 +7,9 @@ namespace TVMazeWeb.Data
 {
     public class WebShows
     {
-        public WebShows()
-        {
-            AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
-        }
-
-        public List<ShowsInfo> GetShowsByTvmStatus(AppInfo appinfo, string tvmstatus)
+        public AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
+        
+        public List<ShowsInfo> GetShowsByTvmStatus(string tvmstatus)
         {
             MariaDB mdbshows = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
@@ -37,12 +34,13 @@ namespace TVMazeWeb.Data
             return newShows;
         }
 
-        public List<ShowsInfo> FindShows(AppInfo appinfo, string showname)
+        public List<ShowsInfo> FindShows(string showname)
         {
             MariaDB mdbshows = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
             List<ShowsInfo> newShows = new();
-            string sql = $"select * from Shows where `ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%' order by `TvmShowId` desc";
+            if (showname is not null) { showname = showname.Replace("'", "''"); }
+            string sql = $"select * from Shows where `ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%' order by `TvmShowId` desc limit 150";
             rdr = mdbshows.ExecQuery(sql);
             while (rdr.Read())
             {
@@ -63,7 +61,7 @@ namespace TVMazeWeb.Data
             return newShows;
         }
 
-        public bool DeleteShow(AppInfo appinfo, int showid)
+        public bool DeleteShow(int showid)
         {
             MariaDB mdbshows = new(appinfo);
             string sql = $"delete from Shows where `TvmShowId` = {showid}";
@@ -71,7 +69,7 @@ namespace TVMazeWeb.Data
             if (resultrows > 0) { return true; } else { return false; }
         }
 
-        public bool SetTvmStatusShow(AppInfo appinfo, int showid, string newstatus)
+        public bool SetTvmStatusShow(int showid, string newstatus)
         {
             MariaDB mdbshows = new(appinfo);
             string sql = $"update shows set `TvmStatus` = '{newstatus}' where `TvmShowId` = {showid}";
@@ -79,9 +77,10 @@ namespace TVMazeWeb.Data
             if (resultrows > 0) { return true; } else { return false; }
         }
 
-        public bool SetMtAndAsnShow(AppInfo appinfo, int showid, string mediatype, string altshowname)
+        public bool SetMtAndAsnShow(int showid, string mediatype, string altshowname)
         {
             MariaDB mdbshows = new(appinfo);
+            altshowname = altshowname.Replace("'", "''");
             string sql = $"update shows set `AltShowName` = '{altshowname}', `MediaType` = '{mediatype}' where `TvmShowId` = {showid}";
             int resultrows = mdbshows.ExecNonQuery(sql);
             if (resultrows > 0) { return true; } else { appinfo.TxtFile.Write($"Edit Showname and MediaType unsuccesfull:  MediaType = {mediatype}"); return false; }

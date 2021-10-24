@@ -3,44 +3,46 @@
 
 @using TVMazeWeb.Data
 @inject WebShows WebShowsService
+@inject DataExchange DataExchangeService
+@inject NavigationManager NavigationManagerService
 
 
 @code {
-    AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
     private List<ShowsInfo> showsInfoList = new();
     string SearchString;
+    int idx;
 
     private void ReviewNewShows()
     {
-        showsInfoList = WebShowsService.GetShowsByTvmStatus(appinfo, "New");
+        showsInfoList = WebShowsService.GetShowsByTvmStatus("New");
         SearchString = "";
     }
 
     private void ReviewReviewShows()
     {
-        showsInfoList = WebShowsService.GetShowsByTvmStatus(appinfo, "Reviewing");
+        showsInfoList = WebShowsService.GetShowsByTvmStatus("Reviewing");
         SearchString = "";
     }
 
     private void FindShows()
     {
-        showsInfoList = WebShowsService.FindShows(appinfo, SearchString);
+        showsInfoList = WebShowsService.FindShows(SearchString);
     }
 
     private void EditShow(ShowsInfo si)
     {
         if (si.TvmStatus == "New")
         {
-            appinfo.TxtFile.Write($"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
-            bool result = WebShowsService.SetTvmStatusShow(appinfo, si.TvmShowId, "Reviewing");
+            WebShowsService.appinfo.TxtFile.Write($"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
+            bool result = WebShowsService.SetTvmStatusShow(si.TvmShowId, "Reviewing");
             SearchString = si.ShowName;
             FindShows();
             SearchString = "";
         }
         else if (si.TvmStatus == "Following")
         {
-            appinfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
-            bool result = WebShowsService.SetMtAndAsnShow(appinfo, si.TvmShowId, si.MediaType, si.AltShowName);
+            WebShowsService.appinfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
+            bool result = WebShowsService.SetMtAndAsnShow(si.TvmShowId, si.MediaType, si.AltShowName);
             SearchString = si.ShowName;
             FindShows();
             SearchString = "";
@@ -49,10 +51,18 @@
 
     private void DeleteShow(ShowsInfo si)
     {
-        appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
-        bool result = WebShowsService.DeleteShow(appinfo, si.TvmShowId);
-        if (si.TvmStatus == "New") { ReviewNewShows(); } else { ReviewReviewShows();  }
+        WebShowsService.appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
+        bool result = WebShowsService.DeleteShow(si.TvmShowId);
+        if (si.TvmStatus == "New") { ReviewNewShows(); } else { ReviewReviewShows(); }
         SearchString = "";
+    }
+
+    private void FindEpisodes(ShowsInfo si)
+    {
+        if (si.AltShowName == "") { DataExchangeService.ShowName = si.ShowName; } else { DataExchangeService.ShowName = si.AltShowName; }
+        DataExchangeService.SendingPage = "Shows";
+        DataExchangeService.IntendedPage = "Episodes";
+        //NavigationManagerService.NavigateTo("/episodes", true);
     }
 
 }
@@ -93,6 +103,7 @@
             </tr>
         </thead>
         <tbody>
+            @if (idx != 0) { idx = 0; }
             @foreach (ShowsInfo si in showsInfoList)
             {
                 <tr>
@@ -123,11 +134,14 @@
                             { <button class="btn btn-secondary" @onclick="@(() => EditShow(si))">Submit Edit</button>}
                         @if (@si.TvmStatus != "Following")
                         {<button class="btn btn-secondary" @onclick="@(() => DeleteShow(si))">Delete</button>}
+                        <button class="btn btn-secondary" @onclick="@(() => FindEpisodes(si))">Episodes</button>
                     </td>
                 </tr>
+                idx++;
             }
         </tbody>
     </table>
+    <div><em>Output has @idx records</em></div>
 </div>
 
 

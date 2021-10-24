@@ -1,17 +1,6 @@
-﻿using System;
-using Common_Lib;
+﻿using Common_Lib;
 using Entities_Lib;
-using Web_Lib;
 using DB_Lib;
-
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Diagnostics;
-using System.Threading;
-
-using CodeHollow.FeedReader;
-using System.Threading.Tasks;
 
 namespace RefreshOneShow
 {
