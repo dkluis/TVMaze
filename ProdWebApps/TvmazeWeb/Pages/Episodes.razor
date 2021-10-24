@@ -1,0 +1,103 @@
+﻿@page "/episodes"
+
+@using TVMazeWeb.Data
+@inject WebEpisodes WebEpisodesService
+@inject DataExchange DataExchangeService
+
+@code{
+    private List<EpisodeInfo> EpisodesInfoList = new();
+    string SearchString;
+    string SeasonString;
+    string EpisodeString;
+    int idx;
+
+    private void FindEpisodes()
+    {
+        if (SeasonString is null) { SeasonString = ""; }
+        if (EpisodeString is null) { EpisodeString = ""; }
+        if (SearchString is null) { SearchString = ""; }
+        WebEpisodesService.appinfo.TxtFile.Write($"Executing Find Episodes for show {SearchString},  {SeasonString}, {EpisodeString}", "", 4);
+        EpisodesInfoList = WebEpisodesService.GetEpisodes(SearchString, SeasonString, EpisodeString);
+        DataExchangeService.Reset();
+    }
+
+    private void GetEpisodesToAcquire()
+    {
+        EpisodesInfoList = WebEpisodesService.GetEpisodesToAcquire();
+    }
+}
+
+@{if (DataExchangeService.SendingPage == "Shows" && DataExchangeService.IntendedPage == "Episodes")
+    {
+        WebEpisodesService.appinfo.TxtFile.Write($"Request to Find Episode for show {DataExchangeService.ShowName} from page {DataExchangeService.SendingPage}", "", 3);
+        SearchString = DataExchangeService.ShowName;
+        FindEpisodes();
+        SearchString = "";
+    }
+}
+
+<h1>Episodes</h1>
+<em>To manually set Watched, Acquired or Skipped use TVMaze Episode Url</em>
+<div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">ShowName %</span>
+        </div>
+        <input @bind="SearchString" />
+        <div class="input-group-append">
+            <span class="input-group-text">%</span>
+        </div>
+        <div class="input-group-prepend">
+            <span class="input-group-text">Season</span>
+        </div>
+        <input @bind="SeasonString" size="3" />
+        <div class="input-group-prepend">
+            <span class="input-group-text">Episode</span>
+        </div>
+        <input @bind="EpisodeString" size="3" />
+        &#8195;<button class="btn btn-primary" @onclick="FindEpisodes">Find Episodes</button>
+        &#8195;<button class="btn btn-primary" @onclick="GetEpisodesToAcquire">Next 2 Days</button>
+    </div>
+</div>
+
+<p></p>
+
+<p></p>
+
+<div>
+    <h6>Shows - Table</h6>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Show Id</th>
+                <th>Name</th>
+                <th>Season</th>
+                <th>Episode</th>
+                <th>Broadcast Date</th>
+                <th>Episode Url</th>
+                <th>Status</th>
+                <th>Status Date</th>
+                <th>Update Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (idx != 0) { idx = 0; }
+            @foreach (EpisodeInfo ei in EpisodesInfoList)
+            {
+                <tr>
+                    <td>@ei.TvmShowId</td>
+                    <td>@ei.ShowName</td>
+                    <td>@ei.Season</td>
+                    <td>@ei.Episode</td>
+                    <td>@ei.BroadcastDate</td>
+                    <td> <a href="@ei.TvmUrl" target="_blank">TVMaze</a> </td>
+                    <td>@ei.PlexStatus</td>
+                    <td>@ei.PlexDate</td>
+                    <td>@ei.UpdateDate</td>
+                </tr>
+                idx++;
+            }
+        </tbody>
+    </table>
+    <div><em>Output has @idx records</em></div> 
+</div>

@@ -1,17 +1,6 @@
-﻿using System;
-using Common_Lib;
+﻿using Common_Lib;
 using Entities_Lib;
-using Web_Lib;
 using DB_Lib;
-
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Diagnostics;
-using System.Threading;
-
-using CodeHollow.FeedReader;
-using System.Threading.Tasks;
 
 namespace RefreshOneShow
 {
@@ -24,7 +13,7 @@ namespace RefreshOneShow
             TextFileHandler log = appinfo.TxtFile;
             log.Start();
 
-            int TheShowToRefresh = 57907;
+            int TheShowToRefresh = 55012;
 
             MariaDB Mdbr = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
