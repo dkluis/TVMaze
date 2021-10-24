@@ -62,7 +62,7 @@
         if (si.AltShowName == "") { DataExchangeService.ShowName = si.ShowName; } else { DataExchangeService.ShowName = si.AltShowName; }
         DataExchangeService.SendingPage = "Shows";
         DataExchangeService.IntendedPage = "Episodes";
-        //NavigationManagerService.NavigateTo("/episodes", true);
+        NavigationManagerService.NavigateTo("/episodes", false);
     }
 
 }

@@ -42,8 +42,36 @@ namespace TVMazeWeb.Data
             }
 
             appinfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeinfolist.Count} records", "", 4);
+            
             return episodeinfolist;
 
+        }
+
+        public List<EpisodeInfo> GetEpisodesToAcquire()
+        {
+            MariaDB mdbacquire = new(appinfo);
+            MySqlConnector.MySqlDataReader rdr;
+            List<EpisodeInfo> episodeinfolist = new();
+
+            rdr = mdbacquire.ExecQuery($"select * from episodesfromtodayback where finder = 'Multi' order by `BroadcastDate` asc, `ShowName` asc");
+            while (rdr.Read())
+            {
+                EpisodeInfo ei = new();
+                ei.TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
+                ei.ShowName = rdr["ShowName"].ToString();
+                ei.Season = rdr["Season"].ToString();
+                ei.Episode = rdr["Episode"].ToString();
+                ei.BroadcastDate = rdr["BroadcastDate"].ToString();
+                if (ei.BroadcastDate.Length > 10) { ei.BroadcastDate = ei.BroadcastDate.Substring(0, 10); }
+                ei.TvmUrl = rdr["TvmUrl"].ToString();
+                ei.PlexStatus = rdr["PlexStatus"].ToString();
+                ei.PlexDate = "";
+                ei.UpdateDate = rdr["UpdateDate"].ToString().Substring(0, 10);
+
+                episodeinfolist.Add(ei);
+            }
+
+            return episodeinfolist;
         }
     }
 
