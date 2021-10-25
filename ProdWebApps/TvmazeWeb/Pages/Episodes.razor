@@ -11,6 +11,7 @@
     string EpisodeString;
     int idx;
     string findurl = "https://eztv.re/search/";
+    bool showrssbool;
 
     private void FindEpisodes()
     {
@@ -24,7 +25,7 @@
 
     private void GetEpisodesToAcquire()
     {
-        EpisodesInfoList = WebEpisodesService.GetEpisodesToAcquire();
+        EpisodesInfoList = WebEpisodesService.GetEpisodesToAcquire(showrssbool);
     }
 }
 
@@ -57,6 +58,7 @@
         </div>
         <input @bind="EpisodeString" size="3" />
         &#8195;<button class="btn btn-primary" @onclick="FindEpisodes">Find Episodes</button>
+        &#8195;Include ShowRss:&#8195;<input type="checkbox" @bind="showrssbool" />
         &#8195;<button class="btn btn-primary" @onclick="GetEpisodesToAcquire">Next 2 Days</button>
     </div>
 </div>
@@ -86,7 +88,7 @@
             @if (idx != 0) { idx = 0; }
             @foreach (EpisodeInfo ei in EpisodesInfoList)
             {
-                string findit = findurl + ei.ShowName.Replace(" ","-");
+                string findit = findurl + ei.ShowName.Replace(" ", "-");
                 <tr>
                     <td>@ei.TvmShowId</td>
                     <td>@ei.ShowName</td>
@@ -103,5 +105,5 @@
             }
         </tbody>
     </table>
-    <div><em>Output has @idx records</em></div> 
+    <div><em>Output has @idx records</em></div>
 </div>

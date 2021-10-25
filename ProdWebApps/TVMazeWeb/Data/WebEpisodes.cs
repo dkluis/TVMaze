@@ -47,13 +47,16 @@ namespace TVMazeWeb.Data
 
         }
 
-        public List<EpisodeInfo> GetEpisodesToAcquire()
+        public List<EpisodeInfo> GetEpisodesToAcquire(bool includeshowrss)
         {
             MariaDB mdbacquire = new(appinfo);
             MySqlConnector.MySqlDataReader rdr;
             List<EpisodeInfo> episodeinfolist = new();
-
-            rdr = mdbacquire.ExecQuery($"select * from episodesfromtodayback where finder = 'Multi' order by `BroadcastDate` asc, `ShowName` asc");
+            string sqlnoshowrss = $"select * from episodesfromtodayback where finder = 'Multi' order by `BroadcastDate` asc, `ShowName` asc";
+            string sqlwithshowrss = $"select * from episodesfromtodayback order by `BroadcastDate` asc, `ShowName` asc";
+            string sql;
+            if (includeshowrss) { sql = sqlwithshowrss; } else { sql = sqlnoshowrss; }
+            rdr = mdbacquire.ExecQuery(sql);
             while (rdr.Read())
             {
                 EpisodeInfo ei = new();
