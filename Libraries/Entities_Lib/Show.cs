@@ -40,7 +40,7 @@ namespace Entities_Lib
         public string TvmImdb;
         public string TvmImage;
         public string TvmSummary;
-        public int    TvmUpdatedEpoch;
+        public int TvmUpdatedEpoch;
 
         #endregion
 
@@ -109,7 +109,7 @@ namespace Entities_Lib
             Mdb.success = true;
             string updfields = "";
             string sqlpre = $"update shows set ";
-            if (TvmStatus == "Reviewing" && !TvmSummary.ToLower().Contains("we don't have a summary for")) { TvmStatus = "New"; }
+            if (TvmStatus == "Reviewing" && TvmSummary != "" ) { TvmStatus = "New"; }
             updfields += $"`TvmStatus` = '{TvmStatus}', ";
             updfields += $"`Finder` = '{Finder}', ";
             updfields += $"`ShowStatus` = '{ShowStatus}', ";
@@ -157,7 +157,7 @@ namespace Entities_Lib
             values += $"'{Finder}', ";
             values += $"'{MediaType}', ";
             values += $"'{CleanedShowName.Replace("'", "''")}', ";
-            if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); } 
+            if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); }
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
             int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
@@ -223,7 +223,7 @@ namespace Entities_Lib
                     if (showjson["network"]["name"] is not null) { TvmNetwork = showjson["network"]["name"].ToString(); }
                     if (showjson["network"]["country"] is not null)
                     {
-                        if (showjson["network"]["country"]["name"] is not null ) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
+                        if (showjson["network"]["country"]["name"] is not null) { TvmCountry = showjson["network"]["country"]["name"].ToString(); }
                     }
                 }
 
@@ -237,18 +237,15 @@ namespace Entities_Lib
                 }
 
                 if (showjson["externals"]["imdb"] is not null) { TvmImdb = showjson["externals"]["imdb"].ToString(); }
-                if (showjson["image"].ToString() != "") 
+                if (showjson["image"].ToString() != "")
                 {
                     if (showjson["image"]["medium"] is not null) { TvmImage = showjson["image"]["medium"].ToString(); }
                 }
 
                 if (showjson["summary"] is not null)
-                {
-                    if (showjson["image"].ToString() != "")
-                    { TvmSummary = showjson["summary"].ToString(); }
-                    else
-                    { TvmSummary = "##Unknow##"; }
-                }
+                { TvmSummary = showjson["summary"].ToString(); }
+                else
+                { TvmSummary = ""; }
 
                 if (showjson["updated"] is not null) { TvmUpdatedEpoch = int.Parse(showjson["updated"].ToString()); }
 
@@ -269,13 +266,15 @@ namespace Entities_Lib
                     {
                         TvmStatus = rdr["TvmStatus"].ToString();
                         Finder = rdr["Finder"].ToString();
-                        if ( rdr["TvmStatus"].ToString() == "New")
+                        /*
+                        if (rdr["TvmStatus"].ToString() == "New")
                         {
                             CheckTvm ct = new();
                             bool Following = ct.IsFollowedShow(Appinfo, showid);
                             if (Following) { TvmStatus = "Following"; }
                             isFollowed = Following;
                         }
+                        */
                         AltShowName = rdr["AltShowName"].ToString();
                         if (AltShowName == "" && ShowName.Contains(":")) { AltShowName = ShowName.Replace(":", ""); }
                         UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
@@ -495,16 +494,6 @@ namespace Entities_Lib
                 string sql = $"update shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showid};";
                 appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
                 if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update to Review unsuccessful {sql}", "", 4); }
-            }
-        }
-
-        public void ToUnDecided(AppInfo appinfo, int showid)
-        {
-            using (MariaDB Mdbw = new(appinfo))
-            {
-                string sql = $"update shows set `TvmStatus` = 'Undecided' where `TvmShowId` = {showid};";
-                appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
-                if (Mdbw.ExecNonQuery(sql) == 0) { appinfo.TxtFile.Write($"Update to Undecided unsuccessful {sql}", "", 4); }
             }
         }
     }

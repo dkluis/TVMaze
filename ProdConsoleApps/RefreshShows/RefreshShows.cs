@@ -34,7 +34,7 @@ namespace RefreshShows
             Mdbr.Close();
 
 
-            rdr = Mdbr.ExecQuery($"select distinct `TvmShowId` from episodestoacquire order by `TvmShowId` desc;");
+            rdr = Mdbr.ExecQuery($"select distinct `TvmShowId` from episodesfromtodayback order by `TvmShowId` desc;");
             while (rdr.Read())
             {
                 using (ShowAndEpisodes sae = new(appinfo))
