@@ -10,7 +10,7 @@
     string SeasonString;
     string EpisodeString;
     int idx;
-    string findurl = "https://www.ettv.be/torrents-search.php?search=";
+    string findurl = "https://eztv.re/search/";
 
     private void FindEpisodes()
     {
@@ -86,8 +86,7 @@
             @if (idx != 0) { idx = 0; }
             @foreach (EpisodeInfo ei in EpisodesInfoList)
             {
-                string se = Common.BuildSeasonEpisodeString(int.Parse(ei.Season), int.Parse(ei.Episode));
-                string findit = findurl + ei.ShowName.Replace(" ","+") + "+" + se;
+                string findit = findurl + ei.ShowName.Replace(" ","-");
                 <tr>
                     <td>@ei.TvmShowId</td>
                     <td>@ei.ShowName</td>
