@@ -1,5 +1,61 @@
 ﻿@page "/tools"
-@{
+@code
+{
+    string message;
+
+    public void ExecUpdateFollowed()
+    {
+        message = "Running Update Followed";
+        RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
+        message = "Finished Update Followed";
+    }
+
+    public void ExecUpdatePlexAcquired()
+    {
+        message = "Running Update Plex Acquired";
+        RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexAcquired.sh");
+        message = "Finished Update Plex Acquired";
+    }
+
+    public void ExecUpdatePlexWatched()
+    {
+        message = "Running Update Plex Watched";
+        RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
+        message = "Finished Update Plex Watched";
+    }
+
+    private void RunScript(string script)
+    {
+        using (Process Script = new())
+        {
+            Script.StartInfo.FileName = script;
+            Script.StartInfo.UseShellExecute = true;
+            Script.StartInfo.RedirectStandardOutput = false;
+            bool started = Script.Start();
+            Script.WaitForExit();
+        }
+    }
+
 }
 
 <h1>Tools Page</h1>
+<div>
+    <h2>Batch Processes: </h2>
+    <p></p>
+    <button class="btn btn-primary" @onclick="ExecUpdateFollowed">Update Followed</button>
+    &#8195;<button class="btn btn-primary" @onclick="ExecUpdatePlexAcquired">Update PlexAcquired</button>
+    &#8195;<button class="btn btn-primary" @onclick="ExecUpdatePlexWatched">Update PlexWatched</button>
+    <p></p>
+</div>
+<!--
+<div>
+    <h2>Future Group:</h2>
+    <p></p>
+    <button class="btn btn-primary" @onclick="ExecUpdateFollowed">Some Future Function</button>
+    <p></p>
+</div>
+-->
+<div>
+    <h3>Status:</h3>
+    <div><h4><em>@message</em></h4></div>
+</div>
