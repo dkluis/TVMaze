@@ -31,7 +31,7 @@ namespace Web_Lib
             int foundmagnets = 0;
             string html = BuildEztvURL($"{showname}-{seasepi}");
 
-            string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
+            string comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             log.Write($"Compare string = {comparewithmagnet}", "Eztv", 4);
 
             int priority;
@@ -93,7 +93,7 @@ namespace Web_Lib
             int foundmagnets = 0;
             string html = BuildMagnetDLURL($"{showname}-{seasepi}");
 
-            string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
+            string comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 4);
 
             int priority;
@@ -157,7 +157,7 @@ namespace Web_Lib
             int prio;
             int foundmagnets = 0;
             WebAPI tvmapi = new(appinfo);
-            string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
+            string comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             HttpResponseMessage result = tvmapi.GetRarbgMagnets(showname + " " + seasepi);
 
             log.Write($"Compare string = {comparewithmagnet}", "RarbgAPI", 4);
@@ -204,7 +204,7 @@ namespace Web_Lib
             int foundmagnets = 0;
             string html = BuildPirateBayURL($"{showname}+{seasepi}");
 
-            string comparewithmagnet = Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
+            string comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowname(showname).Replace(" ", ".") + "." + seasepi + ".";
             log.Write($"Compare string = {comparewithmagnet}", "PirateBay", 4);
 
             int priority;
