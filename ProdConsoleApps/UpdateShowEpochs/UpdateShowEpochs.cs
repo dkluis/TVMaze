@@ -68,14 +68,14 @@ namespace UpdateShowEpochs
                     if (showid > LastEvaluatedShow)
                     {
                         if (showid > HighestShowId) { HighestShowId = showid; } 
-                        if (!tvmshow.isForReview) { log.Write($"Show {showid} is rejected because of review rules {tvmshow.TvmUrl}"); continue; }
+                        if (!tvmshow.IsForReview) { log.Write($"Show {showid} is rejected because of review rules {tvmshow.TvmUrl}"); continue; }
                     }
                     else
                     {
                         log.Write($"This show is evaluated already", "", 3); continue;
                     }
                     tvmshow.TvmStatus = "New";
-                    tvmshow.isFollowed = false;
+                    tvmshow.IsFollowed = false;
                     if (!tvmshow.DbInsert(false, "UpdateShowEpochs"))
                     {
                         log.Write($"Insert of Show {showid} Failed #############################", "", 0);
@@ -100,7 +100,7 @@ namespace UpdateShowEpochs
                 else
                 {
                     using (MariaDB Mdbw = new(appinfo)) { Mdbw.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};"); Mdbw.Close(); }
-                    if (!tvmshow.isDBFilled) { continue;  }
+                    if (!tvmshow.IsDbFilled) { continue;  }
                     if (!tvmshow.DbUpdate())
                     {
                         log.Write($"Update of Show {showid} Failed ###################", "", 0);

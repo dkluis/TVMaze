@@ -27,7 +27,7 @@ namespace Entities_Lib
         public void Refresh(int showid, bool ignore = false)
         {
             Show.FillViaTvmaze(showid);
-            if (Show.isDBFilled && Show.isFollowed) { Show.TvmStatus = "Following"; }
+            if (Show.IsDbFilled && Show.IsFollowed) { Show.TvmStatus = "Following"; }
             Show.DbUpdate();
             Show.Reset();
 

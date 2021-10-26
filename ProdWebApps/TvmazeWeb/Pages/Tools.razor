@@ -3,6 +3,8 @@
 {
     string message;
     int refreshshowid;
+    string logview = "";
+    string log = "";
 
     public void ExecUpdateFollowed()
     {
@@ -24,6 +26,34 @@
         RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
         message = "Finished Update Plex Watched";
     }
+
+    public void ExecAcquireMedia()
+    {
+        message = "Running Acquire Media";
+        RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
+        message = "Finished Acquire Media";
+    }
+
+    public void ExecAcquireMediaLog()
+    {
+        logview = "Acquire Media Log";
+    }
+
+    public void ExecFollowedLog()
+    {
+        logview = "Followed Log";
+    }
+
+    public void ExecPlexAcquiredLog()
+    {
+        logview = "Plex Acquired Log";
+    }
+
+    public void ExecPlexWatchedLog()
+    {
+        logview = "Plex Watched Log";
+    }
+
 
     private void RunScript(string script)
     {
@@ -79,6 +109,7 @@
     <button class="btn btn-primary" @onclick="ExecUpdateFollowed">Followed</button>
     &#8195;<button class="btn btn-primary" @onclick="ExecUpdatePlexAcquired">Plex Acquired</button>
     &#8195;<button class="btn btn-primary" @onclick="ExecUpdatePlexWatched">Plex Watched</button>
+    &#8195;<button class="btn btn-primary" @onclick="ExecAcquireMedia">Acquire</button>
     <p></p>
 </div>
 
@@ -91,6 +122,24 @@
 </div>
 
 <div>
-    <h3>Status:</h3>
+    <h2>Status:</h2>
     <div><h4><em>@message</em></h4></div>
+</div>
+
+<div>
+    <h2>Logs</h2>
+    <p></p>
+    <button class="btn btn-primary" @onclick="ExecFollowedLog">Followed</button>
+    &#8195;<button class="btn btn-primary" @onclick="ExecPlexAcquiredLog">Plex Acquired</button>
+    &#8195;<button class="btn btn-primary" @onclick="ExecPlexWatchedLog">Plex Watched</button>
+    &#8195;<button class="btn btn-primary" @onclick="ExecAcquireMediaLog">Acquire</button>
+    <p></p>
+</div>
+
+<div>
+    <h4>@logview</h4>
+    <p></p>
+    @log
+    <p></p>
+    <em>End of Log @logview</em>
 </div>

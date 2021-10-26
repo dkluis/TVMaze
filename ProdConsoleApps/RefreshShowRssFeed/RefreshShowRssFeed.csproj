@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <ReleaseVersion>1.2</ReleaseVersion>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

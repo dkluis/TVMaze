@@ -24,7 +24,7 @@ namespace DB_Lib
             exception = new Exception();
             try
             {
-                conn = new MySqlConnection(appinfo.ActiveDBConn);
+                conn = new MySqlConnection(appinfo.ActiveDbConn);
                 success = true;
             }
             catch (Exception e)

@@ -68,7 +68,7 @@ namespace UpdateFollowed
                     {
                         theshow.FillViaTvmaze(jtshow);
                         theshow.TvmStatus = "Following";
-                        if (theshow.isDBFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(true); }
+                        if (theshow.IsDbFilled) { theshow.DbUpdate(); } else { theshow.DbInsert(true); }
                         using (MariaDB tsu = new(appinfo))
                         {
                             tsu.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {theshow.TvmUpdatedEpoch} where `TvmShowId` = {theshow.TvmShowId};");

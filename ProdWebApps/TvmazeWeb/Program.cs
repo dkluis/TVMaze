@@ -21,7 +21,7 @@ namespace TVMazeWeb
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://localhost:5000", "http://192.168.142.80:5000", "http://ca-server.local:5000");
+                    webBuilder.UseUrls("http://localhost:5001", "http://192.168.142.80:5001", "http://ca-server.local:5001");
                 });
     }
 }

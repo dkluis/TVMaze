@@ -18,7 +18,7 @@ namespace DB_Lib
             string PlexDBLocation = "Data Source=/Users/dick/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db";
             TextFileHandler log = appinfo.TxtFile;
             List<PlexWatchedInfo> watchedepisodes = new();
-            MySqlConnection Mdbw = new(appinfo.ActiveDBConn);
+            MySqlConnection Mdbw = new(appinfo.ActiveDbConn);
 
             SQLiteConnection con = new(PlexDBLocation);
             con.Open();
