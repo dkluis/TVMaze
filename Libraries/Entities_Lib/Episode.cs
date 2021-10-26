@@ -1,64 +1,36 @@
-﻿using Common_Lib;
+﻿using System;
+using System.Collections.Generic;
+using Common_Lib;
 using DB_Lib;
-using Web_Lib;
-
 using MySqlConnector;
 using Newtonsoft.Json.Linq;
-
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
+using Web_Lib;
 
 namespace Entities_Lib
 {
     public class Episode : IDisposable
     {
-        #region DB Record Definition
-
-        public int    Id = 0;
-        public int    TvmShowId = 0;
-        public int    TvmEpisodeId = 0;
-        public string TvmUrl = "";
-        public string ShowName = "";
-        public string SeasonEpisode = "";
-        public int    SeasonNum = 0;
-        public int    EpisodeNum = 0;
-        public string BroadcastDate = null;
-        public string PlexStatus = " ";
-        public string PlexDate;
-        public string UpdateDate = "1970-01-01";
-
-
-        public string MediaType = "";
-        public string CleanedShowName = "";
-        public string AltShowName = "";
-
-        #endregion
-
-        #region Tvm Record Definiton (without what is in DB record)
-
-        public string TvmType;
-        public int    TvmRunTime;
-        public string TvmImage;
-        public string TvmSummary;
-
-        #endregion
-
-        public bool isFilled;
-        public bool isDBFilled;
-        public bool isJsonFilled;
-        public bool isOnTvmaze;
-        public bool isAutoDelete;
+        private readonly AppInfo Appinfo;
+        private readonly TextFileHandler log;
 
         private readonly MariaDB Mdb;
-        private readonly TextFileHandler log;
-        private readonly AppInfo Appinfo;
+        public bool isAutoDelete;
+        public bool isDBFilled;
+
+        public bool isFilled;
+        public bool isJsonFilled;
+        public bool isOnTvmaze;
 
         public Episode(AppInfo appinfo)
         {
             Appinfo = appinfo;
-            Mdb = new(appinfo);
+            Mdb = new MariaDB(appinfo);
             log = appinfo.TxtFile;
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
 
         public void Reset()
@@ -100,8 +72,7 @@ namespace Entities_Lib
                 FillViaDb(episodeid);
                 WebAPI fem = new(Appinfo);
                 FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeid)));
-                
-            }   
+            }
         }
 
         private void FillViaJson(JObject episode)
@@ -116,19 +87,16 @@ namespace Entities_Lib
             ShowName = episode["_embedded"]["show"]["name"].ToString();
             TvmUrl = episode["url"].ToString();
             SeasonNum = int.Parse(episode["season"].ToString());
-            EpisodeNum = int.Parse(episode["number"].ToString());      
+            EpisodeNum = int.Parse(episode["number"].ToString());
             SeasonEpisode = Common.BuildSeasonEpisodeString(SeasonNum, EpisodeNum);
-            if (episode["airdate"] is not null) { BroadcastDate = episode["airdate"].ToString(); }
+            if (episode["airdate"] is not null) BroadcastDate = episode["airdate"].ToString();
             TvmType = episode["type"].ToString();
-            if (episode["summary"] is not null) { TvmSummary = episode["summary"].ToString(); }
+            if (episode["summary"] is not null) TvmSummary = episode["summary"].ToString();
             if (episode["image"] is not null && episode["image"].ToString() != "")
-            {
                 if (episode["image"]["medium"] is not null && episode["image"]["medium"].ToString() != "")
-                {
                     TvmImage = episode["image"]["medium"].ToString();
-                }
-            }
-            if (episode["runtime"] is not null && episode["runtime"].ToString() != "") { TvmRunTime = int.Parse(episode["runtime"].ToString()); }
+            if (episode["runtime"] is not null && episode["runtime"].ToString() != "")
+                TvmRunTime = int.Parse(episode["runtime"].ToString());
 
             isJsonFilled = true;
         }
@@ -155,13 +123,15 @@ namespace Entities_Lib
                         PlexStatus = null;
                         break;
                 }
-                if (epm["marked_at"] is not null) { PlexDate = Common.ConvertEpochToDate(int.Parse(epm["marked_at"].ToString())); }
+
+                if (epm["marked_at"] is not null)
+                    PlexDate = Common.ConvertEpochToDate(int.Parse(epm["marked_at"].ToString()));
             }
         }
 
         private void FillViaDb(int episode)
         {
-            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodesfullinfo where `TvmEpisodeId` = {episode};");
+            var rdr = Mdb.ExecQuery($"select * from episodesfullinfo where `TvmEpisodeId` = {episode};");
             while (rdr.Read())
             {
                 Id = int.Parse(rdr["Id"].ToString());
@@ -169,9 +139,10 @@ namespace Entities_Lib
                 CleanedShowName = rdr["CleanedShowname"].ToString();
                 AltShowName = rdr["AltShowName"].ToString();
                 UpdateDate = rdr["UpdateDate"].ToString();
-                if (rdr["AutoDelete"].ToString() == "Yes") { isAutoDelete = true; }
+                if (rdr["AutoDelete"].ToString() == "Yes") isAutoDelete = true;
                 isDBFilled = true;
             }
+
             Mdb.Close();
         }
 
@@ -179,9 +150,9 @@ namespace Entities_Lib
         {
             Mdb.success = true;
 
-            string values = "";
-            string sqlpre = $"insert into episodes values (";
-            string sqlsuf = $");";
+            var values = "";
+            var sqlpre = "insert into episodes values (";
+            var sqlsuf = ");";
 
             values += $"{0}, ";
             values += $"{TvmShowId}, ";
@@ -190,15 +161,22 @@ namespace Entities_Lib
             values += $"'{SeasonEpisode}', ";
             values += $"{SeasonNum}, ";
             values += $"{EpisodeNum}, ";
-            if (BroadcastDate == "") { BroadcastDate = null; }
-            if (BroadcastDate is null) { values += $"null, "; } else { values += $"'{BroadcastDate}', "; }
+            if (BroadcastDate == "") BroadcastDate = null;
+            if (BroadcastDate is null)
+                values += "null, ";
+            else
+                values += $"'{BroadcastDate}', ";
             values += $"'{PlexStatus}', ";
-            if (PlexDate is null) { values += $"null, "; } else { values += $"'{PlexDate}', "; }
+            if (PlexDate is null)
+                values += "null, ";
+            else
+                values += $"'{PlexDate}', ";
             values += $"'{DateTime.Now.ToString("yyyy-MM-dd")}' ";
-            int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+            var rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbInsert for Episode: {TvmEpisodeId}", "", 4);
             Mdb.Close();
-            if (rows == 0) { Mdb.success = false; };
+            if (rows == 0) Mdb.success = false;
+            ;
             return Mdb.success;
         }
 
@@ -206,34 +184,65 @@ namespace Entities_Lib
         {
             Mdb.success = true;
 
-            string values = "";
-            string sqlpre = $"update episodes set ";
-            string sqlsuf = $"where `Id` = {Id};";
+            var values = "";
+            var sqlpre = "update episodes set ";
+            var sqlsuf = $"where `Id` = {Id};";
 
-            if (BroadcastDate == "") { BroadcastDate = null; }
-            if (BroadcastDate is null) { values += $"`BroadcastDate` = null, "; } else { values += $"`BroadcastDate` = '{BroadcastDate}', "; }
+            if (BroadcastDate == "") BroadcastDate = null;
+            if (BroadcastDate is null)
+                values += "`BroadcastDate` = null, ";
+            else
+                values += $"`BroadcastDate` = '{BroadcastDate}', ";
             values += $"`PlexStatus` = '{PlexStatus}', ";
             values += $"`Season` = {SeasonNum}, ";
             values += $"`Episode` = {EpisodeNum}, ";
             values += $"`SeasonEpisode` = '{SeasonEpisode}', ";
-            if (PlexDate is null) { values += $"`PlexDate` = null, "; } else { values += $"`PlexDate` = '{PlexDate}', "; }
+            if (PlexDate is null)
+                values += "`PlexDate` = null, ";
+            else
+                values += $"`PlexDate` = '{PlexDate}', ";
             values += $"`UpdateDate` = '{DateTime.Now.ToString("yyyy-MM-dd")}' ";
-            
-            int rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+
+            var rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             log.Write($"DbUpdate for Episode: {TvmEpisodeId}", "", 4);
             Mdb.Close();
-            if (rows == 0) { Mdb.success = false; }
+            if (rows == 0) Mdb.success = false;
             return Mdb.success;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }  
+        #region DB Record Definition
 
+        public int Id;
+        public int TvmShowId;
+        public int TvmEpisodeId;
+        public string TvmUrl = "";
+        public string ShowName = "";
+        public string SeasonEpisode = "";
+        public int SeasonNum;
+        public int EpisodeNum;
+        public string BroadcastDate;
+        public string PlexStatus = " ";
+        public string PlexDate;
+        public string UpdateDate = "1970-01-01";
+
+
+        public string MediaType = "";
+        public string CleanedShowName = "";
+        public string AltShowName = "";
+
+        #endregion
+
+        #region Tvm Record Definiton (without what is in DB record)
+
+        public string TvmType;
+        public int TvmRunTime;
+        public string TvmImage;
+        public string TvmSummary;
+
+        #endregion
     }
 
-    public class EpisodesByShow :IDisposable
+    public class EpisodesByShow : IDisposable
     {
         public List<Episode> episodesbyshow = new();
 
@@ -248,20 +257,18 @@ namespace Entities_Lib
             using (WebAPI wa = new(appinfo))
             {
                 epsbyshow = wa.ConvertHttpToJArray(wa.GetEpisodesByShow(showid));
-                if (epsbyshow is null) { return episodesbyshow; }
+                if (epsbyshow is null) return episodesbyshow;
             }
 
 
-            foreach (JToken ep in epsbyshow)
-            {
+            foreach (var ep in epsbyshow)
                 using (Episode episode = new(appinfo))
                 {
-                    if (ep is null) { continue; }
+                    if (ep is null) continue;
                     appinfo.TxtFile.Write($"Working on Episode {ep["id"]}", "", 4);
                     episode.FillViaTvmaze(int.Parse(ep["id"].ToString()));
                     episodesbyshow.Add(episode);
                 }
-            }
 
             return episodesbyshow;
         }
@@ -269,38 +276,36 @@ namespace Entities_Lib
 
     public class EpisodeSearch : IDisposable
     {
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
         public int Find(AppInfo appinfo, int showid, string seasonepisode)
         {
-            int epiid = 0;
+            var epiid = 0;
             MariaDB Mdb = new(appinfo);
 
-            MySqlDataReader rdr = Mdb.ExecQuery($"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showid} and `SeasonEpisode` = '{seasonepisode}'; ");
-            while (rdr.Read())
-            {
-                epiid = int.Parse(rdr[0].ToString());
-            }
+            var rdr = Mdb.ExecQuery(
+                $"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showid} and `SeasonEpisode` = '{seasonepisode}'; ");
+            while (rdr.Read()) epiid = int.Parse(rdr[0].ToString());
 
             return epiid;
         }
+    }
 
+    public class GetEpisodesToBeAcquired : IDisposable
+    {
         public void Dispose()
         {
             GC.SuppressFinalize(this);
         }
-    }
 
-    public class GetEpisodesToBeAcquired :IDisposable
-    {
         public MySqlDataReader Find(AppInfo appinfo)
         {
             MariaDB Mdb = new(appinfo);
-            MySqlDataReader rdr = Mdb.ExecQuery($"select * from episodestoacquire order by `TvmShowId`, `Season`, `Episode`");
+            var rdr = Mdb.ExecQuery("select * from episodestoacquire order by `TvmShowId`, `Season`, `Episode`");
             return rdr;
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
     }
 }

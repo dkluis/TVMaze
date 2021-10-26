@@ -1,10 +1,12 @@
 ﻿@page "/tools"
+@using MySqlConnector
+
 @code
 {
     string message;
     int refreshshowid;
     string logview = "";
-    string log = "";
+    readonly string log = "";
 
     public void ExecUpdateFollowed()
     {
@@ -62,7 +64,7 @@
             Script.StartInfo.FileName = script;
             Script.StartInfo.UseShellExecute = true;
             Script.StartInfo.RedirectStandardOutput = false;
-            bool started = Script.Start();
+            var started = Script.Start();
             Script.WaitForExit();
         }
     }
@@ -77,11 +79,11 @@
         message = $"Trying to update {refreshshowid}";
 
         AppInfo appinfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
-        TextFileHandler log = appinfo.TxtFile;
+        var log = appinfo.TxtFile;
         log.Start();
         using (MariaDB Mdbr = new(appinfo))
         {
-            MySqlConnector.MySqlDataReader rdr;
+            MySqlDataReader rdr;
 
             rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {refreshshowid} order by `TvmShowId` desc");
 
@@ -94,8 +96,14 @@
                     sae.Refresh(int.Parse(rdr[0].ToString()));
                 }
             }
-            if (message.Contains("Trying")) { message = $"ShowId {refreshshowid} is not in the Shows Table"; }
-            else { message = message.Replace("Working on", "Refreshed"); }
+            if (message.Contains("Trying"))
+            {
+                message = $"ShowId {refreshshowid} is not in the Shows Table";
+            }
+            else
+            {
+                message = message.Replace("Working on", "Refreshed");
+            }
         }
         log.Stop();
     }
@@ -116,14 +124,18 @@
 <div>
     <h2>Direct Update Processes:</h2>
     <p></p>
-    <input @bind="@refreshshowid" size="5" />
+    <input @bind="@refreshshowid" size="5"/>
     &#8195;<button class="btn btn-primary" @onclick="RefreshOneShow">Refresh Show</button>
     <p></p>
 </div>
 
 <div>
     <h2>Status:</h2>
-    <div><h4><em>@message</em></h4></div>
+    <div>
+        <h4>
+            <em>@message</em>
+        </h4>
+    </div>
 </div>
 
 <div>

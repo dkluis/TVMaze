@@ -1,45 +1,46 @@
 ﻿@page "/"
+@using MySqlConnector
 
 
 @{
     AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
-    string showCount = $"select count(*) from Shows";
-    string followedCount = $"select count(*) from Followed";
-    string followedShowsCount = $"select count(*) from Shows where `TvmStatus` = 'Following'";
-    string reviewingShowsCount = $"select count(*) from Shows where `TvmStatus` = 'Reviewing'";
-    string newShowsCount = $"select count(*) from Shows where `TvmStatus` = 'New'";
-    string RunningShowsCount = $"select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
-    string TBDShowsCount = $"select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
-    string InDevShowsCount = $"select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
-    string EndedShowsCount = $"select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
+    var showCount = "select count(*) from Shows";
+    var followedCount = "select count(*) from Followed";
+    var followedShowsCount = "select count(*) from Shows where `TvmStatus` = 'Following'";
+    var reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
+    var newShowsCount = "select count(*) from Shows where `TvmStatus` = 'New'";
+    var RunningShowsCount = "select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
+    var TBDShowsCount = "select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
+    var InDevShowsCount = "select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
+    var EndedShowsCount = "select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
 
-    string numShows = "";
-    string numFollowed = "";
-    string numFollowedShows = "";
-    string numReviewingShows = "";
-    string numNewShows = "";
-    string numRunningShows = "";
-    string numTBDShows = "";
-    string numInDevShows = "";
-    string numEndedShows = "";
+    var numShows = "";
+    var numFollowed = "";
+    var numFollowedShows = "";
+    var numReviewingShows = "";
+    var numNewShows = "";
+    var numRunningShows = "";
+    var numTBDShows = "";
+    var numInDevShows = "";
+    var numEndedShows = "";
 
-    string episodeCount = $"select count(*) from Episodes";
-    string episodeWatchedCount = $"select count(*) from Episodes where `PlexStatus` = 'Watched'";
-    string episodeAcquiredCount = $"select count(*) from Episodes where `PlexStatus` = 'Acquired'";
-    string episodeSkippedCount = $"select count(*) from Episodes where `PlexStatus` = 'Skipped'";
-    string episodeFutureCount = $"select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is not NULL";
-    string episodeFutureUnknownCount = $"select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is NULL";
+    var episodeCount = "select count(*) from Episodes";
+    var episodeWatchedCount = "select count(*) from Episodes where `PlexStatus` = 'Watched'";
+    var episodeAcquiredCount = "select count(*) from Episodes where `PlexStatus` = 'Acquired'";
+    var episodeSkippedCount = "select count(*) from Episodes where `PlexStatus` = 'Skipped'";
+    var episodeFutureCount = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is not NULL";
+    var episodeFutureUnknownCount = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is NULL";
 
-    string numEpisodes = "";
-    string numWatchedEpisodes = "";
-    string numSkippedEpisodes = "";
-    string numAcquiredEpisodes = "";
-    string numFutureEpisodes = "";
-    string numFutureUnknownEpisodes = "";
+    var numEpisodes = "";
+    var numWatchedEpisodes = "";
+    var numSkippedEpisodes = "";
+    var numAcquiredEpisodes = "";
+    var numFutureEpisodes = "";
+    var numFutureUnknownEpisodes = "";
 
     MariaDB mdb = new(appInfo);
-    MySqlConnector.MySqlDataReader rdr;
+    MySqlDataReader rdr;
 
     rdr = mdb.ExecQuery(showCount);
     while (rdr.Read())
@@ -151,58 +152,58 @@
     <h4>Shows Statistics</h4>
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th>Type</th>
-                <th>Description</th>
-                <th align="right"># of Records</th>
-            </tr>
+        <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th align="right"># of Records</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Shows Table</td>
-                <td>Total</td>
-                <td  align="right">@numShows</td>
-            </tr>
-            <tr>
-                <td>...Shows</td>
-                <td>Status: New</td>
-                <td  align="right">@numNewShows</td>
-            </tr>
-            <tr>
-                <td>...Shows</td>
-                <td>Status: Reviewing</td>
-                <td  align="right">@numReviewingShows</td>
-            </tr>
-            <tr>
-                <td>...Shows</td>
-                <td>Status: Following</td>
-                <td  align="right">@numFollowedShows</td>
-            </tr>
-            <tr>
-                <td>Followed Table</td>
-                <td>Total</td>
-                <td  align="right">@numFollowed</td>
-            </tr>
-            <tr>
-                <td>...Shows (Following)</td>
-                <td>Show Status: Running</td>
-                <td align="right">@numRunningShows</td>
-            </tr>
-            <tr>
-                <td>...Shows (Following)</td>
-                <td>Show Status: To Be Decided</td>
-                <td align="right">@numTBDShows</td>
-            </tr>
-            <tr>
-                <td>...Shows (Following)</td>
-                <td>Show Status: In Development</td>
-                <td align="right">@numInDevShows</td>
-            </tr>
-            <tr>
-                <td>...Shows (Following)</td>
-                <td>Show Status: Ended</td>
-                <td align="right">@numEndedShows</td>
-            </tr>
+        <tr>
+            <td>Shows Table</td>
+            <td>Total</td>
+            <td align="right">@numShows</td>
+        </tr>
+        <tr>
+            <td>...Shows</td>
+            <td>Status: New</td>
+            <td align="right">@numNewShows</td>
+        </tr>
+        <tr>
+            <td>...Shows</td>
+            <td>Status: Reviewing</td>
+            <td align="right">@numReviewingShows</td>
+        </tr>
+        <tr>
+            <td>...Shows</td>
+            <td>Status: Following</td>
+            <td align="right">@numFollowedShows</td>
+        </tr>
+        <tr>
+            <td>Followed Table</td>
+            <td>Total</td>
+            <td align="right">@numFollowed</td>
+        </tr>
+        <tr>
+            <td>...Shows (Following)</td>
+            <td>Show Status: Running</td>
+            <td align="right">@numRunningShows</td>
+        </tr>
+        <tr>
+            <td>...Shows (Following)</td>
+            <td>Show Status: To Be Decided</td>
+            <td align="right">@numTBDShows</td>
+        </tr>
+        <tr>
+            <td>...Shows (Following)</td>
+            <td>Show Status: In Development</td>
+            <td align="right">@numInDevShows</td>
+        </tr>
+        <tr>
+            <td>...Shows (Following)</td>
+            <td>Show Status: Ended</td>
+            <td align="right">@numEndedShows</td>
+        </tr>
         </tbody>
     </table>
 </div>
@@ -211,43 +212,43 @@
     <h4>Episodes Statistics</h4>
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th>Type</th>
-                <th>Description</th>
-                <th align="right"># of Records</th>
-            </tr>
+        <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th align="right"># of Records</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Episodes Table</td>
-                <td>Total</td>
-                <td align="right">@numEpisodes</td>
-            </tr>
-            <tr>
-                <td>...Episodes</td>
-                <td>Status: Watched</td>
-                <td align="right">@numWatchedEpisodes</td>
-            </tr>
-            <tr>
-                <td>...Episodes</td>
-                <td>Status: Available to Watch</td>
-                <td align="right">@numAcquiredEpisodes</td>
-            </tr>
-            <tr>
-                <td>...Episodes</td>
-                <td>Status: Skipped</td>
-                <td align="right">@numSkippedEpisodes</td>
-            </tr>
-            <tr>
-                <td>...Episodes</td>
-                <td>Status: Coming Soon</td>
-                <td align="right">@numFutureEpisodes</td>
-            </tr>
-            <tr>
-                <td>...Episodes</td>
-                <td>Status: Coming Unknown</td>
-                <td align="right">@numFutureUnknownEpisodes</td>
-            </tr>
+        <tr>
+            <td>Episodes Table</td>
+            <td>Total</td>
+            <td align="right">@numEpisodes</td>
+        </tr>
+        <tr>
+            <td>...Episodes</td>
+            <td>Status: Watched</td>
+            <td align="right">@numWatchedEpisodes</td>
+        </tr>
+        <tr>
+            <td>...Episodes</td>
+            <td>Status: Available to Watch</td>
+            <td align="right">@numAcquiredEpisodes</td>
+        </tr>
+        <tr>
+            <td>...Episodes</td>
+            <td>Status: Skipped</td>
+            <td align="right">@numSkippedEpisodes</td>
+        </tr>
+        <tr>
+            <td>...Episodes</td>
+            <td>Status: Coming Soon</td>
+            <td align="right">@numFutureEpisodes</td>
+        </tr>
+        <tr>
+            <td>...Episodes</td>
+            <td>Status: Coming Unknown</td>
+            <td align="right">@numFutureUnknownEpisodes</td>
+        </tr>
         </tbody>
     </table>
 </div>

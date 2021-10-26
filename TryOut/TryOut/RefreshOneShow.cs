@@ -1,33 +1,33 @@
 ﻿using Common_Lib;
-using Entities_Lib;
 using DB_Lib;
+using Entities_Lib;
+using MySqlConnector;
 
 namespace RefreshOneShow
 {
-    class RefreshOneShow
+    internal class RefreshOneShow
     {
-        static void Main()
+        private static void Main()
         {
-            string This_Program = "Refresh One Show";
+            var This_Program = "Refresh One Show";
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            TextFileHandler log = appinfo.TxtFile;
+            var log = appinfo.TxtFile;
             log.Start();
 
-            int TheShowToRefresh = 58473;
+            var TheShowToRefresh = 58473;
 
             MariaDB Mdbr = new(appinfo);
-            MySqlConnector.MySqlDataReader rdr;
+            MySqlDataReader rdr;
 
-            rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {TheShowToRefresh} order by `TvmShowId` desc");
+            rdr = Mdbr.ExecQuery(
+                $"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {TheShowToRefresh} order by `TvmShowId` desc");
 
             while (rdr.Read())
-            {
                 using (ShowAndEpisodes sae = new(appinfo))
                 {
                     log.Write($"Working on Show {rdr[0]} {rdr[1]}", "", 2);
                     sae.Refresh(int.Parse(rdr[0].ToString()));
                 }
-            }
 
             log.Stop();
         }

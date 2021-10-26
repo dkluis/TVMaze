@@ -1,19 +1,18 @@
-﻿using Common_Lib;
-using Entities_Lib;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Common_Lib;
+using Entities_Lib;
 
 namespace InitializeEpisodes
 {
-    class InitializeEpisodes
+    internal class InitializeEpisodes
     {
-        static void Main()
+        private static void Main()
         {
-            string This_Program = "Init Episode Table";
+            var This_Program = "Init Episode Table";
             Console.WriteLine($"{DateTime.Now}:  {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            TextFileHandler log = appinfo.TxtFile;
+            var log = appinfo.TxtFile;
             log.Start();
 
             //Get All Followed Shows
@@ -22,25 +21,29 @@ namespace InitializeEpisodes
             allfollowed = sal.Find(appinfo);
             if (allfollowed.Count == 0)
             {
-                log.Write($"No Followed Shows Found, exiting program", "", 0);
+                log.Write("No Followed Shows Found, exiting program", "", 0);
                 Environment.Exit(99);
             }
+
             log.Write($"Found {allfollowed.Count} Show to get Episodes for");
 
             //Process All Episodes for the Followed Shows
-            int idxalleps = 0;
-            foreach (int showid in allfollowed)
+            var idxalleps = 0;
+            foreach (var showid in allfollowed)
             {
-                int idxepsbyshow = 0;
+                var idxepsbyshow = 0;
                 EpisodesByShow epsbyshow = new();
-                List<Episode> ebs = epsbyshow.Find(appinfo, showid);
-                foreach (Episode eps in ebs)
+                var ebs = epsbyshow.Find(appinfo, showid);
+                foreach (var eps in ebs)
                 {
                     eps.DbInsert();
-                    log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}", "", 4);
+                    log.Write(
+                        $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}",
+                        "", 4);
                     idxalleps++;
                     idxepsbyshow++;
                 }
+
                 log.Write($"Number of Episodes for Show {showid}: {idxepsbyshow}", "", 2);
             }
 

@@ -1,38 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Globalization;
-
+using System.IO;
 using Common_Lib;
 using DB_Lib;
-
-using MySqlConnector;
 
 namespace Entities_Lib
 {
     public class MediaFileHandler : IDisposable
     {
-        public string PlexMediaTvShows;
-        public string PlexMediaTvShowSeries;
-        public string PlexMediaKidsTvShows;
-        public string PlexMediaAcquire;
-
-        public List<string> TvShowsInSeries;
-        public List<string> MoviesinSeries;
-        public List<string> TvShowsInKids;
+        private readonly AppInfo Appinfo;
+        private readonly TextFileHandler log;
 
         private readonly MariaDB Mdb;
-        private readonly TextFileHandler log;
-        private readonly AppInfo Appinfo;
+        public List<string> MoviesinSeries;
+        public string PlexMediaAcquire;
+        public string PlexMediaKidsTvShows;
+        public string PlexMediaTvShows;
+        public string PlexMediaTvShowSeries;
+        public List<string> TvShowsInKids;
+
+        public List<string> TvShowsInSeries;
 
         public MediaFileHandler(AppInfo appinfo)
         {
             Appinfo = appinfo;
-            Mdb = new(appinfo);
+            Mdb = new MariaDB(appinfo);
             log = appinfo.TxtFile;
 
             GetSetMediaInfo();
+        }
 
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
 
         public void GetSetMediaInfo()
@@ -45,25 +46,21 @@ namespace Entities_Lib
 
         public string GetDirectoryViaMediaType(string mt)
         {
-            string path = "";
-            MySqlDataReader rdr = Mdb.ExecQuery($"select `PlexLocation` from `MediaTypes` where `MediaType` = '{mt}'");
+            var path = "";
+            var rdr = Mdb.ExecQuery($"select `PlexLocation` from `MediaTypes` where `MediaType` = '{mt}'");
             if (rdr is not null)
-            {
                 while (rdr.Read())
-                {
                     path = rdr[0].ToString();
-                }
-            }
             Mdb.Close();
             return path;
         }
 
         public bool DeleteEpisodeFiles(Episode epi)
         {
-            if (!epi.isAutoDelete) { return true; }
-            bool success = false;
+            if (!epi.isAutoDelete) return true;
+            var success = false;
 
-            string directory = "";
+            var directory = "";
             switch (epi.MediaType)
             {
                 case "TS":
@@ -75,28 +72,27 @@ namespace Entities_Lib
                 case "KTS":
                     directory = PlexMediaKidsTvShows;
                     break;
-                default:
-                    break;
             }
 
-            string seas = $"Season {epi.SeasonNum}";
-            string seasonepisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
+            var seas = $"Season {epi.SeasonNum}";
+            var seasonepisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
             string showname;
-            if (epi.AltShowName != "") { showname = epi.AltShowName; } else { showname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(epi.CleanedShowName); }
-            string findin = Path.Combine(directory, showname, seas);
+            if (epi.AltShowName != "")
+                showname = epi.AltShowName;
+            else
+                showname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(epi.CleanedShowName);
+            var findin = Path.Combine(directory, showname, seas);
             if (Directory.Exists(findin))
-            {
                 try
                 {
-                    string[] files = Directory.GetFiles(findin);
-                    foreach (string file in files)
+                    var files = Directory.GetFiles(findin);
+                    foreach (var file in files)
                     {
-                        string medianame = file.Replace(findin, "").Replace("/", "");
-                        string trashloc = Path.Combine(Appinfo.HomeDir, "Trash", medianame);
+                        var medianame = file.Replace(findin, "").Replace("/", "");
+                        var trashloc = Path.Combine(Appinfo.HomeDir, "Trash", medianame);
                         log.Write($"File to Delete {medianame} for episode {seasonepisode}", "MediaFileHandler", 4);
 
                         if (file.ToLower().Contains(seasonepisode.ToLower()))
-                        {
                             try
                             {
                                 File.Move(file, trashloc);
@@ -105,24 +101,26 @@ namespace Entities_Lib
                             catch (Exception e)
                             {
                                 log.Write($"Something went wrong moving {medianame} to {trashloc}: {e.Message}", "", 0);
-                                using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Something went wrong moving {medianame} to {trashloc}: {e.Message}"); }
+                                using (ActionItems ai = new(Appinfo))
+                                {
+                                    ai.DbInsert($"Something went wrong moving {medianame} to {trashloc}: {e.Message}");
+                                }
                             }
-                        }
                     }
                 }
                 catch (Exception e)
                 {
                     log.Write($"Error on getting Files for {Path.Combine(directory, showname, seas)}: {e}");
                 }
-            }
-            else { log.Write($"Directory {findin} does not exist"); }
+            else
+                log.Write($"Directory {findin} does not exist");
 
             return success;
         }
 
         public bool MoveNonTvMediaToPlex(string mediainfo)
         {
-            bool success = false;
+            var success = false;
             //TODO handle non TVShow media
 
             return success;
@@ -133,11 +131,16 @@ namespace Entities_Lib
             if (episode is null && show is null)
             {
                 log.Write($"Episode and Show are set to null, cannot process the move for {mediainfo}", "", 0);
-                using (ActionItems ai = new(Appinfo)) { ai.DbInsert($"Episode and Show are set to null, cannot process the move for {mediainfo}"); }
+                using (ActionItems ai = new(Appinfo))
+                {
+                    ai.DbInsert($"Episode and Show are set to null, cannot process the move for {mediainfo}");
+                }
+
                 return false;
             }
-            string destdirectory = "";
-            string shown = "";
+
+            var destdirectory = "";
+            var shown = "";
             if (episode is not null)
             {
                 switch (episode.MediaType)
@@ -151,10 +154,12 @@ namespace Entities_Lib
                     case "KTS":
                         destdirectory = PlexMediaKidsTvShows;
                         break;
-                    default:
-                        break;
                 }
-                if (episode.AltShowName != "") { shown = episode.AltShowName; } else { shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName); }
+
+                if (episode.AltShowName != "")
+                    shown = episode.AltShowName;
+                else
+                    shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
             }
             else
             {
@@ -169,26 +174,27 @@ namespace Entities_Lib
                     case "KTS":
                         destdirectory = PlexMediaKidsTvShows;
                         break;
-                    default:
-                        break;
                 }
-                if (show.AltShowName != "") { shown = show.AltShowName; } else { shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName); }
+
+                if (show.AltShowName != "")
+                    shown = show.AltShowName;
+                else
+                    shown = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
             }
 
-            bool success = false;
-            string fullmediapath = Path.Combine(PlexMediaAcquire, mediainfo);
-            bool isdirectory = false;
+            var success = false;
+            var fullmediapath = Path.Combine(PlexMediaAcquire, mediainfo);
+            var isdirectory = false;
             List<string> media = new();
             string[] filesindirectory;
             FileAttributes atr = new();
-            bool founddir = false;
-            bool foundfile = false;
+            var founddir = false;
+            var foundfile = false;
 
             try
             {
-
-                if (Directory.Exists(fullmediapath)) { founddir = true; }
-                if (File.Exists(fullmediapath)) { foundfile = true; }
+                if (Directory.Exists(fullmediapath)) founddir = true;
+                if (File.Exists(fullmediapath)) foundfile = true;
             }
             catch (Exception ex)
             {
@@ -196,54 +202,56 @@ namespace Entities_Lib
                 return success;
             }
 
-            if (!founddir && !foundfile) { log.Write($"Could not find dir {founddir} or file {foundfile} for {fullmediapath}", "", 0); return success; }
+            if (!founddir && !foundfile)
+            {
+                log.Write($"Could not find dir {founddir} or file {foundfile} for {fullmediapath}", "", 0);
+                return success;
+            }
 
             atr = File.GetAttributes(fullmediapath);
-            if (atr == FileAttributes.Directory) { isdirectory = true; }
-            if (!isdirectory) { media.Add(fullmediapath); }
+            if (atr == FileAttributes.Directory) isdirectory = true;
+            if (!isdirectory)
+            {
+                media.Add(fullmediapath);
+            }
             else
             {
-                string[] fullmp = fullmediapath.Split("[");
+                var fullmp = fullmediapath.Split("[");
                 if (fullmp.Length == 2)
                 {
                     Directory.Move(fullmediapath, fullmp[0]);
                     fullmediapath = fullmp[0];
                 }
+
                 filesindirectory = Directory.GetFiles(fullmediapath);
-                foreach (string file in filesindirectory)
+                foreach (var file in filesindirectory)
+                foreach (var ext in Appinfo.MediaExtensions)
                 {
-                    foreach (string ext in Appinfo.MediaExtensions)
+                    log.Write($"Processing {file} with extension {ext}", "", 4);
+                    if (file.Contains(ext))
                     {
-                        log.Write($"Processing {file} with extension {ext}", "", 4);
-                        if (file.Contains(ext)) { media.Add(file); break; }
+                        media.Add(file);
+                        break;
                     }
                 }
             }
 
-            if (media.Count == 0) { log.Write($"There was nothing to move {mediainfo}"); }
-            string todir = "";
+            if (media.Count == 0) log.Write($"There was nothing to move {mediainfo}");
+            var todir = "";
             if (episode is not null)
-            {
                 todir = Path.Combine(destdirectory, shown, $"Season {episode.SeasonNum}");
-            }
             else
-            {
                 todir = Path.Combine(destdirectory, shown, $"Season {season}");
-            }
-            if (!Directory.Exists(todir)) { Directory.CreateDirectory(todir); }
+            if (!Directory.Exists(todir)) Directory.CreateDirectory(todir);
 
-            foreach (string file in media)
+            foreach (var file in media)
             {
-                string fromfile = "";
+                var fromfile = "";
                 if (!isdirectory)
-                {
                     fromfile = file.Replace(PlexMediaAcquire, "").Replace("/", "");
-                }
                 else
-                {
                     fromfile = file.Replace(fullmediapath, "").Replace("/", "");
-                }
-                string topath = Path.Combine(todir, fromfile);
+                var topath = Path.Combine(todir, fromfile);
                 try
                 {
                     File.Move(file, topath);
@@ -251,18 +259,12 @@ namespace Entities_Lib
                 }
                 catch (Exception ex)
                 {
-                    log.Write($"Error Moving File {file} to {topath} >>> {ex.Message}"); 
+                    log.Write($"Error Moving File {file} to {topath} >>> {ex.Message}");
                 }
-
             }
 
-            if (isdirectory) { Directory.Move(fullmediapath, $"{PlexMediaAcquire}/Processed/{mediainfo}"); }
+            if (isdirectory) Directory.Move(fullmediapath, $"{PlexMediaAcquire}/Processed/{mediainfo}");
             return success;
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
     }
 }

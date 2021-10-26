@@ -1,20 +1,22 @@
+using System;
 using Common_Lib;
 using MySqlConnector;
-using System;
 
 namespace DB_Lib
 {
     public class MariaDB : IDisposable
     {
         private readonly MySqlConnection conn;
-        private bool connOpen;
         private MySqlCommand cmd;
-        private MySqlDataReader rdr;
-        //private MySqlDataAdapter da;
-        public bool success;
-        public int rows;
+        private bool connOpen;
         public Exception exception;
         public TextFileHandler mdblog;
+        private MySqlDataReader rdr;
+
+        public int rows;
+
+        //private MySqlDataAdapter da;
+        public bool success;
 
         public MariaDB(AppInfo appinfo)
         {
@@ -32,6 +34,12 @@ namespace DB_Lib
                 exception = e;
                 mdblog.Write($"MariaDB Class Connection Error: {e.Message}", null, 0);
             }
+        }
+
+        void IDisposable.Dispose()
+        {
+            Close();
+            GC.SuppressFinalize(this);
         }
 
         public void Open()
@@ -73,9 +81,10 @@ namespace DB_Lib
             success = true;
             try
             {
-                if (!connOpen) { Open(); };
+                if (!connOpen) Open();
+                ;
                 cmd = new MySqlCommand(sql, conn);
-                return (cmd);
+                return cmd;
             }
             catch (Exception e)
             {
@@ -92,7 +101,8 @@ namespace DB_Lib
             exception = new Exception();
             try
             {
-                if (!connOpen) { Open(); };
+                if (!connOpen) Open();
+                ;
                 rdr = cmd.ExecuteReader();
                 return rdr;
             }
@@ -107,12 +117,13 @@ namespace DB_Lib
 
         public MySqlDataReader ExecQuery(string sql)
         {
-            cmd = this.Command(sql);
+            cmd = Command(sql);
             success = true;
             exception = new Exception();
             try
             {
-                if (!connOpen) { Open(); };
+                if (!connOpen) Open();
+                ;
                 rdr = cmd.ExecuteReader();
                 return rdr;
             }
@@ -131,15 +142,16 @@ namespace DB_Lib
             exception = new Exception();
             try
             {
-                if (!connOpen) { Open(); };
+                if (!connOpen) Open();
+                ;
                 rows = cmd.ExecuteNonQuery();
-                if (rows !> 0) { success = false; }
+                if (rows ! > 0) success = false;
                 return rows;
             }
             catch (Exception e)
             {
                 exception = e;
-                if (!ignore) { mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", null, 0); }
+                if (!ignore) mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", null, 0);
                 success = false;
                 return rows;
             }
@@ -147,29 +159,24 @@ namespace DB_Lib
 
         public int ExecNonQuery(string sql, bool ignore = false)
         {
-            cmd = this.Command(sql);
+            cmd = Command(sql);
             success = true;
             exception = new Exception();
             try
             {
-                if (!connOpen) { Open(); };
+                if (!connOpen) Open();
+                ;
                 rows = cmd.ExecuteNonQuery();
-                if (rows! > 0) { success = false; }
+                if (rows! > 0) success = false;
                 return rows;
             }
             catch (Exception e)
             {
                 exception = e;
-                if (!ignore) { mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", null, 0); }
+                if (!ignore) mdblog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", null, 0);
                 success = false;
                 return rows;
             }
-        }
-
-        void IDisposable.Dispose()
-        {
-            this.Close();
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,20 +1,20 @@
-﻿using System;
-using DB_Lib;
+﻿using System.Collections.Generic;
 using Common_Lib;
-using System.Collections.Generic;
+using DB_Lib;
+using MySqlConnector;
 
 namespace TVMazeWeb.Data
 {
     public class WebShows
     {
         public AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
-        
+
         public List<ShowsInfo> GetShowsByTvmStatus(string tvmstatus)
         {
             MariaDB mdbshows = new(appinfo);
-            MySqlConnector.MySqlDataReader rdr;
+            MySqlDataReader rdr;
             List<ShowsInfo> newShows = new();
-            string sql = $"select * from Shows where `TvmStatus` = '{tvmstatus}' order by `TvmShowId` desc";
+            var sql = $"select * from Shows where `TvmStatus` = '{tvmstatus}' order by `TvmShowId` desc";
             rdr = mdbshows.ExecQuery(sql);
             while (rdr.Read())
             {
@@ -31,16 +31,18 @@ namespace TVMazeWeb.Data
 
                 newShows.Add(rec);
             }
+
             return newShows;
         }
 
         public List<ShowsInfo> FindShows(string showname)
         {
             MariaDB mdbshows = new(appinfo);
-            MySqlConnector.MySqlDataReader rdr;
+            MySqlDataReader rdr;
             List<ShowsInfo> newShows = new();
-            if (showname is not null) { showname = showname.Replace("'", "''"); }
-            string sql = $"select * from Shows where `ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%' order by `TvmShowId` desc limit 150";
+            if (showname is not null) showname = showname.Replace("'", "''");
+            var sql =
+                $"select * from Shows where `ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%' order by `TvmShowId` desc limit 150";
             rdr = mdbshows.ExecQuery(sql);
             while (rdr.Read())
             {
@@ -58,45 +60,57 @@ namespace TVMazeWeb.Data
 
                 newShows.Add(rec);
             }
+
             return newShows;
         }
 
         public bool DeleteShow(int showid)
         {
             MariaDB mdbshows = new(appinfo);
-            string sql = $"delete from Shows where `TvmShowId` = {showid}";
-            int resultrows = mdbshows.ExecNonQuery(sql);
-            if (resultrows > 0) { return true; } else { return false; }
+            var sql = $"delete from Shows where `TvmShowId` = {showid}";
+            var resultrows = mdbshows.ExecNonQuery(sql);
+            if (resultrows > 0)
+                return true;
+            return false;
         }
 
         public bool SetTvmStatusShow(int showid, string newstatus)
         {
             MariaDB mdbshows = new(appinfo);
-            string sql = $"update shows set `TvmStatus` = '{newstatus}' where `TvmShowId` = {showid}";
-            int resultrows = mdbshows.ExecNonQuery(sql);
-            if (resultrows > 0) { return true; } else { return false; }
+            var sql = $"update shows set `TvmStatus` = '{newstatus}' where `TvmShowId` = {showid}";
+            var resultrows = mdbshows.ExecNonQuery(sql);
+            if (resultrows > 0)
+                return true;
+            return false;
         }
 
         public bool SetMtAndAsnShow(int showid, string mediatype, string altshowname)
         {
             MariaDB mdbshows = new(appinfo);
             altshowname = altshowname.Replace("'", "''");
-            string sql = $"update shows set `AltShowName` = '{altshowname}', `MediaType` = '{mediatype}' where `TvmShowId` = {showid}";
-            int resultrows = mdbshows.ExecNonQuery(sql);
-            if (resultrows > 0) { return true; } else { appinfo.TxtFile.Write($"Edit Showname and MediaType unsuccesfull:  MediaType = {mediatype}"); return false; }
+            var sql =
+                $"update shows set `AltShowName` = '{altshowname}', `MediaType` = '{mediatype}' where `TvmShowId` = {showid}";
+            var resultrows = mdbshows.ExecNonQuery(sql);
+            if (resultrows > 0)
+            {
+                return true;
+            }
+
+            appinfo.TxtFile.Write($"Edit Showname and MediaType unsuccesfull:  MediaType = {mediatype}");
+            return false;
         }
     }
 
     public class ShowsInfo
     {
-        public int TvmShowId;
+        public string AltShowName;
+        public string Finder;
+        public string MediaType;
         public string ShowName;
+        public string ShowStatus;
+        public int TvmShowId;
         public string TvmStatus;
         public string TvmUrl;
-        public string Finder;
-        public string ShowStatus;
-        public string AltShowName;
-        public string MediaType;
         public string UpdateDate;
     }
 }

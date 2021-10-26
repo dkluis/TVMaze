@@ -1,22 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <ReleaseVersion>1.2</ReleaseVersion>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <ReleaseVersion>1.2</ReleaseVersion>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.37"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Common_Lib\Common_Lib.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Common_Lib\Common_Lib.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="HtmlAgilityPack" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="HtmlAgilityPack"/>
+    </ItemGroup>
 </Project>

@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <ReleaseVersion>1.2</ReleaseVersion>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <ReleaseVersion>1.2</ReleaseVersion>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj" />
-    <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj" />
-    <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj"/>
+    </ItemGroup>
 </Project>

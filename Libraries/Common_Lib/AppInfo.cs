@@ -12,9 +12,10 @@ namespace Common_Lib
         public readonly string ConfigFileName;
         public readonly string ConfigFullPath;
         public readonly string ConfigPath;
+
         public readonly string DbAltConn;
         //public readonly string DbConnection;
-        
+
         public readonly string DbProdConn;
         public readonly string DbTestConn;
         public readonly string Drive;
@@ -31,17 +32,15 @@ namespace Common_Lib
         public readonly string TvmazeToken;
         public readonly TextFileHandler TxtFile;
 
-        public AppInfo(string application, string program, string dbconnection)
+        public AppInfo(string application, string program, string dbConnection)
         {
             Application = application;
             Program = program;
 
-            Common.EnvInfo envinfo = new();
-            Drive = envinfo.Drive;
-            if (envinfo.OS == "Windows")
-                HomeDir = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            else
-                HomeDir = Environment.GetEnvironmentVariable("HOME");
+            Common.EnvInfo envInfo = new();
+            Drive = envInfo.Drive;
+            HomeDir = envInfo.Os == "Windows" ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%") 
+                : Environment.GetEnvironmentVariable("HOME");
 
             if (HomeDir is not null)
             {
@@ -82,7 +81,7 @@ namespace Common_Lib
             var me = readKeyFromFile.FindInArray(ConfigFullPath, "MediaExtensions");
             MediaExtensions = me.Split(", ");
 
-            switch (dbconnection)
+            switch (dbConnection)
             {
                 case "DbProduction":
                     ActiveDbConn = DbProdConn;

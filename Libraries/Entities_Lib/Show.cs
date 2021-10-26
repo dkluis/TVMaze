@@ -213,7 +213,7 @@ namespace Entities_Lib
                     if (date != "") PremiereDate = Convert.ToDateTime(showjson["premiered"]).ToString("yyyy-MM-dd");
                 }
 
-                CleanedShowName = Common.RemoveSpecialCharsInShowname(ShowName);
+                CleanedShowName = Common.RemoveSpecialCharsInShowName(ShowName);
 
                 if (showjson["type"] is not null) TvmType = showjson["type"].ToString();
 
@@ -361,7 +361,7 @@ namespace Entities_Lib
                         _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                         return;
                 }
-            
+
             IsForReview = true;
         }
 
@@ -381,7 +381,7 @@ namespace Entities_Lib
             showName = showName.Replace("'", "''");
             altShowName = altShowName.Replace("'", "''");
             if (cleanedShowName == "")
-                cleanedShowName = Common.RemoveSuffixFromShowname(Common.RemoveSpecialCharsInShowname(showName));
+                cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
 
             if (altShowName == "") altShowName = showName;
 

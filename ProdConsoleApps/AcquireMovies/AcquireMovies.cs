@@ -1,28 +1,27 @@
 ﻿using System;
 using Common_Lib;
 using DB_Lib;
-using Web_Lib;
 
 namespace AcquireMovies
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string This_Program = "Acquire Movies";
+            var This_Program = "Acquire Movies";
             Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            TextFileHandler log = appinfo.TxtFile;
+            var log = appinfo.TxtFile;
             log.Start();
 
             MariaDB mdb = new(appinfo);
-            string sql = $"select * from Movies";  //Todo add where clause for date comparision later
-            MySqlConnector.MySqlDataReader rdr = mdb.ExecQuery(sql);
-            string name = "";
-            string seriesName = "";
-            int movieNumber = 0;
-            string finderDate = "";
-            string mediaType = "";
+            var sql = "select * from Movies"; //Todo add where clause for date comparision later
+            var rdr = mdb.ExecQuery(sql);
+            var name = "";
+            var seriesName = "";
+            var movieNumber = 0;
+            var finderDate = "";
+            var mediaType = "";
 
             while (rdr.Read())
             {

@@ -6,17 +6,17 @@ namespace Entities_Lib
 {
     public class ShowAndEpisodes : IDisposable
     {
-        private Show Show;
-        private TextFileHandler log;
+        private readonly AppInfo appinfo;
         private List<Episode> EpsByShow;
-        private AppInfo appinfo;
+        private TextFileHandler log;
+        private readonly Show Show;
 
 
         public ShowAndEpisodes(AppInfo Appinfo)
         {
             log = Appinfo.TxtFile;
             appinfo = Appinfo;
-            Show = new(appinfo);
+            Show = new Show(appinfo);
         }
 
         public void Dispose()
@@ -27,16 +27,20 @@ namespace Entities_Lib
         public void Refresh(int showid, bool ignore = false)
         {
             Show.FillViaTvmaze(showid);
-            if (Show.IsDbFilled && Show.IsFollowed) { Show.TvmStatus = "Following"; }
+            if (Show.IsDbFilled && Show.IsFollowed) Show.TvmStatus = "Following";
             Show.DbUpdate();
             Show.Reset();
 
-            using (EpisodesByShow epsbyshow = new()) { EpsByShow = epsbyshow.Find(appinfo, showid); }
-            foreach (Episode episode in EpsByShow )
+            using (EpisodesByShow epsbyshow = new())
             {
-                if (episode.isDBFilled) { episode.DbUpdate(); } else { episode.DbInsert();  }
+                EpsByShow = epsbyshow.Find(appinfo, showid);
             }
 
+            foreach (var episode in EpsByShow)
+                if (episode.isDBFilled)
+                    episode.DbUpdate();
+                else
+                    episode.DbInsert();
         }
     }
 }
