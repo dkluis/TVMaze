@@ -8,10 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Web_Lib"/>
-        <None Remove="DB_Lib"/>
-        <None Remove="Entities_Lib"/>
-        <None Remove="Common_Lib"/>
+        <None Remove="Web_Lib" />
+        <None Remove="DB_Lib" />
+        <None Remove="Entities_Lib" />
+        <None Remove="Common_Lib" />
     </ItemGroup>
 
     <ItemGroup>
