@@ -9,8 +9,9 @@
     string _seasonString;
     string _episodeString;
     int _idx;
-        private const string FindUrl = "https://eztv.re/search/";
     bool _showRssBool;
+        private const string FindUrlE = "https://eztv.re/search/";
+        private const string FindUrlR = "https://www.ettv.be/torrents-search.php?search=";
 
     private void FindEpisodes()
     {
@@ -89,7 +90,8 @@
         @{ _idx = 0; }
         @foreach (var ei in _episodesInfoList)
         {
-            var findIt = FindUrl + ei.ShowName.Replace(" ", "-");
+            var findItE = FindUrlE + ei.ShowName.Replace(" ", "-");
+            var findItR = FindUrlR + ei.ShowName.Replace(" ", "+");
             <tr>
                 <td>@ei.TvmShowId</td>
                 <td>@ei.ShowName</td>
@@ -103,7 +105,8 @@
                 <td>@ei.PlexDate</td>
                 <td>@ei.UpdateDate</td>
                 <td>
-                    <a href="@findIt" target="_blank">Find</a>
+                    <a href="@findItE" target="_blank">FE</a>
+                    <a href="@findItR" target="_blank">FR</a>
                 </td>
             </tr>
             _idx++;
