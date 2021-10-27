@@ -3,106 +3,106 @@
 
 @code
 {
-    string message;
-    int refreshshowid;
-    string logview = "";
-    readonly string log = "";
+    string _message;
+    int _refreshshowid;
+    string _logview = "";
+    readonly string _log = "";
 
     public void ExecUpdateFollowed()
     {
-        message = "Running Update Followed";
+        _message = "Running Update Followed";
         RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
-        message = "Finished Update Followed";
+        _message = "Finished Update Followed";
     }
 
     public void ExecUpdatePlexAcquired()
     {
-        message = "Running Update Plex Acquired";
+        _message = "Running Update Plex Acquired";
         RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexAcquired.sh");
-        message = "Finished Update Plex Acquired";
+        _message = "Finished Update Plex Acquired";
     }
 
     public void ExecUpdatePlexWatched()
     {
-        message = "Running Update Plex Watched";
+        _message = "Running Update Plex Watched";
         RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
-        message = "Finished Update Plex Watched";
+        _message = "Finished Update Plex Watched";
     }
 
     public void ExecAcquireMedia()
     {
-        message = "Running Acquire Media";
+        _message = "Running Acquire Media";
         RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
-        message = "Finished Acquire Media";
+        _message = "Finished Acquire Media";
     }
 
     public void ExecAcquireMediaLog()
     {
-        logview = "Acquire Media Log";
+        _logview = "Acquire Media Log";
     }
 
     public void ExecFollowedLog()
     {
-        logview = "Followed Log";
+        _logview = "Followed Log";
     }
 
     public void ExecPlexAcquiredLog()
     {
-        logview = "Plex Acquired Log";
+        _logview = "Plex Acquired Log";
     }
 
     public void ExecPlexWatchedLog()
     {
-        logview = "Plex Watched Log";
+        _logview = "Plex Watched Log";
     }
 
 
-    private void RunScript(string script)
+    private void RunScript(string scriptName)
     {
-        using (Process Script = new())
+        using (Process runScript = new())
         {
-            Script.StartInfo.FileName = script;
-            Script.StartInfo.UseShellExecute = true;
-            Script.StartInfo.RedirectStandardOutput = false;
-            var started = Script.Start();
-            Script.WaitForExit();
+            runScript.StartInfo.FileName = scriptName;
+            runScript.StartInfo.UseShellExecute = true;
+            runScript.StartInfo.RedirectStandardOutput = false;
+            var started = runScript.Start();
+            runScript.WaitForExit();
         }
     }
 
     private void RefreshOneShow()
     {
-        if (refreshshowid == 0)
+        if (_refreshshowid == 0)
         {
-            message = "Enter a ShowId: 0 is not Valid";
+            _message = "Enter a ShowId: 0 is not Valid";
             return;
         }
-        message = $"Trying to update {refreshshowid}";
+        _message = $"Trying to update {_refreshshowid}";
 
         AppInfo appinfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
         var log = appinfo.TxtFile;
         log.Start();
-        using (MariaDB Mdbr = new(appinfo))
+        using (MariaDb mdbr = new(appinfo))
         {
             MySqlDataReader rdr;
 
-            rdr = Mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {refreshshowid} order by `TvmShowId` desc");
+            rdr = mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {_refreshshowid} order by `TvmShowId` desc");
 
             while (rdr.Read())
             {
                 using (ShowAndEpisodes sae = new(appinfo))
                 {
-                    message = $"Working on Show {rdr[0]} {rdr[1]}";
-                    log.Write($"{message}", "", 2);
+                    _message = $"Working on Show {rdr[0]} {rdr[1]}";
+                    log.Write($"{_message}", "", 2);
                     sae.Refresh(int.Parse(rdr[0].ToString()));
                 }
             }
-            if (message.Contains("Trying"))
+            if (_message.Contains("Trying"))
             {
-                message = $"ShowId {refreshshowid} is not in the Shows Table";
+                _message = $"ShowId {_refreshshowid} is not in the Shows Table";
             }
             else
             {
-                message = message.Replace("Working on", "Refreshed");
+                _message = _message.Replace("Working on", "Refreshed");
             }
         }
         log.Stop();
@@ -124,7 +124,7 @@
 <div>
     <h2>Direct Update Processes:</h2>
     <p></p>
-    <input @bind="@refreshshowid" size="5"/>
+    <input @bind="@_refreshshowid" size="5"/>
     &#8195;<button class="btn btn-primary" @onclick="RefreshOneShow">Refresh Show</button>
     <p></p>
 </div>
@@ -133,7 +133,7 @@
     <h2>Status:</h2>
     <div>
         <h4>
-            <em>@message</em>
+            <em>@_message</em>
         </h4>
     </div>
 </div>
@@ -149,9 +149,9 @@
 </div>
 
 <div>
-    <h4>@logview</h4>
+    <h4>@_logview</h4>
     <p></p>
-    @log
+    @_log
     <p></p>
-    <em>End of Log @logview</em>
+    <em>End of Log @_logview</em>
 </div>

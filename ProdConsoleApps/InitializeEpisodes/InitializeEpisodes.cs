@@ -9,9 +9,9 @@ namespace InitializeEpisodes
     {
         private static void Main()
         {
-            var This_Program = "Init Episode Table";
-            Console.WriteLine($"{DateTime.Now}:  {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Init Episode Table";
+            Console.WriteLine($"{DateTime.Now}:  {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 

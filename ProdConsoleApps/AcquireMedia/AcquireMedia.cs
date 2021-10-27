@@ -12,38 +12,29 @@ namespace AcquireMedia
     {
         private static void Main()
         {
-            var This_Program = "Acquire Media";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appInfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Acquire Media";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appInfo.TxtFile;
             log.Start();
 
             Magnets media = new(appInfo);
             MySqlDataReader rdr;
-            using (GetEpisodesToBeAcquired gea = new())
-            {
-                rdr = gea.Find(appInfo);
-            }
+            using GetEpisodesToBeAcquired gea = new();
+            rdr = gea.Find(appInfo);
 
             var isSeason = false;
             var showId = 0;
-
             while (rdr.Read())
             {
-                if (isSeason && showId == int.Parse(rdr["TvmShowId"].ToString()!))
-                {
-                    continue;
-                }
-
+                if (isSeason && showId == int.Parse(rdr["TvmShowId"].ToString()!)) { continue; }
                 showId = 0;
                 var showName = rdr["AltShowName"].ToString() != "" ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "") 
                     : rdr["ShowName"].ToString();
-
-                var result = media.PerformShowEpisodeMagnetsSearch(showName, int.Parse(rdr["Season"].ToString()!),
-                    int.Parse(rdr["Episode"].ToString()!), log);
                 var episodeId = int.Parse(rdr["TvmEpisodeId"].ToString()!);
-                var magnet = result.Item2;
-                isSeason = result.Item1;
+                var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName, int.Parse(rdr["Season"].ToString()!),
+                    int.Parse(rdr["Episode"].ToString()!), log);
+                isSeason = seasonInd;
 
                 if (magnet != "")
                 {
@@ -77,7 +68,7 @@ namespace AcquireMedia
                         episode.DbUpdate();
                     }
 
-                    using (WebAPI wai = new(appInfo))
+                    using (WebApi wai = new(appInfo))
                     {
                         wai.PutEpisodeToAcquired(episodeId);
                     }
@@ -86,25 +77,20 @@ namespace AcquireMedia
                 {
                     showId = int.Parse(rdr["TvmShowId"].ToString()!);
                     var season = int.Parse(rdr["Season"].ToString()!);
-                    using MariaDB mdb = new(appInfo);
+                    using MariaDb mdb = new(appInfo);
                     var seasRdr =
                         mdb.ExecQuery(
                             $"select * from Episodes where `TvmShowId` = {showId} and `Season` = {season}");
                     while (seasRdr.Read())
                     {
                         var seasEpiId = int.Parse(seasRdr["TvmEpisodeId"].ToString()!);
-                        using (Episode seasEpi = new(appInfo))
-                        {
-                            seasEpi.FillViaTvmaze(seasEpiId);
-                            seasEpi.PlexStatus = "Acquired";
-                            seasEpi.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
-                            seasEpi.DbUpdate();
-                        }
-
-                        using (WebAPI wai = new(appInfo))
-                        {
-                            wai.PutEpisodeToAcquired(seasEpiId);
-                        }
+                        using Episode seasEpi = new(appInfo);
+                        seasEpi.FillViaTvmaze(seasEpiId);
+                        seasEpi.PlexStatus = "Acquired";
+                        seasEpi.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        seasEpi.DbUpdate();
+                        using WebApi wai = new(appInfo);
+                        wai.PutEpisodeToAcquired(seasEpiId);
                     }
                 }
             }

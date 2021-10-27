@@ -32,7 +32,7 @@
     {
         if (si.TvmStatus == "New")
         {
-            _webShowsService.appinfo.TxtFile.Write($"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
+            _webShowsService.Appinfo.TxtFile.Write($"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
             _webShowsService.SetTvmStatusShow(si.TvmShowId, "Reviewing");
             _searchString = si.ShowName;
             FindShows();
@@ -40,7 +40,7 @@
         }
         else if (si.TvmStatus == "Following")
         {
-            _webShowsService.appinfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
+            _webShowsService.Appinfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
             _webShowsService.SetMtAndAsnShow(si.TvmShowId, si.MediaType, si.AltShowName);
             _searchString = si.ShowName;
             FindShows();
@@ -50,7 +50,7 @@
 
     private void DeleteShow(ShowsInfo si)
     {
-        _webShowsService.appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
+        _webShowsService.Appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
         _webShowsService.DeleteShow(si.TvmShowId);
         if (si.TvmStatus == "New")
         {

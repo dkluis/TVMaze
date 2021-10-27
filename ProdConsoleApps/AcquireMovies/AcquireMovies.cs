@@ -8,13 +8,13 @@ namespace AcquireMovies
     {
         private static void Main(string[] args)
         {
-            var This_Program = "Acquire Movies";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Acquire Movies";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
-            MariaDB mdb = new(appinfo);
+            MariaDb mdb = new(appinfo);
             var sql = "select * from Movies"; //Todo add where clause for date comparision later
             var rdr = mdb.ExecQuery(sql);
             var name = "";

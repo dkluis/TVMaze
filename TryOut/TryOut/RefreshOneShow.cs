@@ -9,18 +9,18 @@ namespace RefreshOneShow
     {
         private static void Main()
         {
-            var This_Program = "Refresh One Show";
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Refresh One Show";
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
-            var TheShowToRefresh = 58473;
+            var theShowToRefresh = 58473;
 
-            MariaDB Mdbr = new(appinfo);
+            MariaDb mdbr = new(appinfo);
             MySqlDataReader rdr;
 
-            rdr = Mdbr.ExecQuery(
-                $"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {TheShowToRefresh} order by `TvmShowId` desc");
+            rdr = mdbr.ExecQuery(
+                $"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {theShowToRefresh} order by `TvmShowId` desc");
 
             while (rdr.Read())
                 using (ShowAndEpisodes sae = new(appinfo))

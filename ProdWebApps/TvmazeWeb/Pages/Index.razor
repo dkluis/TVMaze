@@ -10,10 +10,10 @@
     var followedShowsCount = "select count(*) from Shows where `TvmStatus` = 'Following'";
     var reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
     var newShowsCount = "select count(*) from Shows where `TvmStatus` = 'New'";
-    var RunningShowsCount = "select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
-    var TBDShowsCount = "select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
-    var InDevShowsCount = "select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
-    var EndedShowsCount = "select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
+    var runningShowsCount = "select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
+    var tbdShowsCount = "select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
+    var inDevShowsCount = "select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
+    var endedShowsCount = "select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
 
     var numShows = "";
     var numFollowed = "";
@@ -21,7 +21,7 @@
     var numReviewingShows = "";
     var numNewShows = "";
     var numRunningShows = "";
-    var numTBDShows = "";
+    var numTbdShows = "";
     var numInDevShows = "";
     var numEndedShows = "";
 
@@ -39,7 +39,7 @@
     var numFutureEpisodes = "";
     var numFutureUnknownEpisodes = "";
 
-    MariaDB mdb = new(appInfo);
+    MariaDb mdb = new(appInfo);
     MySqlDataReader rdr;
 
     rdr = mdb.ExecQuery(showCount);
@@ -77,28 +77,28 @@
     }
     mdb.Close();
 
-    rdr = mdb.ExecQuery(RunningShowsCount);
+    rdr = mdb.ExecQuery(runningShowsCount);
     while (rdr.Read())
     {
         numRunningShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
-    rdr = mdb.ExecQuery(TBDShowsCount);
+    rdr = mdb.ExecQuery(tbdShowsCount);
     while (rdr.Read())
     {
-        numTBDShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numTbdShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
-    rdr = mdb.ExecQuery(InDevShowsCount);
+    rdr = mdb.ExecQuery(inDevShowsCount);
     while (rdr.Read())
     {
         numInDevShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
     }
     mdb.Close();
 
-    rdr = mdb.ExecQuery(EndedShowsCount);
+    rdr = mdb.ExecQuery(endedShowsCount);
     while (rdr.Read())
     {
         numEndedShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
@@ -192,7 +192,7 @@
         <tr>
             <td>...Shows (Following)</td>
             <td>Show Status: To Be Decided</td>
-            <td align="right">@numTBDShows</td>
+            <td align="right">@numTbdShows</td>
         </tr>
         <tr>
             <td>...Shows (Following)</td>

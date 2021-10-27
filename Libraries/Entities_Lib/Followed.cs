@@ -7,27 +7,27 @@ namespace Entities_Lib
 {
     public class Followed
     {
-        private AppInfo appInfo;
+        private AppInfo _appInfo;
         public int Id;
 
-        public bool inDB;
-        private readonly TextFileHandler log;
-        private readonly MariaDB Mdb;
+        public bool InDb;
+        private readonly TextFileHandler _log;
+        private readonly MariaDb _mdb;
         public int TvmShowId;
         public string UpdateDate = $"{DateTime.Now.Date:yyyy-MM-dd}";
 
         public Followed(AppInfo appinfo)
         {
-            appInfo = appinfo;
-            Mdb = new MariaDB(appinfo);
-            log = appinfo.TxtFile;
+            _appInfo = appinfo;
+            _mdb = new MariaDb(appinfo);
+            _log = appinfo.TxtFile;
         }
 
         public void Reset()
         {
             TvmShowId = 0;
             UpdateDate = $"{DateTime.Now.Date:yyyy-MM-dd}";
-            Mdb.Close();
+            _mdb.Close();
         }
 
         public bool DbInsert(bool ignore = false)
@@ -40,10 +40,10 @@ namespace Entities_Lib
             values += $"'{TvmShowId}', ";
             values += $"'{UpdateDate}' ";
 
-            var rows = Mdb.ExecNonQuery(sqlpre + values + sqlsuf, ignore);
-            Mdb.Close();
+            var rows = _mdb.ExecNonQuery(sqlpre + values + sqlsuf, ignore);
+            _mdb.Close();
             if (rows == 0) return false;
-            log.Write($"Followed {TvmShowId} is inserted", "", 4);
+            _log.Write($"Followed {TvmShowId} is inserted", "", 4);
             return true;
         }
 
@@ -57,35 +57,35 @@ namespace Entities_Lib
             updfields += $"`UpdateDate` = '{DateTime.Now.ToString("yyyy-MM-dd")}' ";
             var sqlsuf = $"where `TvmShowId` = {TvmShowId};";
 
-            var rows = Mdb.ExecNonQuery(sqlpre + updfields + sqlsuf, ignore);
-            Mdb.Close();
+            var rows = _mdb.ExecNonQuery(sqlpre + updfields + sqlsuf, ignore);
+            _mdb.Close();
             if (rows == 0) return false;
-            log.Write($"Followed {TvmShowId} is updated", "", 4);
+            _log.Write($"Followed {TvmShowId} is updated", "", 4);
             return true;
         }
 
         public bool DbDelete(bool ignore = false)
         {
-            var rows = Mdb.ExecNonQuery($"delete from Followed where `TvmShowId` = {TvmShowId}");
-            Mdb.Close();
+            var rows = _mdb.ExecNonQuery($"delete from Followed where `TvmShowId` = {TvmShowId}");
+            _mdb.Close();
             if (rows == 0) return false;
-            log.Write($"Followed {TvmShowId} is deleted", "", 4);
+            _log.Write($"Followed {TvmShowId} is deleted", "", 4);
             return true;
         }
 
         public bool DbDelete(int showid)
         {
-            var rows = Mdb.ExecNonQuery($"delete from Followed where `TvmShowId` = {showid}");
-            Mdb.Close();
+            var rows = _mdb.ExecNonQuery($"delete from Followed where `TvmShowId` = {showid}");
+            _mdb.Close();
             if (rows == 0) return false;
-            log.Write($"Followed {showid} is deleted", "", 4);
+            _log.Write($"Followed {showid} is deleted", "", 4);
             return true;
         }
 
         public void GetFollowed(int showid)
         {
             var sql = $"select * from Followed where `TvmShowId` = {showid};";
-            var rdr = Mdb.ExecQuery(sql);
+            var rdr = _mdb.ExecQuery(sql);
             if (rdr.HasRows)
             {
                 while (rdr.Read())
@@ -93,25 +93,25 @@ namespace Entities_Lib
                     Id = int.Parse(rdr["Id"].ToString());
                     TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
                     UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
-                    inDB = true;
+                    InDb = true;
                 }
             }
             else
             {
-                inDB = false;
+                InDb = false;
                 Id = 0;
                 TvmShowId = showid;
                 UpdateDate = Convert.ToDateTime(DateTime.Now).ToString("yyyy-MM-dd");
             }
 
-            Mdb.Close();
+            _mdb.Close();
         }
 
-        public void SetUpdateDate(int ShowId, string UpdDate = "")
+        public void SetUpdateDate(int showId, string updDate = "")
         {
-            TvmShowId = ShowId;
-            if (UpdDate != "")
-                UpdateDate = UpdDate;
+            TvmShowId = showId;
+            if (updDate != "")
+                UpdateDate = updDate;
             else
                 DateTime.Now.ToString("yyyy-MM-DD");
         }
@@ -121,10 +121,10 @@ namespace Entities_Lib
             List<int> showstodelete = new();
             List<int> followedindb = new();
 
-            using (var rdr = Mdb.ExecQuery("select `TvmShowId` from Followed"))
+            using (var rdr = _mdb.ExecQuery("select `TvmShowId` from Followed"))
             {
                 while (rdr.Read()) followedindb.Add(int.Parse(rdr["TvmShowId"].ToString()));
-                Mdb.Close();
+                _mdb.Close();
             }
 
             if (followedontvmaze.Count == followedindb.Count) return showstodelete;

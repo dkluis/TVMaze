@@ -7,11 +7,11 @@ namespace TVMazeWeb.Data
 {
     public class WebEpisodes
     {
-        public AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
+        public AppInfo Appinfo = new("Tvmaze", "WebUI", "DbAlternate");
 
         public List<EpisodeInfo> GetEpisodes(string showname, string season, string episode)
         {
-            MariaDB mdbepisodes = new(appinfo);
+            MariaDb mdbepisodes = new(Appinfo);
             MySqlDataReader rdr;
             List<EpisodeInfo> episodeinfolist = new();
             int seasonint;
@@ -42,14 +42,14 @@ namespace TVMazeWeb.Data
                 episodeinfolist.Add(ei);
             }
 
-            appinfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeinfolist.Count} records", "", 4);
+            Appinfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeinfolist.Count} records", "", 4);
 
             return episodeinfolist;
         }
 
         public List<EpisodeInfo> GetEpisodesToAcquire(bool includeshowrss)
         {
-            MariaDB mdbacquire = new(appinfo);
+            MariaDb mdbacquire = new(Appinfo);
             MySqlDataReader rdr;
             List<EpisodeInfo> episodeinfolist = new();
             var sqlnoshowrss =

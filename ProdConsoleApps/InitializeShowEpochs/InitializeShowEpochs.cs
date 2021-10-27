@@ -9,17 +9,17 @@ namespace InitializeShowEpochs
     {
         private static void Main()
         {
-            var This_Program = "Init Show Epochs";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Init Show Epochs";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
-            WebAPI tvmapi = new(appinfo);
+            WebApi tvmapi = new(appinfo);
             var jsoncontent = tvmapi.ConvertHttpToJArray(tvmapi.GetFollowedShows());
 
-            var iu_idx = 0;
-            MariaDB Mdbw = new(appinfo);
+            var iuIdx = 0;
+            MariaDb mdbw = new(appinfo);
 
             foreach (var show in jsoncontent)
             {
@@ -28,7 +28,7 @@ namespace InitializeShowEpochs
                     var showid = int.Parse(show["show_id"].ToString());
                     log.Write($"insert into TvmShowUpdates values (0, {showid}, 0, '{DateTime.Now:yyyy-MM-dd}');", "",
                         4);
-                    var rows = Mdbw.ExecNonQuery(
+                    var rows = mdbw.ExecNonQuery(
                         $"insert into TvmShowUpdates values (0, {showid}, 1, '{DateTime.Now:yyyy-MM-dd}');");
                     if (rows == 0) log.Write($"Insert went wrong for {showid}");
                 }
@@ -37,10 +37,10 @@ namespace InitializeShowEpochs
                     log.Write("JToken Show[id] was null", "", 0);
                 }
 
-                iu_idx++;
+                iuIdx++;
             }
 
-            log.Write($"Processed {iu_idx} Followed Shows");
+            log.Write($"Processed {iuIdx} Followed Shows");
 
             log.Stop();
         }

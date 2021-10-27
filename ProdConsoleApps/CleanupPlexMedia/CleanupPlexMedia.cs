@@ -10,9 +10,9 @@ namespace CleanupPlexMedia
     {
         private static void Main()
         {
-            var This_Program = "Cleanup Plex Media";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Cleanup Plex Media";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 

@@ -9,16 +9,16 @@ namespace Web_Lib
 {
     public class WebScrape : IDisposable
     {
-        private readonly AppInfo appinfo;
-        private readonly TextFileHandler log;
-        public List<string> magnets = new();
-        public bool rarbgError;
+        private readonly AppInfo _appinfo;
+        private readonly TextFileHandler _log;
+        public List<string> Magnets = new();
+        public bool RarbgError;
         public bool WholeSeasonFound;
 
         public WebScrape(AppInfo info)
         {
-            appinfo = info;
-            log = appinfo.TxtFile;
+            _appinfo = info;
+            _log = _appinfo.TxtFile;
         }
 
         public void Dispose()
@@ -30,14 +30,14 @@ namespace Web_Lib
 
         #region EZTV
 
-        public void GetEZTVMagnets(string showname, string seasepi)
+        public void GetEztvMagnets(string showname, string seasepi)
         {
             var foundmagnets = 0;
-            var html = BuildEztvURL($"{showname}-{seasepi}");
+            var html = BuildEztvUrl($"{showname}-{seasepi}");
 
             var comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showname).Replace(" ", ".") + "." +
                                     seasepi + ".";
-            log.Write($"Compare string = {comparewithmagnet}", "Eztv", 4);
+            _log.Write($"Compare string = {comparewithmagnet}", "Eztv", 4);
 
             int priority;
             string prioritizedmagnet;
@@ -49,7 +49,7 @@ namespace Web_Lib
             }
             catch (HtmlWebException ex)
             {
-                log.Write($"Error Occurred loading Url {html} --- {ex}", "EZTV", 0);
+                _log.Write($"Error Occurred loading Url {html} --- {ex}", "EZTV", 0);
                 return;
             }
 
@@ -64,45 +64,45 @@ namespace Web_Lib
                         if (priority > 130)
                         {
                             prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                            log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "Eztv", 4);
-                            magnets.Add(prioritizedmagnet);
+                            _log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "Eztv", 4);
+                            Magnets.Add(prioritizedmagnet);
                             foundmagnets++;
                         }
                     }
             }
             else
             {
-                log.Write("No result returned from the webscape Eztv", "Eztv", 4);
+                _log.Write("No result returned from the webscape Eztv", "Eztv", 4);
                 return;
             }
 
-            magnets.Sort();
-            magnets.Reverse();
-            log.Write($"Found {foundmagnets} via EZTV");
+            Magnets.Sort();
+            Magnets.Reverse();
+            _log.Write($"Found {foundmagnets} via EZTV");
         }
 
-        private string BuildEztvURL(string showname)
+        private string BuildEztvUrl(string showname)
         {
-            var eztv_url = "https://eztv.re/search/";
+            var eztvUrl = "https://eztv.re/search/";
             showname = Common.RemoveSpecialCharsInShowName(showname);
             showname = showname.Replace(" ", "-"); //eztv seach char.
-            eztv_url += showname;
-            log.Write($"URL EZTV is {eztv_url}", "Eztv", 4);
-            return eztv_url;
+            eztvUrl += showname;
+            _log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
+            return eztvUrl;
         }
 
         #endregion
 
         #region MagnetDL
 
-        public void GetMagnetDLMagnets(string showname, string seasepi)
+        public void GetMagnetDlMagnets(string showname, string seasepi)
         {
             var foundmagnets = 0;
-            var html = BuildMagnetDLURL($"{showname}-{seasepi}");
+            var html = BuildMagnetDlurl($"{showname}-{seasepi}");
 
             var comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showname).Replace(" ", ".") + "." +
                                     seasepi + ".";
-            log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 4);
+            _log.Write($"Compare string = {comparewithmagnet}", "MagnetDL", 4);
 
             int priority;
             string prioritizedmagnet;
@@ -115,14 +115,14 @@ namespace Web_Lib
             }
             catch (HtmlWebException ex)
             {
-                log.Write($"Error Occurred loading Url {html} --- {ex}", "MagnetDL", 0);
+                _log.Write($"Error Occurred loading Url {html} --- {ex}", "MagnetDL", 0);
                 return;
             }
 
             var table = htmlDoc.DocumentNode.SelectNodes("//td/a");
             if (table is null)
             {
-                log.Write("No result returned from the webscape MagnetDL", "MagnetDL", 4);
+                _log.Write("No result returned from the webscape MagnetDL", "MagnetDL", 4);
                 return;
             }
 
@@ -134,24 +134,24 @@ namespace Web_Lib
                     if (priority > 130)
                     {
                         prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                        log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "MagnetDL", 4);
-                        magnets.Add(prioritizedmagnet);
+                        _log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "MagnetDL", 4);
+                        Magnets.Add(prioritizedmagnet);
                         foundmagnets++;
                     }
                 }
 
-            magnets.Sort();
-            magnets.Reverse();
-            log.Write($"Found {foundmagnets} via MagnetDL");
+            Magnets.Sort();
+            Magnets.Reverse();
+            _log.Write($"Found {foundmagnets} via MagnetDL");
         }
 
-        private string BuildMagnetDLURL(string showname)
+        private string BuildMagnetDlurl(string showname)
         {
             var url = "https://www.magnetdl.com/";
             showname = Common.RemoveSpecialCharsInShowName(showname);
             showname = showname.Replace(" ", "-"); //MagnetDL seach char.
             url = url + "/" + showname[0].ToString().ToLower() + "/" + showname + "/";
-            log.Write($"URL MagnetDL is {url}", "MagnetDL", 4);
+            _log.Write($"URL MagnetDL is {url}", "MagnetDL", 4);
             return url;
         }
 
@@ -163,25 +163,25 @@ namespace Web_Lib
         {
             int prio;
             var foundmagnets = 0;
-            WebAPI tvmapi = new(appinfo);
+            WebApi tvmapi = new(_appinfo);
             var comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showname).Replace(" ", ".") + "." +
                                     seasepi + ".";
             var result = tvmapi.GetRarbgMagnets(showname + " " + seasepi);
 
-            log.Write($"Compare string = {comparewithmagnet}", "RarbgAPI", 4);
-            log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 4);
+            _log.Write($"Compare string = {comparewithmagnet}", "RarbgAPI", 4);
+            _log.Write($"Result back from API call {result.StatusCode}", "RarbgAPI", 4);
 
             if (!result.IsSuccessStatusCode)
             {
-                log.Write("No Result returned from the API RarbgAPI", "RarbgAPI", 4);
+                _log.Write("No Result returned from the API RarbgAPI", "RarbgAPI", 4);
                 return;
             }
 
             var content = result.Content.ReadAsStringAsync().Result;
             if (content == "{\"error\":\"No results found\",\"error_code\":20}")
             {
-                log.Write("No Result returned from the API RarbgAPI", "RarbgAPI", 4);
-                rarbgError = true;
+                _log.Write("No Result returned from the API RarbgAPI", "RarbgAPI", 4);
+                RarbgError = true;
                 return;
             }
 
@@ -192,15 +192,15 @@ namespace Web_Lib
                 prio = PrioritizeMagnet(magnet, "RarbgAPI");
                 if (prio > 130 && magnet.ToLower().Contains(comparewithmagnet))
                 {
-                    magnets.Add(prio + "#$# " + magnet);
+                    Magnets.Add(prio + "#$# " + magnet);
                     foundmagnets++;
-                    log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 4);
+                    _log.Write($"Prioritized Magnet Recorded {prio}#$# {magnet}", "RarbgAPI", 4);
                 }
             }
 
-            magnets.Sort();
-            magnets.Reverse();
-            log.Write($"Found {foundmagnets} via RarbgAPI");
+            Magnets.Sort();
+            Magnets.Reverse();
+            _log.Write($"Found {foundmagnets} via RarbgAPI");
         }
 
         #endregion
@@ -210,11 +210,11 @@ namespace Web_Lib
         public void GetPirateBayMagnets(string showname, string seasepi)
         {
             var foundmagnets = 0;
-            var html = BuildPirateBayURL($"{showname}+{seasepi}");
+            var html = BuildPirateBayUrl($"{showname}+{seasepi}");
 
             var comparewithmagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showname).Replace(" ", ".") + "." +
                                     seasepi + ".";
-            log.Write($"Compare string = {comparewithmagnet}", "PirateBay", 4);
+            _log.Write($"Compare string = {comparewithmagnet}", "PirateBay", 4);
 
             int priority;
             string prioritizedmagnet;
@@ -227,14 +227,14 @@ namespace Web_Lib
             }
             catch (HtmlWebException ex)
             {
-                log.Write($"Error Occurred loading Url {html} --- {ex}", "PirateBay", 0);
+                _log.Write($"Error Occurred loading Url {html} --- {ex}", "PirateBay", 0);
                 return;
             }
 
             var table = htmlDoc.DocumentNode.SelectNodes("//td/a");
             if (table is null)
             {
-                log.Write("No result returned from the webscape PirateBay", "PirateBay", 4);
+                _log.Write("No result returned from the webscape PirateBay", "PirateBay", 4);
                 return;
             }
 
@@ -246,24 +246,24 @@ namespace Web_Lib
                     if (priority > 130)
                     {
                         prioritizedmagnet = priority + "#$# " + node.Attributes["href"].Value;
-                        log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "PirateBay", 4);
-                        magnets.Add(prioritizedmagnet);
+                        _log.Write($"Prioritized Magnet recorded: {prioritizedmagnet}", "PirateBay", 4);
+                        Magnets.Add(prioritizedmagnet);
                         foundmagnets++;
                     }
                 }
 
-            magnets.Sort();
-            magnets.Reverse();
-            log.Write($"Found {foundmagnets} via PirateBay");
+            Magnets.Sort();
+            Magnets.Reverse();
+            _log.Write($"Found {foundmagnets} via PirateBay");
         }
 
-        private string BuildPirateBayURL(string showname)
+        private string BuildPirateBayUrl(string showname)
         {
             var url = "https://piratebay.bid/s/?q=";
             showname = Common.RemoveSpecialCharsInShowName(showname);
             showname = showname.Replace(" ", "+");
             url = url + showname + "&category=0&page=0&orderby=99";
-            log.Write($"URL PirateBay is {url}", "PirateBay", 4);
+            _log.Write($"URL PirateBay is {url}", "PirateBay", 4);
             return url;
         }
 
@@ -326,14 +326,14 @@ namespace Web_Lib
         {
             //TODO Figure out how to log into ShowRss via webscrape and replace below string loading
 
-            var showrsspath = Path.Combine(appinfo.ConfigPath, "Inputs", "ShowRss.html");
+            var showrsspath = Path.Combine(_appinfo.ConfigPath, "Inputs", "ShowRss.html");
             HtmlDocument showrsshtml = new();
 
             var showrssinfo = File.ReadAllText(showrsspath);
             showrsshtml.LoadHtml(showrssinfo);
 
             var table = showrsshtml.DocumentNode.SelectNodes("//li/a");
-            List<string> Titles = new();
+            List<string> titles = new();
             string showname;
 
             foreach (var node in table)
@@ -343,11 +343,11 @@ namespace Web_Lib
                 {
                     showname = Common.RemoveSpecialCharsInShowName(node.Attributes["title"].Value);
                     showname = Common.RemoveSuffixFromShowName(showname);
-                    Titles.Add(showname);
+                    titles.Add(showname);
                 }
             }
 
-            return Titles;
+            return titles;
         }
 
         public bool ShowRssLogin()
@@ -363,16 +363,16 @@ namespace Web_Lib
 
     public class Magnets
     {
-        private readonly AppInfo appinfo;
+        private readonly AppInfo _appinfo;
 
         #region Get Prioritized Magnet
 
         public Magnets(AppInfo info)
         {
-            appinfo = info;
+            _appinfo = info;
         }
 
-        public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showname, int seas_num, int epi_num,
+        public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showname, int seasNum, int epiNum,
             TextFileHandler logger)
         {
             var log = logger;
@@ -380,19 +380,19 @@ namespace Web_Lib
             var magnet = "";
             Tuple<bool, string> result = new(false, "");
 
-            if (epi_num == 1) //Search for whole season first
+            if (epiNum == 1) //Search for whole season first
             {
-                seasepi = Common.BuildSeasonOnly(seas_num);
+                seasepi = Common.BuildSeasonOnly(seasNum);
                 magnet = PerformFindMagnet(showname, seasepi, log);
                 result = new Tuple<bool, string>(true, magnet);
             }
 
             if (magnet == "")
             {
-                if (epi_num == 1)
+                if (epiNum == 1)
                     log.Write(
-                        $"No Magnet found for the whole season {seas_num} of {showname} now searching for episode 1");
-                seasepi = Common.BuildSeasonEpisodeString(seas_num, epi_num);
+                        $"No Magnet found for the whole season {seasNum} of {showname} now searching for episode 1");
+                seasepi = Common.BuildSeasonEpisodeString(seasNum, epiNum);
                 magnet = PerformFindMagnet(showname, seasepi, log);
                 result = new Tuple<bool, string>(false, magnet);
             }
@@ -402,18 +402,18 @@ namespace Web_Lib
 
         public string PerformFindMagnet(string showname, string seasepi, TextFileHandler log)
         {
-            using WebScrape seasonscrape = new(appinfo);
+            using WebScrape seasonscrape = new(_appinfo);
             {
-                seasonscrape.magnets = new List<string>();
+                seasonscrape.Magnets = new List<string>();
                 seasonscrape.GetRarbgMagnets(showname, seasepi);
-                seasonscrape.GetEZTVMagnets(showname, seasepi);
-                seasonscrape.GetMagnetDLMagnets(showname, seasepi);
+                seasonscrape.GetEztvMagnets(showname, seasepi);
+                seasonscrape.GetMagnetDlMagnets(showname, seasepi);
                 seasonscrape.GetPirateBayMagnets(showname, seasepi);
 
-                if (seasonscrape.magnets.Count > 0)
+                if (seasonscrape.Magnets.Count > 0)
                 {
-                    log.Write($"Total Magnets found {seasonscrape.magnets.Count}", "Getters", 4);
-                    var temp = seasonscrape.magnets[0].Split("#$#");
+                    log.Write($"Total Magnets found {seasonscrape.Magnets.Count}", "Getters", 4);
+                    var temp = seasonscrape.Magnets[0].Split("#$#");
                     var magnet = temp[1];
                     return magnet;
                 }

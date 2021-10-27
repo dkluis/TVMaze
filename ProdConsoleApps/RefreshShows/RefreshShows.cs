@@ -11,16 +11,16 @@ namespace RefreshShows
     {
         private static void Main()
         {
-            var This_Program = "Refresh Shows";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Refresh Shows";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
-            MariaDB Mdbr = new(appinfo);
+            MariaDb mdbr = new(appinfo);
             MySqlDataReader rdr;
 
-            rdr = Mdbr.ExecQuery("select `TvmShowId` from showstorefresh limit 175");
+            rdr = mdbr.ExecQuery("select `TvmShowId` from showstorefresh limit 175");
 
             while (rdr.Read())
                 using (ShowAndEpisodes sae = new(appinfo))
@@ -30,10 +30,10 @@ namespace RefreshShows
                     Thread.Sleep(1000);
                 }
 
-            Mdbr.Close();
+            mdbr.Close();
 
 
-            rdr = Mdbr.ExecQuery("select distinct `TvmShowId` from episodesfromtodayback order by `TvmShowId` desc;");
+            rdr = mdbr.ExecQuery("select distinct `TvmShowId` from episodesfromtodayback order by `TvmShowId` desc;");
             while (rdr.Read())
                 using (ShowAndEpisodes sae = new(appinfo))
                 {

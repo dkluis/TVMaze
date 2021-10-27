@@ -13,25 +13,25 @@ namespace UpdatePlexAcquired
     {
         private static void Main(string[] args)
         {
-            var This_Program = "Update Plex Acquired";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Update Plex Acquired";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
-            var PlexAcquired = Path.Combine(appinfo.ConfigPath, "Inputs", "PlexAcquired.log");
-            if (!File.Exists(PlexAcquired))
+            var plexAcquired = Path.Combine(appinfo.ConfigPath, "Inputs", "PlexAcquired.log");
+            if (!File.Exists(plexAcquired))
             {
-                log.Write($"Plex Acquired Log File Does not Exist {PlexAcquired}");
+                log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
                 log.Stop();
                 Environment.Exit(0);
             }
 
-            var acquired = File.ReadAllLines(PlexAcquired);
-            var AllAcquired = Path.Combine(appinfo.ConfigPath, "Inputs", "AllAcquired.log");
-            File.AppendAllLinesAsync(AllAcquired, acquired);
-            File.Delete(PlexAcquired);
-            log.Write($"Found {acquired.Length} records in {PlexAcquired}");
+            var acquired = File.ReadAllLines(plexAcquired);
+            var allAcquired = Path.Combine(appinfo.ConfigPath, "Inputs", "AllAcquired.log");
+            File.AppendAllLinesAsync(allAcquired, acquired);
+            File.Delete(plexAcquired);
+            log.Write($"Found {acquired.Length} records in {plexAcquired}");
 
             foreach (var acq in acquired)
             {
@@ -131,9 +131,9 @@ namespace UpdatePlexAcquired
                 }
 
                 if (isSeason)
-                    using (MariaDB Mdbe = new(appinfo))
+                    using (MariaDb mdbe = new(appinfo))
                     {
-                        var rdre = Mdbe.ExecQuery(
+                        var rdre = mdbe.ExecQuery(
                             $"select TvmEpisodeId from Episodes where `TvmShowId` = {showid[0]} and `Season` = {season}");
                         while (rdre.Read()) epstoupdate.Add(int.Parse(rdre[0].ToString()));
                     }
@@ -151,7 +151,7 @@ namespace UpdatePlexAcquired
                         }
                         else
                         {
-                            using (WebAPI uts = new(appinfo))
+                            using (WebApi uts = new(appinfo))
                             {
                                 uts.PutEpisodeToAcquired(epitoupdate.TvmEpisodeId);
                             }
@@ -188,7 +188,7 @@ namespace UpdatePlexAcquired
                         }
                         else
                         {
-                            using (WebAPI uts = new(appinfo))
+                            using (WebApi uts = new(appinfo))
                             {
                                 uts.PutEpisodeToAcquired(eptoupdate.TvmEpisodeId);
                             }

@@ -9,21 +9,21 @@ namespace RefreshShowRss
     {
         private static void Main()
         {
-            var This_Program = "Refresh ShowRss";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Refresh ShowRss";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
             // Update All Shows with ShowRss Finder Info
 
             WebScrape showscrape = new(appinfo);
-            var ShowRssShows = showscrape.GetShowRssInfo();
+            var showRssShows = showscrape.GetShowRssInfo();
             SearchShowsViaNames ssvn = new();
-            UpdateFinder UF = new();
-            log.Write($"Found {ShowRssShows.Count} in the ShowRss HTML download");
+            UpdateFinder uf = new();
+            log.Write($"Found {showRssShows.Count} in the ShowRss HTML download");
             var idx = 1;
-            foreach (var show in ShowRssShows)
+            foreach (var show in showRssShows)
             {
                 log.Write($"On ShowRss: {show}", "", 4);
                 var cleanshow = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(show));
@@ -45,7 +45,7 @@ namespace RefreshShowRss
                             if (showdup.ShowStatus == "Running")
                             {
                                 log.Write($"Selected to Update {cleanshow}: {showdup.TvmShowId} to Finder: ShowRss");
-                                UF.ToShowRss(appinfo, showdup.TvmShowId);
+                                uf.ToShowRss(appinfo, showdup.TvmShowId);
                                 idx++;
                             }
                         }
@@ -58,7 +58,7 @@ namespace RefreshShowRss
                 }
 
                 log.Write($"Updating {cleanshow} to Finder: ShowRss", "", 4);
-                UF.ToShowRss(appinfo, int.Parse(foundindb[0].ToString()));
+                uf.ToShowRss(appinfo, int.Parse(foundindb[0].ToString()));
                 idx++;
             }
 

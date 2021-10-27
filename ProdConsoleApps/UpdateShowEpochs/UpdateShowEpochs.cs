@@ -1,6 +1,7 @@
 ﻿using System;
 using Common_Lib;
 using DB_Lib;
+using DB_Lib.Tvmaze;
 using Entities_Lib;
 using Web_Lib;
 
@@ -22,26 +23,26 @@ namespace UpdateShowEpochs
     {
         private static void Main()
         {
-            var This_Program = "Update Show Epochs";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Update Show Epochs";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
             int showid;
             int showepoch;
-            int LastEvaluatedShow;
+            int lastEvaluatedShow;
             using (TvmCommonSql ge = new(appinfo))
             {
-                LastEvaluatedShow = ge.GetLastEvaluatedShow();
+                lastEvaluatedShow = ge.GetLastEvaluatedShow();
             }
 
-            var HighestShowId = LastEvaluatedShow;
-            log.Write($"Last Evaluated ShowId = {LastEvaluatedShow}", "", 2);
+            var highestShowId = lastEvaluatedShow;
+            log.Write($"Last Evaluated ShowId = {lastEvaluatedShow}", "", 2);
 
-            WebAPI tvmapi = new(appinfo);
+            WebApi tvmapi = new(appinfo);
             var jsoncontent = tvmapi.ConvertHttpToJObject(tvmapi.GetShowUpdateEpochs("day"));
-            log.Write($"Found {jsoncontent.Count} updates on Tvmaze", This_Program, 2);
+            log.Write($"Found {jsoncontent.Count} updates on Tvmaze", thisProgram, 2);
 
             Show tvmshow = new(appinfo);
             int indbepoch;
@@ -76,17 +77,17 @@ namespace UpdateShowEpochs
 
                 if (indbepoch == 0)
                 {
-                    using (MariaDB Mdbw = new(appinfo))
+                    using (MariaDb mdbw = new(appinfo))
                     {
-                        Mdbw.ExecNonQuery(
+                        mdbw.ExecNonQuery(
                             $"insert into TvmShowUpdates values (0, {showid}, {showepoch}, '{DateTime.Now:yyyy-MM-dd}');");
-                        Mdbw.Close();
+                        mdbw.Close();
                     }
 
                     log.Write($"Inserted Epoch Record {showid} {tvmshow.ShowName}");
-                    if (showid > LastEvaluatedShow)
+                    if (showid > lastEvaluatedShow)
                     {
-                        if (showid > HighestShowId) HighestShowId = showid;
+                        if (showid > highestShowId) highestShowId = showid;
                         if (!tvmshow.IsForReview)
                         {
                             log.Write($"Show {showid} is rejected because of review rules {tvmshow.TvmUrl}");
@@ -130,11 +131,11 @@ namespace UpdateShowEpochs
                 }
                 else
                 {
-                    using (MariaDB Mdbw = new(appinfo))
+                    using (MariaDb mdbw = new(appinfo))
                     {
-                        Mdbw.ExecNonQuery(
+                        mdbw.ExecNonQuery(
                             $"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showid};");
-                        Mdbw.Close();
+                        mdbw.Close();
                     }
 
                     if (!tvmshow.IsDbFilled) continue;
@@ -155,7 +156,7 @@ namespace UpdateShowEpochs
                             foreach (var eps in ebs)
                             {
                                 log.Write($"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 4);
-                                if (!eps.isDBFilled)
+                                if (!eps.IsDbFilled)
                                 {
                                     if (!eps.DbInsert())
                                     {
@@ -204,7 +205,7 @@ namespace UpdateShowEpochs
 
             using (TvmCommonSql se = new(appinfo))
             {
-                se.SetLastEvaluatedShow(HighestShowId);
+                se.SetLastEvaluatedShow(highestShowId);
             }
 
             log.Stop();

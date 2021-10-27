@@ -17,15 +17,15 @@ namespace DB_Lib
     {
         private static void Main()
         {
-            var This_Program = "Update Plex Watched";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Update Plex Watched";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
 
             log.Start();
 
             PlexSqlLite pdb = new();
-            var watchedepisodes = pdb.PlexWatched(appinfo);
+            var watchedepisodes = PlexSqlLite.PlexWatched(appinfo);
 
             if (watchedepisodes.Count > 0)
             {
@@ -73,7 +73,7 @@ namespace DB_Lib
                         using (Episode epi = new(appinfo))
                         {
                             epi.FillViaTvmaze(pwi.TvmEpisodeId);
-                            using (WebAPI wa = new(appinfo))
+                            using (WebApi wa = new(appinfo))
                             {
                                 wa.PutEpisodeToWatched(epi.TvmEpisodeId, pwi.WatchedDate);
                             }
@@ -87,7 +87,7 @@ namespace DB_Lib
 
                             pwi.ProcessedToTvmaze = true;
                             pwi.DbUpdate(appinfo);
-                            if (epi.isAutoDelete)
+                            if (epi.IsAutoDelete)
                             {
                                 log.Write($"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file");
                                 using (MediaFileHandler mfh = new(appinfo))

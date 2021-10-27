@@ -1,50 +1,50 @@
 ﻿@page "/episodes"
 @using TVMazeWeb.Data
-@inject WebEpisodes WebEpisodesService
-@inject DataExchange DataExchangeService
+@inject WebEpisodes _webEpisodesService
+@inject DataExchange _dataExchangeService
 
 @code{
-    private List<EpisodeInfo> EpisodesInfoList = new();
-    string SearchString;
-    string SeasonString;
-    string EpisodeString;
-    int idx;
-    readonly string findurl = "https://eztv.re/search/";
-    bool showrssbool;
+    private List<EpisodeInfo> _episodesInfoList = new();
+    string _searchString;
+    string _seasonString;
+    string _episodeString;
+    int _idx;
+    readonly string _findurl = "https://eztv.re/search/";
+    bool _showrssbool;
 
     private void FindEpisodes()
     {
-        if (SeasonString is null)
+        if (_seasonString is null)
         {
-            SeasonString = "";
+            _seasonString = "";
         }
-        if (EpisodeString is null)
+        if (_episodeString is null)
         {
-            EpisodeString = "";
+            _episodeString = "";
         }
-        if (SearchString is null)
+        if (_searchString is null)
         {
-            SearchString = "";
+            _searchString = "";
         }
-        WebEpisodesService.appinfo.TxtFile.Write($"Executing Find Episodes for show {SearchString},  {SeasonString}, {EpisodeString}", "", 4);
-        EpisodesInfoList = WebEpisodesService.GetEpisodes(SearchString, SeasonString, EpisodeString);
-        DataExchangeService.Reset();
+        _webEpisodesService.Appinfo.TxtFile.Write($"Executing Find Episodes for show {_searchString},  {_seasonString}, {_episodeString}", "", 4);
+        _episodesInfoList = _webEpisodesService.GetEpisodes(_searchString, _seasonString, _episodeString);
+        _dataExchangeService.Reset();
     }
 
     private void GetEpisodesToAcquire()
     {
-        EpisodesInfoList = WebEpisodesService.GetEpisodesToAcquire(showrssbool);
+        _episodesInfoList = _webEpisodesService.GetEpisodesToAcquire(_showrssbool);
     }
 
 }
 
 @{
-    if (DataExchangeService.SendingPage == "Shows" && DataExchangeService.IntendedPage == "Episodes")
+    if (_dataExchangeService.SendingPage == "Shows" && _dataExchangeService.IntendedPage == "Episodes")
     {
-        WebEpisodesService.appinfo.TxtFile.Write($"Request to Find Episode for show {DataExchangeService.ShowName} from page {DataExchangeService.SendingPage}");
-        SearchString = DataExchangeService.ShowName;
+        _webEpisodesService.Appinfo.TxtFile.Write($"Request to Find Episode for show {_dataExchangeService.ShowName} from page {_dataExchangeService.SendingPage}");
+        _searchString = _dataExchangeService.ShowName;
         FindEpisodes();
-        SearchString = "";
+        _searchString = "";
     }
 }
 
@@ -55,20 +55,20 @@
         <div class="input-group-prepend">
             <span class="input-group-text">ShowName %</span>
         </div>
-        <input @bind="SearchString"/>
+        <input @bind="_searchString"/>
         <div class="input-group-append">
             <span class="input-group-text">%</span>
         </div>
         <div class="input-group-prepend">
             <span class="input-group-text">Season</span>
         </div>
-        <input @bind="SeasonString" size="3"/>
+        <input @bind="_seasonString" size="3"/>
         <div class="input-group-prepend">
             <span class="input-group-text">Episode</span>
         </div>
-        <input @bind="EpisodeString" size="3"/>
+        <input @bind="_episodeString" size="3"/>
         &#8195;<button class="btn btn-primary" @onclick="FindEpisodes">Find Episodes</button>
-        &#8195;Include ShowRss:&#8195;<input type="checkbox" @bind="showrssbool"/>
+        &#8195;Include ShowRss:&#8195;<input type="checkbox" @bind="_showrssbool"/>
         &#8195;<button class="btn btn-primary" @onclick="GetEpisodesToAcquire">Next 2 Days</button>
     </div>
 </div>
@@ -95,13 +95,13 @@
         </tr>
         </thead>
         <tbody>
-        @if (idx != 0)
+        @if (_idx != 0)
         {
-            idx = 0;
+            _idx = 0;
         }
-        @foreach (var ei in EpisodesInfoList)
+        @foreach (var ei in _episodesInfoList)
         {
-            var findit = findurl + ei.ShowName.Replace(" ", "-");
+            var findit = _findurl + ei.ShowName.Replace(" ", "-");
             <tr>
                 <td>@ei.TvmShowId</td>
                 <td>@ei.ShowName</td>
@@ -118,11 +118,11 @@
                     <a href="@findit" target="_blank">Find</a>
                 </td>
             </tr>
-            idx++;
+            _idx++;
         }
         </tbody>
     </table>
     <div>
-        <em>Output has @idx records</em>
+        <em>Output has @_idx records</em>
     </div>
 </div>

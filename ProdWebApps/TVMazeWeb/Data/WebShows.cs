@@ -7,11 +7,11 @@ namespace TVMazeWeb.Data
 {
     public class WebShows
     {
-        public AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
+        public AppInfo Appinfo = new("Tvmaze", "WebUI", "DbAlternate");
 
         public List<ShowsInfo> GetShowsByTvmStatus(string tvmstatus)
         {
-            MariaDB mdbshows = new(appinfo);
+            MariaDb mdbshows = new(Appinfo);
             MySqlDataReader rdr;
             List<ShowsInfo> newShows = new();
             var sql = $"select * from Shows where `TvmStatus` = '{tvmstatus}' order by `TvmShowId` desc";
@@ -37,7 +37,7 @@ namespace TVMazeWeb.Data
 
         public List<ShowsInfo> FindShows(string showname)
         {
-            MariaDB mdbshows = new(appinfo);
+            MariaDb mdbshows = new(Appinfo);
             MySqlDataReader rdr;
             List<ShowsInfo> newShows = new();
             if (showname is not null) showname = showname.Replace("'", "''");
@@ -66,7 +66,7 @@ namespace TVMazeWeb.Data
 
         public bool DeleteShow(int showid)
         {
-            MariaDB mdbshows = new(appinfo);
+            MariaDb mdbshows = new(Appinfo);
             var sql = $"delete from Shows where `TvmShowId` = {showid}";
             var resultrows = mdbshows.ExecNonQuery(sql);
             if (resultrows > 0)
@@ -76,7 +76,7 @@ namespace TVMazeWeb.Data
 
         public bool SetTvmStatusShow(int showid, string newstatus)
         {
-            MariaDB mdbshows = new(appinfo);
+            MariaDb mdbshows = new(Appinfo);
             var sql = $"update shows set `TvmStatus` = '{newstatus}' where `TvmShowId` = {showid}";
             var resultrows = mdbshows.ExecNonQuery(sql);
             if (resultrows > 0)
@@ -86,7 +86,7 @@ namespace TVMazeWeb.Data
 
         public bool SetMtAndAsnShow(int showid, string mediatype, string altshowname)
         {
-            MariaDB mdbshows = new(appinfo);
+            MariaDb mdbshows = new(Appinfo);
             altshowname = altshowname.Replace("'", "''");
             var sql =
                 $"update shows set `AltShowName` = '{altshowname}', `MediaType` = '{mediatype}' where `TvmShowId` = {showid}";
@@ -96,7 +96,7 @@ namespace TVMazeWeb.Data
                 return true;
             }
 
-            appinfo.TxtFile.Write($"Edit Showname and MediaType unsuccesfull:  MediaType = {mediatype}");
+            Appinfo.TxtFile.Write($"Edit Showname and MediaType unsuccesfull:  MediaType = {mediatype}");
             return false;
         }
     }

@@ -10,20 +10,20 @@ namespace RefreshShowRssFeed
     {
         private static void Main(string[] args)
         {
-            var This_Program = "Refresh ShowRss Feed";
-            Console.WriteLine($"{DateTime.Now}: {This_Program} ");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Refresh ShowRss Feed";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram} ");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
-            Feed Result = new();
+            Feed result = new();
             try
             {
-                var ShowRssFeed =
+                var showRssFeed =
                     FeedReader.ReadAsync(
                         "http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
-                ShowRssFeed.Wait();
-                Result = ShowRssFeed.Result;
+                showRssFeed.Wait();
+                result = showRssFeed.Result;
             }
             catch (Exception ex)
             {
@@ -32,43 +32,43 @@ namespace RefreshShowRssFeed
                 Environment.Exit(99);
             }
 
-            MariaDB Mdb = new(appinfo);
+            MariaDb mdb = new(appinfo);
             var sql = "";
             var row = 0;
             var idx = 0;
 
-            foreach (var Show in Result.Items)
+            foreach (var show in result.Items)
             {
                 idx++;
-                if (CheckIfProcessed(appinfo, Show.Title)) continue;
+                if (CheckIfProcessed(appinfo, show.Title)) continue;
 
-                if (Show.Title.ToLower().Contains("proper") || Show.Title.ToLower().Contains("repack"))
-                    log.Write($"Found Repack or Proper Version: {Show.Title}");
+                if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack"))
+                    log.Write($"Found Repack or Proper Version: {show.Title}");
 
-                using (Process AcquireMediaScript = new())
+                using (Process acquireMediaScript = new())
                 {
-                    AcquireMediaScript.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/AcquireMediaViaTransmission.sh";
-                    AcquireMediaScript.StartInfo.Arguments = Show.Link;
-                    AcquireMediaScript.StartInfo.UseShellExecute = true;
-                    AcquireMediaScript.StartInfo.RedirectStandardOutput = false;
-                    var started = AcquireMediaScript.Start();
-                    AcquireMediaScript.WaitForExit();
+                    acquireMediaScript.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/AcquireMediaViaTransmission.sh";
+                    acquireMediaScript.StartInfo.Arguments = show.Link;
+                    acquireMediaScript.StartInfo.UseShellExecute = true;
+                    acquireMediaScript.StartInfo.RedirectStandardOutput = false;
+                    var started = acquireMediaScript.Start();
+                    acquireMediaScript.WaitForExit();
                 }
 
-                log.Write($"Added {Show.Title} to Transmission");
+                log.Write($"Added {show.Title} to Transmission");
 
                 sql = "insert ShowRssFeed values (";
                 sql += "0, ";
-                sql += $"'{Show.Title}', ";
+                sql += $"'{show.Title}', ";
                 sql += "0, ";
-                sql += $"'{Show.Link}', ";
+                sql += $"'{show.Link}', ";
                 sql += $"'{DateTime.Now.ToString("yyyy-MM-dd")}') ";
-                row = Mdb.ExecNonQuery(sql);
-                Mdb.Close();
+                row = mdb.ExecNonQuery(sql);
+                mdb.Close();
                 if (row != 1)
-                    log.Write($"Insert of Episode {Show.Title} Failed", "", 4);
+                    log.Write($"Insert of Episode {show.Title} Failed", "", 4);
                 else
-                    log.Write($"Inserted Episode {Show.Title} successfully", "", 4);
+                    log.Write($"Inserted Episode {show.Title} successfully", "", 4);
             }
 
             log.Write($"Processed {idx} records from ShowRss");
@@ -78,12 +78,12 @@ namespace RefreshShowRssFeed
         private static bool CheckIfProcessed(AppInfo appinfo, string showname)
         {
             var isProcessed = false;
-            using (MariaDB Mdbr = new(appinfo))
+            using (MariaDb mdbr = new(appinfo))
             {
                 var rsql = $"select `Showname`, Processed from ShowRssFeed where `ShowName` = '{showname}' ";
-                var rdr = Mdbr.ExecQuery(rsql);
+                var rdr = mdbr.ExecQuery(rsql);
                 if (rdr.HasRows) isProcessed = true;
-                Mdbr.Close();
+                mdbr.Close();
             }
 
             return isProcessed;

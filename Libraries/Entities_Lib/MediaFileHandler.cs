@@ -9,10 +9,10 @@ namespace Entities_Lib
 {
     public class MediaFileHandler : IDisposable
     {
-        private readonly AppInfo Appinfo;
-        private readonly TextFileHandler log;
+        private readonly AppInfo _appinfo;
+        private readonly TextFileHandler _log;
 
-        private readonly MariaDB Mdb;
+        private readonly MariaDb _mdb;
         public List<string> MoviesinSeries;
         public string PlexMediaAcquire;
         public string PlexMediaKidsTvShows;
@@ -24,9 +24,9 @@ namespace Entities_Lib
 
         public MediaFileHandler(AppInfo appinfo)
         {
-            Appinfo = appinfo;
-            Mdb = new MariaDB(appinfo);
-            log = appinfo.TxtFile;
+            _appinfo = appinfo;
+            _mdb = new MariaDb(appinfo);
+            _log = appinfo.TxtFile;
 
             GetSetMediaInfo();
         }
@@ -47,17 +47,17 @@ namespace Entities_Lib
         public string GetDirectoryViaMediaType(string mt)
         {
             var path = "";
-            var rdr = Mdb.ExecQuery($"select `PlexLocation` from `MediaTypes` where `MediaType` = '{mt}'");
+            var rdr = _mdb.ExecQuery($"select `PlexLocation` from `MediaTypes` where `MediaType` = '{mt}'");
             if (rdr is not null)
                 while (rdr.Read())
                     path = rdr[0].ToString();
-            Mdb.Close();
+            _mdb.Close();
             return path;
         }
 
         public bool DeleteEpisodeFiles(Episode epi)
         {
-            if (!epi.isAutoDelete) return true;
+            if (!epi.IsAutoDelete) return true;
             var success = false;
 
             var directory = "";
@@ -89,19 +89,19 @@ namespace Entities_Lib
                     foreach (var file in files)
                     {
                         var medianame = file.Replace(findin, "").Replace("/", "");
-                        var trashloc = Path.Combine(Appinfo.HomeDir, "Trash", medianame);
-                        log.Write($"File to Delete {medianame} for episode {seasonepisode}", "MediaFileHandler", 4);
+                        var trashloc = Path.Combine(_appinfo.HomeDir, "Trash", medianame);
+                        _log.Write($"File to Delete {medianame} for episode {seasonepisode}", "MediaFileHandler", 4);
 
                         if (file.ToLower().Contains(seasonepisode.ToLower()))
                             try
                             {
                                 File.Move(file, trashloc);
-                                log.Write($"Delete {medianame}, to {trashloc}", "", 4);
+                                _log.Write($"Delete {medianame}, to {trashloc}", "", 4);
                             }
                             catch (Exception e)
                             {
-                                log.Write($"Something went wrong moving {medianame} to {trashloc}: {e.Message}", "", 0);
-                                using (ActionItems ai = new(Appinfo))
+                                _log.Write($"Something went wrong moving {medianame} to {trashloc}: {e.Message}", "", 0);
+                                using (ActionItems ai = new(_appinfo))
                                 {
                                     ai.DbInsert($"Something went wrong moving {medianame} to {trashloc}: {e.Message}");
                                 }
@@ -110,10 +110,10 @@ namespace Entities_Lib
                 }
                 catch (Exception e)
                 {
-                    log.Write($"Error on getting Files for {Path.Combine(directory, showname, seas)}: {e}");
+                    _log.Write($"Error on getting Files for {Path.Combine(directory, showname, seas)}: {e}");
                 }
             else
-                log.Write($"Directory {findin} does not exist");
+                _log.Write($"Directory {findin} does not exist");
 
             return success;
         }
@@ -130,8 +130,8 @@ namespace Entities_Lib
         {
             if (episode is null && show is null)
             {
-                log.Write($"Episode and Show are set to null, cannot process the move for {mediainfo}", "", 0);
-                using (ActionItems ai = new(Appinfo))
+                _log.Write($"Episode and Show are set to null, cannot process the move for {mediainfo}", "", 0);
+                using (ActionItems ai = new(_appinfo))
                 {
                     ai.DbInsert($"Episode and Show are set to null, cannot process the move for {mediainfo}");
                 }
@@ -198,13 +198,13 @@ namespace Entities_Lib
             }
             catch (Exception ex)
             {
-                log.Write($"Got an error {ex} trying to access {fullmediapath}");
+                _log.Write($"Got an error {ex} trying to access {fullmediapath}");
                 return success;
             }
 
             if (!founddir && !foundfile)
             {
-                log.Write($"Could not find dir {founddir} or file {foundfile} for {fullmediapath}", "", 0);
+                _log.Write($"Could not find dir {founddir} or file {foundfile} for {fullmediapath}", "", 0);
                 return success;
             }
 
@@ -225,9 +225,9 @@ namespace Entities_Lib
 
                 filesindirectory = Directory.GetFiles(fullmediapath);
                 foreach (var file in filesindirectory)
-                foreach (var ext in Appinfo.MediaExtensions)
+                foreach (var ext in _appinfo.MediaExtensions)
                 {
-                    log.Write($"Processing {file} with extension {ext}", "", 4);
+                    _log.Write($"Processing {file} with extension {ext}", "", 4);
                     if (file.Contains(ext))
                     {
                         media.Add(file);
@@ -236,7 +236,7 @@ namespace Entities_Lib
                 }
             }
 
-            if (media.Count == 0) log.Write($"There was nothing to move {mediainfo}");
+            if (media.Count == 0) _log.Write($"There was nothing to move {mediainfo}");
             var todir = "";
             if (episode is not null)
                 todir = Path.Combine(destdirectory, shown, $"Season {episode.SeasonNum}");
@@ -255,11 +255,11 @@ namespace Entities_Lib
                 try
                 {
                     File.Move(file, topath);
-                    log.Write($"Moved To: {topath}");
+                    _log.Write($"Moved To: {topath}");
                 }
                 catch (Exception ex)
                 {
-                    log.Write($"Error Moving File {file} to {topath} >>> {ex.Message}");
+                    _log.Write($"Error Moving File {file} to {topath} >>> {ex.Message}");
                 }
             }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Common_Lib;
 using DB_Lib;
+using DB_Lib.Tvmaze;
 using Newtonsoft.Json.Linq;
 using Web_Lib;
 
@@ -12,7 +13,7 @@ namespace Entities_Lib
         private readonly AppInfo _appinfo;
         private readonly TextFileHandler _log;
 
-        private readonly MariaDB _mdb;
+        private readonly MariaDb _mdb;
         public string AltShowName = "";
         public string CleanedShowName = "";
         public string Finder = "Multi";
@@ -44,7 +45,7 @@ namespace Entities_Lib
         public Show(AppInfo appinfo)
         {
             _appinfo = appinfo;
-            _mdb = new MariaDB(appinfo);
+            _mdb = new MariaDb(appinfo);
             _log = appinfo.TxtFile;
         }
 
@@ -91,7 +92,7 @@ namespace Entities_Lib
                 lastEvaluatedShow = ge.GetLastEvaluatedShow();
             }
 
-            using WebAPI js = new(_appinfo);
+            using WebApi js = new(_appinfo);
             FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
             FillViaDb(showid, true);
             if (!IsFollowed && !IsDbFilled) ValidateForReview(lastEvaluatedShow);
@@ -99,7 +100,7 @@ namespace Entities_Lib
 
         public bool DbUpdate()
         {
-            _mdb.success = true;
+            _mdb.Success = true;
             var updateFields = "";
             var sqlPrefix = "update shows set ";
             if (TvmStatus == "Reviewing" && TvmSummary != "") TvmStatus = "New";
@@ -117,9 +118,9 @@ namespace Entities_Lib
             var rows = _mdb.ExecNonQuery(sqlPrefix + updateFields + sqlSuffix);
             _log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
             _mdb.Close();
-            if (rows == 0) _mdb.success = false;
+            if (rows == 0) _mdb.Success = false;
 
-            return _mdb.success;
+            return _mdb.Success;
         }
 
         public bool DbInsert(bool overRide = false, string callingApp = "")
@@ -127,12 +128,12 @@ namespace Entities_Lib
             if (!IsForReview && !IsFollowed && !overRide)
             {
                 _log.Write($"New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false");
-                _mdb.success = true;
-                return _mdb.success;
+                _mdb.Success = true;
+                return _mdb.Success;
             }
 
 
-            _mdb.success = true;
+            _mdb.Success = true;
 
             var values = "";
             var sqlpre = "insert into shows values (";
@@ -162,31 +163,31 @@ namespace Entities_Lib
             var rows = _mdb.ExecNonQuery(sqlpre + values + sqlsuf);
             _log.Write($"DbInsert for Show: {TvmShowId}", "", 4);
             _mdb.Close();
-            if (rows == 0) _mdb.success = false;
+            if (rows == 0) _mdb.Success = false;
 
-            return _mdb.success;
+            return _mdb.Success;
         }
 
         public bool DbDelete()
         {
-            _mdb.success = true;
+            _mdb.Success = true;
             var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {TvmShowId}");
             _log.Write($"DbDelete for Show: {TvmShowId}", "", 4);
             _mdb.Close();
-            if (rows == 0) _mdb.success = false;
+            if (rows == 0) _mdb.Success = false;
 
-            return _mdb.success;
+            return _mdb.Success;
         }
 
         public bool DbDelete(int showid)
         {
-            _mdb.success = true;
+            _mdb.Success = true;
             var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {showid}");
             _log.Write($"DbDelete for Show: {showid}", "", 4);
             _mdb.Close();
-            if (rows == 0) _mdb.success = false;
+            if (rows == 0) _mdb.Success = false;
 
-            return _mdb.success;
+            return _mdb.Success;
         }
 
         private void FillViaJson(JObject showjson)
@@ -385,7 +386,7 @@ namespace Entities_Lib
 
             if (altShowName == "") altShowName = showName;
 
-            using (MariaDB mDbR = new(appInfo))
+            using (MariaDb mDbR = new(appInfo))
             {
                 var sql =
                     $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showName}' or " +
@@ -408,7 +409,7 @@ namespace Entities_Lib
 
         public List<int> Find(AppInfo appinfo, string option = "Following")
         {
-            using (MariaDB mDbR = new(appinfo))
+            using (MariaDb mDbR = new(appinfo))
             {
                 var sql =
                     $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = '{option}' order by `TvmShowId`;";
@@ -428,7 +429,7 @@ namespace Entities_Lib
     {
         public void ToShowRss(AppInfo appinfo, int showid)
         {
-            using (MariaDB mDbW = new(appinfo))
+            using (MariaDb mDbW = new(appinfo))
             {
                 var sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showid};";
                 appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
@@ -446,7 +447,7 @@ namespace Entities_Lib
 
         public void ToFollowed(AppInfo appInfo, int showId)
         {
-            using (MariaDB mDbW = new(appInfo))
+            using (MariaDb mDbW = new(appInfo))
             {
                 var sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId};";
                 appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
@@ -457,7 +458,7 @@ namespace Entities_Lib
 
         public void ToReview(AppInfo appInfo, int showId)
         {
-            using MariaDB mDbW = new(appInfo);
+            using MariaDb mDbW = new(appInfo);
             var sql = $"update shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showId};";
             appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
             if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update to Review unsuccessful {sql}", "", 4);
@@ -469,7 +470,7 @@ namespace Entities_Lib
         public bool IsFollowedShow(AppInfo appinfo, int showid)
         {
             bool isFollowed;
-            using WebAPI webapi = new(appinfo);
+            using WebApi webapi = new(appinfo);
             isFollowed = webapi.CheckForFollowedShow(showid);
 
             return isFollowed;
@@ -481,7 +482,7 @@ namespace Entities_Lib
         public int FollowedCount(AppInfo appInfo)
         {
             var records = 0;
-            using MariaDB mDbR = new(appInfo);
+            using MariaDb mDbR = new(appInfo);
             var rdr = mDbR.ExecQuery("select count(*) from Followed");
             while (rdr.Read()) records = int.Parse(rdr[0].ToString()!);
             return records;

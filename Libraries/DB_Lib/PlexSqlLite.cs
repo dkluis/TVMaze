@@ -2,40 +2,34 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using Common_Lib;
-using MySqlConnector;
 
 namespace DB_Lib
 {
     public class PlexSqlLite
     {
-        public List<PlexWatchedInfo> PlexWatched(AppInfo appinfo)
+        public static List<PlexWatchedInfo> PlexWatched(AppInfo appInfo)
         {
-            var PlexPlayedItems =
+            const string plexPlayedItems =
                 "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
-                "where miv.parent_index > 0 and miv.metadata_type = 4 and (miv.viewed_at > date('now', '-1 day') and miv.viewed_at < datetime('now', '-4 hours', '-5 minutes')) and miv.account_id = 1 " +
-                "order by miv.grandparent_title, miv.parent_index, miv.`index`; ";
-            var PlexDBLocation =
-                "Data Source=/Users/dick/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db";
-            var log = appinfo.TxtFile;
-            List<PlexWatchedInfo> watchedepisodes = new();
-            MySqlConnection Mdbw = new(appinfo.ActiveDbConn);
-
-            SQLiteConnection con = new(PlexDBLocation);
+                                           "where miv.parent_index > 0 and miv.metadata_type = 4 and (miv.viewed_at > " +
+                                           "date('now', '-1 day') and miv.viewed_at < datetime('now', '-4 hours', '-5 minutes')) and miv.account_id = 1 " +
+                                           "order by miv.grandparent_title, miv.parent_index, miv.`index`; ";
+            const string plexDbLocation = "Data Source=/Users/dick/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db";
+            List<PlexWatchedInfo> watchedEpisodes = new();
+            SQLiteConnection con = new(plexDbLocation);
             con.Open();
 
-            SQLiteCommand cmd = new(PlexPlayedItems, con);
+            SQLiteCommand cmd = new(plexPlayedItems, con);
             var rdr = cmd.ExecuteReader();
-
-            if (rdr is not null)
-                while (rdr.Read())
-                {
-                    PlexWatchedInfo record = new();
-                    record.Fill(rdr[0].ToString(), int.Parse(rdr[1].ToString()), int.Parse(rdr[2].ToString()),
-                        rdr[3].ToString());
-                    watchedepisodes.Add(record);
-                }
-
-            return watchedepisodes;
+            if (rdr is null) return watchedEpisodes;
+            while (rdr.Read())
+            {
+                PlexWatchedInfo record = new();
+                record.Fill(rdr[0].ToString(), int.Parse(rdr[1].ToString()!), int.Parse(rdr[2].ToString()!),
+                    rdr[3].ToString());
+                watchedEpisodes.Add(record);
+            }
+            return watchedEpisodes;
         }
     }
 
@@ -67,49 +61,40 @@ namespace DB_Lib
             CleanedShowName = "";
         }
 
-        public void Fill(string showname, int season, int episode, string watcheddate)
+        public void Fill(string showName, int season, int episode, string watchedDate)
         {
-            ShowName = showname;
+            ShowName = showName;
             Season = season;
             Episode = episode;
-            var date = watcheddate.Split(" ")[0];
+            var date = watchedDate.Split(" ")[0];
             var d = date.Split(@"/");
             date = d[2] + "-" + d[0].PadLeft(2, '0') + "-" + d[1].PadLeft(2, '0');
             WatchedDate = date;
             UpdateDate = DateTime.Now.ToString("yyyy-MM-dd");
             SeasonEpisode = Common.BuildSeasonEpisodeString(season, episode);
-            CleanedShowName = Common.RemoveSpecialCharsInShowName(showname);
+            CleanedShowName = Common.RemoveSpecialCharsInShowName(showName);
         }
 
-        public bool DbInsert(AppInfo appinfo)
+        public bool DbInsert(AppInfo appInfo)
         {
-            int rows;
             var success = false;
-            using (MariaDB Mdbw = new(appinfo))
-            {
-                var sql = "insert into `PlexWatchedEpisodes` values (";
-                sql += $"0, {TvmShowId}, {TvmEpisodeId}, ";
-                sql += $"'{ShowName.Replace("'", "''")}', {Season}, {Episode}, ";
-                sql += $"'{SeasonEpisode}', '{WatchedDate}', ";
-                sql += $"0, '{DateTime.Now.ToString("yyyy-MM-dd")}' ); ";
-                rows = Mdbw.ExecNonQuery(sql, true);
-                if (rows == 1) success = true;
-            }
-
+            using MariaDb mDbW = new(appInfo);
+            var sql =
+                $"insert into `PlexWatchedEpisodes` values (0, {TvmShowId}, {TvmEpisodeId}, " +
+                $"'{ShowName.Replace("'", "''")}', {Season}, {Episode}, '{SeasonEpisode}', " +
+                $"'{WatchedDate}', 0, '{DateTime.Now:yyyy-MM-dd}' );";
+            var rows = mDbW.ExecNonQuery(sql, true);
+            if (rows == 1) success = true;
             return success;
         }
 
         public bool DbUpdate(AppInfo appInfo)
         {
-            var rows = 0;
             var success = false;
-            using (MariaDB Mdbw = new(appInfo))
-            {
-                var sql =
-                    $"update `PlexWatchedEpisodes` set `ProcessedToTvmaze` = 1 where `TvmEpisodeId` = {TvmEpisodeId}";
-                rows = Mdbw.ExecNonQuery(sql, true);
-            }
-
+            using MariaDb mDbW = new(appInfo);
+            var sql =
+                $"update `PlexWatchedEpisodes` set `ProcessedToTvmaze` = 1 where `TvmEpisodeId` = {TvmEpisodeId}";
+            var rows = mDbW.ExecNonQuery(sql, true);
             if (rows == 1) success = true;
             return success;
         }

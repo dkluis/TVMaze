@@ -17,22 +17,22 @@ namespace UpdateFollowed
     {
         private static void Main()
         {
-            var This_Program = "Update Followed";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
+            var thisProgram = "Update Followed";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appinfo.TxtFile;
             log.Start();
 
-            WebAPI tvmapi = new(appinfo);
+            WebApi tvmapi = new(appinfo);
             var gfs = tvmapi.GetFollowedShows();
-            if (tvmapi.isTimedOut)
+            if (tvmapi.IsTimedOut)
             {
                 log.Write("Getting an Time Out twice on the GetFollowedShows call to TVMaze");
                 Environment.Exit(99);
             }
 
-            var FollowedShowOnTvmaze = tvmapi.ConvertHttpToJArray(gfs);
-            log.Write($"Found {FollowedShowOnTvmaze.Count} Followed Shows Tvmaze", "", 2);
+            var followedShowOnTvmaze = tvmapi.ConvertHttpToJArray(gfs);
+            log.Write($"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze", "", 2);
 
             CheckDb cdb = new();
             var records = cdb.FollowedCount(appinfo);
@@ -41,21 +41,21 @@ namespace UpdateFollowed
             Show theshow = new(appinfo);
             var idx = 0;
             var delidx = 0;
-            List<int> AllFollowedShows = new();
+            List<int> allFollowedShows = new();
 
-            using (MariaDB Mdbw = new(appinfo))
+            using (MariaDb mDbWrite = new(appinfo))
             {
-                Followed InFollowedTable = new(appinfo);
+                Followed inFollowedTable = new(appinfo);
                 int jtshow;
 
-                foreach (var show in FollowedShowOnTvmaze)
+                foreach (var show in followedShowOnTvmaze)
                 {
                     jtshow = int.Parse(show["show_id"].ToString());
 
                     log.Write($"Processing {jtshow}", "", 4);
-                    InFollowedTable.GetFollowed(jtshow);
+                    inFollowedTable.GetFollowed(jtshow);
 
-                    if (InFollowedTable.inDB)
+                    if (inFollowedTable.InDb)
                     {
                         using (UpdateTvmStatus uts = new())
                         {
@@ -72,7 +72,7 @@ namespace UpdateFollowed
                             theshow.DbUpdate();
                         else
                             theshow.DbInsert(true);
-                        using (MariaDB tsu = new(appinfo))
+                        using (MariaDb tsu = new(appinfo))
                         {
                             tsu.ExecNonQuery(
                                 $"update TvmShowUpdates set `TvmUpdateEpoch` = {theshow.TvmUpdatedEpoch} where `TvmShowId` = {theshow.TvmShowId};");
@@ -80,7 +80,7 @@ namespace UpdateFollowed
                         }
 
                         theshow.Reset();
-                        InFollowedTable.DbInsert(true);
+                        inFollowedTable.DbInsert(true);
                         using (ShowAndEpisodes sae = new(appinfo))
                         {
                             log.Write($"Working on Refreshing Show {jtshow}");
@@ -90,20 +90,20 @@ namespace UpdateFollowed
                         idx++;
                     }
 
-                    InFollowedTable.Reset();
-                    AllFollowedShows.Add(int.Parse(show["show_id"].ToString()));
-                    Mdbw.Close();
+                    inFollowedTable.Reset();
+                    allFollowedShows.Add(int.Parse(show["show_id"].ToString()));
+                    mDbWrite.Close();
                 }
 
                 log.Write($"Updated or Inserted {idx} Shows", "", 2);
             }
 
             Followed followed = new(appinfo);
-            var ToDelete = followed.ShowsToDelete(AllFollowedShows);
-            if (ToDelete.Count > 0)
+            var toDelete = followed.ShowsToDelete(allFollowedShows);
+            if (toDelete.Count > 0)
             {
-                if (ToDelete.Count <= 10)
-                    foreach (var showid in ToDelete)
+                if (toDelete.Count <= 10)
+                    foreach (var showid in toDelete)
                     {
                         log.Write($"Deleting {showid}", "", 2);
                         theshow.DbDelete(showid);
@@ -113,17 +113,17 @@ namespace UpdateFollowed
                         delidx++;
                     }
                 else
-                    log.Write($"Too Many Shows are flagged for deletion {ToDelete.Count}", "", 0);
+                    log.Write($"Too Many Shows are flagged for deletion {toDelete.Count}", "", 0);
 
                 log.Write($"Deleted {delidx} Shows", "", 1);
             }
 
-            MariaDB mdb = new(appinfo);
-            MariaDB mdbw = new(appinfo);
+            MariaDb mdb = new(appinfo);
+            MariaDb mDbW = new(appinfo);
             var rdr = mdb.ExecQuery("select ShowsTvmShowId from notinfollowed where `Status` = 'Following'");
             while (rdr.Read())
             {
-                mdbw.ExecQuery(
+                mDbW.ExecQuery(
                     $"update Shows set `TvmStatus` = 'New' where `TvmShowid` = {int.Parse(rdr[0].ToString())}");
                 log.Write($"Reset {rdr[0]} to New ---> Should not occur ###################", "", 0);
             }
