@@ -7,11 +7,11 @@ namespace DB_Lib
     public class MariaDb : IDisposable
     {
         private readonly MySqlConnection _conn;
+        public readonly TextFileHandler MDbLog;
         private MySqlCommand _cmd;
         private bool _connOpen;
-        public Exception Exception;
-        public readonly TextFileHandler MDbLog;
         private MySqlDataReader _rdr;
+        public Exception Exception;
 
         public int Rows;
 

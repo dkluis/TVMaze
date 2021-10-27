@@ -22,46 +22,6 @@ namespace Common_Lib
             }
         }
 
-        public class EnvInfo
-        {
-            public readonly string Drive;
-            public readonly string MachineName;
-            public readonly string Os;
-            public readonly string UserName;
-            public readonly string WorkingDrive;
-            public readonly string WorkingPath;
-
-            public EnvInfo()
-            {
-                var os = Environment.OSVersion;
-                var pid = os.Platform;
-                switch (pid)
-                {
-                    case PlatformID.Win32NT:
-                    case PlatformID.Win32S:
-                    case PlatformID.Win32Windows:
-                    case PlatformID.WinCE:
-                        Os = "Windows";
-                        Drive = @"C:\";
-                        break;
-                    case PlatformID.Unix:
-                    case PlatformID.MacOSX:
-                        Os = "Linux";
-                        Drive = @"/";
-                        break;
-                    default:
-                        Os = "Unknown";
-                        Drive = "Unknown";
-                        break;
-                }
-
-                MachineName = Environment.MachineName;
-                WorkingPath = Environment.CurrentDirectory;
-                WorkingDrive = Path.GetPathRoot(WorkingPath);
-                UserName = Environment.UserName;
-            }
-        }
-
         public static string RemoveSpecialCharsInShowName(string showName)
         {
             showName = showName.Replace("...", "")
@@ -120,35 +80,74 @@ namespace Common_Lib
 
         public static int ConvertDateToEpoch(string date)
         {
-            int epoch;
             var ts = ConvertDateToDateTime(date) - new DateTime(1970, 1, 1, 0, 0, 0);
-            epoch = Convert.ToInt32(ts.TotalSeconds);
+            var epoch = Convert.ToInt32(ts.TotalSeconds);
             return epoch;
         }
 
         public static DateTime ConvertDateToDateTime(string date)
         {
-            var ditems = date.Split("-");
+            var dItems = date.Split("-");
             DateTime datetime = new();
-            if (ditems.Length != 3) return datetime;
-            datetime = new DateTime(int.Parse(ditems[0]), int.Parse(ditems[1]), int.Parse(ditems[2]), 0, 0, 0);
+            if (dItems.Length != 3) return datetime;
+            datetime = new DateTime(int.Parse(dItems[0]), int.Parse(dItems[1]), int.Parse(dItems[2]), 0, 0, 0);
             return datetime;
         }
 
         public static string AddDaysToDate(string date, int days)
         {
-            var calculateddt = ConvertDateToDateTime(date);
-            calculateddt = calculateddt.AddDays(days);
-            date = calculateddt.ToString("yyyy-MM-DD");
+            var calculatedDt = ConvertDateToDateTime(date);
+            calculatedDt = calculatedDt.AddDays(days);
+            date = calculatedDt.ToString("yyyy-MM-DD");
             return date;
         }
 
         public static string SubtractDaysFromDate(string date, int days)
         {
-            var calculateddt = ConvertDateToDateTime(date);
-            calculateddt = calculateddt.AddDays(-days);
-            date = calculateddt.ToString("yyyy-MM-DD");
+            var calculatedDt = ConvertDateToDateTime(date);
+            calculatedDt = calculatedDt.AddDays(-days);
+            date = calculatedDt.ToString("yyyy-MM-DD");
             return date;
+        }
+
+        public class EnvInfo
+        {
+            public readonly string Drive;
+            public readonly string MachineName;
+            public readonly string Os;
+            public readonly string UserName;
+            public readonly string WorkingDrive;
+            public readonly string WorkingPath;
+
+            public EnvInfo()
+            {
+                var os = Environment.OSVersion;
+                var pid = os.Platform;
+                switch (pid)
+                {
+                    case PlatformID.Win32NT:
+                    case PlatformID.Win32S:
+                    case PlatformID.Win32Windows:
+                    case PlatformID.WinCE:
+                        Os = "Windows";
+                        Drive = @"C:\";
+                        break;
+                    case PlatformID.Unix:
+                    case PlatformID.MacOSX:
+                        Os = "Linux";
+                        Drive = @"/";
+                        break;
+                    default:
+                        Os = "Unknown";
+                        Drive = "Unknown";
+                        break;
+                }
+
+                MachineName = Environment.MachineName;
+                WorkingPath = Environment.CurrentDirectory;
+                WorkingDrive = Path.GetPathRoot(WorkingPath);
+                UserName = Environment.UserName;
+            }
         }
     }
 }

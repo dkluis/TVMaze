@@ -44,9 +44,8 @@ namespace DB_Lib.Tvmaze
             var isEnded = false;
             _rdr = _db.ExecQuery($"select ShowStatus from Shows where `TvmShowId` = {showId};");
             while (_rdr.Read())
-            {
-                if (_rdr["ShowStatus"].ToString() == "Ended") isEnded = true;
-            }
+                if (_rdr["ShowStatus"].ToString() == "Ended")
+                    isEnded = true;
 
             _db.Close();
             return isEnded;

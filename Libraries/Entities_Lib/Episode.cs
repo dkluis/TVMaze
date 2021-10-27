@@ -81,14 +81,11 @@ namespace Entities_Lib
             if (episode["_embedded"]?["show"] != null)
             {
                 if (episode["_embedded"]["show"]["id"] is not null)
-                {
                     TvmShowId = int.Parse(episode["_embedded"]["show"]["id"].ToString());
-                }
                 if (episode["_embedded"]["show"]["name"] is not null)
-                {
                     ShowName = episode["_embedded"]["show"]["name"].ToString();
-                }
             }
+
             TvmEpisodeId = int.Parse(episode["id"].ToString());
             TvmUrl = episode["url"].ToString();
             SeasonNum = int.Parse(episode["season"].ToString());
@@ -190,7 +187,7 @@ namespace Entities_Lib
             _mdb.Success = true;
 
             var values = "";
-            var sqlPre = $"update episodes set ";
+            var sqlPre = "update episodes set ";
             var sqlSuf = $"where `Id` = {Id};";
 
             if (BroadcastDate == "") BroadcastDate = null;

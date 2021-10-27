@@ -39,7 +39,8 @@ namespace Common_Lib
 
             Common.EnvInfo envInfo = new();
             Drive = envInfo.Drive;
-            HomeDir = envInfo.Os == "Windows" ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%") 
+            HomeDir = envInfo.Os == "Windows"
+                ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
                 : Environment.GetEnvironmentVariable("HOME");
 
             if (HomeDir is not null)

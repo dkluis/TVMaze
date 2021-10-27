@@ -6,42 +6,41 @@ using Entities_Lib;
 
 namespace CleanupPlexMedia
 {
-    internal class CleanupPlexMedia
+    internal static class CleanupPlexMedia
     {
         private static void Main()
         {
             var thisProgram = "Cleanup Plex Media";
             Console.WriteLine($"{DateTime.Now}: {thisProgram}");
-            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
-            var log = appinfo.TxtFile;
+            AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+            var log = appInfo.TxtFile;
             log.Start();
 
-            MediaFileHandler mfh = new(appinfo);
+            MediaFileHandler mfh = new(appInfo);
 
             List<string> showDirsToDelete = new();
-            var deleteDir = false;
 
-            var tvshowdirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
-            foreach (var dir in tvshowdirs)
+            var tvShowDirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
+            foreach (var dir in tvShowDirs)
             {
-                deleteDir = false;
-                var seasondirs = Directory.GetDirectories(dir);
-                foreach (var sdir in seasondirs)
+                var deleteDir = false;
+                var seasonDirs = Directory.GetDirectories(dir);
+                foreach (var seasonDir in seasonDirs)
                 {
-                    var files = Directory.GetFiles(sdir);
+                    var files = Directory.GetFiles(seasonDir);
                     if (files.Length == 0)
                     {
                         deleteDir = true;
                         try
                         {
-                            Directory.Delete(sdir);
+                            Directory.Delete(seasonDir);
                         }
                         catch (Exception ex)
                         {
-                            log.Write($"Delete of {sdir} went wrong {ex}");
+                            log.Write($"Delete of {seasonDir} went wrong {ex}");
                         }
 
-                        log.Write($"Deleted directory: {sdir}");
+                        log.Write($"Deleted directory: {seasonDir}");
                     }
                     else
                     {

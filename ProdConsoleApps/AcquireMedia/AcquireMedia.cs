@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
-using MySqlConnector;
 using Web_Lib;
 
 namespace AcquireMedia
@@ -19,20 +18,21 @@ namespace AcquireMedia
             log.Start();
 
             Magnets media = new(appInfo);
-            MySqlDataReader rdr;
             using GetEpisodesToBeAcquired gea = new();
-            rdr = gea.Find(appInfo);
+            var rdr = gea.Find(appInfo);
 
             var isSeason = false;
             var showId = 0;
             while (rdr.Read())
             {
-                if (isSeason && showId == int.Parse(rdr["TvmShowId"].ToString()!)) { continue; }
+                if (isSeason && showId == int.Parse(rdr["TvmShowId"].ToString()!)) continue;
                 showId = 0;
-                var showName = rdr["AltShowName"].ToString() != "" ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "") 
+                var showName = rdr["AltShowName"].ToString() != ""
+                    ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "")
                     : rdr["ShowName"].ToString();
                 var episodeId = int.Parse(rdr["TvmEpisodeId"].ToString()!);
-                var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName, int.Parse(rdr["Season"].ToString()!),
+                var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName,
+                    int.Parse(rdr["Season"].ToString()!),
                     int.Parse(rdr["Episode"].ToString()!), log);
                 isSeason = seasonInd;
 

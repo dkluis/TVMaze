@@ -1,19 +1,17 @@
 ﻿@page "/"
-@using MySqlConnector
-
 
 @{
     AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
-    var showCount = "select count(*) from Shows";
-    var followedCount = "select count(*) from Followed";
-    var followedShowsCount = "select count(*) from Shows where `TvmStatus` = 'Following'";
-    var reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
-    var newShowsCount = "select count(*) from Shows where `TvmStatus` = 'New'";
-    var runningShowsCount = "select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
-    var tbdShowsCount = "select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
-    var inDevShowsCount = "select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
-    var endedShowsCount = "select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
+    const string showCount = "select count(*) from Shows";
+    const string followedCount = "select count(*) from Followed";
+    const string followedShowsCount = "select count(*) from Shows where `TvmStatus` = 'Following'";
+    const string reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
+    const string newShowsCount = "select count(*) from Shows where `TvmStatus` = 'New'";
+    const string runningShowsCount = "select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
+    const string tbdShowsCount = "select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
+    const string inDevShowsCount = "select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
+    const string endedShowsCount = "select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
 
     var numShows = "";
     var numFollowed = "";
@@ -25,12 +23,12 @@
     var numInDevShows = "";
     var numEndedShows = "";
 
-    var episodeCount = "select count(*) from Episodes";
-    var episodeWatchedCount = "select count(*) from Episodes where `PlexStatus` = 'Watched'";
-    var episodeAcquiredCount = "select count(*) from Episodes where `PlexStatus` = 'Acquired'";
-    var episodeSkippedCount = "select count(*) from Episodes where `PlexStatus` = 'Skipped'";
-    var episodeFutureCount = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is not NULL";
-    var episodeFutureUnknownCount = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is NULL";
+    const string episodeCount = "select count(*) from Episodes";
+    const string episodeWatchedCount = "select count(*) from Episodes where `PlexStatus` = 'Watched'";
+    const string episodeAcquiredCount = "select count(*) from Episodes where `PlexStatus` = 'Acquired'";
+    const string episodeSkippedCount = "select count(*) from Episodes where `PlexStatus` = 'Skipped'";
+    const string episodeFutureCount = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is not NULL";
+    const string episodeFutureUnknownCount = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is NULL";
 
     var numEpisodes = "";
     var numWatchedEpisodes = "";
@@ -40,110 +38,109 @@
     var numFutureUnknownEpisodes = "";
 
     MariaDb mdb = new(appInfo);
-    MySqlDataReader rdr;
 
-    rdr = mdb.ExecQuery(showCount);
+    var rdr = mdb.ExecQuery(showCount);
     while (rdr.Read())
     {
-        numShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedCount);
     while (rdr.Read())
     {
-        numFollowed = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numFollowed = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedShowsCount);
     while (rdr.Read())
     {
-        numFollowedShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numFollowedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(reviewingShowsCount);
     while (rdr.Read())
     {
-        numReviewingShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numReviewingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(newShowsCount);
     while (rdr.Read())
     {
-        numNewShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numNewShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(runningShowsCount);
     while (rdr.Read())
     {
-        numRunningShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numRunningShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(tbdShowsCount);
     while (rdr.Read())
     {
-        numTbdShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numTbdShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(inDevShowsCount);
     while (rdr.Read())
     {
-        numInDevShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numInDevShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(endedShowsCount);
     while (rdr.Read())
     {
-        numEndedShows = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numEndedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeCount);
     while (rdr.Read())
     {
-        numEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeWatchedCount);
     while (rdr.Read())
     {
-        numWatchedEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numWatchedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeAcquiredCount);
     while (rdr.Read())
     {
-        numAcquiredEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numAcquiredEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeSkippedCount);
     while (rdr.Read())
     {
-        numSkippedEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numSkippedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureCount);
     while (rdr.Read())
     {
-        numFutureEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numFutureEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureUnknownCount);
     while (rdr.Read())
     {
-        numFutureUnknownEpisodes = int.Parse(rdr[0].ToString()).ToString("###,##0");
+        numFutureUnknownEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 }

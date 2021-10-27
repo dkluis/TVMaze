@@ -6,8 +6,8 @@ namespace Common_Lib
 {
     public class TextFileHandler
     {
-        private readonly string _fullFilePath;
         private readonly string _app;
+        private readonly string _fullFilePath;
         private readonly int _level;
         private readonly Stopwatch _timer = new();
 
@@ -46,7 +46,7 @@ namespace Common_Lib
         {
             if (string.IsNullOrEmpty(function)) function = _app;
             if (function.Length > 19) function = function[..19];
-            
+
             if (loglevel > _level) return;
             using StreamWriter file = new(_fullFilePath, append);
             file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2} --> {message}");
@@ -56,7 +56,7 @@ namespace Common_Lib
         {
             if (string.IsNullOrEmpty(function)) function = _app;
             if (function.Length > 19) function = function[..19];
-            
+
             if (loglevel > _level) return;
             using StreamWriter file = new(_fullFilePath, append);
             foreach (var msg in messages) file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2}--> {msg}");

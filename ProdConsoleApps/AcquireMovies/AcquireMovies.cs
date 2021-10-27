@@ -4,32 +4,27 @@ using DB_Lib;
 
 namespace AcquireMovies
 {
-    internal class Program
+    internal static class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             var thisProgram = "Acquire Movies";
             Console.WriteLine($"{DateTime.Now}: {thisProgram}");
-            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
-            var log = appinfo.TxtFile;
+            AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+            var log = appInfo.TxtFile;
             log.Start();
 
-            MariaDb mdb = new(appinfo);
+            MariaDb mdb = new(appInfo);
             var sql = "select * from Movies"; //Todo add where clause for date comparision later
             var rdr = mdb.ExecQuery(sql);
-            var name = "";
-            var seriesName = "";
-            var movieNumber = 0;
-            var finderDate = "";
-            var mediaType = "";
 
             while (rdr.Read())
             {
-                name = rdr["name"].ToString();
-                seriesName = rdr["SeriesName"].ToString();
-                finderDate = rdr["FinderDate"].ToString();
-                mediaType = rdr["MediaType"].ToString();
-                movieNumber = int.Parse(rdr["MovieNumber"].ToString());
+                var name = rdr["name"].ToString();
+                var seriesName = rdr["SeriesName"].ToString();
+                var finderDate = rdr["FinderDate"].ToString();
+                var mediaType = rdr["MediaType"].ToString();
+                var movieNumber = int.Parse(rdr["MovieNumber"].ToString()!);
                 log.Write($"Processing {name} ---> {seriesName}, {movieNumber}, {finderDate}, {mediaType}");
             }
 

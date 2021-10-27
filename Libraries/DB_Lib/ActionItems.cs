@@ -6,8 +6,8 @@ namespace DB_Lib
     public class ActionItems : IDisposable
     {
         private readonly AppInfo _appInfo;
-        private TextFileHandler _log;
         private readonly MariaDb _mDbW;
+        private TextFileHandler _log;
 
         public ActionItems(AppInfo appInfo)
         {

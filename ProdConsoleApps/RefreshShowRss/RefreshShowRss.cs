@@ -5,60 +5,60 @@ using Web_Lib;
 
 namespace RefreshShowRss
 {
-    internal class RefreshShowRss
+    internal static class RefreshShowRss
     {
         private static void Main()
         {
             var thisProgram = "Refresh ShowRss";
             Console.WriteLine($"{DateTime.Now}: {thisProgram}");
-            AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
-            var log = appinfo.TxtFile;
+            AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+            var log = appInfo.TxtFile;
             log.Start();
 
             // Update All Shows with ShowRss Finder Info
 
-            WebScrape showscrape = new(appinfo);
-            var showRssShows = showscrape.GetShowRssInfo();
-            SearchShowsViaNames ssvn = new();
+            WebScrape showScrape = new(appInfo);
+            var showRssShows = showScrape.GetShowRssInfo();
+            SearchShowsViaNames searchShowViaNames = new();
             UpdateFinder uf = new();
             log.Write($"Found {showRssShows.Count} in the ShowRss HTML download");
             var idx = 1;
             foreach (var show in showRssShows)
             {
                 log.Write($"On ShowRss: {show}", "", 4);
-                var cleanshow = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(show));
-                var foundindb = ssvn.Find(appinfo, cleanshow);
-                if (foundindb.Count < 1)
+                var cleanShow = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(show));
+                var foundInDb = searchShowViaNames.Find(appInfo, cleanShow);
+                if (foundInDb.Count < 1)
                 {
-                    log.Write($"Found {cleanshow} on ShowRSS but not in Followed/Shows", "", 2);
+                    log.Write($"Found {cleanShow} on ShowRSS but not in Followed/Shows", "", 2);
                     continue;
                 }
 
-                if (foundindb.Count > 1)
+                if (foundInDb.Count > 1)
                 {
-                    log.Write($"Found multiple shows {cleanshow} in DB Show Table");
-                    foreach (var showid in foundindb)
+                    log.Write($"Found multiple shows {cleanShow} in DB Show Table");
+                    foreach (var showId in foundInDb)
                     {
-                        using (Show showdup = new(appinfo))
+                        using (Show showUpd = new(appInfo))
                         {
-                            showdup.FillViaTvmaze(showid);
-                            if (showdup.ShowStatus == "Running")
+                            showUpd.FillViaTvmaze(showId);
+                            if (showUpd.ShowStatus == "Running")
                             {
-                                log.Write($"Selected to Update {cleanshow}: {showdup.TvmShowId} to Finder: ShowRss");
-                                uf.ToShowRss(appinfo, showdup.TvmShowId);
+                                log.Write($"Selected to Update {cleanShow}: {showUpd.TvmShowId} to Finder: ShowRss");
+                                uf.ToShowRss(appInfo, showUpd.TvmShowId);
                                 idx++;
                             }
                         }
 
-                        log.Write($"TvmShowId {showid}: {cleanshow}", "", 0);
+                        log.Write($"TvmShowId {showId}: {cleanShow}", "", 0);
                     }
 
                     idx--;
                     continue;
                 }
 
-                log.Write($"Updating {cleanshow} to Finder: ShowRss", "", 4);
-                uf.ToShowRss(appinfo, int.Parse(foundindb[0].ToString()));
+                log.Write($"Updating {cleanShow} to Finder: ShowRss", "", 4);
+                uf.ToShowRss(appInfo, int.Parse(foundInDb[0].ToString()));
                 idx++;
             }
 

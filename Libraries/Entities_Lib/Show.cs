@@ -10,7 +10,7 @@ namespace Entities_Lib
 {
     public class Show : IDisposable
     {
-        private readonly AppInfo _appinfo;
+        private readonly AppInfo _appInfo;
         private readonly TextFileHandler _log;
 
         private readonly MariaDb _mdb;
@@ -42,11 +42,11 @@ namespace Entities_Lib
         public string TvmUrl = "";
         public string UpdateDate = "1900-01-01";
 
-        public Show(AppInfo appinfo)
+        public Show(AppInfo appInfo)
         {
-            _appinfo = appinfo;
-            _mdb = new MariaDb(appinfo);
-            _log = appinfo.TxtFile;
+            _appInfo = appInfo;
+            _mdb = new MariaDb(appInfo);
+            _log = appInfo.TxtFile;
         }
 
         public void Dispose()
@@ -84,17 +84,13 @@ namespace Entities_Lib
             IsFollowed = false;
         }
 
-        public void FillViaTvmaze(int showid)
+        public void FillViaTvmaze(int showId)
         {
-            int lastEvaluatedShow;
-            using (TvmCommonSql ge = new(_appinfo))
-            {
-                lastEvaluatedShow = ge.GetLastEvaluatedShow();
-            }
-
-            using WebApi js = new(_appinfo);
-            FillViaJson(js.ConvertHttpToJObject(js.GetShow(showid)));
-            FillViaDb(showid, true);
+            using TvmCommonSql ge = new(_appInfo);
+            var lastEvaluatedShow = ge.GetLastEvaluatedShow();
+            using WebApi js = new(_appInfo);
+            FillViaJson(js.ConvertHttpToJObject(js.GetShow(showId)));
+            FillViaDb(showId, true);
             if (!IsFollowed && !IsDbFilled) ValidateForReview(lastEvaluatedShow);
         }
 
@@ -136,8 +132,8 @@ namespace Entities_Lib
             _mdb.Success = true;
 
             var values = "";
-            var sqlpre = "insert into shows values (";
-            var sqlsuf = ");";
+            var sqlPre = "insert into shows values (";
+            var sqlSuf = ");";
 
             values += "0, ";
             values += $"{TvmShowId}, ";
@@ -160,7 +156,7 @@ namespace Entities_Lib
 
             values += $"'{AltShowName.Replace("'", "''")}', ";
             values += $"'{DateTime.Now:yyyy-MM-dd}' ";
-            var rows = _mdb.ExecNonQuery(sqlpre + values + sqlsuf);
+            var rows = _mdb.ExecNonQuery(sqlPre + values + sqlSuf);
             _log.Write($"DbInsert for Show: {TvmShowId}", "", 4);
             _mdb.Close();
             if (rows == 0) _mdb.Success = false;
@@ -179,80 +175,71 @@ namespace Entities_Lib
             return _mdb.Success;
         }
 
-        public bool DbDelete(int showid)
+        public bool DbDelete(int showId)
         {
             _mdb.Success = true;
-            var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {showid}");
-            _log.Write($"DbDelete for Show: {showid}", "", 4);
+            var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {showId}");
+            _log.Write($"DbDelete for Show: {showId}", "", 4);
             _mdb.Close();
             if (rows == 0) _mdb.Success = false;
 
             return _mdb.Success;
         }
 
-        private void FillViaJson(JObject showjson)
+        private void FillViaJson(JObject showJson)
         {
-            if (showjson["id"] is not null)
+            if (showJson["id"] is not null)
             {
-                TvmShowId = int.Parse(showjson["id"].ToString());
-                using (TvmCommonSql tcs = new(_appinfo))
-                {
-                    IsFollowed = tcs.IsShowIdFollowed(TvmShowId);
-                    if (IsFollowed)
-                        TvmStatus = "Following";
-                    else
-                        TvmStatus = "New";
-                }
+                TvmShowId = int.Parse(showJson["id"].ToString());
+                using TvmCommonSql tcs = new(_appInfo);
+                IsFollowed = tcs.IsShowIdFollowed(TvmShowId);
+                TvmStatus = IsFollowed ? "Following" : "New";
 
-                TvmUrl = showjson["url"].ToString();
-                ShowName = showjson["name"].ToString();
-                ShowStatus = showjson["status"].ToString();
-                if (showjson["premiered"] is not null)
+                TvmUrl = showJson["url"].ToString();
+                ShowName = showJson["name"].ToString();
+                ShowStatus = showJson["status"].ToString();
+                if (showJson["premiered"] is not null)
                 {
                     PremiereDate = "1900-01-01";
-                    var date = showjson["premiered"].ToString();
-                    if (date != "") PremiereDate = Convert.ToDateTime(showjson["premiered"]).ToString("yyyy-MM-dd");
+                    var date = showJson["premiered"].ToString();
+                    if (date != "") PremiereDate = Convert.ToDateTime(showJson["premiered"]).ToString("yyyy-MM-dd");
                 }
 
                 CleanedShowName = Common.RemoveSpecialCharsInShowName(ShowName);
 
-                if (showjson["type"] is not null) TvmType = showjson["type"].ToString();
+                if (showJson["type"] is not null) TvmType = showJson["type"].ToString();
 
-                if (showjson["language"] is not null) TvmLanguage = showjson["language"].ToString();
+                if (showJson["language"] is not null) TvmLanguage = showJson["language"].ToString();
 
-                if (showjson["officialSite"] is not null) TvmOfficialSite = showjson["officialSite"].ToString();
+                if (showJson["officialSite"] is not null) TvmOfficialSite = showJson["officialSite"].ToString();
 
-                if (showjson["network"].ToString() != "")
+                if (showJson["network"].ToString() != "")
                 {
-                    if (showjson["network"]["name"] is not null) TvmNetwork = showjson["network"]["name"].ToString();
+                    if (showJson["network"]["name"] is not null) TvmNetwork = showJson["network"]["name"].ToString();
 
-                    if (showjson["network"]["country"] is not null)
-                        if (showjson["network"]["country"]["name"] is not null)
-                            TvmCountry = showjson["network"]["country"]["name"].ToString();
+                    if (showJson["network"]["country"] is not null)
+                        if (showJson["network"]["country"]["name"] is not null)
+                            TvmCountry = showJson["network"]["country"]["name"].ToString();
                 }
 
-                if (showjson["webChannel"].ToString() != "")
+                if (showJson["webChannel"].ToString() != "")
                 {
-                    if (showjson["webChannel"]["name"] is not null)
-                        TvmNetwork = showjson["webChannel"]["name"].ToString();
+                    if (showJson["webChannel"]["name"] is not null)
+                        TvmNetwork = showJson["webChannel"]["name"].ToString();
 
-                    if (showjson["webChannel"]["country"]!.ToString() != "")
-                        if (showjson["webChannel"]["country"]["name"] is not null)
-                            TvmCountry = showjson["webChannel"]["country"]["name"].ToString();
+                    if (showJson["webChannel"]["country"]!.ToString() != "")
+                        if (showJson["webChannel"]["country"]["name"] is not null)
+                            TvmCountry = showJson["webChannel"]["country"]["name"].ToString();
                 }
 
-                if (showjson["externals"]["imdb"] is not null) TvmImdb = showjson["externals"]["imdb"].ToString();
+                if (showJson["externals"]["imdb"] is not null) TvmImdb = showJson["externals"]["imdb"].ToString();
 
-                if (showjson["image"].ToString() != "")
-                    if (showjson["image"]["medium"] is not null)
-                        TvmImage = showjson["image"]["medium"].ToString();
+                if (showJson["image"].ToString() != "")
+                    if (showJson["image"]["medium"] is not null)
+                        TvmImage = showJson["image"]["medium"].ToString();
 
-                if (showjson["summary"] is not null)
-                    TvmSummary = showjson["summary"].ToString();
-                else
-                    TvmSummary = "";
-
-                if (showjson["updated"] is not null) TvmUpdatedEpoch = int.Parse(showjson["updated"].ToString());
+                TvmSummary = showJson["summary"] is not null ? showJson["summary"].ToString() : "";
+                if (showJson["updated"] is not null) TvmUpdatedEpoch = int.Parse(showJson["updated"].ToString());
 
                 IsJsonFilled = true;
                 if (IsDbFilled)
@@ -327,11 +314,11 @@ namespace Entities_Lib
 
             if (ShowStatus is "Ended" or "Running")
             {
-                var compdate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
-                if (!PremiereDate.Contains(compdate) && PremiereDate != "1900-01-01")
+                var compareDate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
+                if (!PremiereDate.Contains(compareDate) && PremiereDate != "1900-01-01")
                 {
                     _log.Write(
-                        $"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compdate} and Status {ShowStatus}");
+                        $"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
                     return;
                 }
             }
@@ -386,18 +373,16 @@ namespace Entities_Lib
 
             if (altShowName == "") altShowName = showName;
 
-            using (MariaDb mDbR = new(appInfo))
-            {
-                var sql =
-                    $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showName}' or " +
-                    $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
-                var rdr = mDbR.ExecQuery(sql);
-                if (rdr is null) return _found;
+            using MariaDb mDbR = new(appInfo);
+            var sql =
+                $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showName}' or " +
+                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+            var rdr = mDbR.ExecQuery(sql);
+            if (rdr is null) return _found;
 
-                if (!rdr.HasRows) return _found;
+            if (!rdr.HasRows) return _found;
 
-                while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
-            }
+            while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
 
             return _found;
         }
@@ -407,19 +392,17 @@ namespace Entities_Lib
     {
         private readonly List<int> _allFollowed = new();
 
-        public List<int> Find(AppInfo appinfo, string option = "Following")
+        public List<int> Find(AppInfo appInfo, string option = "Following")
         {
-            using (MariaDb mDbR = new(appinfo))
-            {
-                var sql =
-                    $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = '{option}' order by `TvmShowId`;";
-                var rdr = mDbR.ExecQuery(sql);
-                if (rdr is null) return _allFollowed;
+            using MariaDb mDbR = new(appInfo);
+            var sql =
+                $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = '{option}' order by `TvmShowId`;";
+            var rdr = mDbR.ExecQuery(sql);
+            if (rdr is null) return _allFollowed;
 
-                if (!rdr.HasRows) return _allFollowed;
+            if (!rdr.HasRows) return _allFollowed;
 
-                while (rdr.Read()) _allFollowed.Add(int.Parse(rdr["TvmShowId"].ToString()!));
-            }
+            while (rdr.Read()) _allFollowed.Add(int.Parse(rdr["TvmShowId"].ToString()!));
 
             return _allFollowed;
         }
@@ -427,14 +410,12 @@ namespace Entities_Lib
 
     public class UpdateFinder
     {
-        public void ToShowRss(AppInfo appinfo, int showid)
+        public void ToShowRss(AppInfo appInfo, int showId)
         {
-            using (MariaDb mDbW = new(appinfo))
-            {
-                var sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showid};";
-                appinfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
-                if (mDbW.ExecNonQuery(sql) == 0) appinfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4);
-            }
+            using MariaDb mDbW = new(appInfo);
+            var sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showId};";
+            appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
+            if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4);
         }
     }
 
@@ -447,13 +428,11 @@ namespace Entities_Lib
 
         public void ToFollowed(AppInfo appInfo, int showId)
         {
-            using (MariaDb mDbW = new(appInfo))
-            {
-                var sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId};";
-                appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
-                if (mDbW.ExecNonQuery(sql) == 0)
-                    appInfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4);
-            }
+            using MariaDb mDbW = new(appInfo);
+            var sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId};";
+            appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
+            if (mDbW.ExecNonQuery(sql) == 0)
+                appInfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4);
         }
 
         public void ToReview(AppInfo appInfo, int showId)
@@ -467,12 +446,10 @@ namespace Entities_Lib
 
     public class CheckTvm
     {
-        public bool IsFollowedShow(AppInfo appinfo, int showid)
+        public bool IsFollowedShow(AppInfo appInfo, int showId)
         {
-            bool isFollowed;
-            using WebApi webapi = new(appinfo);
-            isFollowed = webapi.CheckForFollowedShow(showid);
-
+            using WebApi webapi = new(appInfo);
+            var isFollowed = webapi.CheckForFollowedShow(showId);
             return isFollowed;
         }
     }
