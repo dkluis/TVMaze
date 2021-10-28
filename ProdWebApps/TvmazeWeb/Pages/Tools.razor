@@ -1,109 +1,118 @@
 ﻿@page "/tools"
-@using MySqlConnector
 
 @code
 {
     string _message;
-    int _refreshshowid;
-    string _logview = "";
-    readonly string _log = "";
+    int _refreshShowId;
+    string _logView = "";
+    List<string> _logContent;
+    bool _logRequested;
 
-    public void ExecUpdateFollowed()
+    private void ExecUpdateFollowed()
     {
         _message = "Running Update Followed";
         RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
         _message = "Finished Update Followed";
     }
 
-    public void ExecUpdatePlexAcquired()
+    private void ExecUpdatePlexAcquired()
     {
         _message = "Running Update Plex Acquired";
         RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexAcquired.sh");
         _message = "Finished Update Plex Acquired";
     }
 
-    public void ExecUpdatePlexWatched()
+    private void ExecUpdatePlexWatched()
     {
         _message = "Running Update Plex Watched";
         RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
         _message = "Finished Update Plex Watched";
     }
 
-    public void ExecAcquireMedia()
+    private void ExecAcquireMedia()
     {
         _message = "Running Acquire Media";
         RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
         _message = "Finished Acquire Media";
     }
 
-    public void ExecAcquireMediaLog()
+    private void ExecAcquireMediaLog()
     {
-        _logview = "Acquire Media Log";
+        _logView = "Acquire Media Log";
+        _logRequested = true;
+        var appInfo = new AppInfo("TVMaze", "Acquire Media", "DbAlternate");
+        var logFile = appInfo.TxtFile;
+        _logContent = logFile.ReturnLogContent();
     }
 
-    public void ExecFollowedLog()
+    private void ExecFollowedLog()
     {
-        _logview = "Followed Log";
+        _logView = "Followed Log";
+        _logRequested = true;
+        var appInfo = new AppInfo("TVMaze", "Update Followed", "DbAlternate");
+        var logFile = appInfo.TxtFile;
+        _logContent = logFile.ReturnLogContent();
     }
 
-    public void ExecPlexAcquiredLog()
+    private void ExecPlexAcquiredLog()
     {
-        _logview = "Plex Acquired Log";
+        _logView = "Plex Acquired Log";
+        _logRequested = true;
+        var appInfo = new AppInfo("TVMaze", "Update Plex Acquired", "DbAlternate");
+        var logFile = appInfo.TxtFile;
+        _logContent = logFile.ReturnLogContent();
     }
 
-    public void ExecPlexWatchedLog()
+    private void ExecPlexWatchedLog()
     {
-        _logview = "Plex Watched Log";
+        _logView = "Plex Watched Log";
+        _logRequested = true;
+        var appInfo = new AppInfo("TVMaze", "Update Plex Watched", "DbAlternate");
+        var logFile = appInfo.TxtFile;
+        _logContent = logFile.ReturnLogContent();
+    }
+
+    private void ClearLog()
+    {
+        _logView = "";
+        _logRequested = false;
     }
 
 
     private void RunScript(string scriptName)
     {
-        using (Process runScript = new())
-        {
-            runScript.StartInfo.FileName = scriptName;
-            runScript.StartInfo.UseShellExecute = true;
-            runScript.StartInfo.RedirectStandardOutput = false;
-            var started = runScript.Start();
-            runScript.WaitForExit();
-        }
+        using Process runScript = new();
+        runScript.StartInfo.FileName = scriptName;
+        runScript.StartInfo.UseShellExecute = true;
+        runScript.StartInfo.RedirectStandardOutput = false;
+        runScript.Start();
+        runScript.WaitForExit();
     }
 
     private void RefreshOneShow()
     {
-        if (_refreshshowid == 0)
+        if (_refreshShowId == 0)
         {
             _message = "Enter a ShowId: 0 is not Valid";
             return;
         }
-        _message = $"Trying to update {_refreshshowid}";
+        _message = $"Trying to update {_refreshShowId}";
 
-        AppInfo appinfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
-        var log = appinfo.TxtFile;
+        AppInfo appInfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
+        var log = appInfo.TxtFile;
         log.Start();
-        using (MariaDb mdbr = new(appinfo))
+        using (MariaDb mDbR = new(appInfo))
         {
-            MySqlDataReader rdr;
-
-            rdr = mdbr.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {_refreshshowid} order by `TvmShowId` desc");
+            var rdr = mDbR.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {_refreshShowId} order by `TvmShowId` desc");
 
             while (rdr.Read())
             {
-                using (ShowAndEpisodes sae = new(appinfo))
-                {
-                    _message = $"Working on Show {rdr[0]} {rdr[1]}";
-                    log.Write($"{_message}", "", 2);
-                    sae.Refresh(int.Parse(rdr[0].ToString()));
-                }
+                using ShowAndEpisodes sae = new(appInfo);
+                _message = $"Working on Show {rdr[0]} {rdr[1]}";
+                log.Write($"{_message}", "", 2);
+                sae.Refresh(int.Parse(rdr[0].ToString()!));
             }
-            if (_message.Contains("Trying"))
-            {
-                _message = $"ShowId {_refreshshowid} is not in the Shows Table";
-            }
-            else
-            {
-                _message = _message.Replace("Working on", "Refreshed");
-            }
+            _message = _message.Contains("Trying") ? $"ShowId {_refreshShowId} is not in the Shows Table" : _message.Replace("Working on", "Refreshed");
         }
         log.Stop();
     }
@@ -124,7 +133,7 @@
 <div>
     <h2>Direct Update Processes:</h2>
     <p></p>
-    <input @bind="@_refreshshowid" size="5"/>
+    <input @bind="@_refreshShowId" size="5"/>
     &#8195;<button class="btn btn-primary" @onclick="RefreshOneShow">Refresh Show</button>
     <p></p>
 </div>
@@ -145,13 +154,20 @@
     &#8195;<button class="btn btn-primary" @onclick="ExecPlexAcquiredLog">Plex Acquired</button>
     &#8195;<button class="btn btn-primary" @onclick="ExecPlexWatchedLog">Plex Watched</button>
     &#8195;<button class="btn btn-primary" @onclick="ExecAcquireMediaLog">Acquire</button>
+    &#8195;<button class="btn btn-primary" @onclick="ClearLog">Clear</button>
     <p></p>
 </div>
 
 <div>
-    <h4>@_logview</h4>
+    <h4>@_logView</h4>
     <p></p>
-    @_log
+    @if (_logRequested)
+    {
+        @foreach (var line in _logContent)
+        {
+            <p>@line</p>
+        }
+    }
     <p></p>
-    <em>End of Log @_logview</em>
+    <em>End of Log @_logView</em>
 </div>

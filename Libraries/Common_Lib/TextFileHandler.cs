@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Common_Lib
 {
@@ -20,9 +22,7 @@ namespace Common_Lib
 #else
             _level = loglevel;
 #endif
-
             _fullFilePath = Path.Combine(inFilePath, filename);
-
             if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         }
 
@@ -99,6 +99,17 @@ namespace Common_Lib
                     file.Write(msg);
         }
 
+        public List<string> ReturnLogContent()
+        {
+            var content = new List<string>();
+            var fileContent = File.ReadAllLines(_fullFilePath);
+            foreach (var line in fileContent)
+            {
+                content.Add(line);
+            }
+            return content;
+        }
+        
         public string ReadKeyArray(string find)
         {
             if (!File.Exists(_fullFilePath)) return "";
@@ -109,7 +120,6 @@ namespace Common_Lib
                 if (rec[find] is null) return "";
                 if (rec[find].ToString() != "") return rec[find].ToString();
             }
-
             return "";
         }
 
