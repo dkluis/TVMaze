@@ -106,7 +106,7 @@ namespace Web_Lib
 
             Magnets.Sort();
             Magnets.Reverse();
-            _log.Write($"Found {foundMagnets} via EZTV");
+            _log.Write($"Found {foundMagnets} via EZTV", "", 4);
         }
 
         private string BuildEztvUrl(string showName)
@@ -167,7 +167,7 @@ namespace Web_Lib
 
             Magnets.Sort();
             Magnets.Reverse();
-            _log.Write($"Found {foundMagnets} via MagnetDL");
+            _log.Write($"Found {foundMagnets} via MagnetDL", "", 4);
         }
 
         private string BuildMagnetDownloadUrl(string showName)
@@ -223,7 +223,7 @@ namespace Web_Lib
 
             Magnets.Sort();
             Magnets.Reverse();
-            _log.Write($"Found {foundMagnets} via RarbgAPI");
+            _log.Write($"Found {foundMagnets} via RarbgAPI", "", 4);
         }
 
         #endregion
@@ -274,7 +274,7 @@ namespace Web_Lib
 
             Magnets.Sort();
             Magnets.Reverse();
-            _log.Write($"Found {foundMagnets} via PirateBay");
+            _log.Write($"Found {foundMagnets} via PirateBay", "", 4);
         }
 
         private string BuildPirateBayUrl(string showName)
