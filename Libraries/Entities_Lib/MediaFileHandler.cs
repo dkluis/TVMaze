@@ -185,9 +185,9 @@ namespace Entities_Lib
                 return false;
             }
 
-            if (!foundDir || !foundFile)
+            if (!foundDir && !foundFile)
             {
-                _log.Write($"Could not find dir {foundDir} or file {foundFile} for {fullMediaPath}", "", 0);
+                _log.Write($"Could not find dir and file for {fullMediaPath}", "", 0);
                 return false;
             }
 
