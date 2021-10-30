@@ -37,6 +37,17 @@ namespace RefreshShows
                 sae.Refresh(int.Parse(rdr[0].ToString()!));
                 Thread.Sleep(1000);
             }
+            
+            mDbR.Close();
+
+            rdr = mDbR.ExecQuery("select distinct `TvmShowId` from episodesfullinfo where `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
+            while (rdr.Read())
+            {
+                using ShowAndEpisodes sae = new(appInfo);
+                log.Write($"Working on Epi Update differences Show {rdr[0]}", "", 2);
+                sae.Refresh(int.Parse(rdr[0].ToString()!));
+                Thread.Sleep(1000);
+            }
 
             log.Stop();
         }

@@ -161,13 +161,18 @@
 <div>
     <h4>@_logView</h4>
     <p></p>
+    <p>
     @if (_logRequested)
     {
         @foreach (var line in _logContent)
         {
-            <p>@line</p>
+            if (line.Contains(
+                "########################################################################################") || 
+                line.Contains("Finished ####")) { continue; }
+            @line<br/>
         }
     }
+    </p>
     <p></p>
     <em>End of Log @_logView</em>
 </div>
