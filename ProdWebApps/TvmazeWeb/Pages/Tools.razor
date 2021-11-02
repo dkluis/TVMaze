@@ -66,6 +66,15 @@
             case "Epochs":
                 program = "Update Show Epochs";
                 break;
+            case "ShowRss Feed":
+                program = "Refresh ShowRss Feed";
+                break;
+            case "Refresh One":
+                program = "RefreshOneShow WebUI";
+                break;
+            case "WebUI":
+                program = "WebUI";
+                break;
             default:
                 _logView = "";
                 _logRequested = false;
@@ -141,47 +150,53 @@
 <h1>Tools Page</h1>
 <div>
     <h2>Batch Update Processes: </h2>
-    <p></p>
-    <button class="btn btn-primary" @onclick='() => ExecScripts("Followed")'>Followed</button>
-    &#8195;<button class="btn btn-primary" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
-    &#8195;<button class="btn btn-primary" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
-    &#8195;<button class="btn btn-primary" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
-    <p></p>
+    <div class="row">
+        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Followed")'>Followed</button>
+        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
+    </div>
+    <br/>
 </div>
 
 <div>
     <h2>Direct Update Processes:</h2>
     <p></p>
     <input @bind="@_refreshShowId" size="5"/>
-    &#8195;<button class="btn btn-primary" @onclick="RefreshOneShow">Refresh Show</button>
+    <button class="btn btn-primary" @onclick="RefreshOneShow">Refresh Show</button>
     <p></p>
 </div>
-
 <div>
-    <h2>Status:</h2>
+    <h4>Update Status:</h4>
     <div>
-        <h4>
+        <h5>
             <em>@_message</em>
-        </h4>
+        </h5>
     </div>
 </div>
-
+<p></p><p></p>
+<hr class="bg-primary"/>
+<p></p><p></p>
 <div>
-    <h2>Logs</h2>
-    <p></p>
-    <button class="btn btn-primary" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
-    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
-    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
-    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
-    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Epochs")'>Epochs</button>
-    &#8195;<button class="btn btn-primary" @onclick="ClearLog">Clear Page</button>
-    <p></p>
-    @if (_logView == "No Active Log to Empty")
-    {
-        _logView = "";
-    }
-    <button class="btn btn-secondary" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
-    <p></p>
+    <h2>View the Logs</h2>
+    <div class="row">
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Epochs")'>Epochs</button>
+    </div>
+    <div class="row">
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("ShowRss Feed")'>ShowRss Feed</button>
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Refresh One")'>One Show</button>
+        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("WebUI")'>Web UI</button>
+        <button class="btn btn-primary col-md-1" @onclick="ClearLog">Clear Page</button>
+        @if (_logView == "No Active Log to Empty")
+        {
+            _logView = "";
+        }
+        <button class="btn btn-danger col-md-1" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
+    </div>
 </div>
 
 <div>
