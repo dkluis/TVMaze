@@ -1,75 +1,81 @@
-﻿@page "/tools"
+﻿@namespace TVMazeWeb.Pages
+@page "/tools"
 
 @code
 {
     string _message;
     int _refreshShowId;
     string _logView = "";
+    string _currentLog = "";
     List<string> _logContent;
     bool _logRequested;
 
-    private void ExecUpdateFollowed()
+    private void ExecScripts(string scriptRequested = "")
     {
-        _message = "Running Update Followed";
-        RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
-        _message = "Finished Update Followed";
+        if (scriptRequested == "")
+        {
+            return;
+        }
+        switch (scriptRequested)
+        {
+            case "Followed":
+                RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
+                _message = "Finished Update Followed";
+                break;
+            case "Plex Acquired":
+                RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexAcquired.sh");
+                _message = "Finished Update Plex Acquired";
+                break;
+            case "Plex Watched":
+                RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
+                _message = "Finished Update Plex Watched";
+                break;
+            case "Acquire":
+                RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
+                _message = "Finished Acquire Media";
+                break;
+            default:
+                _message = "";
+                break;
+        }
     }
 
-    private void ExecUpdatePlexAcquired()
+    private void ExecLogViewer(string logRequested = "")
     {
-        _message = "Running Update Plex Acquired";
-        RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexAcquired.sh");
-        _message = "Finished Update Plex Acquired";
-    }
-
-    private void ExecUpdatePlexWatched()
-    {
-        _message = "Running Update Plex Watched";
-        RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
-        _message = "Finished Update Plex Watched";
-    }
-
-    private void ExecAcquireMedia()
-    {
-        _message = "Running Acquire Media";
-        RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
-        _message = "Finished Acquire Media";
-    }
-
-    private void ExecAcquireMediaLog()
-    {
-        _logView = "Acquire Media Log";
+        if (logRequested == "")
+        {
+            return;
+        }
+        string program;
+        _logView = logRequested + " Log";
         _logRequested = true;
-        var appInfo = new AppInfo("TVMaze", "Acquire Media", "DbAlternate");
+        switch (logRequested)
+        {
+            case "Followed":
+                program = "Update Followed";
+                break;
+            case "Plex Acquired":
+                program = "Update Plex Acquired";
+                break;
+            case "Plex Watched":
+                program = "Update Plex Watched";
+                break;
+            case "Acquire":
+                program = "Acquire Media";
+                break;
+            case "Epochs":
+                program = "Update Show Epochs";
+                break;
+            default:
+                _logView = "";
+                _logRequested = false;
+                _currentLog = "";
+                return;
+        }
+        var appInfo = new AppInfo("TVMaze", program, "DbAlternate");
         var logFile = appInfo.TxtFile;
         _logContent = logFile.ReturnLogContent();
-    }
-
-    private void ExecFollowedLog()
-    {
-        _logView = "Followed Log";
-        _logRequested = true;
-        var appInfo = new AppInfo("TVMaze", "Update Followed", "DbAlternate");
-        var logFile = appInfo.TxtFile;
-        _logContent = logFile.ReturnLogContent();
-    }
-
-    private void ExecPlexAcquiredLog()
-    {
-        _logView = "Plex Acquired Log";
-        _logRequested = true;
-        var appInfo = new AppInfo("TVMaze", "Update Plex Acquired", "DbAlternate");
-        var logFile = appInfo.TxtFile;
-        _logContent = logFile.ReturnLogContent();
-    }
-
-    private void ExecPlexWatchedLog()
-    {
-        _logView = "Plex Watched Log";
-        _logRequested = true;
-        var appInfo = new AppInfo("TVMaze", "Update Plex Watched", "DbAlternate");
-        var logFile = appInfo.TxtFile;
-        _logContent = logFile.ReturnLogContent();
+        _currentLog = program;
     }
 
     private void ClearLog()
@@ -78,6 +84,19 @@
         _logRequested = false;
     }
 
+    private void EmptyLog()
+    {
+        if (_logView == "")
+        {
+            _logView = "No Active Log to Empty";
+            return;
+        }
+        var appInfo = new AppInfo("TVMaze", _currentLog, "DbAlternate");
+        appInfo.TxtFile.Empty();
+        _currentLog = "";
+        _logRequested = false;
+        _logView = "";
+    }
 
     private void RunScript(string scriptName)
     {
@@ -123,10 +142,10 @@
 <div>
     <h2>Batch Update Processes: </h2>
     <p></p>
-    <button class="btn btn-primary" @onclick="ExecUpdateFollowed">Followed</button>
-    &#8195;<button class="btn btn-primary" @onclick="ExecUpdatePlexAcquired">Plex Acquired</button>
-    &#8195;<button class="btn btn-primary" @onclick="ExecUpdatePlexWatched">Plex Watched</button>
-    &#8195;<button class="btn btn-primary" @onclick="ExecAcquireMedia">Acquire</button>
+    <button class="btn btn-primary" @onclick='() => ExecScripts("Followed")'>Followed</button>
+    &#8195;<button class="btn btn-primary" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
+    &#8195;<button class="btn btn-primary" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
+    &#8195;<button class="btn btn-primary" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
     <p></p>
 </div>
 
@@ -150,11 +169,18 @@
 <div>
     <h2>Logs</h2>
     <p></p>
-    <button class="btn btn-primary" @onclick="ExecFollowedLog">Followed</button>
-    &#8195;<button class="btn btn-primary" @onclick="ExecPlexAcquiredLog">Plex Acquired</button>
-    &#8195;<button class="btn btn-primary" @onclick="ExecPlexWatchedLog">Plex Watched</button>
-    &#8195;<button class="btn btn-primary" @onclick="ExecAcquireMediaLog">Acquire</button>
-    &#8195;<button class="btn btn-primary" @onclick="ClearLog">Clear</button>
+    <button class="btn btn-primary" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
+    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
+    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
+    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
+    &#8195;<button class="btn btn-primary" @onclick='() => ExecLogViewer("Epochs")'>Epochs</button>
+    &#8195;<button class="btn btn-primary" @onclick="ClearLog">Clear Page</button>
+    <p></p>
+    @if (_logView == "No Active Log to Empty")
+    {
+        _logView = "";
+    }
+    <button class="btn btn-secondary" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
     <p></p>
 </div>
 
@@ -162,16 +188,19 @@
     <h4>@_logView</h4>
     <p></p>
     <p>
-    @if (_logRequested)
-    {
-        @foreach (var line in _logContent)
+        @if (_logRequested)
         {
-            if (line.Contains(
-                "########################################################################################") || 
-                line.Contains("Finished ####")) { continue; }
-            @line<br/>
+            @foreach (var line in _logContent)
+            {
+                if (line.Contains(
+                    "########################################################################################") ||
+                    line.Contains("Finished ####"))
+                {
+                    continue;
+                }
+                @line<br/>
+            }
         }
-    }
     </p>
     <p></p>
     <em>End of Log @_logView</em>

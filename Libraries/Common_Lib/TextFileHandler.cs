@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Common_Lib
 {
@@ -40,6 +39,11 @@ namespace Common_Lib
             Write(
                 $"{_app} Finished ####################################  in {_timer.ElapsedMilliseconds} mSec  ####################################",
                 _app, 0);
+        }
+
+        public void Empty()
+        {
+            using StreamWriter file = new(_fullFilePath, false);
         }
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
