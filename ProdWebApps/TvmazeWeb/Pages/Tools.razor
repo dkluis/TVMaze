@@ -151,10 +151,10 @@
 <div>
     <h2>Batch Update Processes: </h2>
     <div class="row">
-        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Followed")'>Followed</button>
-        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
-        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
-        <button class="btn btn-primary col-md-1" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Followed")'>Followed</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
     </div>
     <br/>
 </div>
@@ -180,22 +180,22 @@
 <div>
     <h2>View the Logs</h2>
     <div class="row">
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Epochs")'>Epochs</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Epochs")'>Epochs</button>
     </div>
     <div class="row">
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("ShowRss Feed")'>ShowRss Feed</button>
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("Refresh One")'>One Show</button>
-        <button class="btn btn-info col-md-1" @onclick='() => ExecLogViewer("WebUI")'>Web UI</button>
-        <button class="btn btn-primary col-md-1" @onclick="ClearLog">Clear Page</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("ShowRss Feed")'>ShowRss Feed</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Refresh One")'>One Show</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("WebUI")'>Web UI</button>
+        <button class="btn btn-primary col-lg-2" @onclick="ClearLog">Clear Page</button>
         @if (_logView == "No Active Log to Empty")
         {
             _logView = "";
         }
-        <button class="btn btn-danger col-md-1" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
+        <button class="btn btn-danger col-lg-2" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
     </div>
 </div>
 
