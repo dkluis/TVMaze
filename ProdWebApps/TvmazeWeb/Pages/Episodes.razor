@@ -28,6 +28,9 @@
     private void GetEpisodesToAcquire()
     {
         _episodesInfoList = _webEpisodesService.GetEpisodesToAcquire(_showRssBool);
+        _dataExchangeService.EpisodeStateFunction = "GetEpisodesToAcquire";
+        _dataExchangeService.EpisodeStateIncludeShowRss = _showRssBool;
+        _dataExchangeService.EpisodeStateIsActive = true;
     }
 
 }
@@ -39,9 +42,20 @@
         _searchString = _dataExchangeService.ShowName;
         FindEpisodes();
         _searchString = "";
+        _dataExchangeService.ResetEpisodeState();
+    }
+    else
+    if (_dataExchangeService.EpisodeStateIsActive && _dataExchangeService.LastPage != "Episodes")
+    {
+        if (_dataExchangeService.EpisodeStateFunction == "GetEpisodesToAcquire")
+        {
+            _showRssBool = _dataExchangeService.EpisodeStateIncludeShowRss;
+            GetEpisodesToAcquire();
+        }
     }
 }
 
+@{ _dataExchangeService.LastPage = "Episodes"; }
 <h1>Episodes</h1>
 <em>To manually set Watched, Acquired or Skipped use TVMaze Episode Url</em>
 <div>

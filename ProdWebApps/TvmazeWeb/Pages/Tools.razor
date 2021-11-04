@@ -1,6 +1,8 @@
 ﻿@namespace TVMazeWeb.Pages
 @page "/tools"
 
+@inject DataExchange _dataExchangeService
+
 @code
 {
     string _message;
@@ -19,6 +21,7 @@
         switch (scriptRequested)
         {
             case "Followed":
+                _message = "Executing Update Followed";
                 RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
                 _message = "Finished Update Followed";
                 break;
@@ -176,6 +179,7 @@
 
 }
 
+@{ _dataExchangeService.LastPage = "Tools"; }
 <h1>Tools Page</h1>
 <div>
     <h2>Execute Processes: </h2>
