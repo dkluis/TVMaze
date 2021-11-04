@@ -1,36 +1,30 @@
 ﻿using System;
 using Common_Lib;
 using DB_Lib;
-using Web_Lib;
 
 namespace AcquireMovies
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            string This_Program = "Acquire Movies";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            TextFileHandler log = appinfo.TxtFile;
+            var thisProgram = "Acquire Movies";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+            var log = appInfo.TxtFile;
             log.Start();
 
-            MariaDB mdb = new(appinfo);
-            string sql = $"select * from Movies";  //Todo add where clause for date comparision later
-            MySqlConnector.MySqlDataReader rdr = mdb.ExecQuery(sql);
-            string name = "";
-            string seriesName = "";
-            int movieNumber = 0;
-            string finderDate = "";
-            string mediaType = "";
+            MariaDb mdb = new(appInfo);
+            var sql = "select * from Movies"; //Todo add where clause for date comparision later
+            var rdr = mdb.ExecQuery(sql);
 
             while (rdr.Read())
             {
-                name = rdr["name"].ToString();
-                seriesName = rdr["SeriesName"].ToString();
-                finderDate = rdr["FinderDate"].ToString();
-                mediaType = rdr["MediaType"].ToString();
-                movieNumber = int.Parse(rdr["MovieNumber"].ToString());
+                var name = rdr["name"].ToString();
+                var seriesName = rdr["SeriesName"].ToString();
+                var finderDate = rdr["FinderDate"].ToString();
+                var mediaType = rdr["MediaType"].ToString();
+                var movieNumber = int.Parse(rdr["MovieNumber"].ToString()!);
                 log.Write($"Processing {name} ---> {seriesName}, {movieNumber}, {finderDate}, {mediaType}");
             }
 

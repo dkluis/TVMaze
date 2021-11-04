@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 namespace Web_Lib
 {
 
-    public class WebAPI : IDisposable
+    public class WebApi : IDisposable
     {
         private readonly HttpClient client = new();
         private static HttpClient rarbgclient = new();
@@ -30,7 +30,7 @@ namespace Web_Lib
 
         private readonly TextFileHandler log;
 
-        public WebAPI(AppInfo appinfo)
+        public WebApi(AppInfo appinfo)
         {
             log = appinfo.TxtFile;
             RarbgAPI_url_suf = appinfo.RarbgToken;
@@ -338,7 +338,7 @@ namespace Web_Lib
 
         private string GetRarbgMagnetsAPI(string searchfor)
         {
-            string api = $"{RarbgAPI_url_pre}{Common.RemoveSpecialCharsInShowname(searchfor)}{RarbgAPI_url_suf}";
+            string api = $"{RarbgAPI_url_pre}{Common.RemoveSpecialCharsInShowName(searchfor)}{RarbgAPI_url_suf}";
             log.Write($"API String = {api}", "RarbgAPI", 4);
             return api;
         }

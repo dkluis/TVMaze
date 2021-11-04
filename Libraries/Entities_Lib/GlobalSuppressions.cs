@@ -5,4 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "<Pending>", Scope = "member", Target = "~M:TvmEntities.Show.FillViaDB(System.Int32,System.Boolean)")]
+[assembly:
+    SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "<Pending>", Scope = "member",
+        Target = "~M:TvmEntities.Show.FillViaDB(System.Int32,System.Boolean)")]

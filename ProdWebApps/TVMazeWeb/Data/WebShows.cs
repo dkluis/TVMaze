@@ -1,102 +1,108 @@
-﻿using System;
-using DB_Lib;
+﻿using System.Collections.Generic;
 using Common_Lib;
-using System.Collections.Generic;
+using DB_Lib;
 
 namespace TVMazeWeb.Data
 {
     public class WebShows
     {
-        public AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
-        
-        public List<ShowsInfo> GetShowsByTvmStatus(string tvmstatus)
+        public readonly AppInfo AppInfo = new("Tvmaze", "WebUI", "DbAlternate");
+
+        public List<ShowsInfo> GetShowsByTvmStatus(string tvmStatus)
         {
-            MariaDB mdbshows = new(appinfo);
-            MySqlConnector.MySqlDataReader rdr;
+            MariaDb mdbShows = new(AppInfo);
             List<ShowsInfo> newShows = new();
-            string sql = $"select * from Shows where `TvmStatus` = '{tvmstatus}' order by `TvmShowId` desc";
-            rdr = mdbshows.ExecQuery(sql);
+            var sql = $"select * from Shows where `TvmStatus` = '{tvmStatus}' order by `TvmShowId` desc";
+            var rdr = mdbShows.ExecQuery(sql);
             while (rdr.Read())
             {
-                ShowsInfo rec = new();
-
-                rec.TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
-                rec.ShowName = rdr["ShowName"].ToString();
-                rec.TvmStatus = rdr["TvmStatus"].ToString();
-                rec.TvmUrl = rdr["TvmUrl"].ToString();
-                rec.Finder = rdr["Finder"].ToString();
-                rec.AltShowName = rdr["AltShowName"].ToString();
-                rec.MediaType = rdr["MediaType"].ToString();
-                rec.UpdateDate = rdr["UpdateDate"].ToString();
-
+                ShowsInfo rec = new()
+                {
+                    TvmShowId = int.Parse(rdr["TvmShowId"].ToString()!),
+                    ShowName = rdr["ShowName"].ToString(),
+                    TvmStatus = rdr["TvmStatus"].ToString(),
+                    TvmUrl = rdr["TvmUrl"].ToString(),
+                    Finder = rdr["Finder"].ToString(),
+                    AltShowName = rdr["AltShowName"].ToString(),
+                    MediaType = rdr["MediaType"].ToString(),
+                    UpdateDate = rdr["UpdateDate"].ToString()
+                };
                 newShows.Add(rec);
             }
+
             return newShows;
         }
 
-        public List<ShowsInfo> FindShows(string showname)
+        public List<ShowsInfo> FindShows(string showName)
         {
-            MariaDB mdbshows = new(appinfo);
-            MySqlConnector.MySqlDataReader rdr;
+            MariaDb mdbShows = new(AppInfo);
             List<ShowsInfo> newShows = new();
-            if (showname is not null) { showname = showname.Replace("'", "''"); }
-            string sql = $"select * from Shows where `ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%' order by `TvmShowId` desc limit 150";
-            rdr = mdbshows.ExecQuery(sql);
+            showName = showName?.Replace("'", "''");
+            var sql =
+                $"select * from Shows where `ShowName` like '%{showName}%' or `AltShowName` like '%{showName}%' order by `TvmShowId` desc limit 150";
+            var rdr = mdbShows.ExecQuery(sql);
             while (rdr.Read())
             {
-                ShowsInfo rec = new();
-
-                rec.TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
-                rec.ShowName = rdr["ShowName"].ToString();
-                rec.TvmStatus = rdr["TvmStatus"].ToString();
-                rec.ShowStatus = rdr["ShowStatus"].ToString();
-                rec.TvmUrl = rdr["TvmUrl"].ToString();
-                rec.Finder = rdr["Finder"].ToString();
-                rec.AltShowName = rdr["AltShowName"].ToString();
-                rec.MediaType = rdr["MediaType"].ToString();
-                rec.UpdateDate = rdr["UpdateDate"].ToString();
-
+                ShowsInfo rec = new()
+                {
+                    TvmShowId = int.Parse(rdr["TvmShowId"].ToString()!),
+                    ShowName = rdr["ShowName"].ToString(),
+                    TvmStatus = rdr["TvmStatus"].ToString(),
+                    ShowStatus = rdr["ShowStatus"].ToString(),
+                    TvmUrl = rdr["TvmUrl"].ToString(),
+                    Finder = rdr["Finder"].ToString(),
+                    AltShowName = rdr["AltShowName"].ToString(),
+                    MediaType = rdr["MediaType"].ToString(),
+                    UpdateDate = rdr["UpdateDate"].ToString()
+                };
                 newShows.Add(rec);
             }
+
             return newShows;
         }
 
-        public bool DeleteShow(int showid)
+        public bool DeleteShow(int showId)
         {
-            MariaDB mdbshows = new(appinfo);
-            string sql = $"delete from Shows where `TvmShowId` = {showid}";
-            int resultrows = mdbshows.ExecNonQuery(sql);
-            if (resultrows > 0) { return true; } else { return false; }
+            MariaDb mdbShows = new(AppInfo);
+            var sql = $"delete from Shows where `TvmShowId` = {showId}";
+            var resultRows = mdbShows.ExecNonQuery(sql);
+            return resultRows > 0;
         }
 
-        public bool SetTvmStatusShow(int showid, string newstatus)
+        public bool SetTvmStatusShow(int showId, string newStatus)
         {
-            MariaDB mdbshows = new(appinfo);
-            string sql = $"update shows set `TvmStatus` = '{newstatus}' where `TvmShowId` = {showid}";
-            int resultrows = mdbshows.ExecNonQuery(sql);
-            if (resultrows > 0) { return true; } else { return false; }
+            MariaDb mdbShows = new(AppInfo);
+            var sql = $"update shows set `TvmStatus` = '{newStatus}' where `TvmShowId` = {showId}";
+            var resultRows = mdbShows.ExecNonQuery(sql);
+            if (resultRows > 0)
+                return true;
+            return false;
         }
 
-        public bool SetMtAndAsnShow(int showid, string mediatype, string altshowname)
+        public bool SetMtAndAsnShow(int showId, string mediaType, string altShowName)
         {
-            MariaDB mdbshows = new(appinfo);
-            altshowname = altshowname.Replace("'", "''");
-            string sql = $"update shows set `AltShowName` = '{altshowname}', `MediaType` = '{mediatype}' where `TvmShowId` = {showid}";
-            int resultrows = mdbshows.ExecNonQuery(sql);
-            if (resultrows > 0) { return true; } else { appinfo.TxtFile.Write($"Edit Showname and MediaType unsuccesfull:  MediaType = {mediatype}"); return false; }
+            MariaDb mdbShows = new(AppInfo);
+            altShowName = altShowName.Replace("'", "''");
+            var sql =
+                $"update shows set `AltShowName` = '{altShowName}', `MediaType` = '{mediaType}' where `TvmShowId` = {showId}";
+            var resultRows = mdbShows.ExecNonQuery(sql);
+            if (resultRows > 0) return true;
+
+            AppInfo.TxtFile.Write($"Edit ShowName and MediaType unsuccessful:  MediaType = {mediaType}");
+            return false;
         }
     }
 
     public class ShowsInfo
     {
-        public int TvmShowId;
+        public string AltShowName;
+        public string Finder;
+        public string MediaType;
         public string ShowName;
+        public string ShowStatus;
+        public int TvmShowId;
         public string TvmStatus;
         public string TvmUrl;
-        public string Finder;
-        public string ShowStatus;
-        public string AltShowName;
-        public string MediaType;
         public string UpdateDate;
     }
 }

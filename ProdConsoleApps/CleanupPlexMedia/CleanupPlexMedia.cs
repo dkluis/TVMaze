@@ -1,58 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
 using Common_Lib;
 using Entities_Lib;
 
 namespace CleanupPlexMedia
 {
-    class CleanupPlexMedia
+    internal static class CleanupPlexMedia
     {
-        static void Main()
+        private static void Main()
         {
-            string This_Program = "Cleanup Plex Media";
-            Console.WriteLine($"{DateTime.Now}: {This_Program}");
-            AppInfo appinfo = new("TVMaze", This_Program, "DbAlternate");
-            TextFileHandler log = appinfo.TxtFile;
+            var thisProgram = "Cleanup Plex Media";
+            Console.WriteLine($"{DateTime.Now}: {thisProgram}");
+            AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+            var log = appInfo.TxtFile;
             log.Start();
 
-            MediaFileHandler mfh = new(appinfo);
+            MediaFileHandler mfh = new(appInfo);
 
             List<string> showDirsToDelete = new();
-            bool deleteDir = false;
 
-            string[] tvshowdirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
-            foreach (string dir in tvshowdirs)
+            var tvShowDirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
+            foreach (var dir in tvShowDirs)
             {
-                deleteDir = false;
-                string[] seasondirs = Directory.GetDirectories(dir);
-                foreach (string sdir in seasondirs)
+                var deleteDir = false;
+                var seasonDirs = Directory.GetDirectories(dir);
+                foreach (var seasonDir in seasonDirs)
                 {
-                    string[] files = Directory.GetFiles(sdir);
+                    var files = Directory.GetFiles(seasonDir);
                     if (files.Length == 0)
                     {
                         deleteDir = true;
                         try
                         {
-                            Directory.Delete(sdir);
+                            Directory.Delete(seasonDir);
                         }
                         catch (Exception ex)
                         {
-                            log.Write($"Delete of {sdir} went wrong {ex}");
+                            log.Write($"Delete of {seasonDir} went wrong {ex}");
                         }
-                        log.Write($"Deleted directory: {sdir}");
+
+                        log.Write($"Deleted directory: {seasonDir}");
                     }
-                    else { deleteDir = false; }
+                    else
+                    {
+                        deleteDir = false;
+                    }
                 }
-                if (deleteDir) { showDirsToDelete.Add(dir); }
+
+                if (deleteDir) showDirsToDelete.Add(dir);
             }
 
-            
-            foreach (string dir in showDirsToDelete)
+
+            foreach (var dir in showDirsToDelete)
             {
                 if (Directory.GetDirectories(dir).Length == 0)
-                {
                     try
                     {
                         Directory.Delete(dir);
@@ -61,7 +63,7 @@ namespace CleanupPlexMedia
                     {
                         log.Write($"Delete of {dir} went wrong {ex}");
                     }
-                }
+
                 log.Write($"Deleted directory: {dir}");
             }
 

@@ -1,161 +1,170 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Newtonsoft.Json.Linq;
-using Common_Lib;
+using System.Collections.Generic;
 
 namespace Common_Lib
 {
     public class TextFileHandler
     {
-        private readonly string filepath;
-        private readonly string fullfilepath;
-        public int level;
-        protected string app;
-        protected Stopwatch timer = new();
+        private readonly string _app;
+        private readonly string _fullFilePath;
+        private readonly int _level;
+        private readonly Stopwatch _timer = new();
 
-        public TextFileHandler(string filename, string appl, string infilepath, int loglevel)
+        public TextFileHandler(string filename, string application, string inFilePath, int loglevel)
         {
-            timer.Start();
-            app = appl;
+            _timer.Start();
+            _app = application;
 #if DEBUG
-            level = 4;
+            _level = 4;
 #else
-            level = loglevel;
+            _level = loglevel;
 #endif
-
-            filepath = infilepath;
-            fullfilepath = Path.Combine(filepath, filename);
-
-            if (!File.Exists(fullfilepath))
-            {
-                File.Create(fullfilepath).Close();
-            }
-
+            _fullFilePath = Path.Combine(inFilePath, filename);
+            if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         }
 
         public void Start()
         {
             EmptyLine();
-            Write($"{app} Started  ########################################################################################", app, 0);
+            Write(
+                $"{_app} Started  ########################################################################################",
+                _app, 0);
         }
 
         public void Stop()
         {
-            timer.Stop();
-            Write($"{app} Finished ####################################  in {timer.ElapsedMilliseconds} mSec  ####################################", app, 0);
+            _timer.Stop();
+            Write(
+                $"{_app} Finished ####################################  in {_timer.ElapsedMilliseconds} mSec  ####################################",
+                _app, 0);
+        }
+
+        public void Empty()
+        {
+            using StreamWriter file = new(_fullFilePath, false);
         }
 
         public void Write(string message, string function = "", int loglevel = 3, bool append = true)
         {
-            if (function == "" || function == null) { function = app; }
-            if (function.Length > 19) { function = function.Substring(0, 19); }
-            if (loglevel <= level)
-            {
-                using StreamWriter file = new(fullfilepath, append);
-                file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2} --> {message}");
-            }
+            if (string.IsNullOrEmpty(function)) function = _app;
+            if (function.Length > 19) function = function[..19];
+
+            if (loglevel > _level) return;
+            using StreamWriter file = new(_fullFilePath, append);
+            file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2} --> {message}");
         }
 
         public void Write(string[] messages, string function = "", int loglevel = 3, bool append = true)
         {
-            if (function == "" || function == null) { function = app; }
-            if (function.Length > 19) { function = function.Substring(0, 19); }
-            if (loglevel <= level)
-            {
-                using StreamWriter file = new(fullfilepath, append);
-                foreach (string msg in messages)
-                {
-                    file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2}--> {msg}");
-                }
-            }
+            if (string.IsNullOrEmpty(function)) function = _app;
+            if (function.Length > 19) function = function[..19];
+
+            if (loglevel > _level) return;
+            using StreamWriter file = new(_fullFilePath, append);
+            foreach (var msg in messages) file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2}--> {msg}");
         }
 
         public void Elapsed()
         {
             EmptyLine();
-            Write($"{app} Elapsed up to now: {timer.ElapsedMilliseconds} mSec", "Elapsed Time", 0);
+            Write($"{_app} Elapsed up to now: {_timer.ElapsedMilliseconds} mSec", "Elapsed Time", 0);
             EmptyLine();
         }
 
         public void EmptyLine(int lines = 1)
         {
-            int idx = 1;
-            using StreamWriter file = new(fullfilepath, true);
+            var idx = 1;
+            using StreamWriter file = new(_fullFilePath, true);
             while (idx <= lines)
             {
-                file.WriteLine($"");
+                file.WriteLine("");
                 idx++;
             }
         }
 
         public void WriteNoHead(string message, bool newline = true, bool append = true)
         {
-            using StreamWriter file = new(fullfilepath, append);
-            if (newline) { file.WriteLine(message); } else { file.Write(message); }
+            using StreamWriter file = new(_fullFilePath, append);
+            if (newline)
+                file.WriteLine(message);
+            else
+                file.Write(message);
         }
 
         public void WriteNoHead(string[] messages, bool newline = true, bool append = true)
         {
-            using StreamWriter file = new(fullfilepath, append);
-            foreach (string msg in messages)
-            {
-                if (newline) { file.WriteLine(msg); } else { file.Write(msg); }
-            }
+            using StreamWriter file = new(_fullFilePath, append);
+            foreach (var msg in messages)
+                if (newline)
+                    file.WriteLine(msg);
+                else
+                    file.Write(msg);
         }
 
+        public List<string> ReturnLogContent()
+        {
+            var content = new List<string>();
+            var fileContent = File.ReadAllLines(_fullFilePath);
+            foreach (var line in fileContent)
+            {
+                content.Add(line);
+            }
+            content.Reverse();
+            return content;
+        }
+        
         public string ReadKeyArray(string find)
         {
-            if (!File.Exists(fullfilepath)) { return ""; }
-            string filetext = File.ReadAllText(fullfilepath);
-            JArray kvps = ConvertJsonTxt.ConvertStringToJArray(filetext);
-            foreach (JToken rec in kvps)
+            if (!File.Exists(_fullFilePath)) return "";
+            var filetText = File.ReadAllText(_fullFilePath);
+            var keyValuePair = ConvertJsonTxt.ConvertStringToJArray(filetText);
+            foreach (var rec in keyValuePair)
             {
-                if (rec[find] is null) { return ""; }
-                if (rec[find].ToString() != "") { return rec[find].ToString(); }
+                if (rec[find] is null) return "";
+                if (rec[find].ToString() != "") return rec[find].ToString();
             }
             return "";
         }
 
         public string ReadKeyObject(string find)
         {
-            if (!File.Exists(fullfilepath)) { return ""; }
-            string filetext = File.ReadAllText(fullfilepath);
-            JObject kvps = ConvertJsonTxt.ConvertStringToJObject(filetext);
-            foreach (var rec in kvps)
-            {
-                if (rec.Key.ToString() == find) { return rec.Value.ToString(); }
-            }
+            if (!File.Exists(_fullFilePath)) return "";
+            var fileText = File.ReadAllText(_fullFilePath);
+            var keyValuePair = ConvertJsonTxt.ConvertStringToJObject(fileText);
+            foreach (var rec in keyValuePair)
+                if (rec.Key == find)
+                    return rec.Value!.ToString();
             return "";
         }
     }
-}
 
-public class ReadKeyFromFile
-{
-    public string FindInArray(string fullfilepath, string find)
+    public class ReadKeyFromFile
     {
-        if (!File.Exists(fullfilepath)) { return "";  }
-        string filetext = File.ReadAllText(fullfilepath);
-        JArray kvps = ConvertJsonTxt.ConvertStringToJArray(filetext);
-        foreach (JToken rec in kvps)
+        public string FindInArray(string fullPath, string find)
         {
-            if (rec[find] is null) { return ""; }
-            if (rec[find].ToString() != "") { return rec[find].ToString(); }
-        }
-        return "";
-    }
+            if (!File.Exists(fullPath)) return "";
+            var fileText = File.ReadAllText(fullPath);
+            var keyValuePair = ConvertJsonTxt.ConvertStringToJArray(fileText);
+            foreach (var rec in keyValuePair)
+            {
+                if (rec[find] is null) return "";
+                if (rec[find].ToString() != "") return rec[find].ToString();
+            }
 
-    public string FindInObject(string fullfilepath, string find)
-    {
-        if (!File.Exists(fullfilepath)) { return ""; }
-        string filetext = File.ReadAllText(fullfilepath);
-        JObject kvps = ConvertJsonTxt.ConvertStringToJObject(filetext);
-        foreach (var rec in kvps)
+            return "";
+        }
+
+        public string FindInObject(string fullPath, string find)
         {
-            if (rec.Key.ToString() == find) { return rec.Value.ToString(); }
+            if (!File.Exists(fullPath)) return "";
+            var fileText = File.ReadAllText(fullPath);
+            var keyValuePair = ConvertJsonTxt.ConvertStringToJObject(fileText);
+            foreach (var rec in keyValuePair)
+                if (rec.Key == find)
+                    return rec.Value!.ToString();
+            return "";
         }
-        return "";
     }
-
 }

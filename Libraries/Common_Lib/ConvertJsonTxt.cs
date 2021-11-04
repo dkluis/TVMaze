@@ -1,20 +1,19 @@
 ﻿using Newtonsoft.Json.Linq;
 
-
 namespace Common_Lib
 {
-    public class ConvertJsonTxt
+    public static class ConvertJsonTxt
     {
-
         public static JArray ConvertStringToJArray(string message)
-        { 
+        {
             if (message == "")
             {
                 JArray empty = new();
                 return empty;
             }
-            JArray jarray = JArray.Parse(message);
-            return jarray;
+
+            var jA = JArray.Parse(message);
+            return jA;
         }
 
         public static JObject ConvertStringToJObject(string message)
@@ -24,9 +23,9 @@ namespace Common_Lib
                 JObject empty = new();
                 return empty;
             }
-            JObject jobject = JObject.Parse(message);
-            return jobject;
-        }
 
+            var jO = JObject.Parse(message);
+            return jO;
+        }
     }
 }

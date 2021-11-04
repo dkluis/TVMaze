@@ -6,17 +6,14 @@ namespace Entities_Lib
 {
     public class ShowAndEpisodes : IDisposable
     {
-        private Show Show;
-        private TextFileHandler log;
-        private List<Episode> EpsByShow;
-        private AppInfo appinfo;
+        private readonly AppInfo _appInfo;
+        private readonly Show _show;
+        private List<Episode> _epsByShow;
 
-
-        public ShowAndEpisodes(AppInfo Appinfo)
+        public ShowAndEpisodes(AppInfo appInfo)
         {
-            log = Appinfo.TxtFile;
-            appinfo = Appinfo;
-            Show = new(appinfo);
+            _appInfo = appInfo;
+            _show = new Show(_appInfo);
         }
 
         public void Dispose()
@@ -24,19 +21,19 @@ namespace Entities_Lib
             GC.SuppressFinalize(this);
         }
 
-        public void Refresh(int showid, bool ignore = false)
+        public void Refresh(int showId, bool ignore = false)
         {
-            Show.FillViaTvmaze(showid);
-            if (Show.isDBFilled && Show.isFollowed) { Show.TvmStatus = "Following"; }
-            Show.DbUpdate();
-            Show.Reset();
-
-            using (EpisodesByShow epsbyshow = new()) { EpsByShow = epsbyshow.Find(appinfo, showid); }
-            foreach (Episode episode in EpsByShow )
-            {
-                if (episode.isDBFilled) { episode.DbUpdate(); } else { episode.DbInsert();  }
-            }
-
+            _show.FillViaTvmaze(showId);
+            if (_show.IsDbFilled && _show.IsFollowed) _show.TvmStatus = "Following";
+            _show.DbUpdate();
+            _show.Reset();
+            using EpisodesByShow epsByShow = new();
+            _epsByShow = epsByShow.Find(_appInfo, showId);
+            foreach (var episode in _epsByShow)
+                if (episode.IsDbFilled)
+                    episode.DbUpdate();
+                else
+                    episode.DbInsert();
         }
     }
 }

@@ -1,14 +1,13 @@
-﻿using System;
-namespace TVMazeWeb.Data
+﻿namespace TVMazeWeb.Data
 {
     public class DataExchange
     {
-        public string SendingPage;
-        public string IntendedPage;
-        public string FunctionRequested;
-        public string ShowName;
-        public int Season;
         public int Episode;
+        public string FunctionRequested;
+        public string IntendedPage;
+        public int Season;
+        public string SendingPage;
+        public string ShowName;
 
         public void Reset()
         {

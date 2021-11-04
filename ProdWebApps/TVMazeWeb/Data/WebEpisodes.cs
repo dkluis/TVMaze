@@ -1,91 +1,89 @@
-﻿using System;
-using DB_Lib;
+﻿using System.Collections.Generic;
 using Common_Lib;
-using System.Collections.Generic;
+using DB_Lib;
 
 namespace TVMazeWeb.Data
 {
     public class WebEpisodes
     {
-        public AppInfo appinfo = new("Tvmaze", "WebUI", "DbAlternate");
+        public readonly AppInfo AppInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
-        public List<EpisodeInfo> GetEpisodes(string showname, string season, string episode)
+        public List<EpisodeInfo> GetEpisodes(string showName, string season, string episode)
         {
-            MariaDB mdbepisodes = new(appinfo);
-            MySqlConnector.MySqlDataReader rdr;
-            List<EpisodeInfo> episodeinfolist = new();
-            int seasonint;
-            int episodeint;
-            showname = showname.Replace("'", "''");
-            string sql = $"select * from episodesfullinfo where (`ShowName` like '%{showname}%' or `AltShowName` like '%{showname}%')";
-            if (int.TryParse(season, out seasonint)) { sql = sql + $" and `Season` = {seasonint}"; }
-            if (int.TryParse(episode, out episodeint)) { sql = sql + $" and `Episode` = {episodeint}"; }
-            sql = sql + " limit 150";
-            
-            rdr = mdbepisodes.ExecQuery(sql);
+            MariaDb mdbEpisodes = new(AppInfo);
+            List<EpisodeInfo> episodeInfoList = new();
+            showName = showName.Replace("'", "''");
+            var sql =
+                $"select * from episodesfullinfo where (`ShowName` like '%{showName}%' or `AltShowName` like '%{showName}%')";
+            if (int.TryParse(season, out var seasonInt)) sql = sql + $" and `Season` = {seasonInt}";
+            if (int.TryParse(episode, out var episodeInt)) sql = sql + $" and `Episode` = {episodeInt}";
+            sql += " limit 150";
+            var rdr = mdbEpisodes.ExecQuery(sql);
             while (rdr.Read())
             {
-                EpisodeInfo ei = new();
-                ei.TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
-                ei.ShowName = rdr["ShowName"].ToString();
-                ei.Season = rdr["Season"].ToString();
-                ei.Episode = rdr["Episode"].ToString();
-                ei.BroadcastDate = rdr["BroadcastDate"].ToString();
-                if (ei.BroadcastDate.Length > 10) { ei.BroadcastDate = ei.BroadcastDate.Substring(0, 10); }
-                ei.TvmUrl = rdr["TvmUrl"].ToString();
-                ei.PlexStatus = rdr["PlexStatus"].ToString();
-                ei.PlexDate = rdr["PlexDate"].ToString();
-                if (ei.PlexDate.Length > 10) { ei.PlexDate = ei.PlexDate.Substring(0, 10); }
-                ei.UpdateDate = rdr["UpdateDate"].ToString().Substring(0, 10);
-
-                episodeinfolist.Add(ei);
+                EpisodeInfo ei = new()
+                {
+                    TvmShowId = int.Parse(rdr["TvmShowId"].ToString()!),
+                    ShowName = rdr["ShowName"].ToString(),
+                    Season = rdr["Season"].ToString(),
+                    Episode = rdr["Episode"].ToString(),
+                    BroadcastDate = rdr["BroadcastDate"].ToString(),
+                    TvmUrl = rdr["TvmUrl"].ToString(),
+                    PlexStatus = rdr["PlexStatus"].ToString(),
+                    PlexDate = rdr["PlexDate"].ToString(),
+                    UpdateDate = rdr["UpdateDate"].ToString()![..10]
+                };
+                if (ei.BroadcastDate!.Length > 10) ei.BroadcastDate = ei.BroadcastDate[..10];
+                if (ei.PlexDate!.Length > 10) ei.PlexDate = ei.PlexDate[..10];
+                episodeInfoList.Add(ei);
             }
 
-            appinfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeinfolist.Count} records", "", 4);
-            
-            return episodeinfolist;
-
+            AppInfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeInfoList.Count} records", "", 4);
+            return episodeInfoList;
         }
 
-        public List<EpisodeInfo> GetEpisodesToAcquire()
+        public List<EpisodeInfo> GetEpisodesToAcquire(bool includeShowRss)
         {
-            MariaDB mdbacquire = new(appinfo);
-            MySqlConnector.MySqlDataReader rdr;
-            List<EpisodeInfo> episodeinfolist = new();
-
-            rdr = mdbacquire.ExecQuery($"select * from episodesfromtodayback where finder = 'Multi' order by `BroadcastDate` asc, `ShowName` asc");
+            MariaDb mdbAcquire = new(AppInfo);
+            List<EpisodeInfo> episodeInfoList = new();
+            const string sqlNoShowRss =
+                "select * from episodesfromtodayback where finder = 'Multi' order by `BroadcastDate`, `ShowName`";
+            const string sqlWithShowRss = "select * from episodesfromtodayback order by `BroadcastDate`, `ShowName`";
+            var sql = includeShowRss ? sqlWithShowRss : sqlNoShowRss;
+            var rdr = mdbAcquire.ExecQuery(sql);
             while (rdr.Read())
             {
-                EpisodeInfo ei = new();
-                ei.TvmShowId = int.Parse(rdr["TvmShowId"].ToString());
-                ei.ShowName = rdr["ShowName"].ToString();
-                ei.Season = rdr["Season"].ToString();
-                ei.Episode = rdr["Episode"].ToString();
-                ei.BroadcastDate = rdr["BroadcastDate"].ToString();
-                if (ei.BroadcastDate.Length > 10) { ei.BroadcastDate = ei.BroadcastDate.Substring(0, 10); }
-                ei.TvmUrl = rdr["TvmUrl"].ToString();
-                ei.PlexStatus = rdr["PlexStatus"].ToString();
-                ei.PlexDate = "";
-                ei.UpdateDate = rdr["UpdateDate"].ToString().Substring(0, 10);
-
-                episodeinfolist.Add(ei);
+                EpisodeInfo ei = new()
+                {
+                    TvmShowId = int.Parse(rdr["TvmShowId"].ToString()!),
+                    ShowName = rdr["ShowName"].ToString(),
+                    Season = rdr["Season"].ToString(),
+                    Episode = rdr["Episode"].ToString(),
+                    BroadcastDate = rdr["BroadcastDate"].ToString(),
+                    TvmUrl = rdr["TvmUrl"].ToString(),
+                    PlexStatus = rdr["PlexStatus"].ToString(),
+                    PlexDate = "",
+                    UpdateDate = rdr["UpdateDate"].ToString()![..10]
+                };
+                if (ei.BroadcastDate!.Length > 10) ei.BroadcastDate = ei.BroadcastDate[..10];
+                episodeInfoList.Add(ei);
             }
 
-            return episodeinfolist;
+            return episodeInfoList;
         }
     }
 
 
     public class EpisodeInfo
     {
-        public int TvmShowId;
-        public string ShowName;
-        public string Season;
-        public string Episode;
         public string BroadcastDate;
-        public string TvmUrl;
-        public string PlexStatus;
+        public string Episode;
         public string PlexDate;
+        public string PlexStatus;
+        public string Season;
+        public string ShowName;
+        public int TvmShowId;
+        public string TvmUrl;
         public string UpdateDate;
     }
 }

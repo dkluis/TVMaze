@@ -1,34 +1,34 @@
 ﻿using System;
-
 using Common_Lib;
 
 namespace DB_Lib
 {
-    public class ActionItems :IDisposable
+    public class ActionItems : IDisposable
     {
-        TextFileHandler log;
-        MariaDB Mdbw;
-        AppInfo appinfo;
+        private readonly AppInfo _appInfo;
+        private readonly MariaDb _mDbW;
+        private TextFileHandler _log;
 
-        public ActionItems(AppInfo appin)
+        public ActionItems(AppInfo appInfo)
         {
-            log = appin.TxtFile;
-            Mdbw = new(appin);
-            appinfo = appin;
-        }
-
-        public bool DbInsert(string Message, bool ignore = false)
-        {
-            bool success = false;
-            int rows;
-            rows = Mdbw.ExecNonQuery($"insert into ActionItems values (0, '{appinfo.Program}', '{Message}', '{DateTime.Now.ToString("yyyy-MM-dd")}');", ignore);
-            if (rows == 1) { success = true; }
-            return success;
+            _log = appInfo.TxtFile;
+            _mDbW = new MariaDb(appInfo);
+            _appInfo = appInfo;
         }
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
+        }
+
+        public bool DbInsert(string message, bool ignore = false)
+        {
+            var success = false;
+            var rows = _mDbW.ExecNonQuery(
+                $"insert into ActionItems values (0, '{_appInfo.Program}', '{message}', '{DateTime.Now:yyyy-MM-dd}');",
+                ignore);
+            if (rows == 1) success = true;
+            return success;
         }
     }
 }

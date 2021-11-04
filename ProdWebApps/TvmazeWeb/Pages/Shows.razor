@@ -1,68 +1,74 @@
-﻿@page "/shows"
+﻿@namespace TVMazeWeb.Pages
+@page "/shows"
 
-
-@using TVMazeWeb.Data
-@inject WebShows WebShowsService
-@inject DataExchange DataExchangeService
-@inject NavigationManager NavigationManagerService
+@inject WebShows _webShowsService
+@inject DataExchange _dataExchangeService
+@inject NavigationManager _navigationManagerService
 
 
 @code {
-    private List<ShowsInfo> showsInfoList = new();
-    string SearchString;
-    int idx;
+    private List<ShowsInfo> _showsInfoList = new();
+    string _searchString;
+    int _idx;
 
     private void ReviewNewShows()
     {
-        showsInfoList = WebShowsService.GetShowsByTvmStatus("New");
-        SearchString = "";
+        _showsInfoList = _webShowsService.GetShowsByTvmStatus("New");
+        _searchString = "";
     }
 
     private void ReviewReviewShows()
     {
-        showsInfoList = WebShowsService.GetShowsByTvmStatus("Reviewing");
-        SearchString = "";
+        _showsInfoList = _webShowsService.GetShowsByTvmStatus("Reviewing");
+        _searchString = "";
     }
 
     private void FindShows()
     {
-        showsInfoList = WebShowsService.FindShows(SearchString);
+        _showsInfoList = _webShowsService.FindShows(_searchString);
     }
 
     private void EditShow(ShowsInfo si)
     {
         if (si.TvmStatus == "New")
         {
-            WebShowsService.appinfo.TxtFile.Write($"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
-            bool result = WebShowsService.SetTvmStatusShow(si.TvmShowId, "Reviewing");
-            SearchString = si.ShowName;
+            _webShowsService.AppInfo.TxtFile.Write($"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
+            _webShowsService.SetTvmStatusShow(si.TvmShowId, "Reviewing");
+            _searchString = si.ShowName;
             FindShows();
-            SearchString = "";
+            _searchString = "";
         }
         else if (si.TvmStatus == "Following")
         {
-            WebShowsService.appinfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
-            bool result = WebShowsService.SetMtAndAsnShow(si.TvmShowId, si.MediaType, si.AltShowName);
-            SearchString = si.ShowName;
+            _webShowsService.AppInfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
+            _webShowsService.SetMtAndAsnShow(si.TvmShowId, si.MediaType, si.AltShowName);
+            _searchString = si.ShowName;
             FindShows();
-            SearchString = "";
+            _searchString = "";
         }
     }
 
     private void DeleteShow(ShowsInfo si)
     {
-        WebShowsService.appinfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
-        bool result = WebShowsService.DeleteShow(si.TvmShowId);
-        if (si.TvmStatus == "New") { ReviewNewShows(); } else { ReviewReviewShows(); }
-        SearchString = "";
+        _webShowsService.AppInfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
+        _webShowsService.DeleteShow(si.TvmShowId);
+        if (si.TvmStatus == "New")
+        {
+            ReviewNewShows();
+        }
+        else
+        {
+            ReviewReviewShows();
+        }
+        _searchString = "";
     }
 
     private void FindEpisodes(ShowsInfo si)
     {
-        if (si.AltShowName == "") { DataExchangeService.ShowName = si.ShowName; } else { DataExchangeService.ShowName = si.AltShowName; }
-        DataExchangeService.SendingPage = "Shows";
-        DataExchangeService.IntendedPage = "Episodes";
-        NavigationManagerService.NavigateTo("/episodes", false);
+        _dataExchangeService.ShowName = si.AltShowName == "" ? si.ShowName : si.AltShowName;
+        _dataExchangeService.SendingPage = "Shows";
+        _dataExchangeService.IntendedPage = "Episodes";
+        _navigationManagerService.NavigateTo("/episodes");
     }
 
 }
@@ -74,13 +80,13 @@
     <div class="input-group-prepend">
         <span class="input-group-text">%</span>
     </div>
-    <input @bind="SearchString" />
+    <input @bind="_searchString"/>
     <div class="input-group-append">
         <span class="input-group-text">%</span>
     </div>
-    &#8195;<button class="btn btn-primary" @onclick="FindShows">Find Shows</button>
-    &#8195;<button class="btn btn-primary" @onclick="ReviewNewShows">New Shows</button>
-    &#8195;<button class="btn btn-primary" @onclick="ReviewReviewShows">Review Shows</button>
+    &#8195;<button class="btn btn-info" @onclick="FindShows">Find Shows</button>
+    &#8195;<button class="btn btn-info" @onclick="ReviewNewShows">New Shows</button>
+    &#8195;<button class="btn btn-info" @onclick="ReviewReviewShows">Review Shows</button>
 </div>
 
 <p></p>
@@ -89,59 +95,77 @@
     <h6>Shows - Table</h6>
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th>Show Id</th>
-                <th>Name</th>
-                <th>Show Url</th>
-                <th>Alt Name</th>
-                <th>Finder</th>
-                <th>Media Type</th>
-                <th>Status</th>
-                <th>ShowStatus</th>
-                <th>Update Date</th>
-                <th>Actions</th>
-            </tr>
+        <tr>
+            <th>Show Id</th>
+            <th>Name</th>
+            <th>Show Url</th>
+            <th>Alt Name</th>
+            <th>Finder</th>
+            <th>Media Type</th>
+            <th>Status</th>
+            <th>ShowStatus</th>
+            <th>Update Date</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-            @if (idx != 0) { idx = 0; }
-            @foreach (ShowsInfo si in showsInfoList)
-            {
-                <tr>
-                    <td>@si.TvmShowId</td>
-                    <td>@si.ShowName</td>
-                    <td> <a href="@si.TvmUrl" target="_blank">TVMaze</a> </td>
-                    <td>
-                        @if (si.TvmStatus == "Following")
-                        {<input @bind="si.AltShowName" size="60" /> }
+        @{ _idx = 0; }
+        @foreach (var si in _showsInfoList)
+        {
+            <tr>
+                <td>@si.TvmShowId</td>
+                <td>@si.ShowName</td>
+                <td>
+                    <a href="@si.TvmUrl" target="_blank">TVMaze</a>
+                </td>
+                <td>
+                    @if (si.TvmStatus == "Following")
+                    {
+                        <input @bind="si.AltShowName" size="60"/>
+                    }
+                    else
+                    {
+                        @si.AltShowName
+                    }
+                </td>
+                <td>@si.Finder</td>
+                <td>
+                    @if (si.TvmStatus == "Following")
+                    {
+                        <input @bind="@si.MediaType" size="4"/>
+                    }
+                    else
+                    {
+                        @si.MediaType
+                    }
+                </td>
+                <td>@si.TvmStatus</td>
+                <td>@si.ShowStatus</td>
+                <td>@si.UpdateDate.Substring(0, 10)</td>
+                <td>
+                    @if (si.TvmStatus != "Reviewing")
+                    {
+                        if (si.TvmStatus == "New")
+                        {
+                            <button class="btn btn-primary" @onclick="@(() => EditShow(si))">Set Reviewing</button>
+                        }
                         else
-                        {@si.AltShowName}
-                    </td>
-                    <td>@si.Finder</td>
-                    <td>
-                        @if (si.TvmStatus == "Following")
-                        {<input @bind="@si.MediaType" size="6" /> }
-                        else
-                        {@si.MediaType}
-                    </td>
-                    <td>@si.TvmStatus</td>
-                    <td>@si.ShowStatus</td>
-                    <td>@si.UpdateDate.Substring(0, 10)</td>
-                    <td>
-                        @if (si.TvmStatus != "Reviewing")
-                            if (si.TvmStatus == "New")
-                            {<button class="btn btn-secondary" @onclick="@(() => EditShow(si))">Set Reviewing</button>}
-                            else
-                            { <button class="btn btn-secondary" @onclick="@(() => EditShow(si))">Submit Edit</button>}
-                        @if (@si.TvmStatus != "Following")
-                        {<button class="btn btn-secondary" @onclick="@(() => DeleteShow(si))">Delete</button>}
-                        <button class="btn btn-secondary" @onclick="@(() => FindEpisodes(si))">Episodes</button>
-                    </td>
-                </tr>
-                idx++;
-            }
+                        {
+                            <button class="btn btn-warning" @onclick="@(() => EditShow(si))">Submit Edit</button>
+                        }
+                    }
+                    @if (si.TvmStatus != "Following")
+                    {
+                        <button class="btn btn-danger" @onclick="@(() => DeleteShow(si))">Delete</button>
+                    }
+                    <button class="btn btn-info" @onclick="@(() => FindEpisodes(si))">Episodes</button>
+                </td>
+            </tr>
+            _idx++;
+        }
         </tbody>
     </table>
-    <div><em>Output has @idx records</em></div>
+    <div>
+        <em>Output has @_idx records</em>
+    </div>
 </div>
-
-
