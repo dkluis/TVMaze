@@ -2,17 +2,17 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <ReleaseVersion>1.2</ReleaseVersion>
+        <ReleaseVersion>1.5</ReleaseVersion>
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Newtonsoft.Json"/>
+        <None Remove="Newtonsoft.Json" />
     </ItemGroup>
 </Project>

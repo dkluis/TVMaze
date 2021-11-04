@@ -3,14 +3,14 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
-        <ReleaseVersion>1.2</ReleaseVersion>
+        <ReleaseVersion>1.5</ReleaseVersion>
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj"/>
-        <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj"/>
-        <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj" />
+        <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj" />
+        <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj" />
     </ItemGroup>
 </Project>
