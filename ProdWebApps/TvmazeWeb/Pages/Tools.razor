@@ -34,6 +34,26 @@
                 RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
                 _message = "Finished Acquire Media";
                 break;
+            case "Show Epochs":
+                RunScript("/Users/dick/TVMaze/Scripts/UpdateShowEpochs.sh");
+                _message = "Finished Update Show Epochs";
+                break;
+            case "Cleanup":
+                RunScript("/Users/dick/TVMaze/Scripts/CleanupPlexMedia.sh");
+                _message = "Finished Cleanup Plex Media";
+                break;
+            case "Refresh Shows":
+                RunScript("/Users/dick/TVMaze/Scripts/RefreshShows.sh");
+                _message = "Finished Refresh Shows";
+                break;
+            case "ShowRss Feed":
+                RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRssFeed.sh");
+                _message = "Finished Refresh ShowRss Feed";
+                break;
+            case "Refresh ShowRss":
+                RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRss.sh");
+                _message = "Finished Refresh ShowRss";
+                break;
             default:
                 _message = "";
                 break;
@@ -63,7 +83,7 @@
             case "Acquire":
                 program = "Acquire Media";
                 break;
-            case "Epochs":
+            case "Show Epochs":
                 program = "Update Show Epochs";
                 break;
             case "ShowRss Feed":
@@ -72,8 +92,17 @@
             case "Refresh One":
                 program = "RefreshOneShow WebUI";
                 break;
+            case "Refresh Shows":
+                program = "Refresh Shows";
+                break;
+            case "Cleanup Media":
+                program = "Cleanup Plex Media";
+                break;
             case "WebUI":
                 program = "WebUI";
+                break;
+            case "Refresh ShowRss":
+                program = "Refresh ShowRss";
                 break;
             default:
                 _logView = "";
@@ -149,22 +178,28 @@
 
 <h1>Tools Page</h1>
 <div>
-    <h2>Batch Update Processes: </h2>
+    <h2>Execute Processes: </h2>
     <div class="row">
         <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Followed")'>Followed</button>
         <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
         <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
         <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Show Epochs")'>Epochs</button>
     </div>
-    <br/>
-</div>
+    <div class="row">
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Cleanup")'>Cleanup Media</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Refresh Shows")'>Refresh Shows</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("ShowRss Feed")'>Refresh Feed</button>
+        <button class="btn btn-primary col-lg-2" @onclick='() => ExecScripts("Refresh ShowRss")'
+                data-toggle="tooltip" data-placement="bottom" title="Update ShowRss HTML first">
+            Refresh ShowRss
+        </button>
+    </div>
+    <div class="row">
+        <input class="col-sm-1" @bind="@_refreshShowId"/>
+        <button class="btn btn-primary col-lg-2" @onclick="RefreshOneShow">Refresh One Show</button>
+    </div>
 
-<div>
-    <h2>Direct Update Processes:</h2>
-    <p></p>
-    <input @bind="@_refreshShowId" size="5"/>
-    <button class="btn btn-primary" @onclick="RefreshOneShow">Refresh Show</button>
-    <p></p>
 </div>
 <div>
     <h4>Update Status:</h4>
@@ -174,9 +209,11 @@
         </h5>
     </div>
 </div>
-<p></p><p></p>
+<p></p>
+<p></p>
 <hr class="bg-primary"/>
-<p></p><p></p>
+<p></p>
+<p></p>
 <div>
     <h2>View the Logs</h2>
     <div class="row">
@@ -184,12 +221,17 @@
         <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
         <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
         <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
-        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Epochs")'>Epochs</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Show Epochs")'>Epochs</button>
     </div>
     <div class="row">
-        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("ShowRss Feed")'>ShowRss Feed</button>
-        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Refresh One")'>One Show</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Cleanup Media")'>Cleanup Media</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Refresh Shows")'>Refresh Shows</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("ShowRss Feed")'>Refresh Feed</button>
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Refresh ShowRss")'>Refresh ShowRss</button>
         <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("WebUI")'>Web UI</button>
+    </div>
+    <div class="row">
+        <button class="btn btn-info col-lg-2" @onclick='() => ExecLogViewer("Refresh One")'>Refresh One Show</button>
         <button class="btn btn-primary col-lg-2" @onclick="ClearLog">Clear Page</button>
         @if (_logView == "No Active Log to Empty")
         {
