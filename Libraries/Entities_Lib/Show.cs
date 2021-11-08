@@ -12,8 +12,8 @@ namespace Entities_Lib
     {
         private readonly AppInfo _appInfo;
         private readonly TextFileHandler _log;
-
         private readonly MariaDb _mdb;
+        
         public string AltShowName = "";
         public string CleanedShowName = "";
         public string Finder = "Multi";
