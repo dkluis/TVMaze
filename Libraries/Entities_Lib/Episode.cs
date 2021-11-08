@@ -131,7 +131,7 @@ namespace Entities_Lib
             }
         }
 
-        private void FillViaDb(int episode)
+        public void FillViaDb(int episode)
         {
             var rdr = _mdb.ExecQuery($"select * from episodesfullinfo where `TvmEpisodeId` = {episode};");
             while (rdr.Read())
@@ -185,7 +185,6 @@ namespace Entities_Lib
         public bool DbUpdate()
         {
             _mdb.Success = true;
-
             var values = "";
             var sqlPre = "update episodes set ";
             var sqlSuf = $"where `Id` = {Id};";
@@ -212,7 +211,15 @@ namespace Entities_Lib
             return _mdb.Success;
         }
 
-        #region DB Record Definition
+        public bool DbDelete()
+        {
+            _mdb.Success = true;
+            var rows = _mdb.ExecNonQuery($"delete from Episodes where `TvmEpisodeId` = {TvmEpisodeId}");
+            _log.Write($"DbDelete for Episode: {TvmEpisodeId}", "", 4);
+            _mdb.Close();
+            if (rows != 0) return _mdb.Success;
+            return _mdb.Success = false;
+        }
 
         public int Id;
         public int TvmShowId;
@@ -232,21 +239,15 @@ namespace Entities_Lib
         public string CleanedShowName = "";
         public string AltShowName = "";
 
-        #endregion
-
-        #region Tvm Record Definiton (without what is in DB record)
-
         public string TvmType;
         public int TvmRunTime;
         public string TvmImage;
         public string TvmSummary;
-
-        #endregion
     }
 
     public class EpisodesByShow : IDisposable
     {
-        public readonly List<Episode> EpisodesByShowList = new();
+        private readonly List<Episode> _episodesByShowList = new();
 
         public void Dispose()
         {
@@ -259,7 +260,7 @@ namespace Entities_Lib
             using (WebApi wa = new(appInfo))
             {
                 epsByShow = wa.ConvertHttpToJArray(wa.GetEpisodesByShow(showId));
-                if (epsByShow is null) return EpisodesByShowList;
+                if (epsByShow is null) return _episodesByShowList;
             }
 
 
@@ -269,10 +270,10 @@ namespace Entities_Lib
                 if (ep is null) continue;
                 appInfo.TxtFile.Write($"Working on Episode {ep["id"]}", "", 4);
                 episode.FillViaTvmaze(int.Parse(ep["id"]!.ToString()));
-                EpisodesByShowList.Add(episode);
+                _episodesByShowList.Add(episode);
             }
 
-            return EpisodesByShowList;
+            return _episodesByShowList;
         }
     }
 

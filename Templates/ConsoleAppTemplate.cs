@@ -7,7 +7,7 @@ namespace This_Program
     {
         static void Main(string[] args)
         {
-            string This_Program = "This Program";
+            const string This_Program = "This Program";
             Console.WriteLine($"{DateTime.Now}: {This_Program}");
             AppInfo appinfo = new("TVMaze", This_Program, "DB Needed from Config");
             TextFileHandler log = appinfo.TxtFile;

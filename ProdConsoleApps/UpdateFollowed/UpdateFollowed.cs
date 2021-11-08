@@ -95,6 +95,7 @@ namespace UpdateFollowed
 
             log.Write($"Updated or Inserted {idx} Shows", "", 2);
 
+            // Delete Shows that are no longer being followed with a limit of 10 at a time.
             Followed followed = new(appInfo);
             var toDelete = followed.ShowsToDelete(allFollowedShows);
             if (toDelete.Count > 0)
@@ -111,7 +112,6 @@ namespace UpdateFollowed
                     }
                 else
                     log.Write($"Too Many Shows are flagged for deletion {toDelete.Count}", "", 0);
-
                 log.Write($"Deleted {delIdx} Shows", "", 1);
             }
 
