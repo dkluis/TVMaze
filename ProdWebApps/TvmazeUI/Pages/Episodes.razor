@@ -1,0 +1,135 @@
+﻿@namespace TvmazeUI.Pages
+@page "/episodes"
+
+
+@inject WebEpisodes _webEpisodesService
+@inject DataExchange _dataExchangeService
+
+@code{
+    private List<EpisodeInfo> _episodesInfoList = new();
+    string? _searchString;
+    string? _seasonString;
+    string? _episodeString;
+    int _idx;
+    bool _showRssBool;
+        private const string FindUrlE = "https://eztv.re/search/";
+        private const string FindUrlR = "https://www.ettv.be/torrents-search.php?search=";
+
+    private void FindEpisodes()
+    {
+        _seasonString ??= "";
+        _episodeString ??= "";
+        _searchString ??= "";
+        _webEpisodesService.AppInfo.TxtFile.Write($"Executing Find Episodes for show {_searchString},  {_seasonString}, {_episodeString}", "", 4);
+        _episodesInfoList = _webEpisodesService.GetEpisodes(_searchString, _seasonString, _episodeString);
+        _dataExchangeService.Reset();
+    }
+
+    private void GetEpisodesToAcquire()
+    {
+        _episodesInfoList = _webEpisodesService.GetEpisodesToAcquire(_showRssBool);
+        _dataExchangeService.EpisodeStateFunction = "GetEpisodesToAcquire";
+        _dataExchangeService.EpisodeStateIncludeShowRss = _showRssBool;
+        _dataExchangeService.EpisodeStateIsActive = true;
+    }
+
+}
+
+@{
+    if (_dataExchangeService.SendingPage == "Shows" && _dataExchangeService.IntendedPage == "Episodes")
+    {
+        _webEpisodesService.AppInfo.TxtFile.Write($"Request to Find Episode for show {_dataExchangeService.ShowName} from page {_dataExchangeService.SendingPage}");
+        _searchString = _dataExchangeService.ShowName;
+        FindEpisodes();
+        _searchString = "";
+        _dataExchangeService.ResetEpisodeState();
+    }
+    else
+    if (_dataExchangeService.EpisodeStateIsActive && _dataExchangeService.LastPage != "Episodes")
+    {
+        if (_dataExchangeService.EpisodeStateFunction == "GetEpisodesToAcquire")
+        {
+            _showRssBool = _dataExchangeService.EpisodeStateIncludeShowRss;
+            GetEpisodesToAcquire();
+        }
+    }
+}
+
+@{ _dataExchangeService.LastPage = "Episodes"; }
+<h1>Episodes</h1>
+<em>To manually set Watched, Acquired or Skipped use TVMaze Episode Url</em>
+<div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">ShowName %</span>
+        </div>
+        <input @bind="_searchString"/>
+        <div class="input-group-append">
+            <span class="input-group-text">%</span>
+        </div>
+        <div class="input-group-prepend">
+            <span class="input-group-text">Season</span>
+        </div>
+        <input @bind="_seasonString" size="3"/>
+        <div class="input-group-prepend">
+            <span class="input-group-text">Episode</span>
+        </div>
+        <input @bind="_episodeString" size="3"/>
+        &#8195;<button class="btn btn-info" @onclick="FindEpisodes">Find Episodes</button>
+        &#8195;Include ShowRss:&#8195;<input type="checkbox" @bind="_showRssBool"/>
+        &#8195;<button class="btn btn-info" @onclick="GetEpisodesToAcquire">Next 2 Days</button>
+    </div>
+</div>
+
+<p></p>
+
+<p></p>
+
+<div>
+    <h6>Shows - Table</h6>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Show Id</th>
+            <th>Name</th>
+            <th>Season</th>
+            <th>Episode</th>
+            <th>Broadcast Date</th>
+            <th>Episode Url</th>
+            <th>Status</th>
+            <th>Status Date</th>
+            <th>Update Date</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{ _idx = 0; }
+        @foreach (var ei in _episodesInfoList)
+        {
+            var findItE = FindUrlE + ei.ShowName!.Replace(" ", "-");
+            var findItR = FindUrlR + ei.ShowName.Replace(" ", "+");
+            <tr>
+                <td>@ei.TvmShowId</td>
+                <td>@ei.ShowName</td>
+                <td>@ei.Season</td>
+                <td>@ei.Episode</td>
+                <td>@ei.BroadcastDate</td>
+                <td>
+                    <a href="@ei.TvmUrl" target="_blank">TVMaze</a>
+                </td>
+                <td>@ei.PlexStatus</td>
+                <td>@ei.PlexDate</td>
+                <td>@ei.UpdateDate</td>
+                <td>
+                    <a href="@findItE" target="_blank">FE</a>
+                    <a href="@findItR" target="_blank">FR</a>
+                </td>
+            </tr>
+            _idx++;
+        }
+        </tbody>
+    </table>
+    <div>
+        <em>Output has @_idx records</em>
+    </div>
+</div>
