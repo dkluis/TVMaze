@@ -67,12 +67,10 @@ namespace TvmazeUI.Data
                 if (ei.BroadcastDate!.Length > 10) ei.BroadcastDate = ei.BroadcastDate[..10];
                 episodeInfoList.Add(ei);
             }
-
             return episodeInfoList;
         }
     }
-
-
+    
     public class EpisodeInfo
     {
         public string? BroadcastDate;

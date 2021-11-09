@@ -251,7 +251,7 @@
     <p>
         @if (_logRequested)
         {
-            @foreach (var line in _logContent)
+            @foreach (var line in _logContent!)
             {
                 if (line.Contains(
                     "########################################################################################") ||
