@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.WebHost.UseUrls("http://ca-server.local:6001");
 builder.Services.AddScoped<WebShows>(); // ServerSide
 builder.Services.AddScoped<WebEpisodes>();
 builder.Services.AddScoped<DataExchange>();
