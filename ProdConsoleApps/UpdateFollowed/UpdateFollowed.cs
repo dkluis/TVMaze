@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
@@ -25,7 +26,7 @@ namespace UpdateFollowed
 
             WebApi tvmApi = new(appInfo);
             var gfs = tvmApi.GetFollowedShows();
-            if (tvmApi.isTimedOut)
+            if (tvmApi.IsTimedOut)
             {
                 log.Write("Getting an Time Out twice on the GetFollowedShows call to TVMaze");
                 Environment.Exit(99);
