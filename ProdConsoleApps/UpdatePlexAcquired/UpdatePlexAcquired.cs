@@ -39,17 +39,27 @@ namespace UpdatePlexAcquired
                 var acqInfo = Regex.Split(acq, "S[0-9]+E[0-9]+.", RegexOptions.IgnoreCase);
                 var acqSeas = Regex.Split(acq, "S[0-9]+.", RegexOptions.IgnoreCase);
                 string show;
-                var episode = "";
+                var episodeString = "";
                 var isSeason = false;
-                int season;
+                int seasonNum;
                 List<int> epsToUpdate = new();
                 if (acqInfo.Length == 2)
                 {
                     show = acqInfo[0].Replace(".", " ").Trim();
-                    episode = acq.Replace(acqInfo[1], "").Replace(acqInfo[0], "").Replace(".", " ").Trim();
-                    var seas = episode.ToLower().Split("e");
-                    season = int.Parse(seas[0].Replace("s", ""));
-                    log.Write($"Found show {show} episode {episode}, season {season}", "", 4);
+                    episodeString = acq.Replace(acqInfo[1], "").Replace(acqInfo[0], "").Replace(".", " ").Trim();
+                    var seas = episodeString.ToLower().Split("e");
+                    seasonNum = int.Parse(seas[0].Replace("s", ""));
+                    var epiNum = int.Parse(seas[1]);
+                    // Special section to handle the Dexter versus Dexter New Blood season mix up on the internet.
+                    if (show.ToLower() == "dexter" && seasonNum > 8)
+                    {
+                        show = "Dexter New Blood";
+                        seasonNum -= 8;
+                        episodeString = Common.BuildSeasonEpisodeString(seasonNum, epiNum);
+                        log.Write($"Changed Dexter to Dexter New Blood", "", 2);
+                    }
+                    //
+                    log.Write($"Found show {show} episode {episodeString}", "", 4);
                 }
                 else
                 {
@@ -57,9 +67,9 @@ namespace UpdatePlexAcquired
                     {
                         isSeason = true;
                         show = acqSeas[0].Replace(".", " ").Trim();
-                        season = int.Parse(acq.Replace(acqSeas[0], "").Replace(acqSeas[1], "").Replace(".", "")
+                        seasonNum = int.Parse(acq.Replace(acqSeas[0], "").Replace(acqSeas[1], "").Replace(".", "")
                             .ToLower().Replace("s", ""));
-                        log.Write($"Found the show's {show} whole season {season}", "", 4);
+                        log.Write($"Found the show's {show} whole season {seasonNum}", "", 4);
                     }
                     else
                     {
@@ -99,7 +109,7 @@ namespace UpdatePlexAcquired
                 if (!isSeason)
                 {
                     EpisodeSearch episodeToUpdate = new();
-                    epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episode);
+                    epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episodeString);
                     epsToUpdate.Add(epiId);
                     log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
                 }
@@ -107,15 +117,15 @@ namespace UpdatePlexAcquired
                 Show foundShow = new(appInfo);
                 if (!isSeason && epiId == 0)
                 {
-                    log.Write($"Could not find episode for Show {show} and Episode String {episode}", "", 2);
+                    log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
                     using (ActionItems ai = new(appInfo))
                     {
-                        ai.DbInsert($"Could not find episode for Show {show} and Episode String {episode}");
+                        ai.DbInsert($"Could not find episode for Show {show} and Episode String {episodeString}");
                     }
 
                     foundShow.FillViaTvmaze(showId[0]);
                     using MediaFileHandler mfh = new(appInfo);
-                    mfh.MoveMediaToPlex(acq, null, foundShow, season);
+                    mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
                     foundShow.Reset();
                     continue;
                 }
@@ -124,7 +134,7 @@ namespace UpdatePlexAcquired
                 {
                     using MariaDb mDbE = new(appInfo);
                     var rdrE = mDbE.ExecQuery(
-                        $"select TvmEpisodeId from Episodes where `TvmShowId` = {showId[0]} and `Season` = {season}");
+                        $"select TvmEpisodeId from Episodes where `TvmShowId` = {showId[0]} and `Season` = {seasonNum}");
                     while (rdrE.Read()) epsToUpdate.Add(int.Parse(rdrE[0].ToString()!));
                 }
 
