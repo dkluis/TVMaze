@@ -44,8 +44,7 @@
         _searchString = "";
         _dataExchangeService.ResetEpisodeState();
     }
-    else
-    if (_dataExchangeService.EpisodeStateIsActive && _dataExchangeService.LastPage != "Episodes")
+    else if (_dataExchangeService.EpisodeStateIsActive && _dataExchangeService.LastPage != "Episodes")
     {
         if (_dataExchangeService.EpisodeStateFunction == "GetEpisodesToAcquire")
         {
@@ -75,9 +74,15 @@
             <span class="input-group-text">Episode</span>
         </div>
         <input @bind="_episodeString" size="3"/>
-        &#8195;<button class="btn btn-info" @onclick="FindEpisodes">Find Episodes</button>
-        &#8195;Include ShowRss:&#8195;<input type="checkbox" @bind="_showRssBool"/>
-        &#8195;<button class="btn btn-info" @onclick="GetEpisodesToAcquire">Next 2 Days</button>
+        <button class="btn btn-info" @onclick="FindEpisodes">Find Episodes</button>
+        &#8195;
+        <div class="input_group_prepend">
+            <span class="input-group-text">
+                Include ShowRss &#8195;
+                <input type="checkbox" @bind="_showRssBool"/>
+            </span>
+        </div>
+        <button class="btn btn-info" @onclick="GetEpisodesToAcquire">Next 2 Days</button>
     </div>
 </div>
 

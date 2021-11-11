@@ -85,7 +85,7 @@
     <div class="input-group-append">
         <span class="input-group-text">%</span>
     </div>
-    &#8195;<button class="btn btn-info" @onclick="FindShows">Find Shows</button>
+    <button class="btn btn-info" @onclick="FindShows">Find Shows</button>
     &#8195;<button class="btn btn-info" @onclick="ReviewNewShows">New Shows</button>
     &#8195;<button class="btn btn-info" @onclick="ReviewReviewShows">Review Shows</button>
 </div>
@@ -122,7 +122,7 @@
                 <td>
                     @if (si.TvmStatus == "Following")
                     {
-                        <input @bind="si.AltShowName" size="60"/>
+                        <input @bind="si.AltShowName"/>
                     }
                     else
                     {
@@ -133,7 +133,7 @@
                 <td>
                     @if (si.TvmStatus == "Following")
                     {
-                        <input @bind="@si.MediaType" size="4"/>
+                        <input @bind="@si.MediaType" size="2"/>
                     }
                     else
                     {
