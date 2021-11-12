@@ -13,7 +13,7 @@ namespace RefreshOneShow
             var log = appInfo.TxtFile;
             log.Start();
 
-            const int theShowToRefresh = 46247;
+            const int theShowToRefresh = 49333;
 
             MariaDb mDbR = new(appInfo);
 
