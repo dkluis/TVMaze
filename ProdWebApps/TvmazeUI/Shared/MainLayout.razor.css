@@ -1,7 +1,7 @@
 .page {
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 main {
@@ -31,7 +31,7 @@ main {
         text-overflow: ellipsis;
     }
 
-@media (max-width: 1050px) {
+@media (max-width: 1500px) {
     .top-row:not(.auth) {
         display: none;
     }

@@ -1,19 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>TVMmaze - UI</PageTitle>
+<header>
+  <NavMenu />
+</header>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
-
-    <div class="main">
-        <div class="top-row px-2">
-            <a href="https://github.com/dkluis/TVMaze.git" target="_blank">TVMaze Info</a>
-        </div>
-
-        <div class="content px-2">
-            @Body
-        </div>
-    </div>
+<div class="container">
+    <main role="main">
+        @Body
+    </main>
 </div>
