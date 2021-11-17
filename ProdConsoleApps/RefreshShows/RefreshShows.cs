@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using Common_Lib;
+﻿using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
 
@@ -42,6 +40,17 @@ namespace RefreshShows
 
             // Get all shows to refresh that have episodes that without a broadcast date
             rdr = mDbR.ExecQuery("select distinct `TvmShowId` from episodesfullinfo where `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
+            while (rdr.Read())
+            {
+                using ShowAndEpisodes sae = new(appInfo);
+                log.Write($"Working on Epi Update differences Show {rdr[0]}", "", 2);
+                sae.Refresh(int.Parse(rdr[0].ToString()!));
+                Thread.Sleep(1000);
+            }
+            mDbR.Close();
+            
+            // Refresh all shows with Orphaned Episodes 
+            rdr = mDbR.ExecQuery("select distinct `TvmShowId` from orphanedepisodes order by `TvmShowId`;");
             while (rdr.Read())
             {
                 using ShowAndEpisodes sae = new(appInfo);

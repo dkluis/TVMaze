@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="ca-server" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="ca-server">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$/Documentation/Applications Explained.md" web="/" />
+            <mapping local="$PROJECT_DIR$/Documentation/Implementation Sequence Notes.md" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Common_Lib/AppInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Common_Lib/Common.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Common_Lib/Common_Lib.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Common_Lib/ConvertJsonTxt.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Common_Lib/TextFileHandler.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Common_Lib/obj/Release/net5.0/Common_Lib.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/ActionItems.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/DB_Lib.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/MariaDB.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/PlexSqlLite.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/Scripts/CreateBaseDB.sql" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/Scripts/PlexDB selection of watched Episodes.sql" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/Tvmaze/TvmCommonSql.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/DB_Lib/obj/Release/net5.0/DB_Lib.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/Entities_Lib.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/Episode.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/Followed.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/GlobalSuppressions.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/MediaFileHandler.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/Show.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/ShowAndEpisodes.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Entities_Lib/obj/Release/net5.0/Entities_Lib.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Web_Lib/Properties/PublishProfiles/FolderProfile.pubxml" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Web_Lib/WebAPI.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Web_Lib/WebScrape.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Web_Lib/Web_Lib.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/Libraries/Web_Lib/obj/Release/net5.0/Web_Lib.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/AcquireMedia/AcquireMedia.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/AcquireMedia/AcquireMedia.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/AcquireMedia/obj/Release/net5.0/AcquireMedia.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/AcquireMovies/AcquireMovies.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/AcquireMovies/AcquireMovies.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/AcquireMovies/obj/Release/net5.0/AcquireMovies.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/CleanupPlexMedia/CleanupPlexMedia.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/CleanupPlexMedia/CleanupPlexMedia.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/CleanupPlexMedia/obj/Release/net5.0/CleanupPlexMedia.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/InitializeEpisodes/InitializeEpisodes.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/InitializeEpisodes/InitializeEpisodes.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/InitializeEpisodes/obj/Release/net5.0/InitializeEpisodes.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/InitializeShowEpochs/InitializeShowEpochs.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/InitializeShowEpochs/InitializeShowEpochs.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/InitializeShowEpochs/obj/Release/net5.0/InitializeShowEpochs.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShowRss/RefreshShowRss.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShowRss/RefreshShowRss.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShowRss/obj/Release/net5.0/RefreshShowRss.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShowRssFeed/RefreshShowRssFeed.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShowRssFeed/RefreshShowRssFeed.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShowRssFeed/obj/Release/net5.0/RefreshShowRssFeed.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShows/Properties/PublishProfiles/FolderProfile.pubxml" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShows/RefreshShows.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShows/RefreshShows.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/RefreshShows/obj/Release/net5.0/RefreshShows.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdateFollowed/UpdateFollowed.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdateFollowed/UpdateFollowed.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdateFollowed/obj/Release/net5.0/UpdateFollowed.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdatePlexAcquired/UpdatePlexAcquired.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdatePlexAcquired/UpdatePlexAcquired.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdatePlexAcquired/obj/Release/net5.0/UpdatePlexAcquired.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdatePlexWatched/UpdatePlexWatched.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdatePlexWatched/UpdatePlexWatched.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdatePlexWatched/obj/Release/net5.0/UpdatePlexWatched.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdateShowEpochs/Properties/PublishProfiles/FolderProfile.pubxml" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdateShowEpochs/UpdateShowEpochs.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdateShowEpochs/UpdateShowEpochs.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdConsoleApps/UpdateShowEpochs/obj/Release/net5.0/UpdateShowEpochs.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/App.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Data/DataExchange.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Data/WebEpisodes.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Data/WebShows.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/Episodes.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/Error.cshtml" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/Error.cshtml.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/Graphs.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/Index.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/Shows.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/Tools.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Pages/_Host.cshtml" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Program.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Properties/PublishProfiles/FolderProfile.pubxml" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Properties/launchSettings.json" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Shared/MainLayout.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Shared/MainLayout.razor.css" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Shared/NavMenu.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Shared/NavMenu.razor.css" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Shared/SurveyPrompt.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/Startup.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/TVMazeWeb.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/_Imports.razor" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/appsettings.Development.json" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/appsettings.json" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/obj/Release/net5.0/TVMazeWeb.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/obj/Release/net5.0/TVMazeWeb.RazorAssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/TVMazeWeb.styles.css" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/bootstrap/bootstrap.min.css" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/bootstrap/bootstrap.min.css.map" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/FONT-LICENSE" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/ICON-LICENSE" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/README.md" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/font/css/open-iconic-bootstrap.min.css" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/font/fonts/open-iconic.eot" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/font/fonts/open-iconic.otf" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/font/fonts/open-iconic.svg" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/font/fonts/open-iconic.ttf" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/open-iconic/font/fonts/open-iconic.woff" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/css/site.css" web="/" />
+            <mapping local="$PROJECT_DIR$/ProdWebApps/TVMazeWeb/wwwroot/favicon.ico" web="/" />
+            <mapping local="$PROJECT_DIR$/Resources/DataBase.erd" web="/" />
+            <mapping local="$PROJECT_DIR$/Resources/tvmaze-icon.png" web="/" />
+            <mapping local="$PROJECT_DIR$/TVMaze.sln" web="/" />
+            <mapping local="$PROJECT_DIR$/Templates/ClassTemplate.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Templates/ConsoleAppTemplate.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/Templates/Crontab Example.txt" web="/" />
+            <mapping local="$PROJECT_DIR$/Templates/Script Example.txt" web="/" />
+            <mapping local="$PROJECT_DIR$/Templates/Tvmaze.cnf" web="/" />
+            <mapping local="$PROJECT_DIR$/TryOut/TryOut/RefreshOneShow.cs" web="/" />
+            <mapping local="$PROJECT_DIR$/TryOut/TryOut/RefreshOneShow.csproj" web="/" />
+            <mapping local="$PROJECT_DIR$/TryOut/TryOut/obj/Release/net5.0/RefreshOneShow.AssemblyInfo.cs" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
