@@ -12,8 +12,6 @@ namespace Web_Lib
         private readonly AppInfo _appInfo;
         private readonly TextFileHandler _log;
         public List<string> Magnets = new();
-        public bool RarbgError;
-        public bool WholeSeasonFound;
 
         public WebScrape(AppInfo info)
         {
@@ -55,10 +53,6 @@ namespace Web_Lib
         {
             return false;
         }
-
-        #region Finders
-
-        #region EZTV
 
         public void GetEztvMagnets(string showName, string seasEpi)
         {
@@ -119,10 +113,6 @@ namespace Web_Lib
             return eztvUrl;
         }
 
-        #endregion
-
-        #region MagnetDL
-
         public void GetMagnetDlMagnets(string showName, string seasEpi)
         {
             var foundMagnets = 0;
@@ -180,10 +170,6 @@ namespace Web_Lib
             return url;
         }
 
-        #endregion
-
-        #region RarbgAPI
-
         public void GetRarbgMagnets(string showName, string seasEpi)
         {
             var foundMagnets = 0;
@@ -205,12 +191,11 @@ namespace Web_Lib
             if (content == "{\"error\":\"No results found\",\"error_code\":20}")
             {
                 _log.Write("No Result returned from the API RarbgAPI", "RarbgAPI", 4);
-                RarbgError = true;
                 return;
             }
 
             dynamic jsonContent = JsonConvert.DeserializeObject(content);
-            if (jsonContent != null)
+            if (jsonContent != null && jsonContent["torrent_results"] != null)
                 foreach (var show in jsonContent["torrent_results"])
                 {
                     string magnet = show["download"];
@@ -225,10 +210,6 @@ namespace Web_Lib
             Magnets.Reverse();
             _log.Write($"Found {foundMagnets} via RarbgAPI", "", 4);
         }
-
-        #endregion
-
-        #region PirateBay
 
         public void GetPirateBayMagnets(string showName, string seasEpi)
         {
@@ -287,14 +268,6 @@ namespace Web_Lib
             return url;
         }
 
-        #endregion
-
-        #region EztvAPI IMDB
-
-        #endregion
-
-        #region Priorities
-
         private static int PrioritizeMagnet(string magnet, string provider)
         {
             var priority = provider switch
@@ -335,10 +308,6 @@ namespace Web_Lib
 
             return priority;
         }
-
-        #endregion
-
-        #endregion
     }
 
     public class Magnets
