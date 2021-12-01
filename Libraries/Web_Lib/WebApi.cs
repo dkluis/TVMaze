@@ -71,29 +71,35 @@ namespace Web_Lib
 
         private void PerformWaitTvmApi(string api)
         {
-            var exectime = new System.Diagnostics.Stopwatch();
-            exectime.Start();
+            var execTime = new System.Diagnostics.Stopwatch();
+            execTime.Start();
 
-            Task t = PerformTvmApiAsync(api);
+            var t = PerformTvmApiAsync(api);
             t.Wait();
 
-            exectime.Stop();
-            _log.Write($"TVMApi Exec time: {exectime.ElapsedMilliseconds} ms.", "", 4);
+            execTime.Stop();
+            _log.Write($"TVMApi Exec time: {execTime.ElapsedMilliseconds} ms.", "", 4);
 
             if (IsTimedOut)
             {
                 _log.Write($"TimedOut --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Exec");
                 _httpResponse = new HttpResponseMessage();
+                Console.WriteLine("########### Aborting from PerformWaitTvmApi IsTimedOut is True ###################");
+                Environment.Exit(99);
             }
             else if (_httpResponse is null)
             {
                 _log.Write($"NULL --> Http Response Code is: NULL for API {_client.BaseAddress}{api}", "WebAPI Exec");
                 _httpResponse = new HttpResponseMessage();
+                Console.WriteLine("########### Aborting from PerformWaitTvmApi Response is Null ###################");
+                Environment.Exit(99);
             }
             else if (!_httpResponse.IsSuccessStatusCode)
             {
                 _log.Write($"Status Code --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Exec", 4);
                 _httpResponse = new HttpResponseMessage();
+                //Console.WriteLine("########### Aborting from PerformWaitTvmApi isSuccessCode is False ###################");
+                //Environment.Exit(99);
             }
         }
 
@@ -114,8 +120,14 @@ namespace Web_Lib
                     {
                         _httpResponse = await _client.GetAsync(api).ConfigureAwait(false);
                     }
-                    catch (Exception ee) { _log.Write($"2nd Exception: {ee.Message}", "WebAPI Async"); }
-                    IsTimedOut = true;
+                    catch (Exception ee)
+                    {
+                        _log.Write($"2nd Exception: {ee.Message}", "WebAPI Async");
+                        _httpResponse = new HttpResponseMessage();
+                        IsTimedOut = true;
+                        Console.WriteLine("########### Aborting from PerformTvmApiAsync 2nd Exception ###################");
+                        Environment.Exit(99);
+                    }
                 }
             }
         }
@@ -139,6 +151,8 @@ namespace Web_Lib
             {
                 _log.Write($"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Put Exec", 4);
                 _httpResponse = new HttpResponseMessage();
+                //Console.WriteLine("########### Aborting from PerformPutTvmApiAsync ###################");
+                //Environment.Exit(99);
             }
         }
 
@@ -147,8 +161,14 @@ namespace Web_Lib
             StringContent httpcontent = new(json, Encoding.UTF8, "application/json");
             _log.Write($"json content now is {json} for api {_client.BaseAddress + api}", "WebAPI PPTAA", 4);
 
-            try { _httpResponse = await _client.PutAsync(_client.BaseAddress + api, httpcontent).ConfigureAwait(false); }
-            catch (Exception e) { _log.Write($"Exception: {e.Message} for {api}", "WebAPI Put Async"); }
+            try
+            {
+                _httpResponse = await _client.PutAsync(_client.BaseAddress + api, httpcontent).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _log.Write($"Exception: {e.Message} for {api}", "WebAPI Put Async");
+            }
         }
 
         private void SetTvmaze()
@@ -330,9 +350,9 @@ namespace Web_Lib
             }
         }
 
-        private string GetRarbgMagnetsApi(string searchfor)
+        private string GetRarbgMagnetsApi(string searchFor)
         {
-            string api = $"{RarbgApiUrlPre}{Common.RemoveSpecialCharsInShowName(searchfor)}{_rarbgApiUrlSuf}";
+            var api = $"{RarbgApiUrlPre}{Common.RemoveSpecialCharsInShowName(searchFor)}{_rarbgApiUrlSuf}";
             _log.Write($"API String = {api}", "RarbgAPI", 4);
             return api;
         }

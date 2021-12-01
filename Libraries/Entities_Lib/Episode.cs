@@ -78,6 +78,12 @@ namespace Entities_Lib
             Id = 0;
             PlexStatus = " ";
             PlexDate = null;
+            if (episode is null)
+            {
+                IsJsonFilled = false;
+                return;
+            }
+            
             if (episode["_embedded"]?["show"] != null)
             {
                 if (episode["_embedded"]["show"]["id"] is not null)
@@ -108,7 +114,7 @@ namespace Entities_Lib
             if (epm is not null && epm.ToString() != "{}")
             {
                 /*
-                 * 0 = watched, 1 = acquired, 2 = skipped 
+                    0 = watched, 1 = acquired, 2 = skipped 
                 */
                 switch (epm["type"].ToString())
                 {
