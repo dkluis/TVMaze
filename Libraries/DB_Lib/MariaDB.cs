@@ -7,23 +7,19 @@ namespace DB_Lib
     public class MariaDb : IDisposable
     {
         private readonly MySqlConnection _conn;
-        public readonly TextFileHandler MDbLog;
+        private readonly TextFileHandler _mDbLog;
         private MySqlCommand _cmd;
         private bool _connOpen;
         private MySqlDataReader _rdr;
-        public Exception Exception;
 
-        public int Rows;
-
-        //private MySqlDataAdapter da;
+        private int _rows;
         public bool Success;
 
         public MariaDb(AppInfo appInfo)
         {
-            MDbLog = appInfo.TxtFile;
+            _mDbLog = appInfo.TxtFile;
 
             Success = false;
-            Exception = new Exception();
             try
             {
                 _conn = new MySqlConnection(appInfo.ActiveDbConn);
@@ -31,8 +27,7 @@ namespace DB_Lib
             }
             catch (Exception e)
             {
-                Exception = e;
-                MDbLog.Write($"MariaDB Class Connection Error: {e.Message}", null, 0);
+                _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", null, 0);
             }
         }
 
@@ -45,7 +40,6 @@ namespace DB_Lib
         public void Open()
         {
             Success = true;
-            Exception = new Exception();
             try
             {
                 _conn.Open();
@@ -53,8 +47,7 @@ namespace DB_Lib
             }
             catch (Exception e)
             {
-                Exception = e;
-                MDbLog.Write($"MariaDB Class Open Error: {e.Message}", null, 0);
+                _mDbLog.Write($"MariaDB Class Open Error: {e.Message}", null, 0);
                 Success = false;
             }
         }
@@ -62,7 +55,6 @@ namespace DB_Lib
         public void Close()
         {
             Success = true;
-            Exception = new Exception();
             try
             {
                 _conn.Close();
@@ -70,8 +62,7 @@ namespace DB_Lib
             }
             catch (Exception e)
             {
-                Exception = e;
-                MDbLog.Write($"MariaDB Class Close Error: {e.Message}", null, 0);
+                _mDbLog.Write($"MariaDB Class Close Error: {e.Message}", null, 0);
                 Success = false;
             }
         }
@@ -87,8 +78,7 @@ namespace DB_Lib
             }
             catch (Exception e)
             {
-                Exception = e;
-                MDbLog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", null, 0);
+                _mDbLog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", null, 0);
                 Success = false;
                 return _cmd;
             }
@@ -97,7 +87,6 @@ namespace DB_Lib
         public MySqlDataReader ExecQuery()
         {
             Success = true;
-            Exception = new Exception();
             try
             {
                 if (!_connOpen) Open();
@@ -106,8 +95,7 @@ namespace DB_Lib
             }
             catch (Exception e)
             {
-                Exception = e;
-                MDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", null, 0);
+                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", null, 0);
                 Success = false;
                 return _rdr;
             }
@@ -117,7 +105,6 @@ namespace DB_Lib
         {
             _cmd = Command(sql);
             Success = true;
-            Exception = new Exception();
             try
             {
                 if (!_connOpen) Open();
@@ -126,8 +113,7 @@ namespace DB_Lib
             }
             catch (Exception e)
             {
-                Exception = e;
-                MDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", null, 0);
+                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", null, 0);
                 Success = false;
                 return _rdr;
             }
@@ -136,20 +122,18 @@ namespace DB_Lib
         public int ExecNonQuery(bool ignore = false)
         {
             Success = true;
-            Exception = new Exception();
             try
             {
                 if (!_connOpen) Open();
-                Rows = _cmd.ExecuteNonQuery();
-                if (Rows ! > 0) Success = false;
-                return Rows;
+                _rows = _cmd.ExecuteNonQuery();
+                if (_rows ! > 0) Success = false;
+                return _rows;
             }
             catch (Exception e)
             {
-                Exception = e;
-                if (!ignore) MDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", null, 0);
+                if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", null, 0);
                 Success = false;
-                return Rows;
+                return _rows;
             }
         }
 
@@ -157,20 +141,18 @@ namespace DB_Lib
         {
             _cmd = Command(sql);
             Success = true;
-            Exception = new Exception();
             try
             {
                 if (!_connOpen) Open();
-                Rows = _cmd.ExecuteNonQuery();
-                if (Rows! > 0) Success = false;
-                return Rows;
+                _rows = _cmd.ExecuteNonQuery();
+                if (_rows! > 0) Success = false;
+                return _rows;
             }
             catch (Exception e)
             {
-                Exception = e;
-                if (!ignore) MDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", null, 0);
+                if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", null, 0);
                 Success = false;
-                return Rows;
+                return _rows;
             }
         }
     }
