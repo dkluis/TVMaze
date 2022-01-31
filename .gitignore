@@ -364,3 +364,5 @@ FodyWeavers.xsd
 *.code-workspace
 
 .DS_Store
+
+.idea/
