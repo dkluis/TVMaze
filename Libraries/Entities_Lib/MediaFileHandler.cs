@@ -18,6 +18,7 @@ namespace Entities_Lib
         public string PlexMediaAcquire;
         public string PlexMediaKidsTvShows;
         public string PlexMediaTvShows;
+        public string PlexMediaKimTvShows;
 
         public string PlexMediaTvShowSeries;
         //public List<string> TvShowsInKids;
@@ -42,6 +43,7 @@ namespace Entities_Lib
             PlexMediaTvShowSeries = GetDirectoryViaMediaType("TSS");
             PlexMediaKidsTvShows = GetDirectoryViaMediaType("KTS");
             PlexMediaAcquire = GetDirectoryViaMediaType("ACQ");
+            PlexMediaKimTvShows = GetDirectoryViaMediaType("KIMTS");
         }
 
         public string GetDirectoryViaMediaType(string mt)
@@ -69,6 +71,9 @@ namespace Entities_Lib
                     break;
                 case "KTS":
                     directory = PlexMediaKidsTvShows;
+                    break;
+                case "KIMTS":
+                    directory = PlexMediaKimTvShows;
                     break;
             }
 
@@ -142,6 +147,9 @@ namespace Entities_Lib
                         break;
                     case "KTS":
                         destDirectory = PlexMediaKidsTvShows;
+                        break;
+                    case "KIMTS":
+                        destDirectory = PlexMediaKimTvShows;
                         break;
                 }
 
