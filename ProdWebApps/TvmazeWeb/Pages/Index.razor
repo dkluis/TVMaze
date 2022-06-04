@@ -1,6 +1,8 @@
 ﻿@namespace TVMazeWeb.Pages
 @page "/"
 
+@inject DataExchange _dataExchangeService
+
 @{
     AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
@@ -146,6 +148,7 @@
     mdb.Close();
 }
 
+@{ _dataExchangeService.LastPage = "Home";}
 <div>
     <h4>Shows Statistics</h4>
     <table class="table table-striped">

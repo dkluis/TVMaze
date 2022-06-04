@@ -1,0 +1,85 @@
+@namespace TVMazeWeb.Pages
+@page "/movies"
+
+@inject DataExchange _dataExchangeService
+
+@code {
+    private int _idx;
+    static readonly AppInfo AppInfo = new("Tvmaze", "WebUI", "DbAlternate");
+    private List<Entities_Lib.Movies> _allMovies = new();
+    
+    private void GetTheMovies()
+    {
+        var movieSql = new MovieSql(AppInfo);
+        _allMovies = movieSql.Read();
+    }
+    
+    private static void Acquire(Entities_Lib.Movies movie)
+    {
+        //ToDo acquire movie logic
+    }
+}
+
+@{
+    _dataExchangeService.LastPage = "Movies";
+    GetTheMovies();
+}
+
+
+<h1>Movies</h1>
+
+<div>
+    <button class="btn btn-info" @onclick="GetTheMovies">Refresh Movies</button>
+    <button class="btn btn-primary" @onclick="GetTheMovies">Add Movie</button>
+    <p></p>
+</div>
+
+<div>
+    <p></p>
+    <h6>Movies - Table</h6>
+    <p></p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Cleaned Name</th>
+            <th>Alt Name</th>
+            <th>Series</th>
+            <th>Series Seq</th>
+            <th>Date</th>
+            <th>MediaType</th>
+            <th>Acquired</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            _idx = 0;
+            foreach (var movie in _allMovies)
+            {
+                <tr>
+                    <td>@movie.Name</td>
+                    <td><input @bind="movie.CleanedName" size="35"/></td>
+                    <td><input @bind="@movie.AltName" size="35"/></td>
+                    <td><input @bind="@movie.SeriesName" size="5"/></td>
+                    <td>@movie.MovieNumber</td>
+                    <td>@movie.FinderDate</td>
+                    <td>@movie.MediaType</td>
+                    <td>@movie.Acquired</td>
+                    <td>
+                        @{
+                            if (!movie.Acquired)
+                            {
+                                <button class="btn btn-primary" @onclick="@(() => Acquire(movie))">Acquire</button>
+                            }
+                        }
+                        <button class="btn btn-danger" @onclick="@(() => Acquire(movie))">Delete</button>
+                        <button class="btn btn-warning" @onclick="@(() => Acquire(movie))">Submit Edit</button>
+                    </td>
+                </tr>
+                _idx++;
+            }
+        }
+        </tbody>
+    </table>
+</div>

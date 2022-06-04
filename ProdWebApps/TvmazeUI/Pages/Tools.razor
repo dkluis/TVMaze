@@ -1,0 +1,268 @@
+﻿@namespace TvmazeUI.Pages
+@page "/tools"
+
+@inject DataExchange _dataExchangeService
+
+@code
+{
+    string? _message;
+    int _refreshShowId;
+    string _logView = "";
+    string _currentLog = "";
+    List<string>? _logContent;
+    bool _logRequested;
+
+    private void ExecScripts(string scriptRequested = "")
+    {
+        if (scriptRequested == "")
+        {
+            return;
+        }
+        switch (scriptRequested)
+        {
+            case "Followed":
+                _message = "Executing Update Followed";
+                RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
+                _message = "Finished Update Followed";
+                break;
+            case "Plex Acquired":
+                RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexAcquired.sh");
+                _message = "Finished Update Plex Acquired";
+                break;
+            case "Plex Watched":
+                RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
+                _message = "Finished Update Plex Watched";
+                break;
+            case "Acquire":
+                RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
+                _message = "Finished Acquire Media";
+                break;
+            case "Show Epochs":
+                RunScript("/Users/dick/TVMaze/Scripts/UpdateShowEpochs.sh");
+                _message = "Finished Update Show Epochs";
+                break;
+            case "Cleanup":
+                RunScript("/Users/dick/TVMaze/Scripts/CleanupPlexMedia.sh");
+                _message = "Finished Cleanup Plex Media";
+                break;
+            case "Refresh Shows":
+                RunScript("/Users/dick/TVMaze/Scripts/RefreshShows.sh");
+                _message = "Finished Refresh Shows";
+                break;
+            case "ShowRss Feed":
+                RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRssFeed.sh");
+                _message = "Finished Refresh ShowRss Feed";
+                break;
+            case "Refresh ShowRss":
+                RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRss.sh");
+                _message = "Finished Refresh ShowRss";
+                break;
+            default:
+                _message = "";
+                break;
+        }
+    }
+
+    private void ExecLogViewer(string logRequested = "")
+    {
+        if (logRequested == "")
+        {
+            return;
+        }
+        string program;
+        _logView = logRequested + " Log";
+        _logRequested = true;
+        switch (logRequested)
+        {
+            case "Followed":
+                program = "Update Followed";
+                break;
+            case "Plex Acquired":
+                program = "Update Plex Acquired";
+                break;
+            case "Plex Watched":
+                program = "Update Plex Watched";
+                break;
+            case "Acquire":
+                program = "Acquire Media";
+                break;
+            case "Show Epochs":
+                program = "Update Show Epochs";
+                break;
+            case "ShowRss Feed":
+                program = "Refresh ShowRss Feed";
+                break;
+            case "Refresh One":
+                program = "RefreshOneShow WebUI";
+                break;
+            case "Refresh Shows":
+                program = "Refresh Shows";
+                break;
+            case "Cleanup Media":
+                program = "Cleanup Plex Media";
+                break;
+            case "WebUI":
+                program = "WebUI";
+                break;
+            case "Refresh ShowRss":
+                program = "Refresh ShowRss";
+                break;
+            default:
+                _logView = "";
+                _logRequested = false;
+                _currentLog = "";
+                return;
+        }
+        var appInfo = new AppInfo("TVMaze", program, "DbAlternate");
+        var logFile = appInfo.TxtFile;
+        _logContent = logFile.ReturnLogContent();
+        _currentLog = program;
+    }
+
+    private void ClearLog()
+    {
+        _logView = "";
+        _logRequested = false;
+    }
+
+    private void EmptyLog()
+    {
+        if (_logView == "")
+        {
+            _logView = "No Active Log to Empty";
+            return;
+        }
+        var appInfo = new AppInfo("TVMaze", _currentLog, "DbAlternate");
+        appInfo.TxtFile.Empty();
+        _currentLog = "";
+        _logRequested = false;
+        _logView = "";
+    }
+
+    private void RunScript(string scriptName)
+    {
+        using Process runScript = new();
+        runScript.StartInfo.FileName = scriptName;
+        runScript.StartInfo.UseShellExecute = true;
+        runScript.StartInfo.RedirectStandardOutput = false;
+        runScript.Start();
+        runScript.WaitForExit();
+    }
+
+    private void RefreshOneShow()
+    {
+        if (_refreshShowId == 0)
+        {
+            _message = "Enter a ShowId: 0 is not Valid";
+            return;
+        }
+        _message = $"Trying to update {_refreshShowId}";
+
+        AppInfo appInfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
+        var log = appInfo.TxtFile;
+        log.Start();
+        using (MariaDb mDbR = new(appInfo))
+        {
+            var rdr = mDbR.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {_refreshShowId} order by `TvmShowId` desc");
+
+            while (rdr.Read())
+            {
+                using ShowAndEpisodes sae = new(appInfo);
+                _message = $"Working on Show {rdr[0]} {rdr[1]}";
+                log.Write($"{_message}", "", 2);
+                sae.Refresh(int.Parse(rdr[0].ToString()!));
+            }
+            _message = _message.Contains("Trying") ? $"ShowId {_refreshShowId} is not in the Shows Table" : _message.Replace("Working on", "Refreshed");
+        }
+        log.Stop();
+    }
+
+}
+
+@{ _dataExchangeService.LastPage = "Tools"; }
+<h1>Tools Page</h1>
+<div>
+    <h2>Execute Processes: </h2>
+    <div class="row">
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Followed")'>Followed</button>
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Show Epochs")'>Epochs</button>
+    </div>
+    <div class="row">
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Cleanup")'>Cleanup Media</button>
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Refresh Shows")'>Refresh Shows</button>
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("ShowRss Feed")'>Refresh Feed</button>
+        <button class="btn btn-primary col" @onclick='() => ExecScripts("Refresh ShowRss")'
+                data-toggle="tooltip" data-placement="bottom" title="Update ShowRss HTML first">
+            Refresh ShowRss
+        </button>
+    </div>
+    <div class="row">
+        <input class="col" @bind="@_refreshShowId"/>
+        <button class="btn btn-primary col" @onclick="RefreshOneShow">Refresh One Show</button>
+    </div>
+
+</div>
+<div>
+    <h4>Update Status:</h4>
+    <div>
+        <h5>
+            <em>@_message</em>
+        </h5>
+    </div>
+</div>
+<p></p>
+<p></p>
+<hr class="bg-primary"/>
+<p></p>
+<p></p>
+<div>
+    <h2>View the Logs</h2>
+    <div class="row">
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Show Epochs")'>Epochs</button>
+    </div>
+    <div class="row">
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Cleanup Media")'>Cleanup Media</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Refresh Shows")'>Refresh Shows</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("ShowRss Feed")'>Refresh Feed</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Refresh ShowRss")'>Refresh ShowRss</button>
+    </div>
+    <div class="row">
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Refresh One")'>Refresh One Show</button>
+        <button class="btn btn-info col" @onclick='() => ExecLogViewer("WebUI")'>Web UI</button>
+        <button class="btn btn-primary col" @onclick="ClearLog">Clear Page</button>
+        @if (_logView == "No Active Log to Empty")
+        {
+            _logView = "";
+        }
+        <button class="btn btn-danger col" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
+    </div>
+</div>
+
+<div>
+    <h4>@_logView</h4>
+    <p></p>
+    <p>
+        @if (_logRequested)
+        {
+            @foreach (var line in _logContent!)
+            {
+                if (line.Contains(
+                    "########################################################################################") ||
+                    line.Contains("Finished ####"))
+                {
+                    continue;
+                }
+                @line<br/>
+            }
+        }
+    </p>
+    <p></p>
+    <em>End of Log @_logView</em>
+</div>

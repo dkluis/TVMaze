@@ -7,11 +7,9 @@ namespace DB_Lib
     {
         private readonly AppInfo _appInfo;
         private readonly MariaDb _mDbW;
-        private TextFileHandler _log;
 
         public ActionItems(AppInfo appInfo)
         {
-            _log = appInfo.TxtFile;
             _mDbW = new MariaDb(appInfo);
             _appInfo = appInfo;
         }

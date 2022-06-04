@@ -12,8 +12,8 @@ namespace Entities_Lib
     {
         private readonly AppInfo _appInfo;
         private readonly TextFileHandler _log;
-
         private readonly MariaDb _mdb;
+        
         public string AltShowName = "";
         public string CleanedShowName = "";
         public string Finder = "Multi";
@@ -375,12 +375,19 @@ namespace Entities_Lib
 
             using MariaDb mDbR = new(appInfo);
             var sql =
-                $"select `Id`, `TvmShowId`, `ShowName` from Shows where (`ShowName` = '{showName}' or " +
-                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where ((`ShowName` = '{showName}' or " +
+                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}')) and `ShowStatus` != 'Ended';";
             var rdr = mDbR.ExecQuery(sql);
-            if (rdr is null) return _found;
 
-            if (!rdr.HasRows) return _found;
+            if (rdr is null || !rdr.HasRows)
+            {
+                mDbR.Close();
+                sql =
+                    $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
+                    $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+                rdr = mDbR.ExecQuery(sql);
+                if (rdr is null || !rdr.HasRows) return _found;
+            }
 
             while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
 

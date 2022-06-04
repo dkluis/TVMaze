@@ -35,6 +35,7 @@ namespace Common_Lib
                 .Replace("/", "")
                 .Replace(":", "")
                 .Replace("?", "")
+                .Replace("|", "")
                 .Replace("&#039;", "")
                 .Replace("&amp;", "and")
                 .Replace("&", "and")
@@ -42,9 +43,9 @@ namespace Common_Lib
                 .Trim()
                 .ToLower();
             // Was put in for the What If...? situation: showName = showName.Substring(0, showName.Length);
-            if (showName.Length > 7)
-                if (showName.ToLower().Substring(0, 7) == "what if")
-                    showName = "What If";
+            if (showName.Length <= 7) return showName;
+            if (showName.ToLower()[..7] == "what if")
+                showName = "What If";
             return showName;
         }
 

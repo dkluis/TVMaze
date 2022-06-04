@@ -1,0 +1,10 @@
+.top-row {
+    height: 3rem;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.oi {
+    width: 2rem;
+    font-size: 1.1rem;
+    vertical-align: text-top;
+}
