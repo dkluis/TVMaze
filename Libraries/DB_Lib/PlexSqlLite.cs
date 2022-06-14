@@ -9,11 +9,12 @@ namespace DB_Lib
     {
         public static List<PlexWatchedInfo> PlexWatched(AppInfo appInfo)
         {
-            const string plexPlayedItems =
+            var timeSpan = DateTime.Now.Subtract(DateTime.Now.TimeOfDay).AddDays(-1) - new DateTime(1970, 1, 1);
+            var yesterday = (int) timeSpan.TotalSeconds + (60 * 60 * 4) + 1;
+            var plexPlayedItems =
                 "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
-                "where miv.parent_index > 0 and miv.metadata_type = 4 and (miv.viewed_at > " +
-                "date('now', '-1 day') and miv.viewed_at < datetime('now', '-4 hours', '-5 minutes')) and miv.account_id = 1 " +
-                "order by miv.grandparent_title, miv.parent_index, miv.`index`; ";
+                $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.viewed_at > {yesterday} " +
+                "and miv.account_id = 1 order by miv.grandparent_title, miv.parent_index, miv.`index`; ";
             const string plexDbLocation =
                 "Data Source=/Users/dick/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db";
             List<PlexWatchedInfo> watchedEpisodes = new();
@@ -27,7 +28,7 @@ namespace DB_Lib
             {
                 PlexWatchedInfo record = new();
                 record.Fill(rdr[0].ToString(), int.Parse(rdr[1].ToString()!), int.Parse(rdr[2].ToString()!),
-                    rdr[3].ToString());
+                    int.Parse(rdr[3].ToString()!));
                 watchedEpisodes.Add(record);
             }
 
@@ -63,15 +64,17 @@ namespace DB_Lib
             CleanedShowName = "";
         }
 
-        public void Fill(string showName, int season, int episode, string watchedDate)
+        public void Fill(string showName, int season, int episode, int watchedDate)
         {
             ShowName = showName;
             Season = season;
             Episode = episode;
+            /*
             var date = watchedDate.Split(" ")[0];
             var d = date.Split(@"/");
             date = d[2] + "-" + d[0].PadLeft(2, '0') + "-" + d[1].PadLeft(2, '0');
-            WatchedDate = date;
+            */
+            WatchedDate = Common.ConvertEpochToDate(watchedDate);
             UpdateDate = DateTime.Now.ToString("yyyy-MM-dd");
             SeasonEpisode = Common.BuildSeasonEpisodeString(season, episode);
             CleanedShowName = Common.RemoveSpecialCharsInShowName(showName);
