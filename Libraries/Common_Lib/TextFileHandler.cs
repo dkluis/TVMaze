@@ -16,11 +16,7 @@ namespace Common_Lib
         {
             _timer.Start();
             _app = application;
-#if DEBUG
-            _level = 4;
-#else
             _level = loglevel;
-#endif
             _fullFilePath = Path.Combine(inFilePath, filename);
             if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         }

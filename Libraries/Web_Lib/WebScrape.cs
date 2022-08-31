@@ -279,13 +279,21 @@ namespace Web_Lib
                 _ => 100
             };
             // Codex values
-            if (magnet.ToLower().Contains("x264") || magnet.ToLower().Contains("h264"))
+            if (magnet.ToLower().Contains("x264") || 
+                magnet.ToLower().Contains("h264") || 
+                magnet.ToLower().Contains("x.264") || 
+                magnet.ToLower().Contains("h.264"))
                 priority += 60;
             else if (magnet.ToLower().Contains("xvid"))
                 priority += 30;
-            else if (magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265"))
+            else if ((magnet.ToLower().Contains("x265") 
+                      || magnet.ToLower().Contains("h265") 
+                      || magnet.ToLower().Contains("x.265") 
+                      || magnet.ToLower().Contains("h.265")) 
+                     && !magnet.ToLower().Contains("hvec"))
                 priority += 65;
-            else if (magnet.ToLower().Contains("hevc")) priority += 55;
+            else if (magnet.ToLower().Contains("hevc"))
+                priority += 55;
             // Resolution values
             if (magnet.ToLower().Contains("1080p."))
                 priority += 15;
@@ -295,7 +303,8 @@ namespace Web_Lib
                 priority += 10;
             else if (magnet.ToLower().Contains("480p."))
                 priority += 3;
-            else if (magnet.ToLower().Contains("2160p.")) priority -= 75;
+            else if (magnet.ToLower().Contains("2160p.")) 
+                priority -= 75;
             // Container values
             if (magnet.ToLower().Contains(".mkv"))
                 priority += 10;

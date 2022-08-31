@@ -20,7 +20,7 @@ namespace TvmazeUI.Data
             var rdr = mdbEpisodes.ExecQuery(sql);
             while (rdr.Read())
             {
-                EpisodeInfo ei = new()
+                EpisodeInfo episodeInfo = new()
                 {
                     TvmShowId = int.Parse(rdr["TvmShowId"].ToString()!),
                     ShowName = rdr["ShowName"].ToString()!,
@@ -32,9 +32,9 @@ namespace TvmazeUI.Data
                     PlexDate = rdr["PlexDate"].ToString()!,
                     UpdateDate = rdr["UpdateDate"].ToString()![..10]
                 };
-                if (ei.BroadcastDate!.Length > 10) ei.BroadcastDate = ei.BroadcastDate[..10];
-                if (ei.PlexDate!.Length > 10) ei.PlexDate = ei.PlexDate[..10];
-                episodeInfoList.Add(ei);
+                if (episodeInfo.BroadcastDate!.Length > 10) episodeInfo.BroadcastDate = episodeInfo.BroadcastDate[..10];
+                if (episodeInfo.PlexDate!.Length > 10) episodeInfo.PlexDate = episodeInfo.PlexDate[..10];
+                episodeInfoList.Add(episodeInfo);
             }
 
             AppInfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeInfoList.Count} records", "", 4);

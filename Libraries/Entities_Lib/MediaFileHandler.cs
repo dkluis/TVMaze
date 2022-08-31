@@ -32,7 +32,7 @@ public class MediaFileHandler : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public void GetSetMediaInfo()
+    private void GetSetMediaInfo()
     {
         PlexMediaTvShows = GetDirectoryViaMediaType("TS");
         PlexMediaTvShowSeries = GetDirectoryViaMediaType("TSS");
@@ -41,7 +41,19 @@ public class MediaFileHandler : IDisposable
         PlexMediaKimTvShows = GetDirectoryViaMediaType("KIMTS");
     }
 
-    public string GetDirectoryViaMediaType(string mt)
+    private string GetMediaDirectory(string mediaType)
+    {
+        return mediaType switch
+        {
+            "TS" => PlexMediaTvShows,
+            "TSS" => PlexMediaTvShowSeries,
+            "KTS" => PlexMediaKidsTvShows,
+            "KIMTS" => PlexMediaKimTvShows,
+            _ => ""
+        };
+    }
+
+    private string GetDirectoryViaMediaType(string mt)
     {
         var path = "";
         var rdr = _mdb.ExecQuery($"select `PlexLocation` from `MediaTypes` where `MediaType` = '{mt}'");
@@ -55,23 +67,17 @@ public class MediaFileHandler : IDisposable
     public bool DeleteEpisodeFiles(Episode epi)
     {
         if (!epi.IsAutoDelete) return true;
-        var directory = "";
-        switch (epi.MediaType)
+        var directory = GetMediaDirectory(epi.MediaType);
+        /*
+        var directory = epi.MediaType switch
         {
-            case "TS":
-                directory = PlexMediaTvShows;
-                break;
-            case "TSS":
-                directory = PlexMediaTvShowSeries;
-                break;
-            case "KTS":
-                directory = PlexMediaKidsTvShows;
-                break;
-            case "KIMTS":
-                directory = PlexMediaKimTvShows;
-                break;
-        }
-
+            "TS" => PlexMediaTvShows,
+            "TSS" => PlexMediaTvShowSeries,
+            "KTS" => PlexMediaKidsTvShows,
+            "KIMTS" => PlexMediaKimTvShows,
+            _ => ""
+        };
+        */
         var seas = $"Season {epi.SeasonNum}";
         var seasonEpisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
         var showName = epi.AltShowName != ""
@@ -132,40 +138,14 @@ public class MediaFileHandler : IDisposable
         string shown;
         if (episode is not null)
         {
-            switch (episode.MediaType)
-            {
-                case "TS":
-                    destDirectory = PlexMediaTvShows;
-                    break;
-                case "TSS":
-                    destDirectory = PlexMediaTvShowSeries;
-                    break;
-                case "KTS":
-                    destDirectory = PlexMediaKidsTvShows;
-                    break;
-                case "KIMTS":
-                    destDirectory = PlexMediaKimTvShows;
-                    break;
-            }
-
+            destDirectory = GetMediaDirectory(episode.MediaType);
             shown = episode.AltShowName != ""
                 ? episode.AltShowName
                 : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
         }
         else
         {
-            switch (show.MediaType)
-            {
-                case "TS":
-                    destDirectory = PlexMediaTvShows;
-                    break;
-                case "TSS":
-                    destDirectory = PlexMediaTvShowSeries;
-                    break;
-                case "KTS":
-                    destDirectory = PlexMediaKidsTvShows;
-                    break;
-            }
+            destDirectory = GetMediaDirectory(show.MediaType);
 
             shown = show.AltShowName != ""
                 ? show.AltShowName

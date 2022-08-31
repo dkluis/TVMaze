@@ -69,11 +69,6 @@ namespace DB_Lib
             ShowName = showName;
             Season = season;
             Episode = episode;
-            /*
-            var date = watchedDate.Split(" ")[0];
-            var d = date.Split(@"/");
-            date = d[2] + "-" + d[0].PadLeft(2, '0') + "-" + d[1].PadLeft(2, '0');
-            */
             WatchedDate = Common.ConvertEpochToDate(watchedDate);
             UpdateDate = DateTime.Now.ToString("yyyy-MM-dd");
             SeasonEpisode = Common.BuildSeasonEpisodeString(season, episode);
