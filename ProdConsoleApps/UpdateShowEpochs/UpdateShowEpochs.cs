@@ -35,7 +35,7 @@ namespace UpdateShowEpochs
             var highestShowId = lastEvaluatedShow;
             log.Write($"Last Evaluated ShowId = {lastEvaluatedShow}", "", 2);
 
-            WebApi tvmApi = new(appInfo);
+            using WebApi tvmApi = new(appInfo);
             var jsonContent = tvmApi.ConvertHttpToJObject(tvmApi.GetShowUpdateEpochs("day"));
             log.Write($"Found {jsonContent.Count} updates on Tvmaze", thisProgram, 2);
 

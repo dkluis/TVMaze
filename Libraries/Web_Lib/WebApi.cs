@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Common_Lib;
@@ -48,9 +49,9 @@ namespace Web_Lib
             return jObject;
         }
 
-        public JArray ConvertHttpToJArray(HttpResponseMessage messsage)
+        public JArray ConvertHttpToJArray(HttpResponseMessage message)
         {
-            var content = messsage.Content.ReadAsStringAsync().Result;
+            var content = message.Content.ReadAsStringAsync().Result;
             if (content == "")
             {
                 JArray empty = new();
@@ -112,7 +113,7 @@ namespace Web_Lib
             }
             catch (Exception e)
             {
-                _log.Write($"Exception: {e.Message}", "WebAPI Async");
+                _log.Write($"Exception: {e.Message}", "WebAPI Async", 0);
                 if (e.Message.Contains(" seconds elapsing") || e.Message.Contains("Operation timed out"))
                 {
                     _log.Write($"Retrying Now: {api}", "WebAPI Async");
@@ -125,10 +126,15 @@ namespace Web_Lib
                         _log.Write($"2nd Exception: {ee.Message}", "WebAPI Async");
                         _httpResponse = new HttpResponseMessage();
                         IsTimedOut = true;
-                        Console.WriteLine("########### Aborting from PerformTvmApiAsync 2nd Exception ###################");
+                        Console.WriteLine(
+                            "########### Aborting from PerformTvmApiAsync 2nd Exception ###################");
                         Environment.Exit(99);
                     }
                 }
+            }
+            finally
+            {
+                _client.Dispose();
             }
         }
 

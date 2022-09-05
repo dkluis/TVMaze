@@ -69,7 +69,7 @@ namespace Entities_Lib
             using WebApi je = new(_appInfo);
             FillViaJson(je.ConvertHttpToJObject(je.GetEpisode(episodeId)));
             FillViaDb(episodeId);
-            WebApi fem = new(_appInfo);
+            using WebApi fem = new(_appInfo);
             FillEpiMarks(fem.ConvertHttpToJObject(fem.GetEpisodeMarks(episodeId)));
         }
 

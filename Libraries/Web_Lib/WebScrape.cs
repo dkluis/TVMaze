@@ -173,7 +173,7 @@ namespace Web_Lib
         public void GetRarbgMagnets(string showName, string seasEpi)
         {
             var foundMagnets = 0;
-            WebApi tvmApi = new(_appInfo);
+            using WebApi tvmApi = new(_appInfo);
             var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." +
                                     seasEpi + ".";
             var result = tvmApi.GetRarbgMagnets(showName + " " + seasEpi);

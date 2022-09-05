@@ -23,7 +23,7 @@ internal static class UpdateFollowed
         var log = appInfo.TxtFile;
         log.Start();
 
-        WebApi tvmApi = new(appInfo);
+        using WebApi tvmApi = new(appInfo);
         var gfs = tvmApi.GetFollowedShows();
         if (tvmApi.IsTimedOut)
         {
@@ -49,7 +49,8 @@ internal static class UpdateFollowed
         foreach (var show in followedShowOnTvmaze)
         {
             var jtShow = int.Parse(show["show_id"]!.ToString());
-
+            allFollowedShows.Add(jtShow);
+            
             log.Write($"Processing {jtShow}", "", 4);
             inFollowedTable.GetFollowed(jtShow);
 
@@ -101,7 +102,7 @@ internal static class UpdateFollowed
                 idx++;
 
                 inFollowedTable.Reset();
-                allFollowedShows.Add(int.Parse(show["show_id"].ToString()));
+                //allFollowedShows.Add(int.Parse(show["show_id"].ToString()));
                 mDbWrite.Close();
             }
         }
