@@ -8,7 +8,7 @@ namespace RefreshOneShow
     {
         private static void Main()
         {
-            const string thisProgram = "Refresh One Show";
+            const string thisProgram = "Refresh all Shows";
             AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
             var log = appInfo.TxtFile;
             log.Start();
@@ -19,6 +19,8 @@ namespace RefreshOneShow
 
             var rdr = mDbR.ExecQuery(
                 $"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {theShowToRefresh} order by `TvmShowId` desc");
+            //var rdr = mDbR.ExecQuery(
+            //    $"select `TvmShowId`, `ShowName` from Shows order by `TvmShowId` desc");
 
             while (rdr.Read())
             {
