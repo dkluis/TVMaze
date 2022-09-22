@@ -105,7 +105,7 @@ namespace Web_Lib
 
         private string BuildEztvUrl(string showName)
         {
-            var eztvUrl = "https://eztv.re/search/";
+            var eztvUrl = "https://eztv.unblockninja.com/search/";
             showName = Common.RemoveSpecialCharsInShowName(showName);
             showName = showName.Replace(" ", "-");
             eztvUrl += showName;
