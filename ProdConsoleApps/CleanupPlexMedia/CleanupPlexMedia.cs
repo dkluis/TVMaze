@@ -17,9 +17,11 @@ internal static class CleanupPlexMedia
         List<string> showDirsToDelete = new();
         var tvShowDirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
         var tvKimShowDirs = Directory.GetDirectories(mfh.PlexMediaKimTvShows);
+        var tvDickShowDirs = Directory.GetDirectories(mfh.PlexMediaDickTvShows);
         var allTvShowDirs = new string[tvShowDirs.Length + tvKimShowDirs.Length];
         tvShowDirs.CopyTo(allTvShowDirs, 0);
         tvKimShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
+        tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
         foreach (var dir in allTvShowDirs)
         {
             var deleteDir = false;
