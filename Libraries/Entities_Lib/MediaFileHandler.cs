@@ -17,6 +17,7 @@ public class MediaFileHandler : IDisposable
     private string PlexMediaKidsTvShows { get; set; }
     public string PlexMediaTvShows { get; private set; }
     public string PlexMediaKimTvShows { get; private set; }
+    public string PlexMediaDickTvShows { get; set; }
     private string PlexMediaTvShowSeries { get; set; }
     
     public MediaFileHandler(AppInfo appInfo)
@@ -39,6 +40,7 @@ public class MediaFileHandler : IDisposable
         PlexMediaKidsTvShows = GetDirectoryViaMediaType("KTS");
         PlexMediaAcquire = GetDirectoryViaMediaType("ACQ");
         PlexMediaKimTvShows = GetDirectoryViaMediaType("KIMTS");
+        PlexMediaDickTvShows = GetDirectoryViaMediaType("DICKTS");
     }
 
     private string GetMediaDirectory(string mediaType)
@@ -49,6 +51,7 @@ public class MediaFileHandler : IDisposable
             "TSS" => PlexMediaTvShowSeries,
             "KTS" => PlexMediaKidsTvShows,
             "KIMTS" => PlexMediaKimTvShows,
+            "DICKTS" => PlexMediaDickTvShows,
             _ => ""
         };
     }
@@ -68,16 +71,6 @@ public class MediaFileHandler : IDisposable
     {
         if (!epi.IsAutoDelete) return true;
         var directory = GetMediaDirectory(epi.MediaType);
-        /*
-        var directory = epi.MediaType switch
-        {
-            "TS" => PlexMediaTvShows,
-            "TSS" => PlexMediaTvShowSeries,
-            "KTS" => PlexMediaKidsTvShows,
-            "KIMTS" => PlexMediaKimTvShows,
-            _ => ""
-        };
-        */
         var seas = $"Season {epi.SeasonNum}";
         var seasonEpisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
         var showName = epi.AltShowName != ""
