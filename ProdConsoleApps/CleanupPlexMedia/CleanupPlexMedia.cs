@@ -18,10 +18,10 @@ internal static class CleanupPlexMedia
         var tvShowDirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
         var tvKimShowDirs = Directory.GetDirectories(mfh.PlexMediaKimTvShows);
         var tvDickShowDirs = Directory.GetDirectories(mfh.PlexMediaDickTvShows);
-        var allTvShowDirs = new string[tvShowDirs.Length + tvKimShowDirs.Length];
+        var allTvShowDirs = new string[tvShowDirs.Length + tvKimShowDirs.Length + tvDickShowDirs.Length];
         tvShowDirs.CopyTo(allTvShowDirs, 0);
         tvKimShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
-        tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
+        tvDickShowDirs.CopyTo(allTvShowDirs, (tvShowDirs.Length + tvKimShowDirs.Length));
         foreach (var dir in allTvShowDirs)
         {
             var deleteDir = false;
@@ -40,7 +40,7 @@ internal static class CleanupPlexMedia
                     {
                         log.Write($"Delete of {seasonDir} went wrong {ex}");
                     }
-
+                    if (deleteDir) showDirsToDelete.Add(dir);
                     log.Write($"Deleted directory: {seasonDir}");
                 }
                 else
@@ -48,7 +48,7 @@ internal static class CleanupPlexMedia
                     deleteDir = false;
                 }
             }
-            if (deleteDir) showDirsToDelete.Add(dir);
+
         }
         foreach (var dir in showDirsToDelete)
         {
