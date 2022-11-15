@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvmazeGraphUI", "TvmazeGrap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcquireSubTitles", "ProdConsoleApps\AcquireSubTitles\AcquireSubTitles.csproj", "{62BD533F-05C3-4020-83E1-7FE083B988EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexMediaServerReset", "ProdConsoleApps\PlexMediaServerReset\PlexMediaServerReset.csproj", "{0C899FD8-A272-4296-84DE-A88F3642A15B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -146,6 +148,10 @@ Global
 		{62BD533F-05C3-4020-83E1-7FE083B988EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62BD533F-05C3-4020-83E1-7FE083B988EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62BD533F-05C3-4020-83E1-7FE083B988EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C899FD8-A272-4296-84DE-A88F3642A15B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C899FD8-A272-4296-84DE-A88F3642A15B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C899FD8-A272-4296-84DE-A88F3642A15B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C899FD8-A272-4296-84DE-A88F3642A15B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -169,6 +175,7 @@ Global
 		{FDE96A53-DD4F-44A6-B8F7-D00CBA56E342} = {67C77F0A-2BC2-4F8D-90DA-0D6FCE662E5A}
 		{1C819125-5708-487C-A7E7-C7B3961B04A9} = {67C77F0A-2BC2-4F8D-90DA-0D6FCE662E5A}
 		{62BD533F-05C3-4020-83E1-7FE083B988EC} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
+		{0C899FD8-A272-4296-84DE-A88F3642A15B} = {F35A7533-4D8C-4E76-8BEF-C7EA335BBBDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55AA4077-0AFF-49EB-AF91-E7F22F2EEF33}

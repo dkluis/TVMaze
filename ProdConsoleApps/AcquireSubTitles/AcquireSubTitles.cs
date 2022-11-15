@@ -12,7 +12,10 @@ internal static class Program
             var log = appInfo.TxtFile;
             log.Start();
             
-            
+            // https://www.opensubtitles.org/en/search/sublanguageid-eng/searchonlytvseries-on/season-2/episode-1/subformat-srt/moviename-one+lane+bridge
+            // https://www.opensubtitles.org/en/subtitleserve/sub/8774960
+            // https://www.opensubtitles.org/en/subtitleserve/sub/8774962
+            // https://www.opensubtitles.org/en/subtitleserve/sub/7492295
             
             log.Stop();
     }
