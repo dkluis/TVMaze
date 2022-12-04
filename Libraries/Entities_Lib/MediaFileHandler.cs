@@ -112,7 +112,29 @@ public class MediaFileHandler : IDisposable
 
     public bool MoveNonTvMediaToPlex(string mediainfo)
     {
-        //TODO handle non TVShow media
+        // Check if it is a Movie
+        var fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo);
+        var isDirectory = false;
+        List<string> media = new();
+        var foundDir = false;
+        var foundFile = false;
+        try
+        {
+            if (Directory.Exists(fullMediaPath)) foundDir = true;
+            if (File.Exists(fullMediaPath)) foundFile = true;
+        }
+        catch (Exception ex)
+        {
+            _log.Write($"Got an error {ex} trying to access {fullMediaPath}");
+            return false;
+        }
+
+        if (!foundDir && !foundFile)
+        {
+            _log.Write($"Could not find dir and file for {fullMediaPath}", "", 0);
+            return false;
+        }
+        
 
         return false;
     }
