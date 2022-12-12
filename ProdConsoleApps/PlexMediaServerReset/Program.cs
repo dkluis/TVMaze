@@ -12,12 +12,12 @@ namespace PlexMediaServerReset
             var log = appInfo.TxtFile;
             log.Start();
             
-            var process = Process.GetProcessesByName("Plex Media Serv");
+            var process = Process.GetProcessesByName("Plex Media Server");
             if (process.Length == 1)
             {
                 process[0].Kill();
                 log.Write($"Kill Plex Media Server with Pid {process[0].Id}", "Plex Reset", 2);
-                Thread.Sleep(10000);
+                Thread.Sleep(5000);
                 var reset = Process.Start("open", "-a \"Plex Media Server\"");
                 log.Write($"Started Plex Media Server with Pid {reset.Id}", "Plex Reset", 2);
             }

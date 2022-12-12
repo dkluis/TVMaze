@@ -40,13 +40,11 @@ internal static class Program
                 log.Write($"Magnet Not Found for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]}");
                 continue;
             }
-            else
-            {
-                var temp = magnet.Split("tr=");
-                log.Write(
-                    $"Found Magnet for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]} " +
-                    $"Processing Whole Season is {isSeason}: {temp[0]}");
-            }
+
+            var temp = magnet.Split("tr=");
+            log.Write(
+                $"Found Magnet for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]} " +
+                $"Processing Whole Season is {isSeason}: {temp[0]}");
 
             using (Process acquireMediaScript = new())
             {
@@ -89,6 +87,7 @@ internal static class Program
                 }
             }
         }
+
         log.Stop();
     }
 }

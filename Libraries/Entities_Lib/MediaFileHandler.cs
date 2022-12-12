@@ -12,14 +12,7 @@ public class MediaFileHandler : IDisposable
     private readonly AppInfo _appInfo;
     private readonly TextFileHandler _log;
     private readonly MariaDb _mdb;
-    
-    private string PlexMediaAcquire { get; set; }
-    private string PlexMediaKidsTvShows { get; set; }
-    public string PlexMediaTvShows { get; private set; }
-    public string PlexMediaKimTvShows { get; private set; }
-    public string PlexMediaDickTvShows { get; set; }
-    private string PlexMediaTvShowSeries { get; set; }
-    
+
     public MediaFileHandler(AppInfo appInfo)
     {
         _appInfo = appInfo;
@@ -27,6 +20,13 @@ public class MediaFileHandler : IDisposable
         _log = appInfo.TxtFile;
         GetSetMediaInfo();
     }
+
+    private string PlexMediaAcquire { get; set; }
+    private string PlexMediaKidsTvShows { get; set; }
+    public string PlexMediaTvShows { get; private set; }
+    public string PlexMediaKimTvShows { get; private set; }
+    public string PlexMediaDickTvShows { get; set; }
+    private string PlexMediaTvShowSeries { get; set; }
 
     public void Dispose()
     {
@@ -112,16 +112,19 @@ public class MediaFileHandler : IDisposable
 
     public bool MoveNonTvMediaToPlex(string mediainfo)
     {
-        // Check if it is a Movie
+        // Check if it is a Movie via the extension
         var fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo);
-        var isDirectory = false;
         List<string> media = new();
-        var foundDir = false;
-        var foundFile = false;
+        List<string> mediaFiles = new();
         try
         {
-            if (Directory.Exists(fullMediaPath)) foundDir = true;
-            if (File.Exists(fullMediaPath)) foundFile = true;
+            if (Directory.Exists(fullMediaPath))
+            {
+                var files = Directory.GetFiles(fullMediaPath);
+                foreach (var file in files) mediaFiles.Add(Path.Combine(PlexMediaAcquire, file));
+            }
+
+            if (File.Exists(fullMediaPath)) mediaFiles.Add(fullMediaPath);
         }
         catch (Exception ex)
         {
@@ -129,12 +132,27 @@ public class MediaFileHandler : IDisposable
             return false;
         }
 
-        if (!foundDir && !foundFile)
+        if (mediaFiles.Count <= 0)
         {
             _log.Write($"Could not find dir and file for {fullMediaPath}", "", 0);
             return false;
         }
-        
+
+        foreach (var file in mediaFiles)
+        foreach (var ext in _appInfo.MediaExtensions)
+        {
+            _log.Write($"Processing {file} with extension {ext}", "", 4);
+            if (!file.Contains(ext)) continue;
+            media.Add(file);
+            break;
+        }
+
+        if (media.Count <= 0)
+        {
+            _log.Write($"Could not find the right Media {fullMediaPath}", "", 0);
+            return false;
+        }
+
 
         return false;
     }

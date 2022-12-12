@@ -42,16 +42,20 @@ internal static class RefreshShowRss
                             updateFinder.ToShowRss(appInfo, showUpd.TvmShowId);
                             idx++;
                         }
+
                         log.Write($"TvmShowId {showId}: {cleanShow}", "", 0);
                     }
+
                     idx--;
                     continue;
                 }
             }
+
             log.Write($"Updating {cleanShow} to Finder: ShowRss", "", 4);
             updateFinder.ToShowRss(appInfo, int.Parse(foundInDb[0].ToString()));
             idx++;
         }
+
         log.Write($"Updated {idx} Shows to Finder ShowRss");
         log.Stop();
     }

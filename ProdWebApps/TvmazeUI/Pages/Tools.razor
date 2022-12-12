@@ -1,7 +1,7 @@
 ﻿@namespace TvmazeUI.Pages
-@page "/tools"
-
 @inject DataExchange _dataExchangeService
+
+@page "/tools"
 
 @code
 {
@@ -56,6 +56,9 @@
             case "Refresh ShowRss":
                 RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRss.sh");
                 _message = "Finished Refresh ShowRss";
+                break;
+            case "Restart Plex":
+                ResetPlexMediaServer();
                 break;
             default:
                 _message = "";
@@ -177,6 +180,37 @@
         log.Stop();
     }
 
+    private void ResetPlexMediaServer()
+    {
+        _message = "Restarting Plex Media Server";
+
+        AppInfo appInfo = new("TVMaze", "WebUI", "DbAlternate");
+        var log = appInfo.TxtFile;
+        log.Start();
+
+        var process = Process.GetProcessesByName("Plex Media Serv");
+
+        if (process.Length == 1)
+        {
+            log.Write("Killing Plex Media Server Process", "", 2);
+            process[0].Kill();
+            Thread.Sleep(5000);
+            log.Write("Restarting Plex Media Server Process", "", 2);
+            RunScript("/Users/dick/TVMaze/Scripts/RestartPlexMediaServer.sh");
+            _message = "Plex Media Server Restarted";
+        }
+        else
+        {
+            log.Write("Did not find Plex Media Server Running, trying to start it now.");
+            _message = "Plex Media Server Not Restarted";
+            Thread.Sleep(5000);
+            log.Write("Starting Plex Media Server Process", "", 2);
+            RunScript("/Users/dick/TVMaze/Scripts/RestartPlexMediaServer.sh");
+            _message = "Plex Media Server Restarted";
+        }
+        log.Stop();
+    }
+
 }
 
 @{ _dataExchangeService.LastPage = "Tools"; }
@@ -184,27 +218,26 @@
 <div>
     <h2>Execute Processes: </h2>
     <div class="row">
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Followed")'>Followed</button>
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Show Epochs")'>Epochs</button>
-    </div>
-    <div class="row">
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Cleanup")'>Cleanup Media</button>
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Refresh Shows")'>Refresh Shows</button>
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("ShowRss Feed")'>Refresh Feed</button>
-        <button class="btn btn-primary col" @onclick='() => ExecScripts("Refresh ShowRss")'
+        <button class="btn btn-primary col-sm-2 m-1" @onclick='() => ExecScripts("Followed")'>Followed</button>
+        <button class="btn btn-primary col-sm-2 m-1" @onclick='() => ExecScripts("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-primary col-sm-2 m-1" @onclick='() => ExecScripts("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-primary col-sm-2 m-1" @onclick='() => ExecScripts("Acquire")'>Acquire</button>
+        <button class="btn btn-primary col-sm-2 m-1" @onclick='() => ExecScripts("Show Epochs")'>Epochs</button>
+        <button class="btn btn-primary col-sm-3 m-1" @onclick='() => ExecScripts("Cleanup")'>Cleanup Media</button>
+        <button class="btn btn-primary col-sm-3 m-1" @onclick='() => ExecScripts("Refresh Shows")'>Refresh Shows</button>
+        <button class="btn btn-primary col-sm-3 m-1" @onclick='() => ExecScripts("ShowRss Feed")'>Refresh Feed</button>
+        <button class="btn btn-primary col-sm-3 m-1" @onclick='() => ExecScripts("Refresh ShowRss")'
                 data-toggle="tooltip" data-placement="bottom" title="Update ShowRss HTML first">
             Refresh ShowRss
         </button>
+        <div class="row">
+            <input class="col-sm-1 m-1" @bind="@_refreshShowId"/>
+            <button class="btn btn-primary col-sm-3 m-1" @onclick="RefreshOneShow">Refresh One Show</button>
+            <button class="btn btn-warning col-sm-2 m-1" @onclick='() => ExecScripts("Restart Plex")'>Restart Plex</button>
+        </div>
     </div>
-    <div class="row">
-        <input class="col" @bind="@_refreshShowId"/>
-        <button class="btn btn-primary col" @onclick="RefreshOneShow">Refresh One Show</button>
-    </div>
-
 </div>
+<p></p>
 <div>
     <h4>Update Status:</h4>
     <div>
@@ -221,27 +254,25 @@
 <div>
     <h2>View the Logs</h2>
     <div class="row">
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Show Epochs")'>Epochs</button>
-    </div>
-    <div class="row">
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Cleanup Media")'>Cleanup Media</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Refresh Shows")'>Refresh Shows</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("ShowRss Feed")'>Refresh Feed</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Refresh ShowRss")'>Refresh ShowRss</button>
-    </div>
-    <div class="row">
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("Refresh One")'>Refresh One Show</button>
-        <button class="btn btn-info col" @onclick='() => ExecLogViewer("WebUI")'>Web UI</button>
-        <button class="btn btn-primary col" @onclick="ClearLog">Clear Page</button>
-        @if (_logView == "No Active Log to Empty")
-        {
-            _logView = "";
-        }
-        <button class="btn btn-danger col" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
+        <button class="btn btn-info col-sm-2 m-1" @onclick='() => ExecLogViewer("Followed")'>Followed</button>
+        <button class="btn btn-info col-sm-2 m-1" @onclick='() => ExecLogViewer("Plex Acquired")'>Plex Acquired</button>
+        <button class="btn btn-info col-sm-2 m-1" @onclick='() => ExecLogViewer("Plex Watched")'>Plex Watched</button>
+        <button class="btn btn-info col-sm-2 m-1" @onclick='() => ExecLogViewer("Acquire")'>Acquire</button>
+        <button class="btn btn-info col-sm-2 m-1" @onclick='() => ExecLogViewer("Show Epochs")'>Epochs</button>
+        <button class="btn btn-info col-sm-3 m-1" @onclick='() => ExecLogViewer("Cleanup Media")'>Cleanup Media</button>
+        <button class="btn btn-info col-sm-3 m-1" @onclick='() => ExecLogViewer("Refresh Shows")'>Refresh Shows</button>
+        <button class="btn btn-info col-sm-2 m-1" @onclick='() => ExecLogViewer("ShowRss Feed")'>Refresh Feed</button>
+        <button class="btn btn-info col-sm-3 m-1" @onclick='() => ExecLogViewer("Refresh ShowRss")'>Refresh ShowRss</button>
+        <button class="btn btn-info col-sm-3 m-1" @onclick='() => ExecLogViewer("Refresh One")'>Refresh One Show</button>
+        <button class="btn btn-info col-sm-2 m-1" @onclick='() => ExecLogViewer("WebUI")'>Web UI</button>
+        <div class="row">
+            <button class="btn btn-primary col-sm-2 m-1" @onclick="ClearLog">Clear Page</button>
+            @if (_logView == "No Active Log to Empty")
+            {
+                _logView = "";
+            }
+            <button class="btn btn-warning col-sm-2 m-1" @onclick="EmptyLog">Empty @_logView.Replace(" Log", "") Log</button>
+        </div>
     </div>
 </div>
 
