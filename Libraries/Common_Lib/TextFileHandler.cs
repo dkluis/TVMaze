@@ -118,8 +118,9 @@ namespace Common_Lib
             var keyValuePair = ConvertJsonTxt.ConvertStringToJArray(filetText);
             foreach (var rec in keyValuePair)
             {
+                
                 if (rec[find] is null) return "";
-                if (rec[find].ToString() != "") return rec[find].ToString();
+                if (rec[find]!.ToString() != "") return rec[find]!.ToString();
             }
             return "";
         }
@@ -146,7 +147,7 @@ namespace Common_Lib
             foreach (var rec in keyValuePair)
             {
                 if (rec[find] is null) return "";
-                if (rec[find].ToString() != "") return rec[find].ToString();
+                if (rec[find]!.ToString() != "") return rec[find]!.ToString();
             }
 
             return "";

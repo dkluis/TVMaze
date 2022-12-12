@@ -28,7 +28,7 @@ internal static class Program
             showId = 0;
             var showName = rdr["AltShowName"].ToString() != ""
                 ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "")
-                : rdr["ShowName"].ToString();
+                : rdr["ShowName"].ToString()!;
             var episodeId = int.Parse(rdr["TvmEpisodeId"].ToString()!);
             var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName,
                 int.Parse(rdr["Season"].ToString()!),

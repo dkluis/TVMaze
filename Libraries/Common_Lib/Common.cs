@@ -118,7 +118,7 @@ namespace Common_Lib
             public readonly string MachineName;
             public readonly string Os;
             public readonly string UserName;
-            public readonly string WorkingDrive;
+            public readonly string? WorkingDrive;
             public readonly string WorkingPath;
 
             public EnvInfo()

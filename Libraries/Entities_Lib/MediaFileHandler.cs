@@ -21,12 +21,12 @@ public class MediaFileHandler : IDisposable
         GetSetMediaInfo();
     }
 
-    private string PlexMediaAcquire { get; set; }
-    private string PlexMediaKidsTvShows { get; set; }
-    public string PlexMediaTvShows { get; private set; }
-    public string PlexMediaKimTvShows { get; private set; }
-    public string PlexMediaDickTvShows { get; set; }
-    private string PlexMediaTvShowSeries { get; set; }
+    private string PlexMediaAcquire { get; set; } = null!;
+    private string PlexMediaKidsTvShows { get; set; } = null!;
+    public string PlexMediaTvShows { get; private set; } = null!;
+    public string PlexMediaKimTvShows { get; private set; } = null!;
+    public string PlexMediaDickTvShows { get; set; } = null!;
+    private string PlexMediaTvShowSeries { get; set; } = null!;
 
     public void Dispose()
     {
@@ -60,11 +60,10 @@ public class MediaFileHandler : IDisposable
     {
         var path = "";
         var rdr = _mdb.ExecQuery($"select `PlexLocation` from `MediaTypes` where `MediaType` = '{mt}'");
-        if (rdr is not null)
-            while (rdr.Read())
-                path = rdr[0].ToString();
+        while (rdr.Read())
+            path = rdr[0].ToString();
         _mdb.Close();
-        return path;
+        return path!;
     }
 
     public bool DeleteEpisodeFiles(Episode epi)
@@ -157,7 +156,7 @@ public class MediaFileHandler : IDisposable
         return false;
     }
 
-    public bool MoveMediaToPlex(string mediainfo, Episode episode = null, Show show = null, int season = 99)
+    public bool MoveMediaToPlex(string mediainfo, Episode? episode = null, Show? show = null, int season = 99)
     {
         if (episode is null && show is null)
         {
@@ -167,7 +166,7 @@ public class MediaFileHandler : IDisposable
             return false;
         }
 
-        var destDirectory = "";
+        string destDirectory;
         string shown;
         if (episode is not null)
         {
@@ -178,7 +177,7 @@ public class MediaFileHandler : IDisposable
         }
         else
         {
-            destDirectory = GetMediaDirectory(show.MediaType);
+            destDirectory = GetMediaDirectory(show!.MediaType);
 
             shown = show.AltShowName != ""
                 ? show.AltShowName
