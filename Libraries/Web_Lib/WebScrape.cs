@@ -304,7 +304,7 @@ namespace Web_Lib
             else if (magnet.ToLower().Contains("480p."))
                 priority += 3;
             else if (magnet.ToLower().Contains("2160p.")) 
-                priority -= 75;
+                priority += 13;
             // Container values
             if (magnet.ToLower().Contains(".mkv"))
                 priority += 10;
