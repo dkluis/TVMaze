@@ -7,6 +7,9 @@
         <LangVersion>11</LangVersion>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>MariaDB Access Lib - Specific To TVMaze</Title>
+        <Authors>Dick Kluis</Authors>
     </PropertyGroup>
 
     <ItemGroup>

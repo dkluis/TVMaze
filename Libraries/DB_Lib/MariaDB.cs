@@ -2,158 +2,157 @@ using System;
 using Common_Lib;
 using MySqlConnector;
 
-namespace DB_Lib
+namespace DB_Lib;
+
+public class MariaDb : IDisposable
 {
-    public class MariaDb : IDisposable
+    private const string Function = "MariaDb";
+    private readonly MySqlConnection _conn = new();
+    private readonly TextFileHandler _mDbLog;
+    private MySqlCommand _cmd = new();
+    private bool _connOpen;
+    private MySqlDataReader? _rdr;
+    private int _rows;
+    public bool Success;
+
+    public MariaDb(AppInfo appInfo)
     {
-        private readonly MySqlConnection _conn;
-        private readonly TextFileHandler _mDbLog;
-        private MySqlCommand _cmd;
-        private bool _connOpen;
-        private MySqlDataReader _rdr;
+        _mDbLog = appInfo.TxtFile;
 
-        private int _rows;
-        public bool Success;
-
-        public MariaDb(AppInfo appInfo)
+        Success = false;
+        try
         {
-            _mDbLog = appInfo.TxtFile;
+            _conn = new MySqlConnection(appInfo.ActiveDbConn);
+            Success = true;
+        }
+        catch (Exception e)
+        {
+            _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", Function, 0);
+        }
+    }
 
+    void IDisposable.Dispose()
+    {
+        Close();
+        GC.SuppressFinalize(this);
+    }
+
+    public void Open()
+    {
+        Success = true;
+        try
+        {
+            _conn.Open();
+            _connOpen = true;
+        }
+        catch (Exception e)
+        {
+            _mDbLog.Write($"MariaDB Class Open Error: {e.Message}", Function, 0);
             Success = false;
-            try
-            {
-                _conn = new MySqlConnection(appInfo.ActiveDbConn);
-                Success = true;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", null, 0);
-            }
         }
+    }
 
-        void IDisposable.Dispose()
+    public void Close()
+    {
+        Success = true;
+        try
         {
-            Close();
-            GC.SuppressFinalize(this);
+            _conn.Close();
+            _connOpen = false;
         }
-
-        public void Open()
+        catch (Exception e)
         {
-            Success = true;
-            try
-            {
-                _conn.Open();
-                _connOpen = true;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class Open Error: {e.Message}", null, 0);
-                Success = false;
-            }
+            _mDbLog.Write($"MariaDB Class Close Error: {e.Message}", Function, 0);
+            Success = false;
         }
+    }
 
-        public void Close()
+    private MySqlCommand Command(string sql)
+    {
+        Success = true;
+        try
         {
-            Success = true;
-            try
-            {
-                _conn.Close();
-                _connOpen = false;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class Close Error: {e.Message}", null, 0);
-                Success = false;
-            }
+            if (!_connOpen) Open();
+            _cmd = new MySqlCommand(sql, _conn);
+            return _cmd;
         }
-
-        public MySqlCommand Command(string sql)
+        catch (Exception e)
         {
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _cmd = new MySqlCommand(sql, _conn);
-                return _cmd;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", null, 0);
-                Success = false;
-                return _cmd;
-            }
+            _mDbLog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", Function, 0);
+            Success = false;
+            return _cmd;
         }
+    }
 
-        public MySqlDataReader ExecQuery()
+    public MySqlDataReader ExecQuery()
+    {
+        Success = true;
+        try
         {
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _rdr = _cmd.ExecuteReader();
-                return _rdr;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", null, 0);
-                Success = false;
-                return _rdr;
-            }
+            if (!_connOpen) Open();
+            _rdr = _cmd.ExecuteReader();
+            return _rdr;
         }
-
-        public MySqlDataReader ExecQuery(string sql)
+        catch (Exception e)
         {
-            _cmd = Command(sql);
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _rdr = _cmd.ExecuteReader();
-                return _rdr;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", null, 0);
-                Success = false;
-                return _rdr;
-            }
+            _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", Function, 0);
+            Success = false;
+            return _rdr!;
         }
+    }
 
-        public int ExecNonQuery(bool ignore = false)
+    public MySqlDataReader ExecQuery(string sql)
+    {
+        _cmd = Command(sql);
+        Success = true;
+        try
         {
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _rows = _cmd.ExecuteNonQuery();
-                if (_rows ! > 0) Success = false;
-                return _rows;
-            }
-            catch (Exception e)
-            {
-                if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", null, 0);
-                Success = false;
-                return _rows;
-            }
+            if (!_connOpen) Open();
+            _rdr = _cmd.ExecuteReader();
+            return _rdr;
         }
-
-        public int ExecNonQuery(string sql, bool ignore = false)
+        catch (Exception e)
         {
-            _cmd = Command(sql);
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _rows = _cmd.ExecuteNonQuery();
-                if (_rows! > 0) Success = false;
-                return _rows;
-            }
-            catch (Exception e)
-            {
-                if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", null, 0);
-                Success = false;
-                return _rows;
-            }
+            _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", Function, 0);
+            Success = false;
+            return _rdr!;
+        }
+    }
+
+    public int ExecNonQuery(bool ignore = false)
+    {
+        Success = true;
+        try
+        {
+            if (!_connOpen) Open();
+            _rows = _cmd.ExecuteNonQuery();
+            if (_rows > 0) Success = false;
+            return _rows;
+        }
+        catch (Exception e)
+        {
+            if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", Function, 0);
+            Success = false;
+            return _rows;
+        }
+    }
+
+    public int ExecNonQuery(string sql, bool ignore = false)
+    {
+        _cmd = Command(sql);
+        Success = true;
+        try
+        {
+            if (!_connOpen) Open();
+            _rows = _cmd.ExecuteNonQuery();
+            if (_rows > 0) Success = false;
+            return _rows;
+        }
+        catch (Exception e)
+        {
+            if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", Function, 0);
+            Success = false;
+            return _rows;
         }
     }
 }
