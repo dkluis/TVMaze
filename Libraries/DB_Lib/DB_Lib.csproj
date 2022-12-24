@@ -13,19 +13,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MySqlConnector" Version="2.2.1" />
-        <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
-        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
-        <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
+        <PackageReference Include="MySqlConnector" Version="2.2.4"/>
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0"/>
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117"/>
+        <PackageReference Include="System.Data.SQLite" Version="1.0.117"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Common_Lib\Common_Lib.csproj" />
+        <ProjectReference Include="..\Common_Lib\Common_Lib.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Microsoft.Data.Sqlite.Core" />
-        <None Remove="System.Data.SQLite.Core" />
-        <None Remove="System.Data.SQLite" />
+        <None Remove="Microsoft.Data.Sqlite.Core"/>
+        <None Remove="System.Data.SQLite.Core"/>
+        <None Remove="System.Data.SQLite"/>
     </ItemGroup>
 </Project>
