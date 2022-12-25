@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>11</LangVersion>
+        <ReleaseVersion>1.5</ReleaseVersion>
     </PropertyGroup>
 
     <ItemGroup>

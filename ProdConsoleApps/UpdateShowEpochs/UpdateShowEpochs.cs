@@ -55,8 +55,7 @@ namespace UpdateShowEpochs
 
                 tvmShow.FillViaTvmaze(showId);
                 log.Write(
-                    $"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}",
-                    "", 4);
+                    $"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}", "", 4);
 
                 if (inDbEpoch == 0)
                 {
@@ -113,8 +112,7 @@ namespace UpdateShowEpochs
                 else
                 {
                     using MariaDb mDbW = new(appInfo);
-                    mDbW.ExecNonQuery(
-                        $"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showId};");
+                    mDbW.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showId};");
                     mDbW.Close();
 
                     if (!tvmShow.IsDbFilled) continue;

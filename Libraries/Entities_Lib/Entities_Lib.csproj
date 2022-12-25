@@ -11,13 +11,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DB_Lib\DB_Lib.csproj"/>
-        <ProjectReference Include="..\Common_Lib\Common_Lib.csproj"/>
-        <ProjectReference Include="..\Web_Lib\Web_Lib.csproj"/>
+        <ProjectReference Include="..\DB_Lib\DB_Lib.csproj" />
+        <ProjectReference Include="..\Common_Lib\Common_Lib.csproj" />
+        <ProjectReference Include="..\Web_Lib\Web_Lib.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MySqlConnector" Version="2.2.4"/>
+        <PackageReference Include="MySqlConnector" Version="2.2.4" />
     </ItemGroup>
 
 </Project>
