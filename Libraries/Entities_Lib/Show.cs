@@ -436,7 +436,7 @@ namespace Entities_Lib
         public void ToFollowed(AppInfo appInfo, int showId)
         {
             using MariaDb mDbW = new(appInfo);
-            var sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId};";
+            var sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
             appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
             if (mDbW.ExecNonQuery(sql) == 0)
                 appInfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4);

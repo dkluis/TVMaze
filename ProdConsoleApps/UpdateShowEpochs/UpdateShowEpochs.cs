@@ -45,12 +45,18 @@ namespace UpdateShowEpochs
                 var showId = int.Parse(show.Key);
                 var showEpoch = int.Parse(show.Value!.ToString());
                 using TvmCommonSql gse = new(appInfo);
+                if (gse.IsShowSkipping(showId)) continue;
+                
                 var inDbEpoch = gse.GetShowEpoch(showId);
-
                 if (showEpoch == inDbEpoch)
                 {
                     log.Write($"Skipping {showId} since show is already up to date", "", 4);
                     continue;
+                }
+
+                using (var db = new MariaDb(appInfo))
+                {
+                    
                 }
 
                 tvmShow.FillViaTvmaze(showId);

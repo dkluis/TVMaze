@@ -66,7 +66,10 @@ internal static class UpdateFollowed
             else
             {
                 theShow.FillViaTvmaze(jtShow);
-                theShow.TvmStatus = "Following";
+                if (theShow.Finder != "Skip")
+                {
+                    theShow.TvmStatus = "Following";
+                }
 
                 using MariaDb tsu = new(appInfo);
                 var rows = tsu.ExecNonQuery(

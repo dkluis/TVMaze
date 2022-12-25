@@ -39,6 +39,15 @@ public class TvmCommonSql : IDisposable
         return isFollowed;
     }
 
+    public bool IsShowSkipping(int showId)
+    {
+        var isSkipping = false;
+        _rdr = _db.ExecQuery($"select TvmStatus from Shows where `TvmShowId` = {showId} and `TvmStatus` = 'Skipping';");
+        while (_rdr.Read()) isSkipping = true;
+        _db.Close();
+        return isSkipping;
+    }
+
     public bool IsShowIdEnded(int showId)
     {
         var isEnded = false;

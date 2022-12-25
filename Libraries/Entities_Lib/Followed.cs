@@ -13,6 +13,7 @@ namespace Entities_Lib
 
         public bool InDb;
         public int TvmShowId;
+        public string? Finder;
         public string UpdateDate = $"{DateTime.Now.Date:yyyy-MM-dd}";
 
         public Followed(AppInfo appInfo)
