@@ -118,7 +118,7 @@ public class WebApi : IDisposable
         }
         catch (Exception e)
         {
-            _log.Write($"Exception: {e.Message}", "WebAPI Async", 0);
+            _log.Write($"Exception: {e.Message}  {e.InnerException}", "WebAPI Async", 0);
             if (e.Message.Contains(" seconds elapsing") || e.Message.Contains("Operation timed out"))
             {
                 _log.Write($"Retrying Now: {api}", "WebAPI Async");
@@ -128,7 +128,7 @@ public class WebApi : IDisposable
                 }
                 catch (Exception ee)
                 {
-                    _log.Write($"2nd Exception: {ee.Message}", "WebAPI Async");
+                    _log.Write($"2nd Exception: {ee.Message}  {ee.InnerException}", "WebAPI Async");
                     _httpResponse = new HttpResponseMessage();
                     IsTimedOut = true;
                     Console.WriteLine(
@@ -178,7 +178,7 @@ public class WebApi : IDisposable
         }
         catch (Exception e)
         {
-            _log.Write($"Exception: {e.Message} for {api}", "WebAPI Put Async");
+            _log.Write($"Exception: {e.Message} for {api}", $"WebAPI Put Async {e.InnerException}");
         }
     }
 
@@ -366,7 +366,7 @@ public class WebApi : IDisposable
         }
         catch (Exception e)
         {
-            _log.Write($"Exception {e.Message}", "WebAPI Rarbg", 0);
+            _log.Write($"Exception {e.Message} {e.InnerException}", "WebAPI Rarbg", 0);
         }
     }
 
