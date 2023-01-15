@@ -15,7 +15,19 @@ internal static class RefreshShows
         log.Start();
 
         MariaDb mDbR = new(appInfo);
-
+        
+        // // Get One Show
+        // var rdr = mDbR.ExecQuery("select `TvmShowId` from `Shows` where `TvmStatus` = 'Skipping' order by `TvmShowID` desc");
+        // while (rdr.Read())
+        // {
+        //     using ShowAndEpisodes sae = new(appInfo);
+        //     log.Write($"Working on Skipped Show {rdr[0]}", "", 2);
+        //     sae.Refresh(int.Parse(rdr[0].ToString()!));
+        //     //Thread.Sleep(1000);
+        // }
+        //
+        // mDbR.Close();
+   
         // Get all Shows to refresh today 
         var rdr = mDbR.ExecQuery("select `TvmShowId` from showstorefresh where `TvmStatus` != 'Skipping' limit 300");
         while (rdr.Read())

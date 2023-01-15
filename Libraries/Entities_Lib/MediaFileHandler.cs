@@ -72,9 +72,7 @@ public class MediaFileHandler : IDisposable
         var directory = GetMediaDirectory(epi.MediaType);
         var seas = $"Season {epi.SeasonNum}";
         var seasonEpisode = Common.BuildSeasonEpisodeString(epi.SeasonNum, epi.EpisodeNum);
-        var showName = epi.AltShowName != ""
-            ? epi.AltShowName
-            : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(epi.CleanedShowName);
+        var showName = string.IsNullOrEmpty(epi.AltShowName) ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(epi.CleanedShowName) : epi.AltShowName;
         var findIn = Path.Combine(directory, showName, seas);
         if (Directory.Exists(findIn))
             try

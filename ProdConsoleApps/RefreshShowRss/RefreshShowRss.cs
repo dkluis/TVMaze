@@ -36,7 +36,7 @@ internal static class RefreshShowRss
                     {
                         using Show showUpd = new(appInfo);
                         showUpd.FillViaTvmaze(showId);
-                        if (showUpd.ShowStatus == "Running")
+                        if (showUpd.ShowStatus == "Running" && showUpd.UpdateDate != "2200-01-01")
                         {
                             log.Write($"Selected to Update {cleanShow}: {showUpd.TvmShowId} to Finder: ShowRss");
                             updateFinder.ToShowRss(appInfo, showUpd.TvmShowId);

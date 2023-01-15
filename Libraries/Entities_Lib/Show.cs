@@ -366,8 +366,8 @@ namespace Entities_Lib
         public List<int> Find(AppInfo appInfo, string showName, string cleanedShowName = "", string altShowName = "")
         {
             _found = new List<int>();
-            showName = showName.Replace("'", "''");
-            altShowName = altShowName.Replace("'", "''");
+            showName = showName.Replace("'", "''").Replace(" ", " ");
+            altShowName = altShowName.Replace("'", "''").Replace(" ", " ");
             if (cleanedShowName == "")
                 cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
 
@@ -375,8 +375,8 @@ namespace Entities_Lib
 
             using MariaDb mDbR = new(appInfo);
             var sql =
-                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where ((`ShowName` = '{showName}' or " +
-                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}')) and `ShowStatus` != 'Ended';";
+                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where " +
+                $"((`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}')) and `ShowStatus` != 'Ended';";
             var rdr = mDbR.ExecQuery(sql);
 
             if (rdr is null || !rdr.HasRows)

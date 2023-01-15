@@ -7,7 +7,7 @@
     AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
     const string showCount = "select count(*) from Shows";
-    const string followedCount = "select count(*) from Followed";
+    const string followedCount = "select count(*) from Followed";  // Change Later to exclude the skipped show
     const string followedShowsCount = "select count(*) from Shows where `TvmStatus` = 'Following'";
     const string reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
     const string newShowsCount = "select count(*) from Shows where `TvmStatus` = 'New'";

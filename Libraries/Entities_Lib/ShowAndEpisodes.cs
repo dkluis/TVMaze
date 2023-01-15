@@ -32,11 +32,12 @@ namespace Entities_Lib
         {
             _show.FillViaTvmaze(showId);
             _epsByShowOnTvmaze = new List<int>();
-            if (_show is {IsDbFilled: true, IsFollowed: true} && _show.Finder != "Skip") _show.TvmStatus = "Following";
-            if (_show is {IsDbFilled: true, Finder: "Skip"}) _show.TvmStatus = "Skipping";
+            if (_show is {IsDbFilled: true, IsFollowed: true} && _show.Finder != "Skip" && _show.UpdateDate != "2200-01-01") _show.TvmStatus = "Following";
+            if (_show is {IsDbFilled: true, Finder: "Skip"} || _show.UpdateDate == "2200-01-01" ) _show.TvmStatus = "Skipping";
             _show.DbUpdate();
   
             using EpisodesByShow epsByShow = new();
+            var tvmApi = new WebApi(_appInfo);
             _epsByShow = epsByShow.Find(_appInfo, showId);
             foreach (var episode in _epsByShow)
             {
@@ -44,14 +45,22 @@ namespace Entities_Lib
                 if (_show.Finder == "Skip" && episode.PlexStatus != "Watched")
                 {
                     episode.PlexStatus = "Skipped";
-                    using var tvmApi = new WebApi(_appInfo);
                     tvmApi.PutEpisodeToSkipped(episode.TvmEpisodeId);
                 }
-                if (episode.IsDbFilled)
-                    episode.DbUpdate();
+
+                if (_show.TvmStatus == "Skipping" && episode.PlexStatus != "Watched")
+                {
+
+                }
                 else
-                    episode.DbInsert();
+                {
+                    if (episode.IsDbFilled)
+                        episode.DbUpdate();
+                    else
+                        episode.DbInsert();
+                }
             }
+
             _show.Reset();
             
             // Check to see if the number of episode on Tvmaze equal the number in Tvmaze Local

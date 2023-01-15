@@ -66,14 +66,11 @@ internal static class UpdateFollowed
             else
             {
                 theShow.FillViaTvmaze(jtShow);
-                if (theShow.Finder != "Skip")
-                {
-                    theShow.TvmStatus = "Following";
-                }
+                if (theShow.Finder != "Skip" && theShow.UpdateDate != "2200-01-01") { theShow.TvmStatus = "Following"; } 
+                else if (theShow.Finder == "Skip" || theShow.UpdateDate == "2200-01-01") { theShow.TvmStatus = "Skipping"; }
 
                 using MariaDb tsu = new(appInfo);
-                var rows = tsu.ExecNonQuery(
-                    $"update TvmShowUpdates set `TvmUpdateEpoch` = {theShow.TvmUpdatedEpoch} where `TvmShowId` = {theShow.TvmShowId};");
+                var rows = tsu.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {theShow.TvmUpdatedEpoch} where `TvmShowId` = {theShow.TvmShowId};");
                 if (rows == 0)
                 {
                     rows = tsu.ExecNonQuery(
