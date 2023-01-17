@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Common_Lib;
 using DB_Lib;
@@ -314,11 +315,12 @@ namespace Entities_Lib
 
             if (ShowStatus is "Ended" or "Running")
             {
-                var compareDate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
-                if (!PremiereDate.Contains(compareDate) && PremiereDate != "1900-01-01")
+                var compareDate = DateOnly.FromDateTime(DateTime.Now).AddYears(-1);
+                var premiereDate = DateOnly.Parse(PremiereDate);
+                if (premiereDate < compareDate && PremiereDate != "1900-01-01")
                 {
                     _log.Write(
-                        $"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
+                        $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
                     return;
                 }
             }
