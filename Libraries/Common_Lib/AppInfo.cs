@@ -9,7 +9,7 @@ public class AppInfo
     private string Application { get; }
     private string ConfigFileName { get; }
     private string ConfigFullPath { get; }
-    public string ConfigPath { get; }
+    public string? ConfigPath { get; }
     private string DbAltConn { get; }
     //public readonly string DbConnection;
 
@@ -19,7 +19,7 @@ public class AppInfo
     public readonly string FileName;
     public readonly string FilePath;
     public readonly string FullPath;
-    public readonly string HomeDir;
+    public readonly string? HomeDir;
     public readonly int LogLevel;
 
     public readonly string[] MediaExtensions;

@@ -28,7 +28,7 @@ namespace Web_Lib
         {
             //TODO Figure out how to log into ShowRss via webScrape and replace below string loading
 
-            var showRssPath = Path.Combine(_appInfo.ConfigPath, "Inputs", "ShowRss.html");
+            var showRssPath = Path.Combine(_appInfo.ConfigPath!, "Inputs", "ShowRss.html");
             HtmlDocument showRssHtml = new();
 
             var showRssInfo = File.ReadAllText(showRssPath);
@@ -193,10 +193,10 @@ namespace Web_Lib
                 _log.Write("No Result returned from the API RarbgAPI", "RarbgAPI", 4);
                 return;
             }
-
-            dynamic jsonContent = JsonConvert.DeserializeObject(content);
-            if (jsonContent != null && jsonContent["torrent_results"] != null)
-                foreach (var show in jsonContent["torrent_results"])
+            
+            dynamic jsonContent = JsonConvert.DeserializeObject(content) ?? throw new InvalidOperationException();
+            if (jsonContent != null && jsonContent!["torrent_results"] != null)
+                foreach (var show in jsonContent!["torrent_results"])
                 {
                     string magnet = show["download"];
                     var priority = PrioritizeMagnet(magnet, "RarbgAPI");

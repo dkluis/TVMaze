@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Common_Lib;
 using DB_Lib;
@@ -314,11 +315,12 @@ namespace Entities_Lib
 
             if (ShowStatus is "Ended" or "Running")
             {
-                var compareDate = Convert.ToDateTime(DateTime.Now).ToString("yyyy");
-                if (!PremiereDate.Contains(compareDate) && PremiereDate != "1900-01-01")
+                var compareDate = DateOnly.FromDateTime(DateTime.Now).AddYears(-1);
+                var premiereDate = DateOnly.Parse(PremiereDate);
+                if (premiereDate < compareDate && PremiereDate != "1900-01-01")
                 {
                     _log.Write(
-                        $"Rejected {TvmShowId} due to Premiere Date {PremiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
+                        $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
                     return;
                 }
             }
@@ -366,8 +368,8 @@ namespace Entities_Lib
         public List<int> Find(AppInfo appInfo, string showName, string cleanedShowName = "", string altShowName = "")
         {
             _found = new List<int>();
-            showName = showName.Replace("'", "''");
-            altShowName = altShowName.Replace("'", "''");
+            showName = showName.Replace("'", "''").Replace(" ", " ");
+            altShowName = altShowName.Replace("'", "''").Replace(" ", " ");
             if (cleanedShowName == "")
                 cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
 
@@ -375,8 +377,8 @@ namespace Entities_Lib
 
             using MariaDb mDbR = new(appInfo);
             var sql =
-                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where ((`ShowName` = '{showName}' or " +
-                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}')) and `ShowStatus` != 'Ended';";
+                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where " +
+                $"((`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}')) and `ShowStatus` != 'Ended';";
             var rdr = mDbR.ExecQuery(sql);
 
             if (rdr is null || !rdr.HasRows)
@@ -436,7 +438,7 @@ namespace Entities_Lib
         public void ToFollowed(AppInfo appInfo, int showId)
         {
             using MariaDb mDbW = new(appInfo);
-            var sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId};";
+            var sql = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
             appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
             if (mDbW.ExecNonQuery(sql) == 0)
                 appInfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4);

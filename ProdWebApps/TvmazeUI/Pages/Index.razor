@@ -7,10 +7,11 @@
     AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
     const string showCount = "select count(*) from Shows";
-    const string followedCount = "select count(*) from Followed";
+    const string followedCount = "select count(*) from Followed";  // Change Later to exclude the skipped show
     const string followedShowsCount = "select count(*) from Shows where `TvmStatus` = 'Following'";
     const string reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
     const string newShowsCount = "select count(*) from Shows where `TvmStatus` = 'New'";
+    const string skippingShowCount = "select count(*) from Shows where `TvmStatus` = 'Skipping'";
     const string runningShowsCount = "select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
     const string tbdShowsCount = "select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
     const string inDevShowsCount = "select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
@@ -21,6 +22,7 @@
     var numFollowedShows = "";
     var numReviewingShows = "";
     var numNewShows = "";
+    var numSkipingShows = "";
     var numRunningShows = "";
     var numTbdShows = "";
     var numInDevShows = "";
@@ -74,6 +76,13 @@
     while (rdr.Read())
     {
         numNewShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
+    }
+    mdb.Close();
+    
+    rdr = mdb.ExecQuery(skippingShowCount);
+    while (rdr.Read())
+    {
+        numSkipingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
     mdb.Close();
 
@@ -174,6 +183,11 @@
             <td>...Shows</td>
             <td>Status: Reviewing</td>
             <td>@numReviewingShows</td>
+        </tr>
+        <tr>
+            <td>...Shows</td>
+            <td>Status: Skipping</td>
+            <td>@numSkipingShows</td>
         </tr>
         <tr>
             <td>...Shows</td>

@@ -45,18 +45,23 @@ namespace UpdateShowEpochs
                 var showId = int.Parse(show.Key);
                 var showEpoch = int.Parse(show.Value!.ToString());
                 using TvmCommonSql gse = new(appInfo);
+                if (gse.IsShowSkipping(showId)) continue;
+                
                 var inDbEpoch = gse.GetShowEpoch(showId);
-
                 if (showEpoch == inDbEpoch)
                 {
                     log.Write($"Skipping {showId} since show is already up to date", "", 4);
                     continue;
                 }
 
+                using (var db = new MariaDb(appInfo))
+                {
+                    
+                }
+
                 tvmShow.FillViaTvmaze(showId);
                 log.Write(
-                    $"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}",
-                    "", 4);
+                    $"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}", "", 4);
 
                 if (inDbEpoch == 0)
                 {
@@ -113,8 +118,7 @@ namespace UpdateShowEpochs
                 else
                 {
                     using MariaDb mDbW = new(appInfo);
-                    mDbW.ExecNonQuery(
-                        $"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showId};");
+                    mDbW.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showId};");
                     mDbW.Close();
 
                     if (!tvmShow.IsDbFilled) continue;

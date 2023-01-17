@@ -114,7 +114,7 @@ namespace UpdatePlexAcquired
                     log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
                 }
 
-                Show foundShow = new(appInfo);
+                Show? foundShow = new(appInfo);
                 if (!isSeason && epiId == 0)
                 {
                     log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
@@ -140,7 +140,7 @@ namespace UpdatePlexAcquired
 
                 if (!isSeason)
                 {
-                    using Episode epiToUpdate = new(appInfo);
+                    using Episode? epiToUpdate = new(appInfo);
                     epiToUpdate.FillViaTvmaze(epiId);
                     if (epiToUpdate.PlexStatus != " ")
                     {
@@ -164,11 +164,11 @@ namespace UpdatePlexAcquired
                 }
                 else
                 {
-                    Episode firstEpi = new(appInfo);
+                    Episode? firstEpi = new(appInfo);
                     firstEpi.FillViaTvmaze(epsToUpdate[0]);
                     foreach (var epi in epsToUpdate)
                     {
-                        Episode epiToUpdate = new(appInfo);
+                        Episode? epiToUpdate = new(appInfo);
                         if (firstEpi.TvmEpisodeId != epi)
                             epiToUpdate.FillViaTvmaze(epi);
                         else

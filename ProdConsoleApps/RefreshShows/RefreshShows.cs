@@ -15,13 +15,50 @@ internal static class RefreshShows
         log.Start();
 
         MariaDb mDbR = new(appInfo);
-
+        
+        // // Get One Show
+        // var rdr = mDbR.ExecQuery("select `TvmShowId` from `Shows` where `TvmStatus` = 'Skipping' order by `TvmShowID` desc");
+        // while (rdr.Read())
+        // {
+        //     using ShowAndEpisodes sae = new(appInfo);
+        //     log.Write($"Working on Skipped Show {rdr[0]}", "", 2);
+        //     sae.Refresh(int.Parse(rdr[0].ToString()!));
+        //     //Thread.Sleep(1000);
+        // }
+        //
+        // mDbR.Close();
+   
         // Get all Shows to refresh today 
-        var rdr = mDbR.ExecQuery("select `TvmShowId` from showstorefresh limit 175");
+        var rdr = mDbR.ExecQuery("select `TvmShowId` from showstorefresh where `TvmStatus` != 'Skipping' limit 300");
         while (rdr.Read())
         {
             using ShowAndEpisodes sae = new(appInfo);
-            log.Write($"Working on Show not updated in 7 days {rdr[0]}", "", 2);
+            log.Write($"Working on Show not updated in 7 to 31 days {rdr[0]}", "", 2);
+            sae.Refresh(int.Parse(rdr[0].ToString()!));
+            //Thread.Sleep(1000);
+        }
+
+        mDbR.Close();
+
+        // Get all shows to refresh that have episodes that without a broadcast date
+        rdr = mDbR.ExecQuery(
+            "select distinct `TvmShowId` from episodesfullinfo where `TvmStatus` != 'Skipping' and `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
+        while (rdr.Read())
+        {
+            using ShowAndEpisodes sae = new(appInfo);
+            log.Write($"Working on Epi Update for Episodes without a Broadcast Date {rdr[0]}", "", 2);
+            sae.Refresh(int.Parse(rdr[0].ToString()!));
+            //Thread.Sleep(1000);
+        }
+
+        mDbR.Close();
+
+        // Refresh all shows with Orphaned Episodes 
+        rdr = mDbR.ExecQuery("select distinct `TvmShowId` from orphanedepisodes order by `TvmShowId`;");
+        while (rdr.Read())
+        {
+            using ShowAndEpisodes sae = new(appInfo);
+            log.Write($"Working on Epi Update for Orphaned Episodes {rdr[0]}", "", 2);
             sae.Refresh(int.Parse(rdr[0].ToString()!));
             //Thread.Sleep(1000);
         }
@@ -39,32 +76,7 @@ internal static class RefreshShows
         }
 
         mDbR.Close();
-
-        // Get all shows to refresh that have episodes that without a broadcast date
-        rdr = mDbR.ExecQuery(
-            "select distinct `TvmShowId` from episodesfullinfo where `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
-        while (rdr.Read())
-        {
-            using ShowAndEpisodes sae = new(appInfo);
-            log.Write($"Working on Epi Update differences Show {rdr[0]}", "", 2);
-            sae.Refresh(int.Parse(rdr[0].ToString()!));
-            //Thread.Sleep(1000);
-        }
-
-        mDbR.Close();
-
-        // Refresh all shows with Orphaned Episodes 
-        rdr = mDbR.ExecQuery("select distinct `TvmShowId` from orphanedepisodes order by `TvmShowId`;");
-        while (rdr.Read())
-        {
-            using ShowAndEpisodes sae = new(appInfo);
-            log.Write($"Working on Epi Update differences Show {rdr[0]}", "", 2);
-            sae.Refresh(int.Parse(rdr[0].ToString()!));
-            //Thread.Sleep(1000);
-        }
-
-        mDbR.Close();
-
+        
         log.Stop();
     }
 }
