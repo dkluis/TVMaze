@@ -10,6 +10,28 @@ namespace Entities_Lib
 {
     public class Episode : IDisposable
     {
+        public int Id;
+        public int TvmShowId;
+        public int TvmEpisodeId;
+        public string TvmUrl = "";
+        public string ShowName = "";
+        public string SeasonEpisode = "";
+        public int SeasonNum;
+        public int EpisodeNum;
+        public string BroadcastDate;
+        public string PlexStatus = " ";
+        public string PlexDate;
+        public string UpdateDate = "1970-01-01";
+
+        public string MediaType = "";
+        public string CleanedShowName = "";
+        public string AltShowName = "";
+
+        public string TvmType;
+        public int TvmRunTime;
+        public string TvmImage;
+        public string TvmSummary;
+        
         private readonly AppInfo _appInfo;
         private readonly TextFileHandler _log;
 
@@ -116,21 +138,13 @@ namespace Entities_Lib
                 /*
                     0 = watched, 1 = acquired, 2 = skipped 
                 */
-                switch (epm["type"].ToString())
+                PlexStatus = epm["type"].ToString() switch
                 {
-                    case "0":
-                        PlexStatus = "Watched";
-                        break;
-                    case "1":
-                        PlexStatus = "Acquired";
-                        break;
-                    case "2":
-                        PlexStatus = "Skipped";
-                        break;
-                    default:
-                        PlexStatus = null;
-                        break;
-                }
+                    "0" => "Watched",
+                    "1" => "Acquired",
+                    "2" => "Skipped",
+                    _ => null
+                };
 
                 if (epm["marked_at"] is not null)
                     PlexDate = Common.ConvertEpochToDate(int.Parse(epm["marked_at"].ToString()));
@@ -226,29 +240,6 @@ namespace Entities_Lib
             if (rows != 0) return _mdb.Success;
             return _mdb.Success = false;
         }
-
-        public int Id;
-        public int TvmShowId;
-        public int TvmEpisodeId;
-        public string TvmUrl = "";
-        public string ShowName = "";
-        public string SeasonEpisode = "";
-        public int SeasonNum;
-        public int EpisodeNum;
-        public string BroadcastDate;
-        public string PlexStatus = " ";
-        public string PlexDate;
-        public string UpdateDate = "1970-01-01";
-
-
-        public string MediaType = "";
-        public string CleanedShowName = "";
-        public string AltShowName = "";
-
-        public string TvmType;
-        public int TvmRunTime;
-        public string TvmImage;
-        public string TvmSummary;
     }
 
     public class EpisodesByShow : IDisposable
@@ -295,8 +286,7 @@ namespace Entities_Lib
             var epiId = 0;
             MariaDb mdb = new(appInfo);
 
-            var rdr = mdb.ExecQuery(
-                $"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showId} and `SeasonEpisode` = '{seasonEpisode}'; ");
+            var rdr = mdb.ExecQuery($"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showId} and `SeasonEpisode` = '{seasonEpisode}'; ");
             while (rdr.Read()) epiId = int.Parse(rdr[0].ToString()!);
 
             return epiId;

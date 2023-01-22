@@ -41,24 +41,20 @@ namespace Entities_Lib
             _epsByShow = epsByShow.Find(_appInfo, showId);
             foreach (var episode in _epsByShow)
             {
-                _epsByShowOnTvmaze.Add(episode.TvmEpisodeId);
-                if (_show.Finder == "Skip" && episode.PlexStatus != "Watched")
+                if (_show.TvmStatus == "Skipping" && episode.PlexStatus != "Watched" && episode.PlexStatus != "Skipped")
                 {
                     episode.PlexStatus = "Skipped";
                     tvmApi.PutEpisodeToSkipped(episode.TvmEpisodeId);
+                    continue;
                 }
 
-                if (_show.TvmStatus == "Skipping" && episode.PlexStatus != "Watched")
-                {
-
-                }
+                if (episode.PlexStatus == "Skipped") continue;
+                
+                _epsByShowOnTvmaze.Add(episode.TvmEpisodeId);
+                if (episode.IsDbFilled)
+                    episode.DbUpdate();
                 else
-                {
-                    if (episode.IsDbFilled)
-                        episode.DbUpdate();
-                    else
-                        episode.DbInsert();
-                }
+                    episode.DbInsert();
             }
 
             _show.Reset();

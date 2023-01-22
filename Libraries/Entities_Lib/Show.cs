@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure.Design;
 using Common_Lib;
 using DB_Lib;
 using DB_Lib.Tvmaze;
@@ -101,6 +102,8 @@ namespace Entities_Lib
             var updateFields = "";
             var sqlPrefix = "update shows set ";
             if (TvmStatus == "Reviewing" && TvmSummary != "") TvmStatus = "New";
+            var now = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            UpdateDate = UpdateDate == "2200-01-01" ? UpdateDate : now;
 
             updateFields += $"`TvmStatus` = '{TvmStatus}', ";
             updateFields += $"`Finder` = '{Finder}', ";
@@ -110,7 +113,7 @@ namespace Entities_Lib
             updateFields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
             updateFields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
             updateFields += $"`PremiereDate` = '{PremiereDate}', ";
-            updateFields += $"`UpdateDate` = '{DateTime.Now.Date:yyyy-MM-dd}' ";
+            updateFields += $"`UpdateDate` = '{UpdateDate}' ";
             var sqlSuffix = $"where `TvmShowId` = {TvmShowId};";
             var rows = _mdb.ExecNonQuery(sqlPrefix + updateFields + sqlSuffix);
             _log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
