@@ -113,18 +113,20 @@
         {
             var findItE = FindUrlE + ei.ShowName!.Replace(" ", "-");
             var findItR = FindUrlR + ei.ShowName.Replace(" ", "+");
+            var upD = ei.UpdateDate!.Split(' ')[0];
+            var brD = ei.BroadcastDate!.Split(' ')[0];
             <tr>
                 <td>@ei.TvmShowId</td>
                 <td>@ei.ShowName</td>
                 <td>@ei.Season</td>
                 <td>@ei.Episode</td>
-                <td>@ei.BroadcastDate</td>
+                <td>@brD</td>
                 <td>
                     <a href="@ei.TvmUrl" target="_blank">TVMaze</a>
                 </td>
                 <td>@ei.PlexStatus</td>
                 <td>@ei.PlexDate</td>
-                <td>@ei.UpdateDate</td>
+                <td>@upD</td>
                 <td>
                     <a href="@findItE" target="_blank">FE</a>
                     <a href="@findItR" target="_blank">FR</a>

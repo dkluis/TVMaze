@@ -68,6 +68,14 @@ namespace TvmazeUI.Data
             return resultRows > 0;
         }
 
+        public bool SkipShow(int showId)
+        {
+            MariaDb mdbShows = new(AppInfo);
+            var sql = $"update Shows set `TvmStatus` = 'Skipping', `Finder` = 'Skip', `UpdateDate` = '2200-01-01' Where `TvmShowId` = {showId}";
+            var resultRows = mdbShows.ExecNonQuery(sql);
+            return resultRows > 0;
+        }
+
         public bool SetTvmStatusShow(int showId, string newStatus)
         {
             MariaDb mdbShows = new(AppInfo);

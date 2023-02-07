@@ -164,24 +164,22 @@ public class MediaFileHandler : IDisposable
             return false;
         }
 
-        string destDirectory;
-        string shown;
-        if (episode is not null)
-        {
-            destDirectory = GetMediaDirectory(episode.MediaType);
-            shown = episode.AltShowName != ""
-                ? episode.AltShowName
-                : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
-        }
-        else
+        var destDirectory = "";
+        var shown = "";
+        if (show != null)
         {
             destDirectory = GetMediaDirectory(show!.MediaType);
-
             shown = show.AltShowName != ""
                 ? show.AltShowName
                 : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
         }
-
+        else
+        {
+            destDirectory = GetMediaDirectory((episode!.MediaType));
+            shown = episode.AltShowName != ""
+                ? episode.AltShowName
+                : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
+        }
         var fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo);
         var isDirectory = false;
         List<string> media = new();

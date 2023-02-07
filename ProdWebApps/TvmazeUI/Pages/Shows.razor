@@ -63,6 +63,15 @@
         _searchString = "";
     }
 
+    private void SkipShow(ShowsInfo si)
+    {
+        _webShowsService.AppInfo.TxtFile.Write($"Setting Show to Skipping {si.TvmShowId}: {si.ShowName}");
+        _webShowsService.SkipShow(si.TvmShowId);
+        _searchString = si.ShowName;
+        FindShows();
+        _searchString = "";
+    }
+
     private void FindEpisodes(ShowsInfo si)
     {
         _dataExchangeService.ShowName = si.AltShowName == "" ? si.ShowName : si.AltShowName;
@@ -142,7 +151,10 @@
                 </td>
                 <td>@si.TvmStatus</td>
                 <td>@si.ShowStatus</td>
-                <td>@si.UpdateDate![..10]</td>
+                @{
+                    var splitDate = @si.UpdateDate!.Split(' ');
+                    <td>@splitDate[0]</td>
+                }
                 <td>
                     @if (si.TvmStatus != "Reviewing")
                     {
@@ -153,6 +165,10 @@
                         else
                         {
                             <button class="btn btn-warning" @onclick="@(() => EditShow(si))">Submit Edit</button>
+                            if (si.TvmStatus != "Skipping")
+                            {
+                                <button class="btn btn-danger" @onclick="@(() => SkipShow(si))">Skip</button>
+                            }
                         }
                     }
                     @if (si.TvmStatus != "Following")

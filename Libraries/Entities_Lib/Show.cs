@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure.Design;
 using Common_Lib;
 using DB_Lib;
 using DB_Lib.Tvmaze;
@@ -379,21 +377,32 @@ namespace Entities_Lib
             if (altShowName == "") altShowName = showName;
 
             using MariaDb mDbR = new(appInfo);
-            var sql =
-                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where " +
-                $"((`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}')) and `ShowStatus` != 'Ended';";
+            var sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where " +
+                      $"(`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Ended';";
             var rdr = mDbR.ExecQuery(sql);
 
-            if (rdr is null || !rdr.HasRows)
+            if (!rdr.HasRows)
             {
                 mDbR.Close();
-                sql =
-                    $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                    $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+                sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
+                      $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
                 rdr = mDbR.ExecQuery(sql);
-                if (rdr is null || !rdr.HasRows) return _found;
             }
 
+            /*if (!rdr.HasRows)
+            {
+                if (altShowName.Contains("(US)") || altShowName.Contains("(UK)"))
+                {
+                    mDbR.Close();
+                    altShowName = altShowName.Replace("(US)", "(2023)").Replace("(UK)", "(2023)");
+                    sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
+                          $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+                    rdr = mDbR.ExecQuery(sql);
+                }
+                if (!rdr.HasRows) return _found;
+            }*/
+
+            if (!rdr.HasRows) return _found;
             while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
 
             return _found;

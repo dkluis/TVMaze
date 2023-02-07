@@ -19,6 +19,7 @@ namespace UpdatePlexAcquired
             var log = appInfo.TxtFile;
             log.Start();
 
+            // Read the Acquired Media txt file
             var plexAcquired = Path.Combine(appInfo.ConfigPath, "Inputs", "PlexAcquired.log");
             if (!File.Exists(plexAcquired))
             {
@@ -33,6 +34,7 @@ namespace UpdatePlexAcquired
             File.Delete(plexAcquired);
             log.Write($"Found {acquired.Length} records in {plexAcquired}");
 
+            // Process all media lines
             foreach (var acq in acquired)
             {
                 log.Write($"Processing acquired {acq}");
