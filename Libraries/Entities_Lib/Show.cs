@@ -298,7 +298,7 @@ namespace Entities_Lib
                     not "hulu" and
                     not "disney+")
                     if (TvmLanguage != "")
-                        if (TvmLanguage is not "English" and not "Dutch")
+                        if (TvmLanguage is not "English")
                         {
                             _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
                             return;
@@ -307,7 +307,7 @@ namespace Entities_Lib
             else
             {
                 if (TvmLanguage != "")
-                    if (TvmLanguage is not "English" and not "Dutch")
+                    if (TvmLanguage is not "English")
                     {
                         _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
                         return;
@@ -349,6 +349,11 @@ namespace Entities_Lib
                     case "abc kids":
                     case "disney Junior":
                     case "food network":
+                    case "chaupal":
+                    case "youku":
+                    case "Домашний":
+                    case "svt play":
+                    case "tencent qq":
                         _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                         return;
                 }
@@ -389,18 +394,15 @@ namespace Entities_Lib
                 rdr = mDbR.ExecQuery(sql);
             }
 
-            /*if (!rdr.HasRows)
+            var splitShowName = altShowName.Split(" (");
+            if (splitShowName.Length > 0) { altShowName = splitShowName[0]; }
+            if (!rdr.HasRows)
             {
-                if (altShowName.Contains("(US)") || altShowName.Contains("(UK)"))
-                {
-                    mDbR.Close();
-                    altShowName = altShowName.Replace("(US)", "(2023)").Replace("(UK)", "(2023)");
-                    sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                          $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
-                    rdr = mDbR.ExecQuery(sql);
-                }
-                if (!rdr.HasRows) return _found;
-            }*/
+                mDbR.Close();
+                sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " + 
+                      $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+                rdr = mDbR.ExecQuery(sql);
+            }
 
             if (!rdr.HasRows) return _found;
             while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));

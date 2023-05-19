@@ -303,15 +303,12 @@ namespace Web_Lib
                 priority += 10;
             else if (magnet.ToLower().Contains("480p."))
                 priority += 3;
-            else if (magnet.ToLower().Contains("2160p.")) 
-                priority += 13;
             // Container values
             if (magnet.ToLower().Contains(".mkv"))
                 priority += 10;
-            else if (magnet.ToLower().Contains(".mp3"))
+            else if (magnet.ToLower().Contains(".mp4"))
                 priority += 5;
             else if (magnet.ToLower().Contains(".avi")) priority += 3;
-
             // Wrong Languages
             if (magnet.ToLower().Contains(".italian.")) priority -= 75;
 
