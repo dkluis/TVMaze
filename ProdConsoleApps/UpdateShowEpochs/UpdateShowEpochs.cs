@@ -56,7 +56,6 @@ namespace UpdateShowEpochs
 
                 using (var db = new MariaDb(appInfo))
                 {
-                    
                 }
 
                 tvmShow.FillViaTvmaze(showId);

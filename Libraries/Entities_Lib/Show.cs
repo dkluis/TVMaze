@@ -289,29 +289,13 @@ namespace Entities_Lib
             IsForReview = false;
             if (TvmShowId <= lastShowEvaluated) return;
 
-            if (TvmNetwork is not null)
+            if (!string.IsNullOrEmpty(TvmLanguage) && !string.IsNullOrWhiteSpace(TvmLanguage))
             {
-                if (TvmNetwork.ToLower() is not "netflix" and
-                    not "amazon prime video" and
-                    not "hbo max" and
-                    not "hbo" and
-                    not "hulu" and
-                    not "disney+")
-                    if (TvmLanguage != "")
-                        if (TvmLanguage is not "English")
-                        {
-                            _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
-                            return;
-                        }
-            }
-            else
-            {
-                if (TvmLanguage != "")
-                    if (TvmLanguage is not "English")
-                    {
-                        _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
-                        return;
-                    }
+                if (TvmLanguage.ToLower() != "english")
+                {
+                    _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
+                    return;
+                }
             }
 
             if (ShowStatus is "Ended" or "Running")
@@ -334,11 +318,13 @@ namespace Entities_Lib
                 case "game show":
                 case "talk show":
                 case "panel show":
+                case "reality":
                     _log.Write($"Rejected {TvmShowId} due to Type {TvmType}");
                     return;
             }
 
             if (TvmNetwork is not null)
+            {
                 switch (TvmNetwork.ToLower())
                 {
                     case "youtube":
@@ -351,12 +337,22 @@ namespace Entities_Lib
                     case "food network":
                     case "chaupal":
                     case "youku":
-                    case "Домашний":
                     case "svt play":
                     case "tencent qq":
+                    case "cctv-1":
+                    case "iqiyi":
+                    case "mbn":
                         _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                         return;
                 }
+                switch (TvmNetwork)
+                {
+                    case "TB Центр":
+                    case "Домашний":
+                        _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
+                        return;
+                }
+            }
 
             IsForReview = true;
         }

@@ -26,8 +26,6 @@ namespace Web_Lib
 
         public List<string> GetShowRssInfo()
         {
-            //TODO Figure out how to log into ShowRss via webScrape and replace below string loading
-
             var showRssPath = Path.Combine(_appInfo.ConfigPath!, "Inputs", "ShowRss.html");
             HtmlDocument showRssHtml = new();
 
@@ -273,10 +271,10 @@ namespace Web_Lib
             var priority = provider switch
             {
                 "Eztv" or "EztvAPI" => 100,
-                "PirateBay" => 100,
+                "PirateBay" => 105,
                 "MagnetDL" => 110, // Does not have container info so +10 by default
-                "RarbgAPI" => 130, // Typically has the better so +30 by default
-                _ => 100
+                //"RarbgAPI" => 130, // Typically has the better so +30 by default
+                _ => 100,
             };
             // Codex values
             if (magnet.ToLower().Contains("x264") || 
@@ -284,8 +282,8 @@ namespace Web_Lib
                 magnet.ToLower().Contains("x.264") || 
                 magnet.ToLower().Contains("h.264"))
                 priority += 60;
-            else if (magnet.ToLower().Contains("xvid"))
-                priority += 30;
+            // else if (magnet.ToLower().Contains("xvid"))
+            //     priority += 30;
             else if ((magnet.ToLower().Contains("x265") 
                       || magnet.ToLower().Contains("h265") 
                       || magnet.ToLower().Contains("x.265") 
@@ -295,14 +293,16 @@ namespace Web_Lib
             else if (magnet.ToLower().Contains("hevc"))
                 priority += 55;
             // Resolution values
-            if (magnet.ToLower().Contains("1080p."))
+            if (magnet.ToLower().Contains("2160p."))
+                priority += 16;
+            else if (magnet.ToLower().Contains("1080p."))
                 priority += 15;
             else if (magnet.ToLower().Contains("hdtv."))
                 priority += 14;
             else if (magnet.ToLower().Contains("720p."))
                 priority += 10;
-            else if (magnet.ToLower().Contains("480p."))
-                priority += 3;
+            // else if (magnet.ToLower().Contains("480p."))
+            //     priority += 3;
             // Container values
             if (magnet.ToLower().Contains(".mkv"))
                 priority += 10;
@@ -310,7 +310,7 @@ namespace Web_Lib
                 priority += 5;
             else if (magnet.ToLower().Contains(".avi")) priority += 3;
             // Wrong Languages
-            if (magnet.ToLower().Contains(".italian.")) priority -= 75;
+            if (magnet.ToLower().Contains(".italian.") || magnet.ToLower().Contains(".ita.")) priority -= 75;
 
             return priority;
         }
@@ -358,7 +358,7 @@ namespace Web_Lib
             using WebScrape seasonScrape = new(_appInfo);
             {
                 seasonScrape.Magnets = new List<string>();
-                seasonScrape.GetRarbgMagnets(showName, seasEpi);
+                //seasonScrape.GetRarbgMagnets(showName, seasEpi);
                 seasonScrape.GetEztvMagnets(showName, seasEpi);
                 seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
                 seasonScrape.GetPirateBayMagnets(showName, seasEpi);
