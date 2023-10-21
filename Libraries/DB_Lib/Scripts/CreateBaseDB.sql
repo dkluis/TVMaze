@@ -163,10 +163,9 @@ select `e`.`TvmShowId`       AS `TvmShowId`,
        `e`.`PlexDate`        AS `PlexDate`,
        `s`.`Finder`          AS `Finder`
 from (`tvmazenewdb`.`episodes` `e`
-         join `tvmazenewdb`.`shows` `s` on
+    join `tvmazenewdb`.`shows` `s` on
     (`e`.`TvmShowId` = `s`.`TvmShowId`))
 where `e`.`BroadcastDate` <= curdate()
   and `e`.`PlexStatus` = ' '
 order by `e`.`TvmShowId`,
          `e`.`SeasonEpisode`;
-

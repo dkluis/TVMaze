@@ -6,21 +6,17 @@ namespace DB_Lib.Tvmaze;
 
 public class TvmCommonSql : IDisposable
 {
-    private readonly MariaDb _db;
-    private MySqlDataReader? _rdr;
-
+    private readonly MariaDb          _db;
+    private          MySqlDataReader? _rdr;
     public TvmCommonSql(AppInfo appInfo)
     {
         _db = new MariaDb(appInfo);
     }
-
-
     public void Dispose()
     {
         _db.Close();
         GC.SuppressFinalize(this);
     }
-
     public int GetLastTvmShowIdInserted()
     {
         var lastShowInserted = 99999999;
@@ -29,7 +25,6 @@ public class TvmCommonSql : IDisposable
         _db.Close();
         return lastShowInserted;
     }
-
     public bool IsShowIdFollowed(int showId)
     {
         var isFollowed = false;
@@ -38,7 +33,6 @@ public class TvmCommonSql : IDisposable
         _db.Close();
         return isFollowed;
     }
-
     public bool IsShowSkipping(int showId)
     {
         var isSkipping = false;
@@ -47,7 +41,6 @@ public class TvmCommonSql : IDisposable
         _db.Close();
         return isSkipping;
     }
-
     public bool IsShowIdEnded(int showId)
     {
         var isEnded = false;
@@ -59,7 +52,6 @@ public class TvmCommonSql : IDisposable
         _db.Close();
         return isEnded;
     }
-
     public int GetShowEpoch(int showId)
     {
         var epoch = 0;
@@ -69,7 +61,6 @@ public class TvmCommonSql : IDisposable
 
         return epoch;
     }
-
     public int GetLastEvaluatedShow()
     {
         var epoch = 0;
@@ -80,7 +71,6 @@ public class TvmCommonSql : IDisposable
         _db.Close();
         return epoch;
     }
-
     public void SetLastEvaluatedShow(int newLastEpoch)
     {
         _db.ExecNonQuery($"update LastShowEvaluated set `ShowId` = {newLastEpoch};");

@@ -14,12 +14,12 @@ namespace Web_Lib;
 
 public class WebApi : IDisposable
 {
-    private const    string              TvmazeUrl          = "https://api.tvmaze.com/";
-    private const    string              TvmazeUserUrl      = "https://api.tvmaze.com/v1/user/";
-    private const    string              Torrentz2ApiUrlPre = "https://torrentz2.cdf/search?q='";
-    private static   HttpClient          _Torrentz2Client   = new();
-    private readonly HttpClient          _client            = new();
-    private readonly TextFileHandler     _log;
+    private const    string          TvmazeUrl          = "https://api.tvmaze.com/";
+    private const    string          TvmazeUserUrl      = "https://api.tvmaze.com/v1/user/";
+    private const    string          Torrentz2ApiUrlPre = "https://torrentz2.cdf/search?q='";
+    private static   HttpClient      _Torrentz2Client   = new();
+    private readonly HttpClient      _client            = new();
+    private readonly TextFileHandler _log;
     //private readonly string              _Torrentz2ApiUrlSuf;
     private readonly string              _tvmazeSecurity;
     private          HttpResponseMessage _httpResponse = new();
@@ -28,9 +28,9 @@ public class WebApi : IDisposable
     public           bool                IsTimedOut;
     public WebApi(AppInfo appInfo)
     {
-        _log                = appInfo.TxtFile;
+        _log = appInfo.TxtFile;
         //_Torrentz2ApiUrlSuf = appInfo.Torrentz2Token;
-        _tvmazeSecurity     = appInfo.TvmazeToken;
+        _tvmazeSecurity = appInfo.TvmazeToken;
     }
     public void Dispose()
     {
