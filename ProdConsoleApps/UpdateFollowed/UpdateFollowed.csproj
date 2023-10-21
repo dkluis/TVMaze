@@ -11,15 +11,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Newtonsoft.Json" />
+        <None Remove="Newtonsoft.Json"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj" />
-        <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj" />
-        <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj" />
-        <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj" />
+        <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj"/>
     </ItemGroup>
 </Project>

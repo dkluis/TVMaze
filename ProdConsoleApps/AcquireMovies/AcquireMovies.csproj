@@ -11,8 +11,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj" />
-        <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj" />
-        <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj" />
+        <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj"/>
+        <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj"/>
     </ItemGroup>
 </Project>

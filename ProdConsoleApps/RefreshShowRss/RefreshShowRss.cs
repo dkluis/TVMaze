@@ -11,12 +11,12 @@ internal static class RefreshShowRss
         const string thisProgram = "Refresh ShowRss";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var log = appInfo.TxtFile;
+        var     log     = appInfo.TxtFile;
         log.Start();
-        WebScrape showScrape = new(appInfo);
-        var showRssShows = showScrape.GetShowRssInfo();
+        WebScrape           showScrape         = new(appInfo);
+        var                 showRssShows       = showScrape.GetShowRssInfo();
         SearchShowsViaNames searchShowViaNames = new();
-        UpdateFinder updateFinder = new();
+        UpdateFinder        updateFinder       = new();
         log.Write($"Found {showRssShows.Count} in the ShowRss HTML download");
         var idx = 1;
         foreach (var show in showRssShows)

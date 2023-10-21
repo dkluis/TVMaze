@@ -11,11 +11,11 @@ internal static class RefreshShows
         const string thisProgram = "Refresh Shows";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var log = appInfo.TxtFile;
+        var     log     = appInfo.TxtFile;
         log.Start();
 
         MariaDb mDbR = new(appInfo);
-        
+
         // Doing Skipping shows on Sunday Only
         if (DateTime.Now.ToString("ddd") == "Sun")
         {
@@ -30,7 +30,7 @@ internal static class RefreshShows
         }
 
         mDbR.Close();
-   
+
         // Get all Shows to refresh today 
         var rdr = mDbR.ExecQuery("select `TvmShowId` from showstorefresh where `TvmStatus` != 'Skipping' limit 300");
         while (rdr.Read())
@@ -45,7 +45,7 @@ internal static class RefreshShows
 
         // Get all shows to refresh that have episodes that without a broadcast date
         rdr = mDbR.ExecQuery(
-            "select distinct `TvmShowId` from episodesfullinfo where `TvmStatus` != 'Skipping' and `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
+                             "select distinct `TvmShowId` from episodesfullinfo where `TvmStatus` != 'Skipping' and `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
         while (rdr.Read())
         {
             using ShowAndEpisodes sae = new(appInfo);
@@ -79,7 +79,7 @@ internal static class RefreshShows
         }
 
         mDbR.Close();
-        
+
         log.Stop();
     }
 }
