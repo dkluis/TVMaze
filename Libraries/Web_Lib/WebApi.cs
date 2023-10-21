@@ -14,32 +14,28 @@ namespace Web_Lib;
 
 public class WebApi : IDisposable
 {
-    private const string TvmazeUrl = "https://api.tvmaze.com/";
-    private const string TvmazeUserUrl = "https://api.tvmaze.com/v1/user/";
-
-    private const string RarbgApiUrlPre = "https://torrentapi.org/pubapi_v2.php?mode=search&search_string='";
-    private static HttpClient _rarbgClient = new();
-    private readonly HttpClient _client = new();
-    private readonly TextFileHandler _log;
-    private readonly string _rarbgApiUrlSuf;
-    private readonly string _tvmazeSecurity;
-    private HttpResponseMessage _httpResponse = new();
-    private bool _tvmazeUrlInitialized;
-    private bool _tvmazeUserUrlInitialized;
-    public bool IsTimedOut;
-
+    private const    string              TvmazeUrl          = "https://api.tvmaze.com/";
+    private const    string              TvmazeUserUrl      = "https://api.tvmaze.com/v1/user/";
+    private const    string              Torrentz2ApiUrlPre = "https://torrentz2.cdf/search?q='";
+    private static   HttpClient          _Torrentz2Client   = new();
+    private readonly HttpClient          _client            = new();
+    private readonly TextFileHandler     _log;
+    //private readonly string              _Torrentz2ApiUrlSuf;
+    private readonly string              _tvmazeSecurity;
+    private          HttpResponseMessage _httpResponse = new();
+    private          bool                _tvmazeUrlInitialized;
+    private          bool                _tvmazeUserUrlInitialized;
+    public           bool                IsTimedOut;
     public WebApi(AppInfo appInfo)
     {
-        _log = appInfo.TxtFile;
-        _rarbgApiUrlSuf = appInfo.RarbgToken;
-        _tvmazeSecurity = appInfo.TvmazeToken;
+        _log                = appInfo.TxtFile;
+        //_Torrentz2ApiUrlSuf = appInfo.Torrentz2Token;
+        _tvmazeSecurity     = appInfo.TvmazeToken;
     }
-
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
-
     public JObject ConvertHttpToJObject(HttpResponseMessage message)
     {
         var content = message.Content.ReadAsStringAsync().Result;
@@ -52,7 +48,6 @@ public class WebApi : IDisposable
         var jObject = JObject.Parse(content);
         return jObject;
     }
-
     public JArray ConvertHttpToJArray(HttpResponseMessage message)
     {
         var content = message.Content.ReadAsStringAsync().Result;
@@ -65,7 +60,6 @@ public class WebApi : IDisposable
         var jArray = JArray.Parse(content);
         return jArray;
     }
-
     public HttpClientHandler ShowRssLogin(string user, string password)
     {
         HttpClientHandler hch = new();
@@ -108,13 +102,12 @@ public class WebApi : IDisposable
             //Environment.Exit(99);
         }
     }
-
     private async Task PerformTvmApiAsync(string api)
     {
         try
         {
             _httpResponse = await _client.GetAsync(api).ConfigureAwait(false);
-            IsTimedOut = false;
+            IsTimedOut    = false;
         }
         catch (Exception e)
         {
@@ -130,9 +123,9 @@ public class WebApi : IDisposable
                 {
                     _log.Write($"2nd Exception: {ee.Message}  {ee.InnerException}", "WebAPI Async");
                     _httpResponse = new HttpResponseMessage();
-                    IsTimedOut = true;
+                    IsTimedOut    = true;
                     Console.WriteLine(
-                        "########### Aborting from PerformTvmApiAsync 2nd Exception ###################");
+                                      "########### Aborting from PerformTvmApiAsync 2nd Exception ###################");
                     Environment.Exit(99);
                 }
             }
@@ -142,14 +135,13 @@ public class WebApi : IDisposable
             _client.Dispose();
         }
     }
-
     private void PerformWaitPutTvmApiAsync(string api, int epi, string date, string type = "")
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        EpisodeMarking em = new(epi, date, type);
-        var content = em.GetJson();
+        EpisodeMarking em      = new(epi, date, type);
+        var            content = em.GetJson();
         _log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}", "", 4);
 
         var t = PerformPutTvmApiAsync(api, content);
@@ -166,7 +158,6 @@ public class WebApi : IDisposable
             //Environment.Exit(99);
         }
     }
-
     private async Task PerformPutTvmApiAsync(string api, string json)
     {
         StringContent stringContent = new(json, Encoding.UTF8, "application/json");
@@ -181,7 +172,6 @@ public class WebApi : IDisposable
             _log.Write($"Exception: {e.Message} for {api}", $"WebAPI Put Async {e.InnerException}");
         }
     }
-
     private void SetTvmaze()
     {
         if (!_tvmazeUrlInitialized)
@@ -189,11 +179,10 @@ public class WebApi : IDisposable
             _client.BaseAddress = new Uri(TvmazeUrl);
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
-            _client.Timeout = TimeSpan.FromSeconds(30);
+            _client.Timeout       = TimeSpan.FromSeconds(30);
             _tvmazeUrlInitialized = true;
         }
     }
-
     private void SetTvmazeUser()
     {
         if (!_tvmazeUserUrlInitialized)
@@ -202,11 +191,10 @@ public class WebApi : IDisposable
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client.DefaultRequestHeaders.Add("Authorization", _tvmazeSecurity);
             _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
-            _client.Timeout = TimeSpan.FromSeconds(30);
+            _client.Timeout           = TimeSpan.FromSeconds(30);
             _tvmazeUserUrlInitialized = true;
         }
     }
-
     public HttpResponseMessage GetShow(string showName)
     {
         SetTvmaze();
@@ -218,7 +206,6 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
-
     public HttpResponseMessage GetShow(int showid)
     {
         SetTvmaze();
@@ -228,7 +215,6 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
-
     public HttpResponseMessage GetEpisodesByShow(int showid)
     {
         SetTvmaze();
@@ -238,17 +224,15 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
-
     public HttpResponseMessage GetAllEpisodes()
     {
         SetTvmazeUser();
-        var api = $"episodes";
+        var api = "episodes";
         PerformWaitTvmApi(api);
         _log.Write($"API String = {TvmazeUserUrl}{api}", "WebAPI GEBS", 4);
 
         return _httpResponse;
     }
-
     public HttpResponseMessage GetShowUpdateEpochs(string period)
     {
         // day, week, month option for period
@@ -259,7 +243,6 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
-
     public HttpResponseMessage GetFollowedShows()
     {
         SetTvmazeUser();
@@ -269,7 +252,6 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
-
     public bool CheckForFollowedShow(int showid)
     {
         var isFollowed = false;
@@ -294,7 +276,6 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
-
     public HttpResponseMessage GetEpisodeMarks(int episodeid)
     {
         SetTvmazeUser();
@@ -303,36 +284,33 @@ public class WebApi : IDisposable
         PerformWaitTvmApi(api);
 
         /*
-         * 0 = watched, 1 = acquired, 2 = skipped 
-        */
+         * 0 = watched, 1 = acquired, 2 = skipped
+         */
 
         return _httpResponse;
     }
-
     public HttpResponseMessage PutEpisodeToWatched(int episodeid, string watcheddate = "")
     {
         SetTvmazeUser();
-        var api = $"episodes/{episodeid}";
+        var api                            = $"episodes/{episodeid}";
         if (watcheddate == "") watcheddate = DateTime.Now.ToString("yyyy-MM-dd");
         PerformWaitPutTvmApiAsync(api, episodeid, watcheddate, "Watched");
 
         return _httpResponse;
     }
-
     public HttpResponseMessage PutEpisodeToAcquired(int episodeid, string acquiredate = "")
     {
         SetTvmazeUser();
-        var api = $"episodes/{episodeid}";
+        var api                            = $"episodes/{episodeid}";
         if (acquiredate == "") acquiredate = DateTime.Now.ToString("yyyy-MM-dd");
         PerformWaitPutTvmApiAsync(api, episodeid, acquiredate, "Acquired");
 
         return _httpResponse;
     }
-
     public HttpResponseMessage PutEpisodeToSkipped(int episodeid, string skipdate = "")
     {
         SetTvmazeUser();
-        var api = $"episodes/{episodeid}";
+        var api                      = $"episodes/{episodeid}";
         if (skipdate == "") skipdate = DateTime.Now.ToString("yyyy-MM-dd");
         PerformWaitPutTvmApiAsync(api, episodeid, skipdate, "Skipped");
 
@@ -343,37 +321,35 @@ public class WebApi : IDisposable
 
     #region Scrape APIs
 
-    #region RarbgAPI
+    #region Torrentz2API
 
-    public HttpResponseMessage GetRarbgMagnets(string searchfor)
+    public HttpResponseMessage GetTorrentz2Magnets(string searchfor)
     {
-        _rarbgClient = new HttpClient();
-        _rarbgClient.BaseAddress = new Uri(RarbgApiUrlPre);
-        _rarbgClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _Torrentz2Client             = new HttpClient();
+        _Torrentz2Client.BaseAddress = new Uri(Torrentz2ApiUrlPre);
+        _Torrentz2Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         var productvalue = new ProductInfoHeaderValue("Safari", "13.0");
-        _rarbgClient.DefaultRequestHeaders.UserAgent.Add(productvalue);
-        var t = GetShowRarbg(searchfor);
+        _Torrentz2Client.DefaultRequestHeaders.UserAgent.Add(productvalue);
+        var t = GetShowTorrentz2(searchfor);
         t.Wait();
         return _httpResponse;
     }
-
-    public async Task GetShowRarbg(string searchfor)
+    private async Task GetShowTorrentz2(string searchfor)
     {
         try
         {
-            var url = GetRarbgMagnetsApi(searchfor);
-            _httpResponse = await _rarbgClient.GetAsync(url).ConfigureAwait(false);
+            var url = GetTorrentz2MagnetsApi(searchfor);
+            _httpResponse = await _Torrentz2Client.GetAsync(url).ConfigureAwait(false);
         }
         catch (Exception e)
         {
-            _log.Write($"Exception {e.Message} {e.InnerException}", "WebAPI Rarbg", 0);
+            _log.Write($"Exception {e.Message} {e.InnerException}", "WebAPI Torrentz2", 0);
         }
     }
-
-    private string GetRarbgMagnetsApi(string searchFor)
+    private string GetTorrentz2MagnetsApi(string searchFor)
     {
-        var api = $"{RarbgApiUrlPre}{Common.RemoveSpecialCharsInShowName(searchFor)}{_rarbgApiUrlSuf}";
-        _log.Write($"API String = {api}", "RarbgAPI", 4);
+        var api = $"{Torrentz2ApiUrlPre}{Common.RemoveSpecialCharsInShowName(searchFor)}'";
+        _log.Write($"API String = {api}", "Torrentz2API", 4);
         return api;
     }
 
@@ -381,18 +357,16 @@ public class WebApi : IDisposable
 
     #endregion
 }
-
 [SuppressMessage("ReSharper", "NotAccessedField.Global")]
 public class EpisodeMarking
 {
     public int episode_id;
     public int marked_at;
     public int type;
-
     public EpisodeMarking(int epi, string date, string ty = "")
     {
         episode_id = epi;
-        marked_at = Common.ConvertDateToEpoch(date);
+        marked_at  = Common.ConvertDateToEpoch(date);
         switch (ty)
         {
             case "Watched":
@@ -409,7 +383,6 @@ public class EpisodeMarking
                 break;
         }
     }
-
     public string GetJson()
     {
         return JsonConvert.SerializeObject(this);
