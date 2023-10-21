@@ -9,16 +9,15 @@ internal class InitializeEpisodes
 {
     private static void Main()
     {
-        var thisProgram = "Init Episode Table";
+        const string thisProgram = "Init Episode Table";
         Console.WriteLine($"{DateTime.Now}:  {thisProgram}");
         AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appinfo.TxtFile;
         log.Start();
 
         //Get All Followed Shows
-        List<int>         allfollowed = new();
-        SearchAllFollowed sal         = new();
-        allfollowed = sal.Find(appinfo);
+        SearchAllFollowed sal = new();
+        var allfollowed = sal.Find(appinfo);
         if (allfollowed.Count == 0)
         {
             log.Write("No Followed Shows Found, exiting program", "", 0);

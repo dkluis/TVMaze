@@ -20,7 +20,7 @@ internal static class UpdatePlexAcquired
         log.Start();
 
         // Read the Acquired Media txt file
-        var plexAcquired = Path.Combine(appInfo.ConfigPath, "Inputs", "PlexAcquired.log");
+        var plexAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "PlexAcquired.log");
         if (!File.Exists(plexAcquired))
         {
             log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
@@ -29,7 +29,7 @@ internal static class UpdatePlexAcquired
         }
 
         var acquired    = File.ReadAllLines(plexAcquired);
-        var allAcquired = Path.Combine(appInfo.ConfigPath, "Inputs", "AllAcquired.log");
+        var allAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "AllAcquired.log");
         File.AppendAllLinesAsync(allAcquired, acquired);
         File.Delete(plexAcquired);
         log.Write($"Found {acquired.Length} records in {plexAcquired}");
@@ -116,33 +116,36 @@ internal static class UpdatePlexAcquired
                 log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
             }
 
-            Show? foundShow = new(appInfo);
-            if (!isSeason && epiId == 0)
+            Show foundShow = new(appInfo);
+            switch (isSeason)
             {
-                log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
-                using (ActionItems ai = new(appInfo))
+                case false when epiId == 0:
                 {
-                    ai.DbInsert($"Could not find episode for Show {show} and Episode String {episodeString}");
+                    log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
+                    using (ActionItems ai = new(appInfo))
+                    {
+                        ai.DbInsert($"Could not find episode for Show {show} and Episode String {episodeString}");
+                    }
+
+                    foundShow.FillViaTvmaze(showId[0]);
+                    using MediaFileHandler mfh = new(appInfo);
+                    mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
+                    foundShow.Reset();
+                    continue;
                 }
-
-                foundShow.FillViaTvmaze(showId[0]);
-                using MediaFileHandler mfh = new(appInfo);
-                mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
-                foundShow.Reset();
-                continue;
-            }
-
-            if (isSeason)
-            {
-                using MariaDb mDbE = new(appInfo);
-                var rdrE = mDbE.ExecQuery(
-                                          $"select TvmEpisodeId from Episodes where `TvmShowId` = {showId[0]} and `Season` = {seasonNum}");
-                while (rdrE.Read()) epsToUpdate.Add(int.Parse(rdrE[0].ToString()!));
+                case true:
+                {
+                    using MariaDb mDbE = new(appInfo);
+                    var rdrE = mDbE.ExecQuery(
+                                              $"select TvmEpisodeId from Episodes where `TvmShowId` = {showId[0]} and `Season` = {seasonNum}");
+                    while (rdrE.Read()) epsToUpdate.Add(int.Parse(rdrE[0].ToString()!));
+                    break;
+                }
             }
 
             if (!isSeason)
             {
-                using Episode? epiToUpdate = new(appInfo);
+                using Episode epiToUpdate = new(appInfo);
                 epiToUpdate.FillViaTvmaze(epiId);
                 if (epiToUpdate.PlexStatus != " ")
                 {
@@ -164,7 +167,7 @@ internal static class UpdatePlexAcquired
                 mfh.MoveMediaToPlex(acq, epiToUpdate);
             } else
             {
-                Episode? firstEpi = new(appInfo);
+                Episode firstEpi = new(appInfo);
                 firstEpi.FillViaTvmaze(epsToUpdate[0]);
                 foreach (var epi in epsToUpdate)
                 {

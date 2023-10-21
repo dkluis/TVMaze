@@ -24,29 +24,23 @@ internal static class CleanupPlexMedia
         tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length + tvKimShowDirs.Length);
         foreach (var dir in allTvShowDirs)
         {
-            var deleteDir  = false;
             var seasonDirs = Directory.GetDirectories(dir);
             foreach (var seasonDir in seasonDirs)
             {
-                var files = Directory.GetFiles(seasonDir);
-                if (files.Length == 0)
+                var  files = Directory.GetFiles(seasonDir);
+                if (files.Length != 0) continue;
+                const bool deleteDir = true;
+                try
                 {
-                    deleteDir = true;
-                    try
-                    {
-                        Directory.Delete(seasonDir);
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Write($"Delete of {seasonDir} went wrong {ex}");
-                    }
-
-                    if (deleteDir) showDirsToDelete.Add(dir);
-                    log.Write($"Deleted directory: {seasonDir}");
-                } else
-                {
-                    deleteDir = false;
+                    Directory.Delete(seasonDir);
                 }
+                catch (Exception ex)
+                {
+                    log.Write($"Delete of {seasonDir} went wrong {ex}");
+                }
+
+                if (deleteDir) showDirsToDelete.Add(dir);
+                log.Write($"Deleted directory: {seasonDir}");
             }
         }
 

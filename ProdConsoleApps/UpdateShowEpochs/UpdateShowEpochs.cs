@@ -23,7 +23,7 @@ internal static class UpdateShowEpochs
 {
     private static void Main()
     {
-        var thisProgram = "Update Show Epochs";
+        const string thisProgram = "Update Show Epochs";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
@@ -52,10 +52,6 @@ internal static class UpdateShowEpochs
             {
                 log.Write($"Skipping {showId} since show is already up to date", "", 4);
                 continue;
-            }
-
-            using (var db = new MariaDb(appInfo))
-            {
             }
 
             tvmShow.FillViaTvmaze(showId);

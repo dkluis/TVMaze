@@ -8,14 +8,14 @@ internal static class Program
 {
     private static void Main()
     {
-        var thisProgram = "Acquire Movies";
+        const string thisProgram = "Acquire Movies";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
 
         MariaDb mdb = new(appInfo);
-        var     sql = "select * from Movies"; //Todo add where clause for date comparision later
+        const string sql = "select * from Movies"; //Todo add where clause for date comparision later
         var     rdr = mdb.ExecQuery(sql);
 
         while (rdr.Read())
