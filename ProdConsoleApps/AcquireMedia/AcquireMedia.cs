@@ -3,6 +3,7 @@ using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
 using Web_Lib;
+using OpenQA.Selenium.Chrome;
 
 namespace AcquireMedia;
 

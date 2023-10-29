@@ -6,19 +6,19 @@ namespace Common_Lib;
 public class AppInfo
 {
     //public readonly string DbConnection;
-    public readonly string          DbProdConn;
-    public readonly string          DbTestConn;
-    public readonly string          Drive;
-    public readonly string          FileName;
-    public readonly string          FilePath;
-    public readonly string          FullPath;
-    public readonly string?         HomeDir;
-    public readonly int             LogLevel;
-    public readonly string[]        MediaExtensions;
-    public readonly string          Program;
-    public readonly string          Torrentz2Token;
-    public readonly string          TvmazeToken;
-    public readonly TextFileHandler TxtFile;
+    private readonly string          DbProdConn;
+    private readonly string          DbTestConn;
+    public readonly  string          Drive;
+    private readonly string          FileName;
+    private readonly string          FilePath;
+    public readonly  string          FullPath;
+    public readonly  string?         HomeDir;
+    private readonly int             LogLevel;
+    public readonly  string[]        MediaExtensions;
+    public readonly  string          Program;
+    public readonly  string          Torrentz2Token;
+    public readonly  string          TvmazeToken;
+    public readonly  TextFileHandler TxtFile;
     public AppInfo(string application, string program, string dbConnection)
     {
         Application = application;

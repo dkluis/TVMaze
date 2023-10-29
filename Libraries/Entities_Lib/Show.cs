@@ -301,6 +301,7 @@ public class Show : IDisposable
             case "game show":
             case "talk show":
             case "panel show":
+            case "award show":
             case "reality":
                 _log.Write($"Rejected {TvmShowId} due to Type {TvmType}");
                 return;
@@ -329,6 +330,8 @@ public class Show : IDisposable
                 case "ntv":
                 case "ena":
                 case "Premier":
+                case "u+ mobile tv":
+                case "bilibili":
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     return;
             }
