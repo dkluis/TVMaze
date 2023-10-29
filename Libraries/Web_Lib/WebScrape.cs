@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
 using Common_Lib;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
@@ -49,7 +48,7 @@ public class WebScrape : IDisposable
     public void GetEztvMagnets(string showName, string seasEpi)
     {
         var foundMagnets = 0;
-        var html         = BuildEztvUrl($"{showName}-{seasEpi}");
+        var url          = BuildEztvUrl($"{showName}-{seasEpi}");
 
         var compareWithMagnet = "dn="                                                           +
                                 Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") +
@@ -58,43 +57,48 @@ public class WebScrape : IDisposable
                                 ".";
         _log.Write($"Compare string = {compareWithMagnet}", "Eztv", 4);
 
-        HtmlWeb      web = new();
-        HtmlDocument htmlDoc;
-        try
+        var options = new ChromeOptions();
+        options.AddArgument("--headless");
+        var driver = new ChromeDriver(options);
+        driver.Navigate().GoToUrl(url);
+        var html = driver.PageSource;
+        driver.Quit();
+
+        var htmlDoc = new HtmlDocument();
+        htmlDoc.LoadHtml(html);
+        //htmlDoc.Load(@"/Users/dick/Desktop/test.html");
+
+        var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
+                                 .Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
+                                 .ToList();
+
+        foreach (var magnetInfo in magnetLinks)
         {
-            htmlDoc = web.Load(html);
-        }
-        catch (HtmlWebException ex)
-        {
-            _log.Write($"Error Occurred loading Url {html} --- {ex}", "EZTV", 0);
-            return;
+            var mgi = magnetInfo.Attributes["href"].Value.ToLower();
+            if (mgi.Contains(compareWithMagnet) == false ||
+                mgi                             == "") continue;
+            var magnetReplace = mgi.Replace("<a href=\"", "");
+            var magnSplit     = magnetReplace.Split("><img src=");
+            var magnet        = magnSplit[0];
+            var priority      = PrioritizeMagnet(magnet, "Eztv");
+            if (priority > 130)
+            {
+                var prioritizedMagnet = priority + "#$# " + magnet;
+                _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "Eztv", 4);
+                Magnets.Add(prioritizedMagnet);
+                foundMagnets++;
+            }
         }
 
-        var table = htmlDoc.DocumentNode.SelectNodes("//td/a");
-        if (table is not null)
+        if (foundMagnets == 0)
         {
-            foreach (var node in table)
-                if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
-                    node.Attributes["href"].Value.ToLower().Contains(compareWithMagnet))
-                {
-                    var priority = PrioritizeMagnet(node.Attributes["href"].Value, "Eztv");
-                    if (priority > 130)
-                    {
-                        var prioritizedMagnet = priority + "#$# " + node.Attributes["href"].Value;
-                        _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "Eztv", 4);
-                        Magnets.Add(prioritizedMagnet);
-                        foundMagnets++;
-                    }
-                }
-        } else
-        {
-            _log.Write("No result returned from the webScape Eztv", "Eztv");
+            _log.Write("No result returned from the WebScrape Eztv", "Acquire Media");
             return;
         }
 
         Magnets.Sort();
         Magnets.Reverse();
-        _log.Write($"Found {foundMagnets} via EZTV");
+        _log.Write($"Found {foundMagnets} via EZTV", "Acquire Media");
     }
     private string BuildEztvUrl(string showName)
     {
@@ -132,7 +136,7 @@ public class WebScrape : IDisposable
         var table = htmlDoc.DocumentNode.SelectNodes("//td/a");
         if (table is null)
         {
-            _log.Write("No result returned from the webScape MagnetDL", "MagnetDL");
+            _log.Write("No result returned from the WebScrape MagnetDL", "Acquire Media");
             return;
         }
 
@@ -140,11 +144,11 @@ public class WebScrape : IDisposable
             if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
                 node.Attributes["href"].Value.ToLower().Contains(compareWithMagnet))
             {
-                var priority = PrioritizeMagnet(node.Attributes["href"].Value, "MagnetDL");
+                var priority = PrioritizeMagnet(node.Attributes["href"].Value, "AcquireMedia");
                 if (priority > 130)
                 {
                     var prioritizedMagnet = priority + "#$# " + node.Attributes["href"].Value;
-                    _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "MagnetDL", 4);
+                    _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "AcquireMedia", 4);
                     Magnets.Add(prioritizedMagnet);
                     foundMagnets++;
                 }
@@ -152,7 +156,7 @@ public class WebScrape : IDisposable
 
         Magnets.Sort();
         Magnets.Reverse();
-        _log.Write($"Found {foundMagnets} via MagnetDL");
+        _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
     }
     private string BuildMagnetDownloadUrl(string showName)
     {
@@ -204,7 +208,7 @@ public class WebScrape : IDisposable
 
         Magnets.Sort();
         Magnets.Reverse();
-        _log.Write($"Found {foundMagnets} via Torrentz2API", "", 4);
+        _log.Write($"Found {foundMagnets} via Torrentz2API", "Acquire Media");
     }
     public void GetPirateBayMagnets(string showName, string seasEpi)
     {
@@ -217,6 +221,7 @@ public class WebScrape : IDisposable
                                 seasEpi                                                         +
                                 ".";
         _log.Write($"Compare string = {compareWithMagnet}", "PirateBay", 4);
+
         var options = new ChromeOptions();
         options.AddArgument("--headless");
         var driver = new ChromeDriver(options);
@@ -239,19 +244,17 @@ public class WebScrape : IDisposable
             if (hrefs == null) continue;
             var title      = "";
             var magnetInfo = "";
+
             foreach (var href in hrefs)
-            {
                 if (href.OuterHtml.Contains("magnet:?xt"))
-                {
                     magnetInfo = href.OuterHtml;
-                }
-            }
+
             var mgi = magnetInfo.ToLower();
             if (mgi.Contains(compareWithMagnet) == false ||
-                magnetInfo == "") continue;
-            var magnetReplace      = magnetInfo.Replace("<a href=\"", "");
-            var magnSplit = magnetReplace.Split("><img src=");
-            var magnet    = magnSplit[0];
+                magnetInfo                      == "") continue;
+            var magnetReplace = magnetInfo.Replace("<a href=\"", "");
+            var magnetSplit   = magnetReplace.Split("><img src=");
+            var magnet        = magnetSplit[0];
 
             var priority = PrioritizeMagnet(magnet, "PirateBay");
             if (priority <= 130) continue;
@@ -262,14 +265,17 @@ public class WebScrape : IDisposable
         }
         Magnets.Sort();
         Magnets.Reverse();
-        _log.Write($"Found {foundMagnets} via PirateBay");
+        if (foundMagnets == 0)
+            _log.Write("No result returned from the WebScrape PirateBay", "Acquire Media");
+        else
+            _log.Write($"Found {foundMagnets} via PirateBay", "Acquire Media");
     }
     private string BuildPirateBayUrl(string showName, string seasEpi)
     {
-        var url   = "https://bayofpirates.xyz/search.php?q=";
+        var url = "https://bayofpirates.xyz/search.php?q=";
         showName = Common.RemoveSpecialCharsInShowName(showName);
         showName = showName.Replace(" ", "+");
-        url      = url + showName +  "+" + seasEpi + "&cat=208";
+        url      = url + showName + "+" + seasEpi + "&cat=208";
         _log.Write($"URL PirateBay is {url}", "PirateBay", 4);
         return url;
     }
@@ -279,7 +285,7 @@ public class WebScrape : IDisposable
                        {
                            "Eztv" or "EztvAPI" => 105,
                            "PirateBay" => 115,
-                           "MagnetDL" => 110, // Does not have container info so +10 by default
+                           "MagnetDL" => 110,     // Does not have container info so +10 by default
                            "Torrentz2API" => 100, // Typically has the better so +30 by default
                            _ => 100,
                        };
@@ -360,8 +366,8 @@ public class Magnets
         {
             seasonScrape.Magnets = new List<string>();
             //seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
-            //seasonScrape.GetEztvMagnets(showName, seasEpi);
 
+            seasonScrape.GetEztvMagnets(showName, seasEpi);
             seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
             seasonScrape.GetPirateBayMagnets(showName, seasEpi);
 
@@ -369,7 +375,7 @@ public class Magnets
             {
                 case > 0:
                 {
-                    log.Write($"Total Magnets found {seasonScrape.Magnets.Count}", "Getters", 3);
+                    log.Write($"Total Magnets found {seasonScrape.Magnets.Count}", "Acquire Media");
                     var temp   = seasonScrape.Magnets[0].Split("#$#");
                     var magnet = temp[1];
                     return magnet;

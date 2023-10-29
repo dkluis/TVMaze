@@ -20,7 +20,6 @@ public class WebApi : IDisposable
     private static   HttpClient      _Torrentz2Client   = new();
     private readonly HttpClient      _client            = new();
     private readonly TextFileHandler _log;
-    //private readonly string              _Torrentz2ApiUrlSuf;
     private readonly string              _tvmazeSecurity;
     private          HttpResponseMessage _httpResponse = new();
     private          bool                _tvmazeUrlInitialized;
