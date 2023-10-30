@@ -48,6 +48,8 @@ internal static class UpdatePlexAcquired
             if (acqInfo.Length == 2)
             {
                 show          = acqInfo[0].Replace(".", " ").Trim();
+                // ReSharper disable once StringLiteralTypo
+                show = show.Replace("WWW SCENETIME COM - ", "");
                 episodeString = acq.Replace(acqInfo[1], "").Replace(acqInfo[0], "").Replace(".", " ").Trim();
                 var seas = episodeString.ToLower().Split("e");
                 seasonNum = int.Parse(seas[0].Replace("s", ""));

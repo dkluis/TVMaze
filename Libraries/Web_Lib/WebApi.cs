@@ -16,8 +16,8 @@ public class WebApi : IDisposable
 {
     private const    string          TvmazeUrl          = "https://api.tvmaze.com/";
     private const    string          TvmazeUserUrl      = "https://api.tvmaze.com/v1/user/";
-    private const    string          Torrentz2ApiUrlPre = "https://torrentz2.cdf/search?q='";
-    private static   HttpClient      _Torrentz2Client   = new();
+    // private const    string          Torrentz2ApiUrlPre = "https://torrentz2.cdf/search?q='";
+    // private static   HttpClient      _Torrentz2Client   = new();
     private readonly HttpClient      _client            = new();
     private readonly TextFileHandler _log;
     private readonly string              _tvmazeSecurity;
@@ -322,6 +322,7 @@ public class WebApi : IDisposable
 
     #region Torrentz2API
 
+    /*
     public HttpResponseMessage GetTorrentz2Magnets(string searchfor)
     {
         _Torrentz2Client             = new HttpClient();
@@ -351,6 +352,7 @@ public class WebApi : IDisposable
         _log.Write($"API String = {api}", "Torrentz2API", 4);
         return api;
     }
+    */
 
     #endregion
 

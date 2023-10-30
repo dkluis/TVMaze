@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Common_Lib;
 using HtmlAgilityPack;
-using Newtonsoft.Json;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
 namespace Web_Lib;
@@ -13,7 +13,7 @@ public class WebScrape : IDisposable
 {
     private readonly AppInfo         _appInfo;
     private readonly TextFileHandler _log;
-    public           List<string>    Magnets = new();
+    public           List<string>    Magnets        = new();
     public WebScrape(AppInfo info)
     {
         _appInfo = info;
@@ -154,6 +154,12 @@ public class WebScrape : IDisposable
                 }
             }
 
+        if (foundMagnets == 0)
+        {
+            _log.Write($"No result returned from WebScrape MagnetDL", "Acquire Media");
+            return;
+        }
+
         Magnets.Sort();
         Magnets.Reverse();
         _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
@@ -169,46 +175,74 @@ public class WebScrape : IDisposable
     }
     public void GetTorrentz2Magnets(string showName, string seasEpi)
     {
-        var          foundMagnets = 0;
-        using WebApi tvmApi       = new(_appInfo);
-        var compareWithMagnet = "dn="                                                           +
-                                Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") +
-                                "."                                                             +
-                                seasEpi                                                         +
-                                ".";
-        var result = tvmApi.GetTorrentz2Magnets(showName + "+" + seasEpi);
-
-        _log.Write($"Compare string = {compareWithMagnet}",          "Torrentz2API", 4);
-        _log.Write($"Result back from API call {result.StatusCode}", "Torrentz2API", 4);
-
-        if (!result.IsSuccessStatusCode)
+        try
         {
-            _log.Write("No Result returned from the API Torrentz2API", "Torrentz2API", 4);
-            return;
-        }
+            var foundMagnets = 0;
+            var url          = BuildTorrentZUrl($"{showName}+{seasEpi}");
 
-        var content = result.Content.ReadAsStringAsync().Result;
-        if (content == "{\"error\":\"No results found\",\"error_code\":20}")
-        {
-            _log.Write("No Result returned from the API Torrentz2API", "Torrentz2API", 4);
-            return;
-        }
+            var compareWithMagnet = ""                                                              +
+                                    Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") +
+                                    "."                                                             +
+                                    seasEpi                                                         +
+                                    ".";
 
-        dynamic jsonContent = JsonConvert.DeserializeObject(content) ?? throw new InvalidOperationException();
-        if (jsonContent != null && jsonContent!["torrent_results"] != null)
-            foreach (var show in jsonContent!["torrent_results"])
+            var options = new ChromeOptions();
+            options.AddArgument("--headless");
+            //options.AddArgument("--disable-dev-shm-usage");
+            var driver = new ChromeDriver(options);
+            driver.Navigate().GoToUrl(url);
+            var html = driver.PageSource;
+            driver.Quit();
+
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(html);
+            //htmlDoc.Load(@"/Users/dick/Desktop/test.html");
+
+            var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
+                                     .Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
+                                     .ToList();
+            if (magnetLinks == null) return;
+            foreach (var magnetInfo in magnetLinks)
             {
-                string magnet   = show["download"];
-                var    priority = PrioritizeMagnet(magnet, "Torrentz2API");
-                if (priority <= 130 || !magnet.ToLower().Contains(compareWithMagnet)) continue;
-                Magnets.Add(priority + "#$# " + magnet);
-                foundMagnets++;
-                _log.Write($"Prioritized Magnet Recorded {priority}#$# {magnet}", "Torrentz2API", 4);
+                var mgi = magnetInfo.Attributes["href"].Value.ToLower();
+                if (mgi.Contains(compareWithMagnet) == false ||
+                    mgi                             == "") continue;
+                var magnetReplace = mgi.Replace("<a href=\"", "");
+                var magnetSplit   = magnetReplace.Split("\n><i");
+                var magnet        = magnetSplit[0];
+                var priority      = PrioritizeMagnet(magnet, "TorrentZ");
+                if (priority > 130)
+                {
+                    var prioritizedMagnet = priority + "#$# " + magnet;
+                    _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "TorrentZ", 4);
+                    Magnets.Add(prioritizedMagnet);
+                    foundMagnets++;
+                }
             }
 
-        Magnets.Sort();
-        Magnets.Reverse();
-        _log.Write($"Found {foundMagnets} via Torrentz2API", "Acquire Media");
+            if (foundMagnets == 0)
+            {
+                _log.Write("No result returned from the WebScrape TorrentZ", "Acquire Media");
+                return;
+            }
+
+            Magnets.Sort();
+            Magnets.Reverse();
+            _log.Write($"Found {foundMagnets} via TorrentZ", "Acquire Media");
+        }
+        catch (Exception e)
+        {
+            _log.Write($"Error occurred in TorrentZ2 WebScrape {e}", "Acquire Media", 0);
+        }
+    }
+    private string BuildTorrentZUrl(string showName)
+    {
+        var eztvUrl = "https://torrentz2.nz/search?q=";
+        showName =  Common.RemoveSpecialCharsInShowName(showName);
+        showName =  showName.Replace(" ", "+");
+        eztvUrl  += showName;
+        _log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
+        return eztvUrl;
     }
     public void GetPirateBayMagnets(string showName, string seasEpi)
     {
@@ -283,11 +317,11 @@ public class WebScrape : IDisposable
     {
         var priority = provider switch
                        {
-                           "Eztv" or "EztvAPI" => 105,
+                           "Eztv" or "EztvAPI" => 110,
                            "PirateBay" => 115,
-                           "MagnetDL" => 110,     // Does not have container info so +10 by default
-                           "Torrentz2API" => 100, // Typically has the better so +30 by default
-                           _ => 100,
+                           "MagnetDL" => 120,  // Does not have container info so +10 by default
+                           "TorrentZ" => 105,
+                           _ => 0,
                        };
         // Codex values
         if (magnet.ToLower().Contains("x264")  ||
@@ -331,10 +365,7 @@ public class Magnets
     {
         _appInfo = info;
     }
-    public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showName,
-        int                                                           seasNum,
-        int                                                           epiNum,
-        TextFileHandler                                               logger)
+    public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showName, int seasNum, int epiNum, TextFileHandler logger)
     {
         var                 log = logger;
         string              seasEpi;
@@ -365,11 +396,13 @@ public class Magnets
         using WebScrape seasonScrape = new(_appInfo);
         {
             seasonScrape.Magnets = new List<string>();
+
             //seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
 
-            seasonScrape.GetEztvMagnets(showName, seasEpi);
-            seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
             seasonScrape.GetPirateBayMagnets(showName, seasEpi);
+            seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
+
+            //seasonScrape.GetEztvMagnets(showName, seasEpi);
 
             switch (seasonScrape.Magnets.Count)
             {
