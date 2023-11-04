@@ -144,7 +144,7 @@ public class WebScrape : IDisposable
             if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
                 node.Attributes["href"].Value.ToLower().Contains(compareWithMagnet))
             {
-                var priority = PrioritizeMagnet(node.Attributes["href"].Value, "AcquireMedia");
+                var priority = PrioritizeMagnet(node.Attributes["href"].Value, "MagnetDL");
                 if (priority > 130)
                 {
                     var prioritizedMagnet = priority + "#$# " + node.Attributes["href"].Value;
@@ -399,10 +399,9 @@ public class Magnets
 
             //seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
 
-            seasonScrape.GetPirateBayMagnets(showName, seasEpi);
             seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
-
-            //seasonScrape.GetEztvMagnets(showName, seasEpi);
+            seasonScrape.GetPirateBayMagnets(showName, seasEpi);
+            seasonScrape.GetEztvMagnets(showName, seasEpi);
 
             switch (seasonScrape.Magnets.Count)
             {
