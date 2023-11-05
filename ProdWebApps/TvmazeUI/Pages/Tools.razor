@@ -112,6 +112,12 @@
             case "Refresh ShowRss":
                 program = "Refresh ShowRss";
                 break;
+            case "CronLog":
+                program = "CronLog";
+                break;
+            case "TransmissionLog":
+                program = "TransmissionLog";
+                break;
             default:
                 _logView = "";
                 _logRequested = false;
@@ -270,6 +276,8 @@
             <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh One")'><i class="bi bi-binoculars"></i>&nbsp;One Show</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("WebUI")'><i class="bi bi-binoculars"></i>&nbsp;Web UI</button>
+            <button class="btn btn-info" @onclick='() => ExecLogViewer("CronLog")'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
+            <button class="btn btn-info" @onclick='() => ExecLogViewer("TransmissionLog")'><i class="bi bi-binoculars"></i>&nbsp;TransmissonLog</button>
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
@@ -294,7 +302,9 @@
             {
                 if (line.Contains(
                     "########################################################################################") ||
-                    line.Contains("Finished ####"))
+                    line.Contains("Finished ####") ||
+                    line.ToLower().Contains("chromedriver") ||
+                    line.ToLower().Contains("connection"))
                 {
                     continue;
                 }
