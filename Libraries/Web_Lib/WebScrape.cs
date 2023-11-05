@@ -92,7 +92,7 @@ public class WebScrape : IDisposable
 
         if (foundMagnets == 0)
         {
-            _log.Write("No result returned from the WebScrape Eztv", "Acquire Media");
+            _log.Write("No result returned from the WebScrape Eztv", "Acquire Media", 4);
             return;
         }
 
@@ -136,7 +136,7 @@ public class WebScrape : IDisposable
         var table = htmlDoc.DocumentNode.SelectNodes("//td/a");
         if (table is null)
         {
-            _log.Write("No result returned from the WebScrape MagnetDL", "Acquire Media");
+            _log.Write("No result returned from the WebScrape MagnetDL", "Acquire Media", 4);
             return;
         }
 
@@ -222,7 +222,7 @@ public class WebScrape : IDisposable
 
             if (foundMagnets == 0)
             {
-                _log.Write("No result returned from the WebScrape TorrentZ", "Acquire Media");
+                _log.Write("No result returned from the WebScrape TorrentZ", "Acquire Media", 4);
                 return;
             }
 
@@ -300,7 +300,7 @@ public class WebScrape : IDisposable
         Magnets.Sort();
         Magnets.Reverse();
         if (foundMagnets == 0)
-            _log.Write("No result returned from the WebScrape PirateBay", "Acquire Media");
+            _log.Write("No result returned from the WebScrape PirateBay", "Acquire Media", 4);
         else
             _log.Write($"Found {foundMagnets} via PirateBay", "Acquire Media");
     }
@@ -383,7 +383,7 @@ public class Magnets
         {
             if (epiNum == 1)
                 log.Write(
-                          $"No Magnet found for the whole season {seasNum} of {showName} now searching for episode 1");
+                          $"No Magnet found for the whole season {seasNum} of {showName}");
             seasEpi = Common.BuildSeasonEpisodeString(seasNum, epiNum);
             magnet  = PerformFindMagnet(showName, seasEpi, log);
             result  = new Tuple<bool, string>(false, magnet);
@@ -398,10 +398,10 @@ public class Magnets
             seasonScrape.Magnets = new List<string>();
 
             //seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
-
+            seasonScrape.GetEztvMagnets(showName, seasEpi);
             seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
             seasonScrape.GetPirateBayMagnets(showName, seasEpi);
-            seasonScrape.GetEztvMagnets(showName, seasEpi);
+
 
             switch (seasonScrape.Magnets.Count)
             {
