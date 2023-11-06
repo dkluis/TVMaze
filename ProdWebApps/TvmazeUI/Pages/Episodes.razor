@@ -12,9 +12,9 @@
     string? _episodeString;
     int _idx;
     bool _showRssBool;
-        private const string FindUrlE = "https://eztv.re/search/";
-        private const string FindUrlR = "https://www.ettv.be/torrents-search.php?search=";
-
+    private const string FindUrlE = "https://eztv.re/search/";
+    private const string FindUrlM = "https://www.magnetdl.com/";
+    private const string FindUrlP = "https://bayofpirates.xyz/search.php?q=";
     private void FindEpisodes()
     {
         _seasonString ??= "";
@@ -24,7 +24,6 @@
         _episodesInfoList = _webEpisodesService.GetEpisodes(_searchString, _seasonString, _episodeString);
         _dataExchangeService.Reset();
     }
-
     private void GetEpisodesToAcquire()
     {
         _episodesInfoList = _webEpisodesService.GetEpisodesToAcquire(_showRssBool);
@@ -111,8 +110,10 @@
         @{ _idx = 0; }
         @foreach (var ei in _episodesInfoList)
         {
-            var findItE = FindUrlE + ei.ShowName!.Replace(" ", "-");
-            var findItR = FindUrlR + ei.ShowName.Replace(" ", "+");
+            var seasEpi = $"S{ei.Season!.PadLeft(2, '0')}E{ei.Episode!.PadLeft(2, '0')}";
+            var findItE = FindUrlE + ei.ShowName!.Replace(" ", "-") + "-" + seasEpi;
+            var findItM = FindUrlM + $"/{ei.ShowName[0].ToString().ToLower()}/" + ei.ShowName.Replace(" ", "-").ToLower() + "-" + seasEpi.ToLower();
+            var findItP = FindUrlP + ei.ShowName!.Replace(" ", "-") + "-" + seasEpi;
             var upD = ei.UpdateDate!.Split(' ')[0];
             var brD = ei.BroadcastDate!.Split(' ')[0];
             <tr>
@@ -128,8 +129,9 @@
                 <td>@ei.PlexDate</td>
                 <td>@upD</td>
                 <td>
-                    <a href="@findItE" target="_blank">FE</a>
-                    <a href="@findItR" target="_blank">FR</a>
+                    <a href="@findItE" target="_blank">Ez</a>
+                    <a href="@findItM" target="_blank">Ma</a>
+                    <a href="@findItP" target="_blank">Fp</a>
                 </td>
             </tr>
             _idx++;
