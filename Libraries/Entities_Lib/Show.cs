@@ -311,6 +311,7 @@ public class Show : IDisposable
         {
             switch (TvmNetwork.ToLower())
             {
+                // ReSharper disable StringLiteralTypo
                 case "youtube":
                 case "youtube premium":
                 case "facebook watch":
@@ -329,18 +330,23 @@ public class Show : IDisposable
                 case "okko":
                 case "ntv":
                 case "ena":
-                case "Premier":
+                case "premier":
                 case "u+ mobile tv":
                 case "bilibili":
+                case "antena 3":
+                    // ReSharper restore StringLiteralTypo
+
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     return;
             }
             switch (TvmNetwork)
             {
+                // ReSharper disable StringLiteralTypo
                 case "TB Центр":
                 case "Домашний":
                 case "КиноПоиск HD":
                 case "ТВ Центр":
+                    // ReSharper restore StringLiteralTypo
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     return;
             }
