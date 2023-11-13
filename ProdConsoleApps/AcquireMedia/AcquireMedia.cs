@@ -2,6 +2,7 @@
 using Common_Lib;
 using DB_Lib;
 using Entities_Lib;
+using OpenQA.Selenium.Chrome;
 using Web_Lib;
 
 namespace AcquireMedia;
@@ -20,6 +21,11 @@ internal static class Program
         using GetEpisodesToBeAcquired gea   = new();
         var                           rdr   = gea.Find(appInfo);
 
+        log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
+        var options = new ChromeOptions();
+        options.AddArgument("--headless");
+        var browserDriver = new ChromeDriver(options);
+
         var isSeason = false;
         var showId   = 0;
         while (rdr.Read())
@@ -32,7 +38,9 @@ internal static class Program
             var episodeId = int.Parse(rdr["TvmEpisodeId"].ToString()!);
             var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName,
                                                                             int.Parse(rdr["Season"].ToString()!),
-                                                                            int.Parse(rdr["Episode"].ToString()!), log);
+                                                                            int.Parse(rdr["Episode"].ToString()!),
+                                                                            log,
+                                                                            browserDriver);
             isSeason = seasonInd;
 
             if (magnet == "")
@@ -52,7 +60,7 @@ internal static class Program
                 acquireMediaScript.StartInfo.Arguments              = magnet;
                 acquireMediaScript.StartInfo.UseShellExecute        = true;
                 acquireMediaScript.StartInfo.RedirectStandardOutput = false;
-                acquireMediaScript.Start();
+                var result = acquireMediaScript.Start();
                 acquireMediaScript.WaitForExit();
             }
 
@@ -86,7 +94,8 @@ internal static class Program
                 }
             }
         }
-
+        log.Write("Quiting Chrome Selenium Driver", thisProgram, 4);
+        browserDriver.Quit();
         log.Stop();
     }
 }

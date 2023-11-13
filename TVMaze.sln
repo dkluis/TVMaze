@@ -68,6 +68,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InitializeEpisodes", "ProdC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InitializeShowEpochs", "ProdConsoleApps\InitializeShowEpochs\InitializeShowEpochs.csproj", "{0CDA2FAB-0E0E-4FCE-80C8-665ADB2C5FC3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{4658968C-68C7-4A06-94E2-E297109B5EAA}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdatePlexAcquired.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdatePlexAcquired.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\AcquireMedia.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\AcquireMedia.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\Transmission.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\Transmission.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\PlexMediaServerReset.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\PlexMediaServerReset.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\TvmazeUI.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\TvmazeUI.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\Publish.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\Publish.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\RefreshShowRssFeed.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\RefreshShowRssFeed.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\RefreshShowRss.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\RefreshShowRss.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdateFollowed.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdateFollowed.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\TvmazeWeb.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\TvmazeWeb.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\CleanupPlexMedia.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\CleanupPlexMedia.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\RefreshShows.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\RefreshShows.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdateShowEpochs.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdateShowEpochs.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\AcquireMediaViaTransmission.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\AcquireMediaViaTransmission.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\RestartPlexMediaServer.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\RestartPlexMediaServer.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdatePlexWatched.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\UpdatePlexWatched.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\AcquireMediaViaTransmissionII.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\AcquireMediaViaTransmissionII.sh
+		..\..\..\..\..\Users\dick\TVMaze\Scripts\TransmissionII.sh = ..\..\..\..\..\Users\dick\TVMaze\Scripts\TransmissionII.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -334,6 +334,8 @@ public class Show : IDisposable
                 case "u+ mobile tv":
                 case "bilibili":
                 case "antena 3":
+                case "htb":
+                case "dmc":
                     // ReSharper restore StringLiteralTypo
 
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
@@ -346,6 +348,8 @@ public class Show : IDisposable
                 case "Домашний":
                 case "КиноПоиск HD":
                 case "ТВ Центр":
+                case "Первый канал":
+                case "ЦТ СССР":
                     // ReSharper restore StringLiteralTypo
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     return;
