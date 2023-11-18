@@ -10,89 +10,94 @@ namespace Entities_Lib;
 
 public class Show : IDisposable
 {
-    private readonly AppInfo         _appInfo;
+    private readonly AppInfo _appInfo;
     private readonly TextFileHandler _log;
-    private readonly MariaDb         _mdb;
-    public           string          AltShowName     = "";
-    public           string          CleanedShowName = "";
-    public           string          Finder          = "Multi";
-    public           int             Id;
-    public           bool            IsDbFilled;
-    public           bool            IsFollowed;
-    public           bool            IsForReview;
-    public           bool            IsJsonFilled;
-    public           string          MediaType    = "TS";
-    public           string          PremiereDate = "";
-    public           string          ShowName     = "";
-    public           string          ShowStatus   = "";
-    public           string          TvmCountry;
-    public           string          TvmImage;
-    public           string          TvmImdb;
-    public           string          TvmLanguage;
-    public           string          TvmNetwork;
-    public           string          TvmOfficialSite;
-    public           int             TvmShowId;
-    public           string          TvmStatus = " ";
-    public           string          TvmSummary;
-    public           string          TvmType;
-    public           int             TvmUpdatedEpoch;
-    public           string          TvmUrl     = "";
-    public           string          UpdateDate = "1900-01-01";
+    private readonly MariaDb _mdb;
+    public string AltShowName = "";
+    public string CleanedShowName = "";
+    public string Finder = "Multi";
+    public int Id;
+    public bool IsDbFilled;
+    public bool IsFollowed;
+    public bool IsForReview;
+    public bool IsJsonFilled;
+    public string MediaType = "TS";
+    public string PremiereDate = "";
+    public string ShowName = "";
+    public string ShowStatus = "";
+    public string TvmCountry;
+    public string TvmImage;
+    public string TvmImdb;
+    public string TvmLanguage;
+    public string TvmNetwork;
+    public string TvmOfficialSite;
+    public int TvmShowId;
+    public string TvmStatus = " ";
+    public string TvmSummary;
+    public string TvmType;
+    public int TvmUpdatedEpoch;
+    public string TvmUrl = "";
+    public string UpdateDate = "1900-01-01";
+
     public Show(AppInfo appInfo)
     {
         _appInfo = appInfo;
-        _mdb     = new MariaDb(appInfo);
-        _log     = appInfo.TxtFile;
+        _mdb = new MariaDb(appInfo);
+        _log = appInfo.TxtFile;
     }
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     public void Reset()
     {
-        Id              = 0;
-        TvmShowId       = 0;
-        TvmStatus       = " ";
-        TvmUrl          = "";
-        ShowName        = "";
-        ShowStatus      = " ";
-        PremiereDate    = "1970-01-01";
-        Finder          = "Multi";
-        MediaType       = "TS";
+        Id = 0;
+        TvmShowId = 0;
+        TvmStatus = " ";
+        TvmUrl = "";
+        ShowName = "";
+        ShowStatus = " ";
+        PremiereDate = "1970-01-01";
+        Finder = "Multi";
+        MediaType = "TS";
         CleanedShowName = "";
-        AltShowName     = "";
-        UpdateDate      = "1900-01-01";
+        AltShowName = "";
+        UpdateDate = "1900-01-01";
 
-        TvmType         = "";
-        TvmLanguage     = "";
+        TvmType = "";
+        TvmLanguage = "";
         TvmOfficialSite = "";
-        TvmNetwork      = "";
-        TvmCountry      = "";
-        TvmImdb         = "";
-        TvmImage        = "";
-        TvmSummary      = "";
+        TvmNetwork = "";
+        TvmCountry = "";
+        TvmImdb = "";
+        TvmImage = "";
+        TvmSummary = "";
         TvmUpdatedEpoch = 1;
 
         IsJsonFilled = false;
-        IsDbFilled   = false;
-        IsFollowed   = false;
+        IsDbFilled = false;
+        IsFollowed = false;
     }
+
     public void FillViaTvmaze(int showId)
     {
-        using TvmCommonSql ge                = new(_appInfo);
-        var                lastEvaluatedShow = ge.GetLastEvaluatedShow();
-        using WebApi       js                = new(_appInfo);
+        using TvmCommonSql ge = new(_appInfo);
+        var lastEvaluatedShow = ge.GetLastEvaluatedShow();
+        using WebApi js = new(_appInfo);
         FillViaJson(js.ConvertHttpToJObject(js.GetShow(showId)));
         FillViaDb(showId, true);
         if (!IsFollowed && !IsDbFilled) ValidateForReview(lastEvaluatedShow);
     }
+
     public bool DbUpdate()
     {
         _mdb.Success = true;
-        var updateFields                                            = "";
-        var sqlPrefix                                               = "update shows set ";
+        var updateFields = "";
+        var sqlPrefix = "update shows set ";
         if (TvmStatus == "Reviewing" && TvmSummary != "") TvmStatus = "New";
-        var now                                                     = DateTime.Now.Date.ToString("yyyy-MM-dd");
+        var now = DateTime.Now.Date.ToString("yyyy-MM-dd");
         UpdateDate = UpdateDate == "2200-01-01" ? UpdateDate : now;
 
         updateFields += $"`TvmStatus` = '{TvmStatus}', ";
@@ -105,13 +110,14 @@ public class Show : IDisposable
         updateFields += $"`PremiereDate` = '{PremiereDate}', ";
         updateFields += $"`UpdateDate` = '{UpdateDate}' ";
         var sqlSuffix = $"where `TvmShowId` = {TvmShowId};";
-        var rows      = _mdb.ExecNonQuery(sqlPrefix + updateFields + sqlSuffix);
+        var rows = _mdb.ExecNonQuery(sqlPrefix + updateFields + sqlSuffix);
         _log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
         _mdb.Close();
         if (rows == 0) _mdb.Success = false;
 
         return _mdb.Success;
     }
+
     public bool DbInsert(bool overRide = false, string callingApp = "")
     {
         if (!IsForReview && !IsFollowed && !overRide)
@@ -156,6 +162,7 @@ public class Show : IDisposable
 
         return _mdb.Success;
     }
+
     public bool DbDelete()
     {
         _mdb.Success = true;
@@ -166,6 +173,7 @@ public class Show : IDisposable
 
         return _mdb.Success;
     }
+
     public bool DbDelete(int showId)
     {
         _mdb.Success = true;
@@ -176,6 +184,7 @@ public class Show : IDisposable
 
         return _mdb.Success;
     }
+
     private void FillViaJson(JObject showJson)
     {
         if (showJson["id"] is not null)
@@ -183,15 +192,15 @@ public class Show : IDisposable
             TvmShowId = int.Parse(showJson["id"].ToString());
             using TvmCommonSql tcs = new(_appInfo);
             IsFollowed = tcs.IsShowIdFollowed(TvmShowId);
-            TvmStatus  = IsFollowed ? "Following" : "New";
+            TvmStatus = IsFollowed ? "Following" : "New";
 
-            TvmUrl     = showJson["url"].ToString();
-            ShowName   = showJson["name"].ToString();
+            TvmUrl = showJson["url"].ToString();
+            ShowName = showJson["name"].ToString();
             ShowStatus = showJson["status"].ToString();
             if (showJson["premiered"] is not null)
             {
                 PremiereDate = "1900-01-01";
-                var date                     = showJson["premiered"].ToString();
+                var date = showJson["premiered"].ToString();
                 if (date != "") PremiereDate = Convert.ToDateTime(showJson["premiered"]).ToString("yyyy-MM-dd");
             }
 
@@ -237,6 +246,7 @@ public class Show : IDisposable
             }
         }
     }
+
     private void FillViaDb(int showId, bool jsonIsDone)
     {
         using var rdr = _mdb.ExecQuery($"select * from shows where `TvmShowId` = {showId};");
@@ -246,20 +256,21 @@ public class Show : IDisposable
             IsDbFilled = true;
             if (jsonIsDone)
             {
-                TvmStatus   = rdr["TvmStatus"].ToString();
-                Finder      = rdr["Finder"].ToString();
+                TvmStatus = rdr["TvmStatus"].ToString();
+                Finder = rdr["Finder"].ToString();
                 AltShowName = rdr["AltShowName"].ToString();
                 if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
                 UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
-                MediaType  = rdr["MediaType"].ToString();
-            } else
+                MediaType = rdr["MediaType"].ToString();
+            }
+            else
             {
-                Id              = int.Parse(rdr["Id"].ToString()!);
-                TvmShowId       = int.Parse(rdr["TvmShowId"].ToString()!);
-                TvmUrl          = rdr["TvmUrl"].ToString();
-                ShowName        = rdr["ShowName"].ToString();
-                ShowStatus      = rdr["ShowStatus"].ToString();
-                PremiereDate    = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
+                Id = int.Parse(rdr["Id"].ToString()!);
+                TvmShowId = int.Parse(rdr["TvmShowId"].ToString()!);
+                TvmUrl = rdr["TvmUrl"].ToString();
+                ShowName = rdr["ShowName"].ToString();
+                ShowStatus = rdr["ShowStatus"].ToString();
+                PremiereDate = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
                 CleanedShowName = rdr["CleanedShowName"].ToString();
                 if (AltShowName == "" && ShowName!.Contains(":")) AltShowName = ShowName.Replace(":", "");
             }
@@ -269,6 +280,7 @@ public class Show : IDisposable
             }
         }
     }
+
     private void ValidateForReview(int lastShowEvaluated)
     {
         IsForReview = false;
@@ -283,12 +295,12 @@ public class Show : IDisposable
 
         if (ShowStatus is "Ended" or "Running")
         {
-            var compareDate  = DateOnly.FromDateTime(DateTime.Now).AddYears(-1);
+            var compareDate = DateOnly.FromDateTime(DateTime.Now).AddYears(-1);
             var premiereDate = DateOnly.Parse(PremiereDate);
             if (premiereDate < compareDate && PremiereDate != "1900-01-01")
             {
                 _log.Write(
-                           $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
+                    $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
                 return;
             }
         }
@@ -341,6 +353,7 @@ public class Show : IDisposable
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     return;
             }
+
             switch (TvmNetwork)
             {
                 // ReSharper disable StringLiteralTypo
@@ -358,18 +371,21 @@ public class Show : IDisposable
 
         IsForReview = true;
     }
+
     public void CloseDb()
     {
         _mdb.Close();
     }
 }
+
 public class SearchShowsViaNames
 {
     private List<int> _found = new();
+
     public List<int> Find(AppInfo appInfo, string showName, string cleanedShowName = "", string altShowName = "")
     {
-        _found      = new List<int>();
-        showName    = showName.Replace("'", "''").Replace(" ", " ");
+        _found = new List<int>();
+        showName = showName.Replace("'", "''").Replace(" ", " ");
         altShowName = altShowName.Replace("'", "''").Replace(" ", " ");
         if (cleanedShowName == "")
             cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
@@ -384,18 +400,20 @@ public class SearchShowsViaNames
         if (!rdr.HasRows)
         {
             mDbR.Close();
-            sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+            sql =
+                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
+                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
             rdr = mDbR.ExecQuery(sql);
         }
 
-        var splitShowName                         = altShowName.Split(" (");
+        var splitShowName = altShowName.Split(" (");
         if (splitShowName.Length > 0) altShowName = splitShowName[0];
         if (!rdr.HasRows)
         {
             mDbR.Close();
-            sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+            sql =
+                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
+                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
             rdr = mDbR.ExecQuery(sql);
         }
 
@@ -405,9 +423,11 @@ public class SearchShowsViaNames
         return _found;
     }
 }
+
 public class SearchAllFollowed
 {
     private readonly List<int> _allFollowed = new();
+
     public List<int> Find(AppInfo appInfo, string option = "Following")
     {
         using MariaDb mDbR = new(appInfo);
@@ -423,54 +443,61 @@ public class SearchAllFollowed
         return _allFollowed;
     }
 }
+
 public class UpdateFinder
 {
     public void ToShowRss(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showId};";
+        var sql = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showId};";
         appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
         if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4);
     }
 }
+
 public class UpdateTvmStatus : IDisposable
 {
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     public void ToFollowed(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
+        var sql =
+            $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
         appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
         if (mDbW.ExecNonQuery(sql) == 0)
             appInfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4);
     }
+
     public void ToReview(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showId};";
+        var sql = $"update shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showId};";
         appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
         if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update to Review unsuccessful {sql}", "", 4);
     }
 }
+
 public class CheckTvm
 {
     public bool IsFollowedShow(AppInfo appInfo, int showId)
     {
-        using WebApi webapi     = new(appInfo);
-        var          isFollowed = webapi.CheckForFollowedShow(showId);
+        using WebApi webapi = new(appInfo);
+        var isFollowed = webapi.CheckForFollowedShow(showId);
         return isFollowed;
     }
 }
+
 public class CheckDb
 {
     public int FollowedCount(AppInfo appInfo)
     {
-        var           records      = 0;
-        using MariaDb mDbR         = new(appInfo);
-        var           rdr          = mDbR.ExecQuery("select count(*) from Followed");
+        var records = 0;
+        using MariaDb mDbR = new(appInfo);
+        var rdr = mDbR.ExecQuery("select count(*) from Followed");
         while (rdr.Read()) records = int.Parse(rdr[0].ToString()!);
         return records;
     }

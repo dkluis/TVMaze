@@ -7,7 +7,7 @@
     AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
     const string showCount = "select count(*) from Shows";
-    const string followedCount = "select count(*) from Followed";  // Change Later to exclude the skipped show
+    const string followedCount = "select count(*) from Followed"; // Change Later to exclude the skipped show
     const string followedShowsCount = "select count(*) from Shows where `TvmStatus` = 'Following'";
     const string reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
     const string newShowsCount = "select count(*) from Shows where `TvmStatus` = 'New'";
@@ -49,6 +49,7 @@
     {
         numShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedCount);
@@ -56,6 +57,7 @@
     {
         numFollowed = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedShowsCount);
@@ -63,6 +65,7 @@
     {
         numFollowedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(reviewingShowsCount);
@@ -70,6 +73,7 @@
     {
         numReviewingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(newShowsCount);
@@ -77,13 +81,15 @@
     {
         numNewShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
-    
+
     rdr = mdb.ExecQuery(skippingShowCount);
     while (rdr.Read())
     {
         numSkipingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(runningShowsCount);
@@ -91,6 +97,7 @@
     {
         numRunningShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(tbdShowsCount);
@@ -98,6 +105,7 @@
     {
         numTbdShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(inDevShowsCount);
@@ -105,6 +113,7 @@
     {
         numInDevShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(endedShowsCount);
@@ -112,6 +121,7 @@
     {
         numEndedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeCount);
@@ -119,6 +129,7 @@
     {
         numEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeWatchedCount);
@@ -126,6 +137,7 @@
     {
         numWatchedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeAcquiredCount);
@@ -133,6 +145,7 @@
     {
         numAcquiredEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeSkippedCount);
@@ -140,6 +153,7 @@
     {
         numSkippedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureCount);
@@ -147,6 +161,7 @@
     {
         numFutureEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureUnknownCount);
@@ -154,6 +169,7 @@
     {
         numFutureUnknownEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
     }
+
     mdb.Close();
 }
 

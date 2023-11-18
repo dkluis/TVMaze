@@ -5,13 +5,13 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
         <LangVersion>11</LangVersion>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2"/>
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
     </ItemGroup>
 
     <ItemGroup>

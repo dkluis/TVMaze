@@ -14,27 +14,32 @@ namespace Web_Lib;
 
 public class WebApi : IDisposable
 {
-    private const    string          TvmazeUrl          = "https://api.tvmaze.com/";
-    private const    string          TvmazeUserUrl      = "https://api.tvmaze.com/v1/user/";
+    private const string TvmazeUrl = "https://api.tvmaze.com/";
+
+    private const string TvmazeUserUrl = "https://api.tvmaze.com/v1/user/";
+
     // private const    string          Torrentz2ApiUrlPre = "https://torrentz2.cdf/search?q='";
     // private static   HttpClient      _Torrentz2Client   = new();
-    private readonly HttpClient      _client            = new();
+    private readonly HttpClient _client = new();
     private readonly TextFileHandler _log;
-    private readonly string              _tvmazeSecurity;
-    private          HttpResponseMessage _httpResponse = new();
-    private          bool                _tvmazeUrlInitialized;
-    private          bool                _tvmazeUserUrlInitialized;
-    public           bool                IsTimedOut;
+    private readonly string _tvmazeSecurity;
+    private HttpResponseMessage _httpResponse = new();
+    private bool _tvmazeUrlInitialized;
+    private bool _tvmazeUserUrlInitialized;
+    public bool IsTimedOut;
+
     public WebApi(AppInfo appInfo)
     {
         _log = appInfo.TxtFile;
         //_Torrentz2ApiUrlSuf = appInfo.Torrentz2Token;
         _tvmazeSecurity = appInfo.TvmazeToken;
     }
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     public JObject ConvertHttpToJObject(HttpResponseMessage message)
     {
         var content = message.Content.ReadAsStringAsync().Result;
@@ -47,6 +52,7 @@ public class WebApi : IDisposable
         var jObject = JObject.Parse(content);
         return jObject;
     }
+
     public JArray ConvertHttpToJArray(HttpResponseMessage message)
     {
         var content = message.Content.ReadAsStringAsync().Result;
@@ -59,6 +65,7 @@ public class WebApi : IDisposable
         var jArray = JArray.Parse(content);
         return jArray;
     }
+
     public HttpClientHandler ShowRssLogin(string user, string password)
     {
         HttpClientHandler hch = new();
@@ -81,7 +88,9 @@ public class WebApi : IDisposable
 
         if (IsTimedOut)
         {
-            _log.Write($"TimedOut --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Exec");
+            _log.Write(
+                $"TimedOut --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
+                "WebAPI Exec");
             _httpResponse = new HttpResponseMessage();
             Console.WriteLine("########### Aborting from PerformWaitTvmApi IsTimedOut is True ###################");
             Environment.Exit(99);
@@ -95,18 +104,21 @@ public class WebApi : IDisposable
         // }
         else if (!_httpResponse.IsSuccessStatusCode)
         {
-            _log.Write($"Status Code --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Exec", 4);
+            _log.Write(
+                $"Status Code --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
+                "WebAPI Exec", 4);
             _httpResponse = new HttpResponseMessage();
             //Console.WriteLine("########### Aborting from PerformWaitTvmApi isSuccessCode is False ###################");
             //Environment.Exit(99);
         }
     }
+
     private async Task PerformTvmApiAsync(string api)
     {
         try
         {
             _httpResponse = await _client.GetAsync(api).ConfigureAwait(false);
-            IsTimedOut    = false;
+            IsTimedOut = false;
         }
         catch (Exception e)
         {
@@ -122,9 +134,9 @@ public class WebApi : IDisposable
                 {
                     _log.Write($"2nd Exception: {ee.Message}  {ee.InnerException}", "WebAPI Async");
                     _httpResponse = new HttpResponseMessage();
-                    IsTimedOut    = true;
+                    IsTimedOut = true;
                     Console.WriteLine(
-                                      "########### Aborting from PerformTvmApiAsync 2nd Exception ###################");
+                        "########### Aborting from PerformTvmApiAsync 2nd Exception ###################");
                     Environment.Exit(99);
                 }
             }
@@ -134,13 +146,14 @@ public class WebApi : IDisposable
             _client.Dispose();
         }
     }
+
     private void PerformWaitPutTvmApiAsync(string api, int epi, string date, string type = "")
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        EpisodeMarking em      = new(epi, date, type);
-        var            content = em.GetJson();
+        EpisodeMarking em = new(epi, date, type);
+        var content = em.GetJson();
         _log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}", "", 4);
 
         var t = PerformPutTvmApiAsync(api, content);
@@ -151,12 +164,14 @@ public class WebApi : IDisposable
 
         if (!_httpResponse.IsSuccessStatusCode)
         {
-            _log.Write($"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Put Exec", 4);
+            _log.Write($"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
+                "WebAPI Put Exec", 4);
             _httpResponse = new HttpResponseMessage();
             //Console.WriteLine("########### Aborting from PerformPutTvmApiAsync ###################");
             //Environment.Exit(99);
         }
     }
+
     private async Task PerformPutTvmApiAsync(string api, string json)
     {
         StringContent stringContent = new(json, Encoding.UTF8, "application/json");
@@ -171,6 +186,7 @@ public class WebApi : IDisposable
             _log.Write($"Exception: {e.Message} for {api}", $"WebAPI Put Async {e.InnerException}");
         }
     }
+
     private void SetTvmaze()
     {
         if (!_tvmazeUrlInitialized)
@@ -178,10 +194,11 @@ public class WebApi : IDisposable
             _client.BaseAddress = new Uri(TvmazeUrl);
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
-            _client.Timeout       = TimeSpan.FromSeconds(30);
+            _client.Timeout = TimeSpan.FromSeconds(30);
             _tvmazeUrlInitialized = true;
         }
     }
+
     private void SetTvmazeUser()
     {
         if (!_tvmazeUserUrlInitialized)
@@ -190,10 +207,11 @@ public class WebApi : IDisposable
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client.DefaultRequestHeaders.Add("Authorization", _tvmazeSecurity);
             _client.DefaultRequestHeaders.UserAgent.TryParseAdd("Tvmaze C# App");
-            _client.Timeout           = TimeSpan.FromSeconds(30);
+            _client.Timeout = TimeSpan.FromSeconds(30);
             _tvmazeUserUrlInitialized = true;
         }
     }
+
     public HttpResponseMessage GetShow(string showName)
     {
         SetTvmaze();
@@ -205,6 +223,7 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public HttpResponseMessage GetShow(int showid)
     {
         SetTvmaze();
@@ -214,6 +233,7 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public HttpResponseMessage GetEpisodesByShow(int showid)
     {
         SetTvmaze();
@@ -223,6 +243,7 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public HttpResponseMessage GetAllEpisodes()
     {
         SetTvmazeUser();
@@ -232,6 +253,7 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public HttpResponseMessage GetShowUpdateEpochs(string period)
     {
         // day, week, month option for period
@@ -242,6 +264,7 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public HttpResponseMessage GetFollowedShows()
     {
         SetTvmazeUser();
@@ -251,6 +274,7 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public bool CheckForFollowedShow(int showid)
     {
         var isFollowed = false;
@@ -275,6 +299,7 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public HttpResponseMessage GetEpisodeMarks(int episodeid)
     {
         SetTvmazeUser();
@@ -288,28 +313,31 @@ public class WebApi : IDisposable
 
         return _httpResponse;
     }
+
     public HttpResponseMessage PutEpisodeToWatched(int episodeid, string watcheddate = "")
     {
         SetTvmazeUser();
-        var api                            = $"episodes/{episodeid}";
+        var api = $"episodes/{episodeid}";
         if (watcheddate == "") watcheddate = DateTime.Now.ToString("yyyy-MM-dd");
         PerformWaitPutTvmApiAsync(api, episodeid, watcheddate, "Watched");
 
         return _httpResponse;
     }
+
     public HttpResponseMessage PutEpisodeToAcquired(int episodeid, string acquiredate = "")
     {
         SetTvmazeUser();
-        var api                            = $"episodes/{episodeid}";
+        var api = $"episodes/{episodeid}";
         if (acquiredate == "") acquiredate = DateTime.Now.ToString("yyyy-MM-dd");
         PerformWaitPutTvmApiAsync(api, episodeid, acquiredate, "Acquired");
 
         return _httpResponse;
     }
+
     public HttpResponseMessage PutEpisodeToSkipped(int episodeid, string skipdate = "")
     {
         SetTvmazeUser();
-        var api                      = $"episodes/{episodeid}";
+        var api = $"episodes/{episodeid}";
         if (skipdate == "") skipdate = DateTime.Now.ToString("yyyy-MM-dd");
         PerformWaitPutTvmApiAsync(api, episodeid, skipdate, "Skipped");
 
@@ -358,16 +386,18 @@ public class WebApi : IDisposable
 
     #endregion
 }
+
 [SuppressMessage("ReSharper", "NotAccessedField.Global")]
 public class EpisodeMarking
 {
     public int episode_id;
     public int marked_at;
     public int type;
+
     public EpisodeMarking(int epi, string date, string ty = "")
     {
         episode_id = epi;
-        marked_at  = Common.ConvertDateToEpoch(date);
+        marked_at = Common.ConvertDateToEpoch(date);
         switch (ty)
         {
             case "Watched":
@@ -384,6 +414,7 @@ public class EpisodeMarking
                 break;
         }
     }
+
     public string GetJson()
     {
         return JsonConvert.SerializeObject(this);

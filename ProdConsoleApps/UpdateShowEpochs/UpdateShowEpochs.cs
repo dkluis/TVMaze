@@ -26,25 +26,25 @@ internal static class UpdateShowEpochs
         const string thisProgram = "Update Show Epochs";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
+        var log = appInfo.TxtFile;
         log.Start();
 
-        using TvmCommonSql ge                = new(appInfo);
-        var                lastEvaluatedShow = ge.GetLastEvaluatedShow();
+        using TvmCommonSql ge = new(appInfo);
+        var lastEvaluatedShow = ge.GetLastEvaluatedShow();
 
         var highestShowId = lastEvaluatedShow;
         log.Write($"Last Evaluated ShowId = {lastEvaluatedShow}", "", 2);
 
-        using WebApi tvmApi      = new(appInfo);
-        var          jsonContent = tvmApi.ConvertHttpToJObject(tvmApi.GetShowUpdateEpochs("day"));
+        using WebApi tvmApi = new(appInfo);
+        var jsonContent = tvmApi.ConvertHttpToJObject(tvmApi.GetShowUpdateEpochs("day"));
         log.Write($"Found {jsonContent.Count} updates on Tvmaze", thisProgram, 2);
 
         Show tvmShow = new(appInfo);
         foreach (var show in jsonContent)
         {
-            var                showId    = int.Parse(show.Key);
-            var                showEpoch = int.Parse(show.Value!.ToString());
-            using TvmCommonSql gse       = new(appInfo);
+            var showId = int.Parse(show.Key);
+            var showEpoch = int.Parse(show.Value!.ToString());
+            using TvmCommonSql gse = new(appInfo);
             if (gse.IsShowSkipping(showId)) continue;
 
             var inDbEpoch = gse.GetShowEpoch(showId);
@@ -56,13 +56,14 @@ internal static class UpdateShowEpochs
 
             tvmShow.FillViaTvmaze(showId);
             log.Write(
-                      $"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}", "", 4);
+                $"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}",
+                "", 4);
 
             if (inDbEpoch == 0)
             {
                 using MariaDb mDbW = new(appInfo);
                 mDbW.ExecNonQuery(
-                                  $"insert into TvmShowUpdates values (0, {showId}, {showEpoch}, '{DateTime.Now:yyyy-MM-dd}');");
+                    $"insert into TvmShowUpdates values (0, {showId}, {showEpoch}, '{DateTime.Now:yyyy-MM-dd}');");
                 mDbW.Close();
 
                 log.Write($"Inserted Epoch Record {showId} {tvmShow.ShowName}");
@@ -74,18 +75,20 @@ internal static class UpdateShowEpochs
                         log.Write($"Show {showId} is rejected because of review rules {tvmShow.TvmUrl}");
                         continue;
                     }
-                } else
+                }
+                else
                 {
                     log.Write("This show is evaluated already");
                     continue;
                 }
 
-                tvmShow.TvmStatus  = "New";
+                tvmShow.TvmStatus = "New";
                 tvmShow.IsFollowed = false;
                 if (!tvmShow.DbInsert(false, "UpdateShowEpochs"))
                 {
                     log.Write($"Insert of Show {showId} Failed #############################", "", 0);
-                } else
+                }
+                else
                 {
                     log.Write($"Inserted new Show {showId}, {tvmShow.ShowName}", "", 2);
                     var idxEpsByShow = 0;
@@ -96,21 +99,23 @@ internal static class UpdateShowEpochs
                         {
                             if (!eps.DbInsert())
                                 log.Write(
-                                          $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} #######################",
-                                          "", 0);
+                                    $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} #######################",
+                                    "", 0);
                             else
                                 log.Write(
-                                          $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}");
+                                    $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}");
                             idxEpsByShow++;
                         }
                     }
 
                     log.Write($"Number of Episodes for Show {showId}: {idxEpsByShow}", "", 2);
                 }
-            } else
+            }
+            else
             {
                 using MariaDb mDbW = new(appInfo);
-                mDbW.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showId};");
+                mDbW.ExecNonQuery(
+                    $"update TvmShowUpdates set `TvmUpdateEpoch` = {show.Value}, `TvmUpdateDate` = '{DateTime.Now:yyyy-MM-dd}' where `TvmShowId` = {showId};");
                 mDbW.Close();
 
                 if (!tvmShow.IsDbFilled) continue;
@@ -119,11 +124,12 @@ internal static class UpdateShowEpochs
                     log.Write($"Update of Show {showId} Failed ###################", "", 0);
                     using ActionItems ai = new(appInfo);
                     ai.DbInsert($"Update of Show {showId} Failed");
-                } else
+                }
+                else
                 {
-                    var                  idxEpsByShow = 0;
-                    using EpisodesByShow epsByShow    = new();
-                    var                  ebs          = epsByShow.Find(appInfo, showId);
+                    var idxEpsByShow = 0;
+                    using EpisodesByShow epsByShow = new();
+                    var ebs = epsByShow.Find(appInfo, showId);
                     foreach (var eps in ebs)
                     {
                         log.Write($"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 4);
@@ -132,26 +138,28 @@ internal static class UpdateShowEpochs
                             if (!eps.DbInsert())
                             {
                                 log.Write(
-                                          $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ##################",
-                                          "", 0);
+                                    $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ##################",
+                                    "", 0);
                                 using ActionItems ai = new(appInfo);
                                 ai.DbInsert(
-                                            $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}");
-                            } else
+                                    $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}");
+                            }
+                            else
                             {
                                 log.Write(
-                                          $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}");
+                                    $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}");
                             }
-                        } else
+                        }
+                        else
                         {
                             if (!eps.DbUpdate())
                             {
                                 log.Write(
-                                          $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ####################",
-                                          "", 0);
+                                    $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ####################",
+                                    "", 0);
                                 using ActionItems ai = new(appInfo);
                                 ai.DbInsert(
-                                            $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}");
+                                    $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}");
                             }
                         }
 

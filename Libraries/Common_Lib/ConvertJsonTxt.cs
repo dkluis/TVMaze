@@ -15,6 +15,7 @@ public static class ConvertJsonTxt
         var jA = JArray.Parse(message);
         return jA;
     }
+
     public static JObject ConvertStringToJObject(string message)
     {
         if (message == "")

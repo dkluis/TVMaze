@@ -13,7 +13,7 @@ internal static class RefreshShowRssFeed
         const string thisProgram = "Refresh ShowRss Feed";
         Console.WriteLine($"{DateTime.Now}: {thisProgram} ");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
+        var log = appInfo.TxtFile;
         log.Start();
 
         Feed result = new();
@@ -21,7 +21,7 @@ internal static class RefreshShowRssFeed
         {
             var showRssFeed =
                 FeedReader.ReadAsync(
-                                     "http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
+                    "http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
             showRssFeed.Wait();
             result = showRssFeed.Result;
         }
@@ -33,7 +33,7 @@ internal static class RefreshShowRssFeed
         }
 
         MariaDb mdb = new(appInfo);
-        var     idx = 0;
+        var idx = 0;
 
         foreach (var show in result.Items)
         {
@@ -45,9 +45,9 @@ internal static class RefreshShowRssFeed
 
             using (Process acquireMediaScript = new())
             {
-                acquireMediaScript.StartInfo.FileName               = "/Users/dick/TVMaze/Scripts/AcquireMediaViaTransmission.sh";
-                acquireMediaScript.StartInfo.Arguments              = show.Link;
-                acquireMediaScript.StartInfo.UseShellExecute        = true;
+                acquireMediaScript.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/AcquireMediaViaTransmission.sh";
+                acquireMediaScript.StartInfo.Arguments = show.Link;
+                acquireMediaScript.StartInfo.UseShellExecute = true;
                 acquireMediaScript.StartInfo.RedirectStandardOutput = false;
                 acquireMediaScript.Start();
                 acquireMediaScript.WaitForExit();
@@ -64,19 +64,20 @@ internal static class RefreshShowRssFeed
             var row = mdb.ExecNonQuery(sql);
             mdb.Close();
             log.Write(
-                      row != 1 ? $"Insert of Episode {show.Title} Failed" : $"Inserted Episode {show.Title} successfully",
-                      "", 4);
+                row != 1 ? $"Insert of Episode {show.Title} Failed" : $"Inserted Episode {show.Title} successfully",
+                "", 4);
         }
 
         log.Write($"Processed {idx} records from ShowRss");
         log.Stop();
     }
+
     private static bool CheckIfProcessed(AppInfo appInfo, string showName)
     {
-        var           isProcessed    = false;
-        using MariaDb mDbR           = new(appInfo);
-        var           rSql           = $"select `ShowName`, Processed from ShowRssFeed where `ShowName` = '{showName}' ";
-        var           rdr            = mDbR.ExecQuery(rSql);
+        var isProcessed = false;
+        using MariaDb mDbR = new(appInfo);
+        var rSql = $"select `ShowName`, Processed from ShowRssFeed where `ShowName` = '{showName}' ";
+        var rdr = mDbR.ExecQuery(rSql);
         if (rdr.HasRows) isProcessed = true;
         mDbR.Close();
 

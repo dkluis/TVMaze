@@ -20,6 +20,7 @@
         {
             return;
         }
+
         switch (scriptRequested)
         {
             case "Followed":
@@ -74,6 +75,7 @@
         {
             return;
         }
+
         string program;
         _logView = logRequested + " Log";
         _logRequested = true;
@@ -124,6 +126,7 @@
                 _currentLog = "";
                 return;
         }
+
         var appInfo = new AppInfo("TVMaze", program, "DbAlternate");
         var logFile = appInfo.TxtFile;
         _logContent = logFile.ReturnLogContent();
@@ -143,6 +146,7 @@
             _logView = "No Active Log to Empty";
             return;
         }
+
         var appInfo = new AppInfo("TVMaze", _currentLog, "DbAlternate");
         appInfo.TxtFile.Empty();
         _currentLog = "";
@@ -167,6 +171,7 @@
             _message = "Enter a ShowId: 0 is not Valid";
             return;
         }
+
         _message = $"Trying to update {_refreshShowId}";
 
         AppInfo appInfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
@@ -183,8 +188,10 @@
                 log.Write($"{_message}", "", 2);
                 sae.Refresh(int.Parse(rdr[0].ToString()!));
             }
+
             _message = _message.Contains("Trying") ? $"ShowId {_refreshShowId} is not in the Shows Table" : _message.Replace("Working on", "Refreshed");
         }
+
         log.Stop();
     }
 
@@ -216,6 +223,7 @@
             RunScript("/Users/dick/TVMaze/Scripts/RestartPlexMediaServer.sh");
             _message = "Plex Media Server Restarted";
         }
+
         log.Stop();
     }
 
@@ -236,7 +244,9 @@
             <button class="btn btn-primary" @onclick='() => ExecScripts("Refresh Shows")'><i class="bi bi-arrow-clockwise"></i>&nbsp;Shows</button>
             <button class="btn btn-primary" @onclick='() => ExecScripts("ShowRss Feed")'><i class="bi bi-arrow-clockwise"></i>&nbsp;Feed</button>
             <button class="btn btn-primary" @onclick='() => ExecScripts("Refresh ShowRss")'
-                    data-toggle="tooltip" data-placement="bottom" title="Update ShowRss HTML first"><i class="bi bi-arrow-clockwise"></i>&nbsp;ShowRss</button>
+                    data-toggle="tooltip" data-placement="bottom" title="Update ShowRss HTML first">
+                <i class="bi bi-arrow-clockwise"></i>&nbsp;ShowRss
+            </button>
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
@@ -301,13 +311,14 @@
             @foreach (var line in _logContent!)
             {
                 if (line.Contains(
-                    "########################################################################################") ||
+                        "########################################################################################") ||
                     line.Contains("Finished ####") ||
                     line.ToLower().Contains("chromedriver") ||
                     line.ToLower().Contains("connection"))
                 {
                     continue;
                 }
+
                 @line<br/>
             }
         }

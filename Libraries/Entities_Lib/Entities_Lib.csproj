@@ -6,7 +6,7 @@
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
         <LangVersion>11</LangVersion>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MySqlConnector" Version="2.2.4"/>
+        <PackageReference Include="MySqlConnector" Version="2.3.1"/>
     </ItemGroup>
 
 </Project>
