@@ -335,6 +335,7 @@ public class Show : IDisposable
                 case "antena 3":
                 case "htb":
                 case "dmc":
+                case "ktk":
                     // ReSharper restore StringLiteralTypo
 
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
