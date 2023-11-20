@@ -11,12 +11,12 @@ internal class InitializeEpisodes
         const string thisProgram = "Init Episode Table";
         Console.WriteLine($"{DateTime.Now}:  {thisProgram}");
         AppInfo appinfo = new("TVMaze", thisProgram, "DbAlternate");
-        var log = appinfo.TxtFile;
+        var     log     = appinfo.TxtFile;
         log.Start();
 
         //Get All Followed Shows
-        SearchAllFollowed sal = new();
-        var allfollowed = sal.Find(appinfo);
+        SearchAllFollowed sal         = new();
+        var               allfollowed = sal.Find(appinfo);
         if (allfollowed.Count == 0)
         {
             log.Write("No Followed Shows Found, exiting program", "", 0);
@@ -29,15 +29,15 @@ internal class InitializeEpisodes
         var idxalleps = 0;
         foreach (var showid in allfollowed)
         {
-            var idxepsbyshow = 0;
-            EpisodesByShow epsbyshow = new();
-            var ebs = epsbyshow.Find(appinfo, showid);
+            var            idxepsbyshow = 0;
+            EpisodesByShow epsbyshow    = new();
+            var            ebs          = epsbyshow.Find(appinfo, showid);
             foreach (var eps in ebs)
             {
                 eps.DbInsert();
                 log.Write(
-                    $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}",
-                    "", 4);
+                          $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}",
+                          "", 4);
                 idxalleps++;
                 idxepsbyshow++;
             }

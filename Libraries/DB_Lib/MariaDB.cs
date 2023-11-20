@@ -6,15 +6,14 @@ namespace DB_Lib;
 
 public class MariaDb : IDisposable
 {
-    private const string Function = "MariaDb";
-    private readonly MySqlConnection _conn = new();
-    private readonly TextFileHandler _mDbLog;
-    private MySqlCommand _cmd = new();
-    private bool _connOpen;
-    private MySqlDataReader? _rdr;
-    private int _rows;
-    public bool Success;
-
+    private const    string           Function = "MariaDb";
+    private readonly MySqlConnection  _conn    = new();
+    private readonly TextFileHandler  _mDbLog;
+    private          MySqlCommand     _cmd = new();
+    private          bool             _connOpen;
+    private          MySqlDataReader? _rdr;
+    private          int              _rows;
+    public           bool             Success;
     public MariaDb(AppInfo appInfo)
     {
         _mDbLog = appInfo.TxtFile;
@@ -22,7 +21,7 @@ public class MariaDb : IDisposable
         Success = false;
         try
         {
-            _conn = new MySqlConnection(appInfo.ActiveDbConn);
+            _conn   = new MySqlConnection(appInfo.ActiveDbConn);
             Success = true;
         }
         catch (Exception e)
@@ -30,14 +29,12 @@ public class MariaDb : IDisposable
             _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", Function, 0);
         }
     }
-
     void IDisposable.Dispose()
     {
         Close();
         GC.SuppressFinalize(this);
     }
-
-    public void Open()
+    private void Open()
     {
         Success = true;
         try
@@ -51,7 +48,6 @@ public class MariaDb : IDisposable
             Success = false;
         }
     }
-
     public void Close()
     {
         Success = true;
@@ -66,7 +62,6 @@ public class MariaDb : IDisposable
             Success = false;
         }
     }
-
     private MySqlCommand Command(string sql)
     {
         Success = true;
@@ -83,7 +78,6 @@ public class MariaDb : IDisposable
             return _cmd;
         }
     }
-
     public MySqlDataReader ExecQuery()
     {
         Success = true;
@@ -100,10 +94,9 @@ public class MariaDb : IDisposable
             return _rdr!;
         }
     }
-
     public MySqlDataReader ExecQuery(string sql)
     {
-        _cmd = Command(sql);
+        _cmd    = Command(sql);
         Success = true;
         try
         {
@@ -118,7 +111,6 @@ public class MariaDb : IDisposable
             return _rdr!;
         }
     }
-
     public int ExecNonQuery(bool ignore = false)
     {
         Success = true;
@@ -136,10 +128,9 @@ public class MariaDb : IDisposable
             return _rows;
         }
     }
-
     public int ExecNonQuery(string sql, bool ignore = false)
     {
-        _cmd = Command(sql);
+        _cmd    = Command(sql);
         Success = true;
         try
         {

@@ -21,7 +21,7 @@ internal static class UpdatePlexWatched
         const string thisProgram = "Update Plex Watched";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var log = appInfo.TxtFile;
+        var     log     = appInfo.TxtFile;
 
         log.Start();
 
@@ -32,7 +32,7 @@ internal static class UpdatePlexWatched
             foreach (var pwi in watchedEpisodes)
             {
                 SearchShowsViaNames searchShowViaNames = new();
-                var foundInDb = searchShowViaNames.Find(appInfo, pwi.ShowName, pwi.CleanedShowName);
+                var                 foundInDb          = searchShowViaNames.Find(appInfo, pwi.ShowName, pwi.CleanedShowName);
                 switch (foundInDb.Count)
                 {
                     case 1:
@@ -63,8 +63,8 @@ internal static class UpdatePlexWatched
                 }
 
                 log.Write(
-                    $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "",
-                    4);
+                          $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "",
+                          4);
 
                 if (!pwi.DbInsert(appInfo)) continue;
 
@@ -72,12 +72,12 @@ internal static class UpdatePlexWatched
                 epi.FillViaTvmaze(pwi.TvmEpisodeId);
                 using WebApi wa = new(appInfo);
                 wa.PutEpisodeToWatched(epi.TvmEpisodeId, pwi.WatchedDate);
-                epi.PlexDate = pwi.WatchedDate;
+                epi.PlexDate   = pwi.WatchedDate;
                 epi.PlexStatus = "Watched";
                 epi.DbUpdate();
                 log.Write(
-                    $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}",
-                    "", 2);
+                          $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}",
+                          "", 2);
                 pwi.ProcessedToTvmaze = true;
                 pwi.DbUpdate(appInfo);
                 if (epi.IsAutoDelete)
@@ -89,8 +89,7 @@ internal static class UpdatePlexWatched
 
                 pwi.Reset();
             }
-        }
-        else
+        } else
         {
             log.Write("No Watched Episodes Found");
         }

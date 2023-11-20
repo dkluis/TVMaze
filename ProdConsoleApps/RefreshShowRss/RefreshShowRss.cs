@@ -11,12 +11,12 @@ internal static class RefreshShowRss
         const string thisProgram = "Refresh ShowRss";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var log = appInfo.TxtFile;
+        var     log     = appInfo.TxtFile;
         log.Start();
-        WebScrape showScrape = new(appInfo);
-        var showRssShows = showScrape.GetShowRssInfo();
+        WebScrape           showScrape         = new(appInfo);
+        var                 showRssShows       = showScrape.GetShowRssInfo();
         SearchShowsViaNames searchShowViaNames = new();
-        UpdateFinder updateFinder = new();
+        UpdateFinder        updateFinder       = new();
         log.Write($"Found {showRssShows.Count} in the ShowRss HTML download");
         var idx = 1;
         foreach (var show in showRssShows)
@@ -39,7 +39,7 @@ internal static class RefreshShowRss
                         if (showUpd.ShowStatus == "Running" && showUpd.UpdateDate != "2200-01-01")
                         {
                             log.Write($"Selected to Update {cleanShow}: {showUpd.TvmShowId} to Finder: ShowRss");
-                            updateFinder.ToShowRss(appInfo, showUpd.TvmShowId);
+                            UpdateFinder.ToShowRss(appInfo, showUpd.TvmShowId);
                             idx++;
                         }
 
@@ -52,7 +52,7 @@ internal static class RefreshShowRss
             }
 
             log.Write($"Updating {cleanShow} to Finder: ShowRss", "", 4);
-            updateFinder.ToShowRss(appInfo, int.Parse(foundInDb[0].ToString()));
+            UpdateFinder.ToShowRss(appInfo, int.Parse(foundInDb[0].ToString()));
             idx++;
         }
 

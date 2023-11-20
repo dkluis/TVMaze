@@ -1,33 +1,29 @@
 ﻿@namespace TvmazeUI.Pages
 @page "/shows"
 
-@inject WebShows _webShowsService
-@inject DataExchange _dataExchangeService
+@inject WebShows          _webShowsService
+@inject DataExchange      _dataExchangeService
 @inject NavigationManager _navigationManagerService
 
 
 @code {
     private List<ShowsInfo> _showsInfoList = new();
-    string? _searchString;
-    int _idx;
-
+    string?                 _searchString;
+    int                     _idx;
     private void ReviewNewShows()
     {
         _showsInfoList = _webShowsService.GetShowsByTvmStatus("New");
-        _searchString = "";
+        _searchString  = "";
     }
-
     private void ReviewReviewShows()
     {
         _showsInfoList = _webShowsService.GetShowsByTvmStatus("Reviewing");
-        _searchString = "";
+        _searchString  = "";
     }
-
     private void FindShows()
     {
         _showsInfoList = _webShowsService.FindShows(_searchString);
     }
-
     private void EditShow(ShowsInfo si)
     {
         if (si.TvmStatus == "New")
@@ -37,8 +33,7 @@
             _searchString = si.ShowName;
             FindShows();
             _searchString = "";
-        }
-        else if (si.TvmStatus == "Following")
+        } else if (si.TvmStatus == "Following")
         {
             _webShowsService.AppInfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
             _webShowsService.SetMtAndAsnShow(si.TvmShowId, si.MediaType!, si.AltShowName!);
@@ -47,7 +42,6 @@
             _searchString = "";
         }
     }
-
     private void DeleteShow(ShowsInfo si)
     {
         _webShowsService.AppInfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
@@ -55,15 +49,13 @@
         if (si.TvmStatus == "New")
         {
             ReviewNewShows();
-        }
-        else
+        } else
         {
             ReviewReviewShows();
         }
 
         _searchString = "";
     }
-
     private void SkipShow(ShowsInfo si)
     {
         _webShowsService.AppInfo.TxtFile.Write($"Setting Show to Skipping {si.TvmShowId}: {si.ShowName}");
@@ -72,15 +64,13 @@
         FindShows();
         _searchString = "";
     }
-
     private void FindEpisodes(ShowsInfo si)
     {
-        _dataExchangeService.ShowName = si.AltShowName == "" ? si.ShowName : si.AltShowName;
-        _dataExchangeService.SendingPage = "Shows";
+        _dataExchangeService.ShowName     = si.AltShowName == "" ? si.ShowName : si.AltShowName;
+        _dataExchangeService.SendingPage  = "Shows";
         _dataExchangeService.IntendedPage = "Episodes";
         _navigationManagerService.NavigateTo("/episodes");
     }
-
 }
 
 @{ _dataExchangeService.LastPage = "Shows"; }
@@ -133,8 +123,7 @@
                     @if (si.TvmStatus == "Following")
                     {
                         <input @bind="si.AltShowName"/>
-                    }
-                    else
+                    } else
                     {
                         @si.AltShowName
                     }
@@ -144,8 +133,7 @@
                     @if (si.TvmStatus == "Following")
                     {
                         <input @bind="@si.MediaType" size="2"/>
-                    }
-                    else
+                    } else
                     {
                         @si.MediaType
                     }
@@ -162,8 +150,7 @@
                         if (si.TvmStatus == "New")
                         {
                             <button class="btn btn-primary" @onclick="@(() => EditShow(si))">Set Reviewing</button>
-                        }
-                        else
+                        } else
                         {
                             <button class="btn btn-warning" @onclick="@(() => EditShow(si))">Submit Edit</button>
                             if (si.TvmStatus != "Skipping")

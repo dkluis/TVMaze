@@ -7,13 +7,12 @@
 
 @code
 {
-    string? _message;
-    int _refreshShowId;
-    string _logView = "";
-    string _currentLog = "";
+    string?       _message;
+    int           _refreshShowId;
+    string        _logView    = "";
+    string        _currentLog = "";
     List<string>? _logContent;
-    bool _logRequested;
-
+    bool          _logRequested;
     private void ExecScripts(string scriptRequested = "")
     {
         if (scriptRequested == "")
@@ -68,7 +67,6 @@
                 break;
         }
     }
-
     private void ExecLogViewer(string logRequested = "")
     {
         if (logRequested == "")
@@ -77,7 +75,7 @@
         }
 
         string program;
-        _logView = logRequested + " Log";
+        _logView      = logRequested + " Log";
         _logRequested = true;
         switch (logRequested)
         {
@@ -121,9 +119,9 @@
                 program = "Transmission";
                 break;
             default:
-                _logView = "";
+                _logView      = "";
                 _logRequested = false;
-                _currentLog = "";
+                _currentLog   = "";
                 return;
         }
 
@@ -132,13 +130,11 @@
         _logContent = logFile.ReturnLogContent();
         _currentLog = program;
     }
-
     private void ClearLog()
     {
-        _logView = "";
+        _logView      = "";
         _logRequested = false;
     }
-
     private void EmptyLog()
     {
         if (_logView == "")
@@ -149,21 +145,19 @@
 
         var appInfo = new AppInfo("TVMaze", _currentLog, "DbAlternate");
         appInfo.TxtFile.Empty();
-        _currentLog = "";
+        _currentLog   = "";
         _logRequested = false;
-        _logView = "";
+        _logView      = "";
     }
-
     private void RunScript(string scriptName)
     {
         using Process runScript = new();
-        runScript.StartInfo.FileName = scriptName;
-        runScript.StartInfo.UseShellExecute = true;
+        runScript.StartInfo.FileName               = scriptName;
+        runScript.StartInfo.UseShellExecute        = true;
         runScript.StartInfo.RedirectStandardOutput = false;
         runScript.Start();
         runScript.WaitForExit();
     }
-
     private void RefreshOneShow()
     {
         if (_refreshShowId == 0)
@@ -175,7 +169,7 @@
         _message = $"Trying to update {_refreshShowId}";
 
         AppInfo appInfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
-        var log = appInfo.TxtFile;
+        var     log     = appInfo.TxtFile;
         log.Start();
         using (MariaDb mDbR = new(appInfo))
         {
@@ -194,13 +188,12 @@
 
         log.Stop();
     }
-
     private void ResetPlexMediaServer()
     {
         _message = "Restarting Plex Media Server";
 
         AppInfo appInfo = new("TVMaze", "WebUI", "DbAlternate");
-        var log = appInfo.TxtFile;
+        var     log     = appInfo.TxtFile;
         log.Start();
 
         var process = Process.GetProcessesByName("Plex Media Serv");
@@ -213,8 +206,7 @@
             log.Write("Restarting Plex Media Server Process", "", 2);
             RunScript("/Users/dick/TVMaze/Scripts/RestartPlexMediaServer.sh");
             _message = "Plex Media Server Restarted";
-        }
-        else
+        } else
         {
             log.Write("Did not find Plex Media Server Running, trying to start it now.");
             _message = "Plex Media Server Not Restarted";
@@ -226,7 +218,6 @@
 
         log.Stop();
     }
-
 }
 
 @{ _dataExchangeService.LastPage = "Tools"; }
@@ -311,9 +302,9 @@
             @foreach (var line in _logContent!)
             {
                 if (line.Contains(
-                        "########################################################################################") ||
-                    line.Contains("Finished ####") ||
-                    line.ToLower().Contains("chromedriver") ||
+                                  "########################################################################################") ||
+                    line.Contains("Finished ####")                                                                            ||
+                    line.ToLower().Contains("chromedriver")                                                                   ||
                     line.ToLower().Contains("connection"))
                 {
                     continue;

@@ -10,30 +10,27 @@ namespace Web_Lib;
 
 public class WebScrape : IDisposable
 {
-    private readonly AppInfo _appInfo;
+    private readonly AppInfo         _appInfo;
     private readonly TextFileHandler _log;
-    public List<string> Magnets = new();
-
+    public           List<string>    Magnets = new();
     public WebScrape(AppInfo info)
     {
         _appInfo = info;
-        _log = _appInfo.TxtFile;
+        _log     = _appInfo.TxtFile;
     }
-
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
-
     public List<string> GetShowRssInfo()
     {
-        var showRssPath = Path.Combine(_appInfo.ConfigPath!, "Inputs", "ShowRss.html");
+        var          showRssPath = Path.Combine(_appInfo.ConfigPath!, "Inputs", "ShowRss.html");
         HtmlDocument showRssHtml = new();
 
         var showRssInfo = File.ReadAllText(showRssPath);
         showRssHtml.LoadHtml(showRssInfo);
 
-        var table = showRssHtml.DocumentNode.SelectNodes("//li/a");
+        var          table  = showRssHtml.DocumentNode.SelectNodes("//li/a");
         List<string> titles = new();
 
         foreach (var node in table)
@@ -47,16 +44,15 @@ public class WebScrape : IDisposable
 
         return titles;
     }
-
     public void GetEztvMagnets(string showName, string seasEpi, ChromeDriver browserDriver)
     {
         var foundMagnets = 0;
-        var url = BuildEztvUrl(showName, seasEpi);
+        var url          = BuildEztvUrl(showName, seasEpi);
 
-        var compareWithMagnet = "dn=" +
+        var compareWithMagnet = "dn="                                                           +
                                 Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") +
-                                "." +
-                                seasEpi +
+                                "."                                                             +
+                                seasEpi                                                         +
                                 ".";
         _log.Write($"Compare string = {compareWithMagnet}", "Eztv", 4);
 
@@ -76,19 +72,19 @@ public class WebScrape : IDisposable
         htmlDoc.LoadHtml(html);
 
         var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
-            .Where(a => a.Attributes["href"] != null &&
-                        a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+                                 .Where(a => a.Attributes["href"] != null &&
+                                             a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
+                                 .ToList();
 
         foreach (var magnetInfo in magnetLinks)
         {
             var mgi = magnetInfo.Attributes["href"].Value.ToLower();
             if (mgi.Contains(compareWithMagnet) == false ||
-                mgi == "") continue;
+                mgi                             == "") continue;
             var magnetReplace = mgi.Replace("<a href=\"", "");
-            var magnSplit = magnetReplace.Split("><img src=");
-            var magnet = magnSplit[0];
-            var priority = PrioritizeMagnet(magnet, "Eztv");
+            var magnSplit     = magnetReplace.Split("><img src=");
+            var magnet        = magnSplit[0];
+            var priority      = PrioritizeMagnet(magnet, "Eztv");
             if (priority > 130)
             {
                 var prioritizedMagnet = priority + "#$# " + magnet;
@@ -108,30 +104,28 @@ public class WebScrape : IDisposable
         Magnets.Reverse();
         _log.Write($"Found {foundMagnets} via EZTV", "Acquire Media");
     }
-
     private string BuildEztvUrl(string showName, string seasEpi)
     {
         var eztvUrl = "https://eztv.re/search/";
-        showName = Common.RemoveSpecialCharsInShowName(showName);
-        showName = showName.Replace(" ", "-");
-        eztvUrl += showName + "-" + seasEpi;
+        showName =  Common.RemoveSpecialCharsInShowName(showName);
+        showName =  showName.Replace(" ", "-");
+        eztvUrl  += showName + "-" + seasEpi;
         _log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
         return eztvUrl;
     }
-
     public void GetMagnetDlMagnets(string showName, string seasEpi)
     {
         var foundMagnets = 0;
-        var html = BuildMagnetDownloadUrl($"{showName}-{seasEpi}");
+        var html         = BuildMagnetDownloadUrl($"{showName}-{seasEpi}");
 
-        var compareWithMagnet = "dn=" +
+        var compareWithMagnet = "dn="                                                           +
                                 Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") +
-                                "." +
-                                seasEpi +
+                                "."                                                             +
+                                seasEpi                                                         +
                                 ".";
         _log.Write($"Compare string = {compareWithMagnet}", "MagnetDL", 4);
 
-        HtmlWeb web = new();
+        HtmlWeb      web = new();
         HtmlDocument htmlDoc;
         try
         {
@@ -174,28 +168,26 @@ public class WebScrape : IDisposable
         Magnets.Reverse();
         _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
     }
-
     private string BuildMagnetDownloadUrl(string showName)
     {
         var url = "https://www.magnetdl.com/";
         showName = Common.RemoveSpecialCharsInShowName(showName);
         showName = showName.Replace(" ", "-");
-        url = url + "/" + showName[0].ToString().ToLower() + "/" + showName + "/";
+        url      = url + "/" + showName[0].ToString().ToLower() + "/" + showName + "/";
         _log.Write($"URL MagnetDL is {url}", "MagnetDL", 4);
         return url;
     }
-
     public void GetTorrentz2Magnets(string showName, string seasEpi)
     {
         try
         {
             var foundMagnets = 0;
-            var url = BuildTorrentZUrl($"{showName}+{seasEpi}");
+            var url          = BuildTorrentZUrl($"{showName}+{seasEpi}");
 
-            var compareWithMagnet = "" +
+            var compareWithMagnet = ""                                                              +
                                     Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") +
-                                    "." +
-                                    seasEpi +
+                                    "."                                                             +
+                                    seasEpi                                                         +
                                     ".";
 
             var options = new ChromeOptions();
@@ -211,19 +203,19 @@ public class WebScrape : IDisposable
             //htmlDoc.Load(@"/Users/dick/Desktop/test.html");
 
             var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
-                .Where(a => a.Attributes["href"] != null &&
-                            a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
-                .ToList();
+                                     .Where(a => a.Attributes["href"] != null &&
+                                                 a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
+                                     .ToList();
             if (magnetLinks == null) return;
             foreach (var magnetInfo in magnetLinks)
             {
                 var mgi = magnetInfo.Attributes["href"].Value.ToLower();
                 if (mgi.Contains(compareWithMagnet) == false ||
-                    mgi == "") continue;
+                    mgi                             == "") continue;
                 var magnetReplace = mgi.Replace("<a href=\"", "");
-                var magnetSplit = magnetReplace.Split("\n><i");
-                var magnet = magnetSplit[0];
-                var priority = PrioritizeMagnet(magnet, "TorrentZ");
+                var magnetSplit   = magnetReplace.Split("\n><i");
+                var magnet        = magnetSplit[0];
+                var priority      = PrioritizeMagnet(magnet, "TorrentZ");
                 if (priority > 130)
                 {
                     var prioritizedMagnet = priority + "#$# " + magnet;
@@ -248,26 +240,24 @@ public class WebScrape : IDisposable
             _log.Write($"Error occurred in TorrentZ2 WebScrape {e}", "Acquire Media", 0);
         }
     }
-
     private string BuildTorrentZUrl(string showName)
     {
         var eztvUrl = "https://torrentz2.nz/search?q=";
-        showName = Common.RemoveSpecialCharsInShowName(showName);
-        showName = showName.Replace(" ", "+");
-        eztvUrl += showName;
+        showName =  Common.RemoveSpecialCharsInShowName(showName);
+        showName =  showName.Replace(" ", "+");
+        eztvUrl  += showName;
         _log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
         return eztvUrl;
     }
-
     public void GetPirateBayMagnets(string showName, string seasEpi, ChromeDriver browserDriver)
     {
         var foundMagnets = 0;
-        var url = BuildPirateBayUrl(showName, seasEpi);
+        var url          = BuildPirateBayUrl(showName, seasEpi);
 
-        var compareWithMagnet = "dn=" +
+        var compareWithMagnet = "dn="                                                           +
                                 Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") +
-                                "+" +
-                                seasEpi +
+                                "+"                                                             +
+                                seasEpi                                                         +
                                 "+";
         _log.Write($"Compare string = {compareWithMagnet}", "PirateBay", 4);
 
@@ -288,19 +278,19 @@ public class WebScrape : IDisposable
         htmlDoc.LoadHtml(html);
 
         var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
-            .Where(a => a.Attributes["href"] != null &&
-                        a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+                                 .Where(a => a.Attributes["href"] != null &&
+                                             a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
+                                 .ToList();
 
         foreach (var magnetInfo in magnetLinks)
         {
             var mgi = magnetInfo.Attributes["href"].Value.ToLower();
             if (mgi.Contains(compareWithMagnet) == false ||
-                mgi == "") continue;
+                mgi                             == "") continue;
             var magnetReplace = mgi.Replace("<a href=\"", "");
-            var magnSplit = magnetReplace.Split("><img src=");
-            var magnet = magnSplit[0];
-            var priority = PrioritizeMagnet(magnet, "PirateBay");
+            var magnSplit     = magnetReplace.Split("><img src=");
+            var magnet        = magnSplit[0];
+            var priority      = PrioritizeMagnet(magnet, "PirateBay");
             if (priority > 130)
             {
                 var prioritizedMagnet = priority + "#$# " + magnet;
@@ -320,44 +310,46 @@ public class WebScrape : IDisposable
         Magnets.Reverse();
         _log.Write($"Found {foundMagnets} via PirateBay", "Acquire Media");
     }
-
     private string BuildPirateBayUrl(string showName, string seasEpi)
     {
         var url = "https://bayofpirates.xyz/search.php/?q=";
         showName = Common.RemoveSpecialCharsInShowName(showName);
         showName = showName.Replace(" ", "-");
-        url = url + showName + "-" + seasEpi; //+ "&cat=0";
+        url      = url + showName + "-" + seasEpi; //+ "&cat=0";
         _log.Write($"URL PirateBay is {url}", "PirateBay", 4);
         return url;
     }
-
     private static int PrioritizeMagnet(string magnet, string provider)
     {
         var priority = provider switch
-        {
-            "Eztv" or "EztvAPI" => 110,
-            "PirateBay" => 115,
-            "MagnetDL" => 120, // Does not have container info so +10 by default
-            "TorrentZ" => 105,
-            _ => 0
-        };
+                       {
+                           "Eztv" or "EztvAPI" => 110,
+                           "PirateBay" => 115,
+                           "MagnetDL" => 120, // Does not have container info so +10 by default
+                           "TorrentZ" => 105,
+                           _ => 0,
+                       };
         // Codex values
-        if (magnet.ToLower().Contains("x264") ||
-            magnet.ToLower().Contains("h264") ||
+        if (magnet.ToLower().Contains("x264")  ||
+            magnet.ToLower().Contains("h264")  ||
             magnet.ToLower().Contains("x.264") ||
             magnet.ToLower().Contains("h.264"))
             priority += 60;
         // else if (magnet.ToLower().Contains("xvid"))
         //     priority += 30;
-        else if ((magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265") ||
-                  magnet.ToLower().Contains("x.265") || magnet.ToLower().Contains("h.265")) &&
+        else if ((magnet.ToLower().Contains("x265")  ||
+                  magnet.ToLower().Contains("h265")  ||
+                  magnet.ToLower().Contains("x.265") ||
+                  magnet.ToLower().Contains("h.265")) &&
                  !magnet.ToLower().Contains("hvec"))
             priority += 65;
         else if (magnet.ToLower().Contains("hevc"))
             priority += 55;
         // Resolution values
-        if (magnet.ToLower().Contains("2160p.") || magnet.ToLower().Contains("4k.") ||
-            magnet.ToLower().Contains("2160p+") || magnet.ToLower().Contains("4k+"))
+        if (magnet.ToLower().Contains("2160p.") ||
+            magnet.ToLower().Contains("4k.")    ||
+            magnet.ToLower().Contains("2160p+") ||
+            magnet.ToLower().Contains("4k+"))
             priority += 20;
         else if (magnet.ToLower().Contains("1080p.") || magnet.ToLower().Contains("1080p+"))
             priority += 18;
@@ -371,8 +363,10 @@ public class WebScrape : IDisposable
         else if (magnet.ToLower().Contains(".mp4") || magnet.ToLower().Contains("+mp4"))
             priority += 5;
         // Wrong Languages
-        if (magnet.ToLower().Contains(".italian.") || magnet.ToLower().Contains(".ita.") ||
-            magnet.ToLower().Contains("+italian+") || magnet.ToLower().Contains("+ita+")) priority -= 75;
+        if (magnet.ToLower().Contains(".italian.") ||
+            magnet.ToLower().Contains(".ita.")     ||
+            magnet.ToLower().Contains("+italian+") ||
+            magnet.ToLower().Contains("+ita+")) priority -= 75;
         // Good Torrents
         if (magnet.ToLower().Contains("-ethel"))
             priority += 5;
@@ -380,44 +374,43 @@ public class WebScrape : IDisposable
         return priority;
     }
 }
-
 public class Magnets
 {
     private readonly AppInfo _appInfo;
-
     public Magnets(AppInfo info)
     {
         _appInfo = info;
     }
-
-    public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showName, int seasNum, int epiNum,
-        TextFileHandler logger, ChromeDriver browserDriver)
+    public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showName,
+        int                                                           seasNum,
+        int                                                           epiNum,
+        TextFileHandler                                               logger,
+        ChromeDriver                                                  browserDriver)
     {
-        var log = logger;
-        string seasEpi;
-        var magnet = "";
+        var                 log = logger;
+        string              seasEpi;
+        var                 magnet = "";
         Tuple<bool, string> result = new(false, "");
 
         if (epiNum == 1) //Search for whole season first
         {
             seasEpi = Common.BuildSeasonOnly(seasNum);
-            magnet = PerformFindMagnet(showName, seasEpi, log, browserDriver);
-            result = new Tuple<bool, string>(true, magnet);
+            magnet  = PerformFindMagnet(showName, seasEpi, log, browserDriver);
+            result  = new Tuple<bool, string>(true, magnet);
         }
 
         if (magnet == "")
         {
             if (epiNum == 1)
                 log.Write(
-                    $"No Magnet found for the whole season {seasNum} of {showName}");
+                          $"No Magnet found for the whole season {seasNum} of {showName}");
             seasEpi = Common.BuildSeasonEpisodeString(seasNum, epiNum);
-            magnet = PerformFindMagnet(showName, seasEpi, log, browserDriver);
-            result = new Tuple<bool, string>(false, magnet);
+            magnet  = PerformFindMagnet(showName, seasEpi, log, browserDriver);
+            result  = new Tuple<bool, string>(false, magnet);
         }
 
         return result;
     }
-
     private string PerformFindMagnet(string showName, string seasEpi, TextFileHandler log, ChromeDriver browserDriver)
     {
         using WebScrape seasonScrape = new(_appInfo);
@@ -435,7 +428,7 @@ public class Magnets
                 case > 0:
                 {
                     log.Write($"Total Magnets found {seasonScrape.Magnets.Count}", "Acquire Media");
-                    var temp = seasonScrape.Magnets[0].Split("#$#");
+                    var temp   = seasonScrape.Magnets[0].Split("#$#");
                     var magnet = temp[1];
                     return magnet;
                 }

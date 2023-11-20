@@ -6,43 +6,41 @@ namespace Common_Lib;
 public class AppInfo
 {
     //public readonly string DbConnection;
-    private readonly string DbProdConn;
-    private readonly string DbTestConn;
-    public readonly string Drive;
-    private readonly string FileName;
-    private readonly string FilePath;
-    public readonly string FullPath;
-    public readonly string? HomeDir;
-    private readonly int LogLevel;
-    public readonly string[] MediaExtensions;
-    public readonly string Program;
-    public readonly string Torrentz2Token;
-    public readonly string TvmazeToken;
-    public readonly TextFileHandler TxtFile;
-
+    private readonly string          DbProdConn;
+    private readonly string          DbTestConn;
+    public readonly  string          Drive;
+    private readonly string          FileName;
+    private readonly string          FilePath;
+    public readonly  string          FullPath;
+    public readonly  string?         HomeDir;
+    private readonly int             LogLevel;
+    public readonly  string[]        MediaExtensions;
+    public readonly  string          Program;
+    public readonly  string          Torrentz2Token;
+    public readonly  string          TvmazeToken;
+    public readonly  TextFileHandler TxtFile;
     public AppInfo(string application, string program, string dbConnection)
     {
         Application = application;
-        Program = program;
+        Program     = program;
 
         Common.EnvInfo envInfo = new();
         Drive = envInfo.Drive;
         HomeDir = envInfo.Os == "Windows"
-            ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
-            : Environment.GetEnvironmentVariable("HOME");
+                      ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
+                      : Environment.GetEnvironmentVariable("HOME");
 
         if (HomeDir is not null)
         {
             HomeDir = Path.Combine(HomeDir, Application);
-        }
-        else
+        } else
         {
             Console.WriteLine("Could not determine HomeDir");
             Environment.Exit(666);
         }
 
         ConfigFileName = Application + ".cnf";
-        ConfigPath = HomeDir;
+        ConfigPath     = HomeDir;
         ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
         if (!File.Exists(ConfigFullPath))
         {
@@ -51,23 +49,23 @@ public class AppInfo
         }
 
         ReadKeyFromFile readKeyFromFile = new();
-        LogLevel = int.Parse(readKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
+        LogLevel = int.Parse(ReadKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
 
         FileName = Program + ".log";
-        FilePath = Path.Combine(HomeDir, "Logs");
+        FilePath = Path.Combine(HomeDir,  "Logs");
         FullPath = Path.Combine(FilePath, FileName);
 
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);
         //CnfFile = new TextFileHandler(ConfigFileName, Program, ConfigPath, LogLevel);
 
-        DbProdConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
-        DbTestConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
-        DbAltConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
+        DbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
+        DbTestConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
+        DbAltConn  = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
 
-        TvmazeToken = readKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");
-        Torrentz2Token = readKeyFromFile.FindInArray(ConfigFullPath, "Torrentz2Token");
+        TvmazeToken    = ReadKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");
+        Torrentz2Token = ReadKeyFromFile.FindInArray(ConfigFullPath, "Torrentz2Token");
 
-        var me = readKeyFromFile.FindInArray(ConfigFullPath, "MediaExtensions");
+        var me = ReadKeyFromFile.FindInArray(ConfigFullPath, "MediaExtensions");
         MediaExtensions = me.Split(", ");
 
         switch (dbConnection)
@@ -86,11 +84,10 @@ public class AppInfo
                 break;
         }
     }
-
-    public string ActiveDbConn { get; }
-    private string Application { get; }
-    private string ConfigFileName { get; }
-    private string ConfigFullPath { get; }
-    public string? ConfigPath { get; }
-    private string DbAltConn { get; }
+    public  string  ActiveDbConn   { get; }
+    private string  Application    { get; }
+    private string  ConfigFileName { get; }
+    private string  ConfigFullPath { get; }
+    public  string? ConfigPath     { get; }
+    private string  DbAltConn      { get; }
 }

@@ -2,38 +2,35 @@
 @page "/episodes"
 
 
-@inject WebEpisodes _webEpisodesService
+@inject WebEpisodes  _webEpisodesService
 @inject DataExchange _dataExchangeService
 
 @code{
     private List<EpisodeInfo> _episodesInfoList = new();
-    string? _searchString;
-    string? _seasonString;
-    string? _episodeString;
-    int _idx;
-    bool _showRssBool;
-    private const string FindUrlE = "https://eztv.re/search/";
-    private const string FindUrlM = "https://www.magnetdl.com/";
-    private const string FindUrlP = "https://bayofpirates.xyz/search.php?q=";
-
+    string?                   _searchString;
+    string?                   _seasonString;
+    string?                   _episodeString;
+    int                       _idx;
+    bool                      _showRssBool;
+    private const string      FindUrlE = "https://eztv.re/search/";
+    private const string      FindUrlM = "https://www.magnetdl.com/";
+    private const string      FindUrlP = "https://bayofpirates.xyz/search.php?q=";
     private void FindEpisodes()
     {
-        _seasonString ??= "";
+        _seasonString  ??= "";
         _episodeString ??= "";
-        _searchString ??= "";
+        _searchString  ??= "";
         _webEpisodesService.AppInfo.TxtFile.Write($"Executing Find Episodes for show {_searchString},  {_seasonString}, {_episodeString}", "", 4);
         _episodesInfoList = _webEpisodesService.GetEpisodes(_searchString, _seasonString, _episodeString);
         _dataExchangeService.Reset();
     }
-
     private void GetEpisodesToAcquire()
     {
-        _episodesInfoList = _webEpisodesService.GetEpisodesToAcquire(_showRssBool);
-        _dataExchangeService.EpisodeStateFunction = "GetEpisodesToAcquire";
+        _episodesInfoList                               = _webEpisodesService.GetEpisodesToAcquire(_showRssBool);
+        _dataExchangeService.EpisodeStateFunction       = "GetEpisodesToAcquire";
         _dataExchangeService.EpisodeStateIncludeShowRss = _showRssBool;
-        _dataExchangeService.EpisodeStateIsActive = true;
+        _dataExchangeService.EpisodeStateIsActive       = true;
     }
-
 }
 
 @{
@@ -44,8 +41,7 @@
         FindEpisodes();
         _searchString = "";
         _dataExchangeService.ResetEpisodeState();
-    }
-    else if (_dataExchangeService.EpisodeStateIsActive && _dataExchangeService.LastPage != "Episodes")
+    } else if (_dataExchangeService.EpisodeStateIsActive && _dataExchangeService.LastPage != "Episodes")
     {
         if (_dataExchangeService.EpisodeStateFunction == "GetEpisodesToAcquire")
         {
@@ -113,11 +109,11 @@
         @foreach (var ei in _episodesInfoList)
         {
             var seasEpi = $"S{ei.Season!.PadLeft(2, '0')}E{ei.Episode!.PadLeft(2, '0')}";
-            var findItE = FindUrlE + ei.ShowName!.Replace(" ", "-") + "-" + seasEpi;
+            var findItE = FindUrlE + ei.ShowName!.Replace(" ", "-")             + "-"                                     + seasEpi;
             var findItM = FindUrlM + $"/{ei.ShowName[0].ToString().ToLower()}/" + ei.ShowName.Replace(" ", "-").ToLower() + "-" + seasEpi.ToLower();
-            var findItP = FindUrlP + ei.ShowName!.Replace(" ", "-") + "-" + seasEpi;
-            var upD = ei.UpdateDate!.Split(' ')[0];
-            var brD = ei.BroadcastDate!.Split(' ')[0];
+            var findItP = FindUrlP + ei.ShowName!.Replace(" ", "-")             + "-"                                     + seasEpi;
+            var upD     = ei.UpdateDate!.Split(' ')[0];
+            var brD     = ei.BroadcastDate!.Split(' ')[0];
             <tr>
                 <td>@ei.TvmShowId</td>
                 <td>@ei.ShowName</td>

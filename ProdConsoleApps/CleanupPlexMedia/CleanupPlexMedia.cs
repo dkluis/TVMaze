@@ -10,15 +10,15 @@ internal static class CleanupPlexMedia
         const string thisProgram = "Cleanup Plex Media";
         Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var log = appInfo.TxtFile;
+        var     log     = appInfo.TxtFile;
         log.Start();
 
-        MediaFileHandler mfh = new(appInfo);
-        List<string> showDirsToDelete = new();
-        var tvShowDirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
-        var tvKimShowDirs = Directory.GetDirectories(mfh.PlexMediaKimTvShows);
-        var tvDickShowDirs = Directory.GetDirectories(mfh.PlexMediaDickTvShows);
-        var allTvShowDirs = new string[tvShowDirs.Length + tvKimShowDirs.Length + tvDickShowDirs.Length];
+        MediaFileHandler mfh              = new(appInfo);
+        List<string>     showDirsToDelete = new();
+        var              tvShowDirs       = Directory.GetDirectories(mfh.PlexMediaTvShows);
+        var              tvKimShowDirs    = Directory.GetDirectories(mfh.PlexMediaKimTvShows);
+        var              tvDickShowDirs   = Directory.GetDirectories(mfh.PlexMediaDickTvShows);
+        var              allTvShowDirs    = new string[tvShowDirs.Length + tvKimShowDirs.Length + tvDickShowDirs.Length];
         tvShowDirs.CopyTo(allTvShowDirs, 0);
         tvKimShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
         tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length + tvKimShowDirs.Length);

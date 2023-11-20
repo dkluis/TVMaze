@@ -1,12 +1,12 @@
 {
   "profiles": {
-    "TvmazeUI": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "applicationUrl": "http://ca-server.local:6001",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    }
+	"TvmazeUI": {
+	  "commandName": "Project",
+	  "launchBrowser": true,
+	  "applicationUrl": "http://ca-server.local:6001",
+	  "environmentVariables": {
+		"ASPNETCORE_ENVIRONMENT": "Development"
+	  }
+	}
   }
 }
