@@ -106,7 +106,7 @@ public class WebScrape : IDisposable
     }
     private string BuildEztvUrl(string showName, string seasEpi)
     {
-        var eztvUrl = "https://eztv.re/search/";
+        var eztvUrl = "https://eztv1.xyz/search/";
         showName =  Common.RemoveSpecialCharsInShowName(showName);
         showName =  showName.Replace(" ", "-");
         eztvUrl  += showName + "-" + seasEpi;
@@ -420,7 +420,7 @@ public class Magnets
             //seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
             seasonScrape.GetEztvMagnets(showName, seasEpi, browserDriver);
             seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
-            seasonScrape.GetPirateBayMagnets(showName, seasEpi, browserDriver);
+            //seasonScrape.GetPirateBayMagnets(showName, seasEpi, browserDriver);
 
 
             switch (seasonScrape.Magnets.Count)

@@ -20,7 +20,7 @@ internal static class RefreshShows
         if (DateTime.Now.ToString("ddd") == "Sun")
         {
             var rdr1 = mDbR.ExecQuery(
-                                      "select `TvmShowId` from `Shows` where `TvmStatus` = 'Skipping' and `ShowStatus` != 'Ended' order by `TvmShowID` desc");
+                                      "select `TvmShowId` from `Shows` where `TvmStatus` = 'Skipping' and `ShowStatus` != 'Ended' and `showStatus` != 'To Be Determined' order by `TvmShowID` desc");
             while (rdr1.Read())
             {
                 using ShowAndEpisodes sae = new(appInfo);

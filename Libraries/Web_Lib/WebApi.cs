@@ -200,17 +200,6 @@ public class WebApi : IDisposable
             _tvmazeUserUrlInitialized = true;
         }
     }
-    public HttpResponseMessage GetShow(string showName)
-    {
-        SetTvmaze();
-
-        var api = $"search/shows?q={showName}";
-        _log.Write($"API String = {TvmazeUrl}{api}", "WebAPI GS", 4);
-
-        PerformWaitTvmApi(api);
-
-        return _httpResponse;
-    }
     public HttpResponseMessage GetShow(int showid)
     {
         SetTvmaze();
@@ -245,6 +234,7 @@ public class WebApi : IDisposable
         var api = $"updates/shows?since={period}";
         PerformWaitTvmApi(api);
         _log.Write($"API String = {TvmazeUrl}{api}", "WebAPI GSUE", 4);
+        var json = _httpResponse.Content.ReadAsStringAsync().Result;
 
         return _httpResponse;
     }
