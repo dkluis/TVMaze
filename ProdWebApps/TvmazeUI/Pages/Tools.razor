@@ -23,12 +23,11 @@
         switch (scriptRequested)
         {
             case "Followed":
-                _message = "Executing Update Followed";
-                RunScript("/Users/dick/TVMaze/Scripts/UpdateFollowed.sh");
+                RunApp("UpdateFollowed");
                 _message = "Finished Update Followed";
                 break;
             case "Plex Acquired":
-                RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexAcquired.sh");
+                RunApp("UpdatePlexAcquired");
                 _message = "Finished Update Plex Acquired";
                 break;
             case "Plex Watched":
@@ -157,6 +156,31 @@
         runScript.StartInfo.RedirectStandardOutput = false;
         runScript.Start();
         runScript.WaitForExit();
+    }
+
+    private void RunApp(string appName)
+    {
+        var basePath = "/media/psf/TVMazeLinux/Apps/";
+        var processInfo = new ProcessStartInfo
+                      {
+                            FileName = $"{basePath}{appName}/{appName}",
+                            Arguments = "",
+                            UseShellExecute = false,
+                            WorkingDirectory = basePath + appName,
+                            RedirectStandardError = true,
+                            RedirectStandardOutput = false,
+                      };
+        var process = new Process {StartInfo = processInfo};
+
+        process.ErrorDataReceived += (sender, data) =>
+        {
+            if (data.Data != null) File.AppendAllText($"media/psf/TVMazeLinux/Apps/Logs/{appName}.log", data.Data + "\n");
+        };
+
+        process.Start();
+        process.BeginErrorReadLine();
+        //process.WaitForExit();
+
     }
     private void RefreshOneShow()
     {

@@ -1,8 +1,13 @@
 ﻿using System.Diagnostics;
+
 using Common_Lib;
+
 using DB_Lib;
+
 using Entities_Lib;
+
 using OpenQA.Selenium.Chrome;
+
 using Web_Lib;
 
 namespace AcquireMedia;
@@ -21,42 +26,37 @@ internal static class Program
         using GetEpisodesToBeAcquired gea   = new();
         var                           rdr   = gea.Find(appInfo);
 
-        log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
-        var options = new ChromeOptions();
-        options.AddArgument("--headless");
-        var browserDriver = new ChromeDriver(options);
+        // log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
+        // var options = new ChromeOptions();
+        // options.AddArgument("--headless");
+        // options.AddArgument("--whitelisted-ips=''");
+        // var browserDriver = new ChromeDriver(options);
 
         var isSeason = false;
         var showId   = 0;
+
         while (rdr.Read())
         {
             if (isSeason && showId == int.Parse(rdr["TvmShowId"].ToString()!)) continue;
             showId = 0;
-            var showName = rdr["AltShowName"].ToString() != ""
-                               ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "")
-                               : rdr["ShowName"].ToString()!;
+            var showName  = rdr["AltShowName"].ToString() != "" ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "") : rdr["ShowName"].ToString()!;
             var episodeId = int.Parse(rdr["TvmEpisodeId"].ToString()!);
-            var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName,
-                                                                            int.Parse(rdr["Season"].ToString()!),
-                                                                            int.Parse(rdr["Episode"].ToString()!),
-                                                                            log,
-                                                                            browserDriver);
-            isSeason = seasonInd;
+            var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName, int.Parse(rdr["Season"].ToString()!), int.Parse(rdr["Episode"].ToString()!), log);
+            isSeason                = seasonInd;
 
             if (magnet == "")
             {
                 log.Write($"Magnet Not Found for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]}");
+
                 continue;
             }
 
             var temp = magnet.Split("tr=");
-            log.Write(
-                      $"Found Magnet for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]} " +
-                      $"Processing Whole Season is {isSeason}: {temp[0]}");
+            log.Write($"Found Magnet for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]} " + $"Processing Whole Season is {isSeason}: {temp[0]}");
 
             using (Process acquireMediaScript = new())
             {
-                acquireMediaScript.StartInfo.FileName               = "/Users/dick/TVMaze/Scripts/AcquireMediaViaTransmission.sh";
+                acquireMediaScript.StartInfo.FileName               = "/media/psf/TVMazeLinux/Scripts/TorrentToTransmission.sh";
                 acquireMediaScript.StartInfo.Arguments              = magnet;
                 acquireMediaScript.StartInfo.UseShellExecute        = true;
                 acquireMediaScript.StartInfo.RedirectStandardOutput = false;
@@ -76,11 +76,10 @@ internal static class Program
             } else
             {
                 showId = int.Parse(rdr["TvmShowId"].ToString()!);
-                var           season = int.Parse(rdr["Season"].ToString()!);
-                using MariaDb mdb    = new(appInfo);
-                var seasRdr =
-                    mdb.ExecQuery(
-                                  $"select * from Episodes where `TvmShowId` = {showId} and `Season` = {season}");
+                var           season  = int.Parse(rdr["Season"].ToString()!);
+                using MariaDb mdb     = new(appInfo);
+                var           seasRdr = mdb.ExecQuery($"select * from Episodes where `TvmShowId` = {showId} and `Season` = {season}");
+
                 while (seasRdr.Read())
                 {
                     var           seasEpiId = int.Parse(seasRdr["TvmEpisodeId"].ToString()!);
@@ -95,8 +94,8 @@ internal static class Program
             }
         }
 
-        log.Write("Quiting Chrome Selenium Driver", thisProgram, 4);
-        browserDriver.Quit();
+        // log.Write("Quiting Chrome Selenium Driver", thisProgram, 4);
+        // browserDriver.Quit();
         log.Stop();
     }
 }

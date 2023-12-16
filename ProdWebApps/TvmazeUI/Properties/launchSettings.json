@@ -3,7 +3,7 @@
 	"TvmazeUI": {
 	  "commandName": "Project",
 	  "launchBrowser": true,
-	  "applicationUrl": "http://ca-server.local:6001",
+	  "applicationUrl": "http://localhost:6001",
 	  "environmentVariables": {
 		"ASPNETCORE_ENVIRONMENT": "Development"
 	  }
