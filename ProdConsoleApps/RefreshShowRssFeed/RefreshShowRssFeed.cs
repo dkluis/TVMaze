@@ -48,7 +48,7 @@ internal static class RefreshShowRssFeed
 
             using (Process acquireMediaScript = new())
             {
-                acquireMediaScript.StartInfo.FileName               = "/Users/dick/TVMaze/Scripts/AcquireMediaViaTransmission.sh";
+                acquireMediaScript.StartInfo.FileName               = "/media/psf/TVMazeLinux/Scripts/TorrentToTransmission.sh";
                 acquireMediaScript.StartInfo.Arguments              = show.Link;
                 acquireMediaScript.StartInfo.UseShellExecute        = true;
                 acquireMediaScript.StartInfo.RedirectStandardOutput = false;
