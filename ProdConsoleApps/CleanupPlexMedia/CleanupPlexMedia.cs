@@ -1,4 +1,5 @@
 ﻿using Common_Lib;
+
 using Entities_Lib;
 
 namespace CleanupPlexMedia;
@@ -22,14 +23,18 @@ internal static class CleanupPlexMedia
         tvShowDirs.CopyTo(allTvShowDirs, 0);
         tvKimShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
         tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length + tvKimShowDirs.Length);
+
         foreach (var dir in allTvShowDirs)
         {
             var seasonDirs = Directory.GetDirectories(dir);
+
             foreach (var seasonDir in seasonDirs)
             {
                 var files = Directory.GetFiles(seasonDir);
+
                 if (files.Length != 0) continue;
                 const bool deleteDir = true;
+
                 try
                 {
                     Directory.Delete(seasonDir);

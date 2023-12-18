@@ -35,15 +35,15 @@
                 _message = "Finished Update Plex Watched";
                 break;
             case "Acquire":
-                RunScript("/Users/dick/TVMaze/Scripts/AcquireMedia.sh");
+                RunApp("AcquireMedia");
                 _message = "Finished Acquire Media";
                 break;
             case "Show Epochs":
-                RunScript("/Users/dick/TVMaze/Scripts/UpdateShowEpochs.sh");
+                RunApp("UpdateShowEpochs");
                 _message = "Finished Update Show Epochs";
                 break;
             case "Cleanup":
-                RunScript("/Users/dick/TVMaze/Scripts/CleanupPlexMedia.sh");
+                RunApp("CleanupPlexMedia");
                 _message = "Finished Cleanup Plex Media";
                 break;
             case "Refresh Shows":
@@ -168,11 +168,15 @@
                             UseShellExecute = false,
                             WorkingDirectory = basePath + appName,
                             RedirectStandardError = true,
-                            RedirectStandardOutput = false,
+                            RedirectStandardOutput = true,
                       };
         var process = new Process {StartInfo = processInfo};
 
         process.ErrorDataReceived += (sender, data) =>
+        {
+            if (data.Data != null) File.AppendAllText($"media/psf/TVMazeLinux/Apps/Logs/{appName}.log", data.Data + "\n");
+        };
+        process.OutputDataReceived += (sender, data) =>
         {
             if (data.Data != null) File.AppendAllText($"media/psf/TVMazeLinux/Apps/Logs/{appName}.log", data.Data + "\n");
         };
