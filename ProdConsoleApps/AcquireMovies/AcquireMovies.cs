@@ -1,5 +1,7 @@
 ﻿using System;
+
 using Common_Lib;
+
 using DB_Lib;
 
 namespace AcquireMovies;

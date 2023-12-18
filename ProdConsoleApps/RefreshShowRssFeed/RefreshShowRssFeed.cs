@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+
 using CodeHollow.FeedReader;
+
 using Common_Lib;
+
 using DB_Lib;
 
 namespace RefreshShowRssFeed;
@@ -17,11 +20,10 @@ internal static class RefreshShowRssFeed
         log.Start();
 
         Feed result = new();
+
         try
         {
-            var showRssFeed =
-                FeedReader.ReadAsync(
-                                     "http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
+            var showRssFeed = FeedReader.ReadAsync("http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
             showRssFeed.Wait();
             result = showRssFeed.Result;
         }
@@ -38,6 +40,7 @@ internal static class RefreshShowRssFeed
         foreach (var show in result.Items)
         {
             idx++;
+
             if (CheckIfProcessed(appInfo, show.Title)) continue;
 
             if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack"))
@@ -63,14 +66,13 @@ internal static class RefreshShowRssFeed
             sql += $"'{DateTime.Now.Date:yyyy-MM-dd}') ";
             var row = mdb.ExecNonQuery(sql);
             mdb.Close();
-            log.Write(
-                      row != 1 ? $"Insert of Episode {show.Title} Failed" : $"Inserted Episode {show.Title} successfully",
-                      "", 4);
+            log.Write(row != 1 ? $"Insert of Episode {show.Title} Failed" : $"Inserted Episode {show.Title} successfully", "", 4);
         }
 
         log.Write($"Processed {idx} records from ShowRss");
         log.Stop();
     }
+
     private static bool CheckIfProcessed(AppInfo appInfo, string showName)
     {
         var           isProcessed    = false;

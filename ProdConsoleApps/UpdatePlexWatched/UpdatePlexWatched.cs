@@ -1,7 +1,11 @@
 ﻿using System;
+
 using Common_Lib;
+
 using DB_Lib;
+
 using Entities_Lib;
+
 using Web_Lib;
 
 namespace UpdatePlexWatched;
@@ -26,13 +30,16 @@ internal static class UpdatePlexWatched
         log.Start();
 
         var watchedEpisodes = PlexSqlLite.PlexWatched(appInfo);
+
         if (watchedEpisodes.Count > 0)
         {
             log.Write($"{watchedEpisodes.Count} Watched Episodes Found");
+
             foreach (var pwi in watchedEpisodes)
             {
                 SearchShowsViaNames searchShowViaNames = new();
                 var                 foundInDb          = searchShowViaNames.Find(appInfo, pwi.ShowName, pwi.CleanedShowName);
+
                 switch (foundInDb.Count)
                 {
                     case 1:
@@ -40,8 +47,10 @@ internal static class UpdatePlexWatched
                         pwi.TvmShowId = foundInDb[0];
                         using EpisodeSearch es = new();
                         pwi.TvmEpisodeId = es.Find(appInfo, pwi.TvmShowId, pwi.SeasonEpisode);
+
                         break;
                     }
+
                     case > 1:
                     {
                         foreach (var showId in foundInDb)
@@ -53,18 +62,18 @@ internal static class UpdatePlexWatched
 
                         continue;
                     }
+
                     default:
                     {
                         log.Write($"Did not find any ShowIds for {pwi.ShowName}", "", 1);
                         using ActionItems ai = new(appInfo);
                         ai.DbInsert($"Did not find any ShowIds for {pwi.ShowName}", true);
+
                         continue;
                     }
                 }
 
-                log.Write(
-                          $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "",
-                          4);
+                log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
 
                 if (!pwi.DbInsert(appInfo)) continue;
 
@@ -75,11 +84,10 @@ internal static class UpdatePlexWatched
                 epi.PlexDate   = pwi.WatchedDate;
                 epi.PlexStatus = "Watched";
                 epi.DbUpdate();
-                log.Write(
-                          $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}",
-                          "", 2);
+                log.Write($"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
                 pwi.ProcessedToTvmaze = true;
                 pwi.DbUpdate(appInfo);
+
                 if (epi.IsAutoDelete)
                 {
                     log.Write($"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file");

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+
 using Common_Lib;
+
 using DB_Lib;
 
 namespace Entities_Lib;
@@ -21,27 +23,36 @@ public class Movies : IDisposable
     public Movies(AppInfo appInfo)
     {
         _mDb = new MariaDb(appInfo);
+
         //_log = appInfo.TxtFile;
     }
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     public bool DbInsert()
     {
         var hasRows = _mDb.ExecNonQuery("");
+
         return hasRows > 0;
     }
+
     public bool DbUpdate()
     {
         var hasRows = _mDb.ExecNonQuery("");
+
         return hasRows > 0;
     }
+
     public bool DbDelete()
     {
         var hasRows = _mDb.ExecNonQuery("");
+
         return hasRows > 0;
     }
+
     public void Reset()
     {
         Name        = "";
@@ -54,6 +65,7 @@ public class Movies : IDisposable
         Acquired    = false;
     }
 }
+
 public class MovieSql : IDisposable
 {
     private readonly AppInfo _appInfo;
@@ -64,12 +76,15 @@ public class MovieSql : IDisposable
     {
         _appInfo = appInfo;
         _mDb     = new MariaDb(appInfo);
+
         //_log = _appInfo.TxtFile;
     }
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     /// <summary>
     ///     Retrieve all Movies unless the SingleMovie param is used
     /// </summary>
@@ -80,11 +95,12 @@ public class MovieSql : IDisposable
         var          allMovies = new List<Movies>();
         const string sql       = "select * from Movies";
         var          sqlWhere  = "";
+
         if (singleMovie != "")
-            sqlWhere =
-                $" where Name = '{singleMovie}' or CleanedName = '{singleMovie}' or AltName = '{singleMovie}'";
+            sqlWhere = $" where Name = '{singleMovie}' or CleanedName = '{singleMovie}' or AltName = '{singleMovie}'";
         const string sqlOrder = " order by SeriesName, MovieNumber, Name";
         var          rdr      = _mDb.ExecQuery(sql + sqlWhere + sqlOrder);
+
         while (rdr.Read())
         {
             using var movie = new Movies(_appInfo);
@@ -100,6 +116,7 @@ public class MovieSql : IDisposable
         }
 
         _mDb.Close();
+
         return allMovies;
     }
 }

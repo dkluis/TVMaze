@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Common_Lib;
+
 using DB_Lib;
+
 using Entities_Lib;
+
 using Web_Lib;
 
 namespace UpdateFollowed;
@@ -25,6 +29,7 @@ internal static class UpdateFollowed
 
         using WebApi tvmApi = new(appInfo);
         var          gfs    = tvmApi.GetFollowedShows();
+
         if (tvmApi.IsTimedOut)
         {
             log.Write("Getting an Time Out twice on the GetFollowedShows call to TVMaze");
@@ -65,23 +70,25 @@ internal static class UpdateFollowed
             } else
             {
                 theShow.FillViaTvmaze(jtShow);
+
                 if (theShow.Finder != "Skip" && theShow.UpdateDate != "2200-01-01")
                     theShow.TvmStatus                                                                      = "Following";
                 else if (theShow.Finder == "Skip" || theShow.UpdateDate == "2200-01-01") theShow.TvmStatus = "Skipping";
 
-                using MariaDb tsu = new(appInfo);
-                var rows = tsu.ExecNonQuery(
-                                            $"update TvmShowUpdates set `TvmUpdateEpoch` = {theShow.TvmUpdatedEpoch} where `TvmShowId` = {theShow.TvmShowId};");
+                using MariaDb tsu  = new(appInfo);
+                var           rows = tsu.ExecNonQuery($"update TvmShowUpdates set `TvmUpdateEpoch` = {theShow.TvmUpdatedEpoch} where `TvmShowId` = {theShow.TvmShowId};");
+
                 if (rows == 0)
                 {
-                    rows = tsu.ExecNonQuery(
-                                            $"insert into TvmShowUpdates values (0, {theShow.TvmShowId}, {theShow.TvmUpdatedEpoch}, 0);");
+                    rows = tsu.ExecNonQuery($"insert into TvmShowUpdates values (0, {theShow.TvmShowId}, {theShow.TvmUpdatedEpoch}, 0);");
+
                     if (rows == 1)
                     {
                         log.Write($"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
                     } else
                     {
                         log.Write($"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
+
                         continue;
                     }
                 }
@@ -93,6 +100,7 @@ internal static class UpdateFollowed
 
                 theShow.Reset();
                 inFollowedTable.DbInsert(true);
+
                 using (ShowAndEpisodes sae = new(appInfo))
                 {
                     log.Write($"Working on Refreshing Show {jtShow}");
@@ -102,6 +110,7 @@ internal static class UpdateFollowed
                 idx++;
 
                 inFollowedTable.Reset();
+
                 //allFollowedShows.Add(int.Parse(show["show_id"].ToString()));
                 mDbWrite.Close();
             }
@@ -112,6 +121,7 @@ internal static class UpdateFollowed
         // Delete Shows that are no longer being followed with a limit of 10 at a time.
         Followed followed = new(appInfo);
         var      toDelete = followed.ShowsToDelete(allFollowedShows);
+
         if (toDelete.Count > 0)
         {
             if (toDelete.Count <= 10)
@@ -133,10 +143,10 @@ internal static class UpdateFollowed
         MariaDb mdb  = new(appInfo);
         MariaDb mDbW = new(appInfo);
         var     rdr  = mdb.ExecQuery("select ShowsTvmShowId from notinfollowed where `Status` = 'Following'");
+
         while (rdr.Read())
         {
-            mDbW.ExecQuery(
-                           $"update Shows set `TvmStatus` = 'New' where `TvmShowId` = {int.Parse(rdr[0].ToString()!)}");
+            mDbW.ExecQuery($"update Shows set `TvmStatus` = 'New' where `TvmShowId` = {int.Parse(rdr[0].ToString()!)}");
             log.Write($"Reset {rdr[0]} to New ---> Should not occur ###################", "", 0);
         }
 

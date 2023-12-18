@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Common_Lib;
+
 using DB_Lib;
 using DB_Lib.Tvmaze;
+
 using Newtonsoft.Json.Linq;
+
 using Web_Lib;
 
 namespace Entities_Lib;
@@ -38,16 +42,19 @@ public class Show : IDisposable
     public           int             TvmUpdatedEpoch;
     public           string          TvmUrl     = "";
     public           string          UpdateDate = "1900-01-01";
+
     public Show(AppInfo appInfo)
     {
         _appInfo = appInfo;
         _mdb     = new MariaDb(appInfo);
         _log     = appInfo.TxtFile;
     }
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     public void Reset()
     {
         Id              = 0;
@@ -77,6 +84,7 @@ public class Show : IDisposable
         IsDbFilled   = false;
         IsFollowed   = false;
     }
+
     public void FillViaTvmaze(int showId)
     {
         using TvmCommonSql ge                = new(_appInfo);
@@ -86,6 +94,7 @@ public class Show : IDisposable
         FillViaDb(showId, true);
         if (!IsFollowed && !IsDbFilled) ValidateForReview(lastEvaluatedShow);
     }
+
     public bool DbUpdate()
     {
         _mdb.Success = true;
@@ -112,15 +121,16 @@ public class Show : IDisposable
 
         return _mdb.Success;
     }
+
     public bool DbInsert(bool overRide = false, string callingApp = "")
     {
         if (!IsForReview && !IsFollowed && !overRide)
         {
             _log.Write($"New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false");
             _mdb.Success = true;
+
             return _mdb.Success;
         }
-
 
         _mdb.Success = true;
 
@@ -156,6 +166,7 @@ public class Show : IDisposable
 
         return _mdb.Success;
     }
+
     public bool DbDelete()
     {
         _mdb.Success = true;
@@ -166,6 +177,7 @@ public class Show : IDisposable
 
         return _mdb.Success;
     }
+
     public bool DbDelete(int showId)
     {
         _mdb.Success = true;
@@ -176,6 +188,7 @@ public class Show : IDisposable
 
         return _mdb.Success;
     }
+
     private void FillViaJson(JObject showJson)
     {
         if (showJson["id"] is not null)
@@ -188,6 +201,7 @@ public class Show : IDisposable
             TvmUrl     = showJson["url"]!.ToString();
             ShowName   = showJson["name"]!.ToString();
             ShowStatus = showJson["status"]!.ToString();
+
             if (showJson["premiered"] is not null)
             {
                 PremiereDate = "1900-01-01";
@@ -231,18 +245,22 @@ public class Show : IDisposable
             if (showJson["updated"] is not null) TvmUpdatedEpoch = int.Parse(showJson["updated"]!.ToString());
 
             IsJsonFilled = true;
+
             if (IsDbFilled)
             {
             }
         }
     }
+
     private void FillViaDb(int showId, bool jsonIsDone)
     {
         using var rdr = _mdb.ExecQuery($"select * from shows where `TvmShowId` = {showId};");
         IsDbFilled = false;
+
         while (rdr.Read())
         {
             IsDbFilled = true;
+
             if (jsonIsDone)
             {
                 TvmStatus   = rdr["TvmStatus"].ToString()!;
@@ -268,15 +286,18 @@ public class Show : IDisposable
             }
         }
     }
+
     private void ValidateForReview(int lastShowEvaluated)
     {
         IsForReview = false;
+
         if (TvmShowId <= lastShowEvaluated) return;
 
         if (!string.IsNullOrEmpty(TvmLanguage) && !string.IsNullOrWhiteSpace(TvmLanguage))
             if (TvmLanguage.ToLower() != "english")
             {
                 _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
+
                 return;
             }
 
@@ -284,10 +305,11 @@ public class Show : IDisposable
         {
             var compareDate  = DateOnly.FromDateTime(DateTime.Now).AddYears(-1);
             var premiereDate = DateOnly.Parse(PremiereDate);
+
             if (premiereDate < compareDate && PremiereDate != "1900-01-01")
             {
-                _log.Write(
-                           $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
+                _log.Write($"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
+
                 return;
             }
         }
@@ -303,6 +325,7 @@ public class Show : IDisposable
             case "award show":
             case "reality":
                 _log.Write($"Rejected {TvmShowId} due to Type {TvmType}");
+
                 return;
         }
 
@@ -339,6 +362,7 @@ public class Show : IDisposable
                     // ReSharper restore StringLiteralTypo
 
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
+
                     return;
             }
 
@@ -353,31 +377,37 @@ public class Show : IDisposable
                 case "ЦТ СССР":
                     // ReSharper restore StringLiteralTypo
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
+
                     return;
             }
         }
 
         IsForReview = true;
     }
+
     public void CloseDb()
     {
         _mdb.Close();
     }
 }
+
 public class SearchShowsViaNames
 {
     private List<int> _found = new();
+
     public List<int> Find(AppInfo appInfo, string showName, string cleanedShowName = "", string altShowName = "")
     {
         _found      = new List<int>();
         showName    = showName.Replace("'", "''").Replace(" ", " ");
         altShowName = altShowName.Replace("'", "''").Replace(" ", " ");
+
         if (cleanedShowName == "")
             cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
 
         if (altShowName == "") altShowName = showName;
 
         using MariaDb mDbR = new(appInfo);
+
         var sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where " +
                   $"(`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Ended';";
         var rdr = mDbR.ExecQuery(sql);
@@ -385,20 +415,21 @@ public class SearchShowsViaNames
         if (!rdr.HasRows)
         {
             mDbR.Close();
-            sql =
-                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+
+            sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
+                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
             rdr = mDbR.ExecQuery(sql);
         }
 
         var splitShowName                         = altShowName.Split(" (");
         if (splitShowName.Length > 0) altShowName = splitShowName[0];
+
         if (!rdr.HasRows)
         {
             mDbR.Close();
-            sql =
-                $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
+
+            sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
+                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}');";
             rdr = mDbR.ExecQuery(sql);
         }
 
@@ -408,15 +439,17 @@ public class SearchShowsViaNames
         return _found;
     }
 }
+
 public class SearchAllFollowed
 {
     private readonly List<int> _allFollowed = new();
+
     public List<int> Find(AppInfo appInfo, string option = "Following")
     {
         using MariaDb mDbR = new(appInfo);
-        var sql =
-            $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = '{option}' order by `TvmShowId`;";
-        var rdr = mDbR.ExecQuery(sql);
+        var           sql  = $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = '{option}' order by `TvmShowId`;";
+        var           rdr  = mDbR.ExecQuery(sql);
+
         if (rdr is null) return _allFollowed;
 
         if (!rdr.HasRows) return _allFollowed;
@@ -426,6 +459,7 @@ public class SearchAllFollowed
         return _allFollowed;
     }
 }
+
 public class UpdateFinder
 {
     public static void ToShowRss(AppInfo appInfo, int showId)
@@ -436,21 +470,24 @@ public class UpdateFinder
         if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4);
     }
 }
+
 public class UpdateTvmStatus : IDisposable
 {
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     public void ToFollowed(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
-        var sql =
-            $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
+        var           sql  = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
         appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
+
         if (mDbW.ExecNonQuery(sql) == 0)
             appInfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4);
     }
+
     public void ToReview(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
@@ -459,15 +496,18 @@ public class UpdateTvmStatus : IDisposable
         if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update to Review unsuccessful {sql}", "", 4);
     }
 }
+
 public class CheckTvm
 {
     public bool IsFollowedShow(AppInfo appInfo, int showId)
     {
         using WebApi webapi     = new(appInfo);
         var          isFollowed = webapi.CheckForFollowedShow(showId);
+
         return isFollowed;
     }
 }
+
 public class CheckDb
 {
     public static int FollowedCount(AppInfo appInfo)
@@ -476,6 +516,7 @@ public class CheckDb
         using MariaDb mDbR         = new(appInfo);
         var           rdr          = mDbR.ExecQuery("select count(*) from Followed");
         while (rdr.Read()) records = int.Parse(rdr[0].ToString()!);
+
         return records;
     }
 }

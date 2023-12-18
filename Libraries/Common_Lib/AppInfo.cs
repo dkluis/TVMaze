@@ -8,7 +8,7 @@ public class AppInfo
     //public readonly string DbConnection;
     public readonly string          Drive;
     public readonly string          FullPath;
-    public readonly string         HomeDir;
+    public readonly string          HomeDir;
     public readonly string[]        MediaExtensions;
     public readonly string          Program;
     public readonly string          Torrentz2Token;
@@ -21,7 +21,7 @@ public class AppInfo
         Program     = program;
 
         Common.EnvInfo envInfo = new();
-        Drive   = envInfo.Drive;
+        Drive = envInfo.Drive;
 
         // HomeDir = envInfo.Os == "Windows" ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%") : Environment.GetEnvironmentVariable("HOME");
         //
@@ -49,16 +49,16 @@ public class AppInfo
         ReadKeyFromFile readKeyFromFile = new();
         var             logLevel        = int.Parse(ReadKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
 
-        var    fileName = Program + ".log";
+        var fileName = Program + ".log";
         var filePath = Path.Combine(HomeDir, "Logs");
         FullPath = Path.Combine(filePath, fileName);
 
         TxtFile = new TextFileHandler(fileName, Program, filePath, logLevel);
 
         //CnfFile = new TextFileHandler(ConfigFileName, Program, ConfigPath, LogLevel);
-        var    dbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
+        var dbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
         var dbTestConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
-        DbAltConn  = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
+        DbAltConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
 
         TvmazeToken    = ReadKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");
         Torrentz2Token = ReadKeyFromFile.FindInArray(ConfigFullPath, "Torrentz2Token");

@@ -87,7 +87,7 @@ public class WebScrape : IDisposable
 
             if (mgi.Contains(compareWithMagnet) == false || mgi == "") continue;
             var magnetReplace = mgi.Replace("<a href=\"", "");
-            var magnetSplit     = magnetReplace.Split("><img src=");
+            var magnetSplit   = magnetReplace.Split("><img src=");
             var magnet        = magnetSplit[0];
             var priority      = PrioritizeMagnet(magnet, "Eztv");
 

@@ -9,21 +9,26 @@ public static class ConvertJsonTxt
         if (message == "")
         {
             JArray empty = new();
+
             return empty;
         }
 
         var jA = JArray.Parse(message);
+
         return jA;
     }
+
     public static JObject ConvertStringToJObject(string message)
     {
         if (message == "")
         {
             JObject empty = new();
+
             return empty;
         }
 
         var jO = JObject.Parse(message);
+
         return jO;
     }
 }
