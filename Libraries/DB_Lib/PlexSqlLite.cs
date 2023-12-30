@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
+// using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 
 using Common_Lib;
 
@@ -16,20 +17,22 @@ public static class PlexSqlLite
         var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
                               $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.viewed_at > {yesterday} "                     +
                               "and miv.account_id = 1 order by miv.grandparent_title, miv.parent_index, miv.`index`; ";
-        const string          plexDbLocation  = "Data Source=/Users/dick/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db";
-        List<PlexWatchedInfo> watchedEpisodes = new();
-        SQLiteConnection      con             = new(plexDbLocation);
-        con.Open();
+        const string          plexDbLocation          = "Data Source=/media/psf/TVMazeLinux/Plex/Plex.db";
+        List<PlexWatchedInfo> watchedEpisodes         = new();
+        var                   connectionStringBuilder = new SqliteConnectionStringBuilder();
+        connectionStringBuilder.DataSource = "/media/psf/TVMazeLinux/Plex/Plex.db";
+        using var connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
+        connection.Open();
+        var selectCommand = connection.CreateCommand();
+        selectCommand.CommandText = plexPlayedItems;
+        using var reader = selectCommand.ExecuteReader();
 
-        SQLiteCommand cmd = new(plexPlayedItems, con);
-        var           rdr = cmd.ExecuteReader();
+        if (reader is null) return watchedEpisodes;
 
-        if (rdr is null) return watchedEpisodes;
-
-        while (rdr.Read())
+        while (reader.Read())
         {
             PlexWatchedInfo record = new();
-            record.Fill(rdr[0].ToString()!, int.Parse(rdr[1].ToString()!), int.Parse(rdr[2].ToString()!), int.Parse(rdr[3].ToString()!));
+            record.Fill(reader[0].ToString()!, int.Parse(reader[1].ToString()!), int.Parse(reader[2].ToString()!), int.Parse(reader[3].ToString()!));
             watchedEpisodes.Add(record);
         }
 

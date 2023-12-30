@@ -31,7 +31,7 @@
                 _message = "Finished Update Plex Acquired";
                 break;
             case "Plex Watched":
-                RunScript("/Users/dick/TVMaze/Scripts/UpdatePlexWatched.sh");
+                RunScript("UpdatePlexWatched");
                 _message = "Finished Update Plex Watched";
                 break;
             case "Acquire":
@@ -47,11 +47,11 @@
                 _message = "Finished Cleanup Plex Media";
                 break;
             case "Refresh Shows":
-                RunScript("/Users/dick/TVMaze/Scripts/RefreshShows.sh");
+                RunScript("RefreshShows");
                 _message = "Finished Refresh Shows";
                 break;
             case "ShowRss Feed":
-                RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRssFeed.sh");
+                RunScript("RefreshShowRssFeed");
                 _message = "Finished Refresh ShowRss Feed";
                 break;
             case "Refresh ShowRss":
@@ -271,7 +271,7 @@
             <div class="col-md-12 mb-2">
                 <input class="col-sm-1 m-1" @bind="@_refreshShowId"/>
                 <button class="btn btn-primary" @onclick="RefreshOneShow"><i class="bi bi-database-down"></i>&nbsp;One Show</button>
-                <button class="btn btn-warning" @onclick='() => ExecScripts("Restart Plex")'><i class="bi bi-sign-stop"></i>&nbsp;Restart Plex&nbsp;<i class="bi bi-skip-start"></i></button>
+                @*<button class="btn btn-warning" @onclick='() => ExecScripts("Restart Plex")'><i class="bi bi-sign-stop"></i>&nbsp;Restart Plex&nbsp;<i class="bi bi-skip-start"></i></button>*@
             </div>
         </div>
     </div>
