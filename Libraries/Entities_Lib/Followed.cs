@@ -105,7 +105,7 @@ public class Followed
         List<int> showsToDelete = new();
         List<int> followedInDb  = new();
 
-        using var rdr = _mdb.ExecQuery("select `TvmShowId` from Followed");
+        using var rdr = _mdb.ExecQuery("select `TvmShowId` from `Followed`");
         while (rdr.Read()) followedInDb.Add(int.Parse(rdr["TvmShowId"].ToString()!));
         _mdb.Close();
 

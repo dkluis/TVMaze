@@ -142,7 +142,7 @@ internal static class UpdateFollowed
 
         MariaDb mdb  = new(appInfo);
         MariaDb mDbW = new(appInfo);
-        var     rdr  = mdb.ExecQuery("select ShowsTvmShowId from notinfollowed where `Status` = 'Following'");
+        var     rdr  = mdb.ExecQuery("select ShowsTvmShowId from NotInFollowed where `Status` = 'Following'");
 
         while (rdr.Read())
         {

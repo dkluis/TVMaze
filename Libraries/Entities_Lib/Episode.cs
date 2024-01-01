@@ -160,7 +160,7 @@ public class Episode : IDisposable
 
     public void FillViaDb(int episode)
     {
-        var rdr = _mdb.ExecQuery($"select * from episodesfullinfo where `TvmEpisodeId` = {episode};");
+        var rdr = _mdb.ExecQuery($"select * from EpisodesFullInfo where `TvmEpisodeId` = {episode};");
 
         while (rdr.Read())
         {
@@ -182,7 +182,7 @@ public class Episode : IDisposable
 
         var          values = "";
         const string ins    = "insert";
-        var          sqlPre = $"{ins} into episodes values (";
+        var          sqlPre = $"{ins} into `Episodes` values (";
         const string sqlSuf = ");";
 
         values += "0, ";
@@ -217,7 +217,7 @@ public class Episode : IDisposable
     {
         _mdb.Success = true;
         var values = "";
-        var sqlPre = "update episodes set ";
+        var sqlPre = "update `Episodes` set ";
         var sqlSuf = $"where `Id` = {Id};";
 
         if (BroadcastDate == "") BroadcastDate = null;
@@ -321,7 +321,7 @@ public class GetEpisodesToBeAcquired : IDisposable
     public MySqlDataReader Find(AppInfo appInfo)
     {
         MariaDb mdb = new(appInfo);
-        var     rdr = mdb.ExecQuery("select * from episodestoacquire order by `TvmShowId`, `Season`, `Episode`");
+        var     rdr = mdb.ExecQuery("select * from EpisodesToAcquire order by `TvmShowId`, `Season`, `Episode`");
 
         return rdr;
     }

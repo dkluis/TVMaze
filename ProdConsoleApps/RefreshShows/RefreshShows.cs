@@ -36,7 +36,7 @@ internal static class RefreshShows
         mDbR.Close();
 
         // Get all Shows to refresh today 
-        var rdr = mDbR.ExecQuery("select `TvmShowId` from showstorefresh where `TvmStatus` != 'Skipping' limit 300");
+        var rdr = mDbR.ExecQuery("select `TvmShowId` from ShowsToRefresh where `TvmStatus` != 'Skipping' limit 300");
 
         while (rdr.Read())
         {
@@ -51,7 +51,7 @@ internal static class RefreshShows
 
         // Get all shows to refresh that have episodes that without a broadcast date
         rdr =
-            mDbR.ExecQuery("select distinct `TvmShowId` from episodesfullinfo where `TvmStatus` != 'Skipping' and `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
+            mDbR.ExecQuery("select distinct `TvmShowId` from EpisodesFullInfo where `TvmStatus` != 'Skipping' and `UpdateDate` != `ShowUpdateDate` and `PlexDate` is not NULL order by `TvmShowId` desc;");
 
         while (rdr.Read())
         {
@@ -65,7 +65,7 @@ internal static class RefreshShows
         mDbR.Close();
 
         // Refresh all shows with Orphaned Episodes 
-        rdr = mDbR.ExecQuery("select distinct `TvmShowId` from orphanedepisodes order by `TvmShowId`;");
+        rdr = mDbR.ExecQuery("select distinct `TvmShowId` from OrphanedEpisodes order by `TvmShowId`;");
 
         while (rdr.Read())
         {
@@ -79,7 +79,7 @@ internal static class RefreshShows
         mDbR.Close();
 
         // Get all Shows that will need to be acquired today to refresh
-        rdr = mDbR.ExecQuery("select distinct `TvmShowId` from episodesfromtodayback order by `TvmShowId` desc;");
+        rdr = mDbR.ExecQuery("select distinct `TvmShowId` from EpisodesFromTodayBack order by `TvmShowId` desc;");
 
         while (rdr.Read())
         {

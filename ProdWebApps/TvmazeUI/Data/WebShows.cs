@@ -75,7 +75,7 @@ public class WebShows
     public bool SetTvmStatusShow(int showId, string newStatus)
     {
         MariaDb mdbShows   = new(AppInfo);
-        var     sql        = $"update shows set `TvmStatus` = '{newStatus}' where `TvmShowId` = {showId}";
+        var     sql        = $"update Shows set `TvmStatus` = '{newStatus}' where `TvmShowId` = {showId}";
         var     resultRows = mdbShows.ExecNonQuery(sql);
         if (resultRows > 0)
             return true;
@@ -86,7 +86,7 @@ public class WebShows
         MariaDb mdbShows = new(AppInfo);
         altShowName = altShowName.Replace("'", "''");
         var sql =
-            $"update shows set `AltShowName` = '{altShowName}', `MediaType` = '{mediaType}' where `TvmShowId` = {showId}";
+            $"update Shows set `AltShowName` = '{altShowName}', `MediaType` = '{mediaType}' where `TvmShowId` = {showId}";
         var resultRows = mdbShows.ExecNonQuery(sql);
         if (resultRows > 0) return true;
 

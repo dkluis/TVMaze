@@ -99,7 +99,7 @@ public class Show : IDisposable
     {
         _mdb.Success = true;
         var          updateFields                                   = "";
-        const string sqlPrefix                                      = "update shows set ";
+        const string sqlPrefix                                      = "update Shows set ";
         if (TvmStatus == "Reviewing" && TvmSummary != "") TvmStatus = "New";
         var now                                                     = DateTime.Now.Date.ToString("yyyy-MM-dd");
         UpdateDate = UpdateDate == "2200-01-01" ? UpdateDate : now;
@@ -135,7 +135,7 @@ public class Show : IDisposable
         _mdb.Success = true;
 
         var          values = "";
-        const string sqlPre = "insert into shows values (";
+        const string sqlPre = "insert into Shows values (";
         const string sqlSuf = ");";
 
         values += "0, ";
@@ -254,7 +254,7 @@ public class Show : IDisposable
 
     private void FillViaDb(int showId, bool jsonIsDone)
     {
-        using var rdr = _mdb.ExecQuery($"select * from shows where `TvmShowId` = {showId};");
+        using var rdr = _mdb.ExecQuery($"select * from Shows where `TvmShowId` = {showId};");
         IsDbFilled = false;
 
         while (rdr.Read())
@@ -465,7 +465,7 @@ public class UpdateFinder
     public static void ToShowRss(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update shows set `Finder` = 'ShowRss' where `TvmShowId` = {showId};";
+        var           sql  = $"update Shows set `Finder` = 'ShowRss' where `TvmShowId` = {showId};";
         appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
         if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4);
     }
@@ -481,7 +481,7 @@ public class UpdateTvmStatus : IDisposable
     public void ToFollowed(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
+        var           sql  = $"update Shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
         appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
 
         if (mDbW.ExecNonQuery(sql) == 0)
@@ -491,7 +491,7 @@ public class UpdateTvmStatus : IDisposable
     public void ToReview(AppInfo appInfo, int showId)
     {
         using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showId};";
+        var           sql  = $"update Shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showId};";
         appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
         if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update to Review unsuccessful {sql}", "", 4);
     }
