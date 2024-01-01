@@ -13,6 +13,7 @@
     string        _currentLog = "";
     List<string>? _logContent;
     bool          _logRequested;
+
     private void ExecScripts(string scriptRequested = "")
     {
         if (scriptRequested == "")
@@ -25,47 +26,69 @@
             case "Followed":
                 RunApp("UpdateFollowed");
                 _message = "Finished Update Followed";
+
                 break;
+
             case "Plex Acquired":
                 RunApp("UpdatePlexAcquired");
                 _message = "Finished Update Plex Acquired";
+
                 break;
+
             case "Plex Watched":
                 RunScript("UpdatePlexWatched");
                 _message = "Finished Update Plex Watched";
+
                 break;
+
             case "Acquire":
                 RunApp("AcquireMedia");
                 _message = "Finished Acquire Media";
+
                 break;
+
             case "Show Epochs":
                 RunApp("UpdateShowEpochs");
                 _message = "Finished Update Show Epochs";
+
                 break;
+
             case "Cleanup":
                 RunApp("CleanupPlexMedia");
                 _message = "Finished Cleanup Plex Media";
+
                 break;
+
             case "Refresh Shows":
                 RunScript("RefreshShows");
                 _message = "Finished Refresh Shows";
+
                 break;
+
             case "ShowRss Feed":
                 RunScript("RefreshShowRssFeed");
                 _message = "Finished Refresh ShowRss Feed";
+
                 break;
+
             case "Refresh ShowRss":
                 RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRss.sh");
                 _message = "Finished Refresh ShowRss";
+
                 break;
+
             case "Restart Plex":
                 ResetPlexMediaServer();
+
                 break;
+
             default:
                 _message = "";
+
                 break;
         }
     }
+
     private void ExecLogViewer(string logRequested = "")
     {
         if (logRequested == "")
@@ -76,51 +99,79 @@
         string program;
         _logView      = logRequested + " Log";
         _logRequested = true;
+
         switch (logRequested)
         {
             case "Followed":
                 program = "Update Followed";
+
                 break;
+
             case "Plex Acquired":
                 program = "Update Plex Acquired";
+
                 break;
+
             case "Plex Watched":
                 program = "Update Plex Watched";
+
                 break;
+
             case "Acquire":
                 program = "Acquire Media";
+
                 break;
+
             case "Show Epochs":
                 program = "Update Show Epochs";
+
                 break;
+
             case "ShowRss Feed":
                 program = "Refresh ShowRss Feed";
+
                 break;
+
             case "Refresh One":
                 program = "RefreshOneShow WebUI";
+
                 break;
+
             case "Refresh Shows":
                 program = "Refresh Shows";
+
                 break;
+
             case "Cleanup Media":
                 program = "Cleanup Plex Media";
+
                 break;
+
             case "WebUI":
                 program = "WebUI";
+
                 break;
+
             case "Refresh ShowRss":
                 program = "Refresh ShowRss";
+
                 break;
+
             case "CronLog":
                 program = "CronLog";
+
                 break;
+
             case "TransmissionLog":
                 program = "Transmission";
+
                 break;
+
             default:
                 _logView      = "";
                 _logRequested = false;
                 _currentLog   = "";
+
                 return;
         }
 
@@ -129,16 +180,19 @@
         _logContent = logFile.ReturnLogContent();
         _currentLog = program;
     }
+
     private void ClearLog()
     {
         _logView      = "";
         _logRequested = false;
     }
+
     private void EmptyLog()
     {
         if (_logView == "")
         {
             _logView = "No Active Log to Empty";
+
             return;
         }
 
@@ -148,6 +202,7 @@
         _logRequested = false;
         _logView      = "";
     }
+
     private void RunScript(string scriptName)
     {
         using Process runScript = new();
@@ -161,21 +216,23 @@
     private void RunApp(string appName)
     {
         var basePath = "/media/psf/TVMazeLinux/Apps/";
+
         var processInfo = new ProcessStartInfo
-                      {
-                            FileName = $"{basePath}{appName}/{appName}",
-                            Arguments = "",
-                            UseShellExecute = false,
-                            WorkingDirectory = basePath + appName,
-                            RedirectStandardError = true,
-                            RedirectStandardOutput = true,
-                      };
+                          {
+                              FileName               = $"{basePath}{appName}/{appName}",
+                              Arguments              = "",
+                              UseShellExecute        = false,
+                              WorkingDirectory       = basePath + appName,
+                              RedirectStandardError  = true,
+                              RedirectStandardOutput = true,
+                          };
         var process = new Process {StartInfo = processInfo};
 
         process.ErrorDataReceived += (sender, data) =>
         {
             if (data.Data != null) File.AppendAllText($"media/psf/TVMazeLinux/Apps/Logs/{appName}.log", data.Data + "\n");
         };
+
         process.OutputDataReceived += (sender, data) =>
         {
             if (data.Data != null) File.AppendAllText($"media/psf/TVMazeLinux/Apps/Logs/{appName}.log", data.Data + "\n");
@@ -183,14 +240,16 @@
 
         process.Start();
         process.BeginErrorReadLine();
-        //process.WaitForExit();
 
+        //process.WaitForExit();
     }
+
     private void RefreshOneShow()
     {
         if (_refreshShowId == 0)
         {
             _message = "Enter a ShowId: 0 is not Valid";
+
             return;
         }
 
@@ -199,6 +258,7 @@
         AppInfo appInfo = new("TVMaze", "RefreshOneShow WebUI", "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
+
         using (MariaDb mDbR = new(appInfo))
         {
             var rdr = mDbR.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {_refreshShowId} order by `TvmShowId` desc");
@@ -216,6 +276,7 @@
 
         log.Stop();
     }
+
     private void ResetPlexMediaServer()
     {
         _message = "Restarting Plex Media Server";
@@ -329,11 +390,7 @@
         {
             @foreach (var line in _logContent!)
             {
-                if (line.Contains(
-                                  "########################################################################################") ||
-                    line.Contains("Finished ####")                                                                            ||
-                    line.ToLower().Contains("chromedriver")                                                                   ||
-                    line.ToLower().Contains("connection"))
+                if (line.Contains("########################################################################################") || line.Contains("Finished ####") || line.ToLower().Contains("chromedriver") || line.ToLower().Contains("connection"))
                 {
                     continue;
                 }

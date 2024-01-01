@@ -1,5 +1,7 @@
 ﻿using Common_Lib;
+
 using DB_Lib;
+
 using Entities_Lib;
 
 namespace RefreshOneShow;
@@ -17,8 +19,8 @@ internal static class RefreshOneShow
 
         MariaDb mDbR = new(appInfo);
 
-        var rdr = mDbR.ExecQuery(
-                                 $"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {theShowToRefresh} order by `TvmShowId` desc");
+        var rdr = mDbR.ExecQuery($"select `TvmShowId`, `ShowName` from Shows where `TvmShowId` = {theShowToRefresh} order by `TvmShowId` desc");
+
         //var rdr = mDbR.ExecQuery(
         //    $"select `TvmShowId`, `ShowName` from Shows order by `TvmShowId` desc");
 

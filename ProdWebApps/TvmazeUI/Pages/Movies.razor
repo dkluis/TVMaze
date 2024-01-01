@@ -7,15 +7,18 @@
     private         int                       _idx;
     static readonly AppInfo                   AppInfo    = new("Tvmaze", "WebUI", "DbAlternate");
     private         List<Entities_Lib.Movies> _allMovies = new();
+
     private void GetTheMovies()
     {
         var movieSql = new MovieSql(AppInfo);
         _allMovies = movieSql.Read();
     }
+
     private static void Acquire(Entities_Lib.Movies movie)
     {
         //ToDo acquire movie logic
     }
+
 }
 
 @{
@@ -53,6 +56,7 @@
         <tbody>
         @{
             _idx = 0;
+
             foreach (var movie in _allMovies)
             {
                 <tr>

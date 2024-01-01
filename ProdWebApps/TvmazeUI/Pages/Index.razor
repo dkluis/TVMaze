@@ -45,6 +45,7 @@
     MariaDb mdb = new(appInfo);
 
     var rdr = mdb.ExecQuery(showCount);
+
     while (rdr.Read())
     {
         numShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -53,6 +54,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedCount);
+
     while (rdr.Read())
     {
         numFollowed = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -61,6 +63,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(followedShowsCount);
+
     while (rdr.Read())
     {
         numFollowedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -69,6 +72,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(reviewingShowsCount);
+
     while (rdr.Read())
     {
         numReviewingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -77,6 +81,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(newShowsCount);
+
     while (rdr.Read())
     {
         numNewShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -85,6 +90,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(skippingShowCount);
+
     while (rdr.Read())
     {
         numSkipingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -93,6 +99,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(runningShowsCount);
+
     while (rdr.Read())
     {
         numRunningShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -101,6 +108,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(tbdShowsCount);
+
     while (rdr.Read())
     {
         numTbdShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -109,6 +117,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(inDevShowsCount);
+
     while (rdr.Read())
     {
         numInDevShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -117,6 +126,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(endedShowsCount);
+
     while (rdr.Read())
     {
         numEndedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -125,6 +135,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeCount);
+
     while (rdr.Read())
     {
         numEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -133,6 +144,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeWatchedCount);
+
     while (rdr.Read())
     {
         numWatchedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -141,6 +153,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeAcquiredCount);
+
     while (rdr.Read())
     {
         numAcquiredEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -149,6 +162,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeSkippedCount);
+
     while (rdr.Read())
     {
         numSkippedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -157,6 +171,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureCount);
+
     while (rdr.Read())
     {
         numFutureEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
@@ -165,6 +180,7 @@
     mdb.Close();
 
     rdr = mdb.ExecQuery(episodeFutureUnknownCount);
+
     while (rdr.Read())
     {
         numFutureUnknownEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");

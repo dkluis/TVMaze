@@ -16,18 +16,21 @@ public class DataExchange
     public string? ShowStateFunction;
     public bool    ShowStateIsActive;
     public string? ShowStateShowName;
+
     public void Reset()
     {
         SendingPage  = "";
         IntendedPage = "";
         ShowName     = "";
     }
+
     public void ResetShowState()
     {
         ShowStateFunction = "";
         ShowStateShowName = "";
         ShowStateIsActive = false;
     }
+
     public void ResetEpisodeState()
     {
         EpisodeStateFunction       = "";
