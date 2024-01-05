@@ -36,7 +36,7 @@
                 break;
 
             case "Plex Watched":
-                RunScript("UpdatePlexWatched");
+                RunApp("UpdatePlexWatched");
                 _message = "Finished Update Plex Watched";
 
                 break;
@@ -60,13 +60,13 @@
                 break;
 
             case "Refresh Shows":
-                RunScript("RefreshShows");
+                RunApp("RefreshShows");
                 _message = "Finished Refresh Shows";
 
                 break;
 
             case "ShowRss Feed":
-                RunScript("RefreshShowRssFeed");
+                RunApp("RefreshShowRssFeed");
                 _message = "Finished Refresh ShowRss Feed";
 
                 break;
@@ -230,17 +230,17 @@
 
         process.ErrorDataReceived += (sender, data) =>
         {
-            if (data.Data != null) File.AppendAllText($"media/psf/TVMazeLinux/Apps/Logs/{appName}.log", data.Data + "\n");
+            if (data.Data != null) File.AppendAllText($"/media/psf/TVMazeLinux/Logs/{appName}.log", data.Data + "\n");
         };
 
         process.OutputDataReceived += (sender, data) =>
         {
-            if (data.Data != null) File.AppendAllText($"media/psf/TVMazeLinux/Apps/Logs/{appName}.log", data.Data + "\n");
+            if (data.Data != null) File.AppendAllText($"/media/psf/TVMazeLinux/Logs/{appName}.log", data.Data + "\n");
         };
 
         process.Start();
+        process.BeginOutputReadLine();
         process.BeginErrorReadLine();
-
         //process.WaitForExit();
     }
 

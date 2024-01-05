@@ -77,6 +77,15 @@ internal static class UpdatePlexWatched
 
                 if (!pwi.DbInsert(appInfo)) continue;
 
+                if (pwi.TvmEpisodeId == 0)
+                {
+                    log.Write($"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", "", 1);
+                    using ActionItems ai = new(appInfo);
+                    ai.DbInsert($"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", true);
+
+                    continue;
+                }
+
                 using Episode epi = new(appInfo);
                 epi.FillViaTvmaze(pwi.TvmEpisodeId);
                 using WebApi wa = new(appInfo);
