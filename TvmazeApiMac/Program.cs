@@ -35,4 +35,6 @@ app.MapGet("api/RestartPlex", () =>
    .WithName("ExecuteRestartPlex")
    .WithOpenApi();
 
+builder.WebHost.UseUrls("http://*:6002");
+
 app.Run();

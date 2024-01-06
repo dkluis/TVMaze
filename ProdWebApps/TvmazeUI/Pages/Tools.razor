@@ -77,11 +77,6 @@
 
                 break;
 
-            case "Restart Plex":
-                ResetPlexMediaServer();
-
-                break;
-
             default:
                 _message = "";
 
@@ -241,6 +236,7 @@
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
+
         //process.WaitForExit();
     }
 
@@ -277,36 +273,20 @@
         log.Stop();
     }
 
-    private void ResetPlexMediaServer()
+    private void RestartPlex()
     {
-        _message = "Restarting Plex Media Server";
+        using var client   = new HttpClient();
+        var       response = client.GetAsync("http://ca-server.local:6002/api/RestartPlex").Result;
 
-        AppInfo appInfo = new("TVMaze", "WebUI", "DbAlternate");
-        var     log     = appInfo.TxtFile;
-        log.Start();
-
-        var process = Process.GetProcessesByName("Plex Media Serv");
-
-        if (process.Length == 1)
+        if (response.IsSuccessStatusCode)
         {
-            log.Write("Killing Plex Media Server Process", "", 2);
-            process[0].Kill();
-            Thread.Sleep(5000);
-            log.Write("Restarting Plex Media Server Process", "", 2);
-            RunScript("/Users/dick/TVMaze/Scripts/RestartPlexMediaServer.sh");
-            _message = "Plex Media Server Restarted";
+            _message = "Plex restart successfully initiated.";
         } else
         {
-            log.Write("Did not find Plex Media Server Running, trying to start it now.");
-            _message = "Plex Media Server Not Restarted";
-            Thread.Sleep(5000);
-            log.Write("Starting Plex Media Server Process", "", 2);
-            RunScript("/Users/dick/TVMaze/Scripts/RestartPlexMediaServer.sh");
-            _message = "Plex Media Server Restarted";
+            _message = $"Failed to start Plex restart. Received status code: {response.StatusCode}";
         }
-
-        log.Stop();
     }
+
 }
 
 @{ _dataExchangeService.LastPage = "Tools"; }
@@ -332,7 +312,7 @@
             <div class="col-md-12 mb-2">
                 <input class="col-sm-1 m-1" @bind="@_refreshShowId"/>
                 <button class="btn btn-primary" @onclick="RefreshOneShow"><i class="bi bi-database-down"></i>&nbsp;One Show</button>
-                @*<button class="btn btn-warning" @onclick='() => ExecScripts("Restart Plex")'><i class="bi bi-sign-stop"></i>&nbsp;Restart Plex&nbsp;<i class="bi bi-skip-start"></i></button>*@
+                <button class="btn btn-warning" @onclick="RestartPlex"><i class="bi bi-sign-stop"></i>&nbsp;Restart Plex&nbsp;<i class="bi bi-skip-start"></i></button>
             </div>
         </div>
     </div>

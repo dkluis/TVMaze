@@ -1,4 +1,4 @@
-@TvmazeApiMac_HostAddress = http://localhost:6002
+@TvmazeApiMac_HostAddress = http://localhost:6002/api
 
 GET {{TvmazeApiMac_HostAddress}}/weatherforecast/
 Accept: application/json
