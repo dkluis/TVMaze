@@ -1,0 +1,69 @@
+@namespace TvmazeUI.Pages
+@page "/other"
+@using DB_Lib_EF.Entities
+@using DB_Lib_EF.Models.MariaDB
+
+@inject WebShows          _webShowsService
+@inject DataExchange      _dataExchangeService
+
+
+@code {
+    private         int                       _idx;
+    static readonly AppInfo                   AppInfo    = new("Tvmaze", "WebUI", "DbAlternate");
+
+    private void DeleteActionItem(ActionItem actionItem)
+    {
+        AppInfo.TxtFile.Write($"Deleting ActionItem {actionItem.Id}: {actionItem.Program}: {actionItem.Message}");
+    }
+}
+
+@{
+    _dataExchangeService.LastPage = "Other";
+    var result      = ActionItemModel.GetAllActionItems();
+    var actionItems = new List<ActionItem>();
+
+    if (result != null && result.ResponseObject != null)
+        actionItems = (List<ActionItem>) result.ResponseObject!;
+}
+
+<h1>Other</h1>
+
+<div>
+    @*<button class="btn btn-info" @onclick="GetTheMovies">Refresh Other</button>*@
+    @*<button class="btn btn-primary" @onclick="GetTheMovies">Add Movie</button>*@
+    <p></p>
+</div>
+
+<div>
+    <p></p>
+    <h6>Action Item - Table</h6>
+    <p></p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Program</th>
+            <th>Message</th>
+            <th>DateTime</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            _idx = 0;
+
+            foreach (var rec in actionItems)
+            {
+                <tr>
+                    <td>@rec.Id</td>
+                    <td>@rec.Program</td>
+                    <td>@rec.Message</td>
+                    <td>@rec.UpdateDateTime</td>
+                    <button class="btn btn-danger" @onclick="@(() => DeleteActionItem(rec))">Delete</button>
+                </tr>
+                _idx++;
+            }
+        }
+        </tbody>
+    </table>
+</div>

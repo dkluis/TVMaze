@@ -88,4 +88,17 @@ public static class ActionItemModel
             return result;
         }
     }
+
+    public static Response? GetAllActionItems()
+    {
+        var response = new Response();
+
+        using (var db = new TvMaze())
+        {
+            response.ResponseObject = db.ActionItems.OrderBy(a => a.UpdateDateTime).ToList();
+            response.WasSuccess     = true;
+        }
+
+        return response;
+    }
 }
