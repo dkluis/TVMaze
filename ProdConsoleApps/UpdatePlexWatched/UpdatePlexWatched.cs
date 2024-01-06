@@ -4,6 +4,8 @@ using Common_Lib;
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 using Entities_Lib;
 
 using Web_Lib;
@@ -56,20 +58,18 @@ internal static class UpdatePlexWatched
                         foreach (var showId in foundInDb)
                         {
                             log.Write($"Multiple ShowIds found for {pwi.ShowName} is: {showId}", "", 1);
-                            using ActionItems ais = new(appInfo);
-                            ais.DbInsert($"Multiple ShowIds found for {pwi.ShowName} is: {showId}", true);
+                            ActionItemModel.RecordActionItem(thisProgram, $"Multiple ShowIds found for {pwi.ShowName} is: {showId}", log);
                         }
 
-                        continue;
+                        break;
                     }
 
                     default:
                     {
                         log.Write($"Did not find any ShowIds for {pwi.ShowName}", "", 1);
-                        using ActionItems ai = new(appInfo);
-                        ai.DbInsert($"Did not find any ShowIds for {pwi.ShowName}", true);
+                        ActionItemModel.RecordActionItem(thisProgram, $"Did not find any ShowIds for {pwi.ShowName}", log);
 
-                        continue;
+                        break;
                     }
                 }
 
@@ -80,8 +80,7 @@ internal static class UpdatePlexWatched
                 if (pwi.TvmEpisodeId == 0)
                 {
                     log.Write($"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", "", 1);
-                    using ActionItems ai = new(appInfo);
-                    ai.DbInsert($"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", true);
+                    ActionItemModel.RecordActionItem(thisProgram, $"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", log);
 
                     continue;
                 }

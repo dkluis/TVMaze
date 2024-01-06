@@ -1,11 +1,15 @@
+using Common_Lib;
+
 using DB_Lib_EF.Models.MariaDB;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace DB_Lib_EF.Entities;
 
-public class ActionItemEntity : ActionItem
+public class ActionItemEntity : ActionItem, IDisposable
 {
+    private bool _disposed = false;
+
     public Response Record(ActionItem record)
     {
         var resp = new Response();
@@ -20,7 +24,7 @@ public class ActionItemEntity : ActionItem
         try
         {
             using var db = new TvMaze();
-            record.UpdateDateTime = DateTime.Now.ToString("yyyy-MM-dd");
+            record.UpdateDateTime = DateTime.Now.ToString("yyyy-MM-dd h:mm:ss");
             db.ActionItems.Add(record);
             db.SaveChanges();
             resp.WasSuccess = true;
@@ -36,5 +40,52 @@ public class ActionItemEntity : ActionItem
     private bool Validate(ActionItem check)
     {
         return !(string.IsNullOrEmpty(check.Message) && string.IsNullOrEmpty(check.Program));
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Release managed resources here
+            }
+
+            // Release unmanaged resources here
+
+            _disposed = true;
+        }
+    }
+
+    ~ActionItemEntity()
+    {
+        Dispose(false);
+    }
+}
+
+public static class ActionItemModel
+{
+    public static Response? RecordActionItem(string program, string message, TextFileHandler log)
+    {
+        using (var entity = new ActionItemEntity())
+        {
+            var result =  entity.Record(new ActionItemEntity() {Program = program, Message = message});
+
+            if (result == null)
+            {
+                log.Write("Error: ActionItem was not recorded", program, 0);
+            } else if (!result.WasSuccess)
+            {
+                log.Write(result.Message!, program);
+            }
+
+            return result;
+        }
     }
 }

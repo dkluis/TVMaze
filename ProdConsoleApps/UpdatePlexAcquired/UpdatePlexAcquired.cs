@@ -7,6 +7,8 @@ using Common_Lib;
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 using Entities_Lib;
 
 using Web_Lib;
@@ -109,8 +111,7 @@ internal static class UpdatePlexAcquired
                         showId = reducedShowToUpdate;
                     } else
                     {
-                        using ActionItems ai = new(appInfo);
-                        ai.DbInsert($"Could not determine ShowId for: {show}, found {showId.Count} records");
+                        ActionItemModel.RecordActionItem(thisProgram, $"Could not determine ShowId for: {show}, found {showId.Count} records", log);
 
                         continue;
                     }
@@ -134,12 +135,7 @@ internal static class UpdatePlexAcquired
                 case false when epiId == 0:
                 {
                     log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
-
-                    using (ActionItems ai = new(appInfo))
-                    {
-                        ai.DbInsert($"Could not find episode for Show {show} and Episode String {episodeString}");
-                    }
-
+                    ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}", log);
                     foundShow.FillViaTvmaze(showId[0]);
                     using MediaFileHandler mfh = new(appInfo);
                     mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
@@ -186,7 +182,7 @@ internal static class UpdatePlexAcquired
 
                 foreach (var epi in epsToUpdate)
                 {
-                    Episode? epiToUpdate = new(appInfo);
+                    Episode epiToUpdate = new(appInfo);
 
                     if (firstEpi.TvmEpisodeId != epi)
                         epiToUpdate.FillViaTvmaze(epi);

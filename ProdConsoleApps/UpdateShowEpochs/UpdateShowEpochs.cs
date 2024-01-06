@@ -3,6 +3,9 @@
 using Common_Lib;
 
 using DB_Lib;
+
+using DB_Lib_EF.Entities;
+
 using DB_Lib.Tvmaze;
 
 using Entities_Lib;
@@ -128,8 +131,7 @@ internal static class UpdateShowEpochs
                 if (!tvmShow.DbUpdate())
                 {
                     log.Write($"Update of Show {showId} Failed ###################", "", 0);
-                    using ActionItems ai = new(appInfo);
-                    ai.DbInsert($"Update of Show {showId} Failed");
+                    ActionItemModel.RecordActionItem(thisProgram, $"Update of Show {showId} Failed", log);
                 } else
                 {
                     var                  idxEpsByShow = 0;
@@ -145,8 +147,7 @@ internal static class UpdateShowEpochs
                             if (!eps.DbInsert())
                             {
                                 log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ##################", "", 0);
-                                using ActionItems ai = new(appInfo);
-                                ai.DbInsert($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}");
+                                ActionItemModel.RecordActionItem(thisProgram, $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", log);
                             } else
                             {
                                 log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}");
@@ -156,8 +157,7 @@ internal static class UpdateShowEpochs
                             if (!eps.DbUpdate())
                             {
                                 log.Write($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ####################", "", 0);
-                                using ActionItems ai = new(appInfo);
-                                ai.DbInsert($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}");
+                                ActionItemModel.RecordActionItem(thisProgram, $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", log);
                             }
                         }
 

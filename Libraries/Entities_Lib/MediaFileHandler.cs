@@ -8,6 +8,8 @@ using Common_Lib;
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 namespace Entities_Lib;
 
 public class MediaFileHandler : IDisposable
@@ -96,8 +98,7 @@ public class MediaFileHandler : IDisposable
                     catch (Exception e)
                     {
                         _log.Write($"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}", "", 0);
-                        using ActionItems ai = new(_appInfo);
-                        ai.DbInsert($"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}");
+                        ActionItemModel.RecordActionItem(_appInfo.Program, $"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}", _log);
                     }
                 }
             }
@@ -168,8 +169,7 @@ public class MediaFileHandler : IDisposable
         if (episode is null && show is null)
         {
             _log.Write($"Episode and Show are set to null, cannot process the move for {mediainfo}", "", 0);
-            using ActionItems ai = new(_appInfo);
-            ai.DbInsert($"Episode and Show are set to null, cannot process the move for {mediainfo}");
+            ActionItemModel.RecordActionItem(_appInfo.Program, $"Episode and Show are set to null, cannot process the move for {mediainfo}", _log);
 
             return false;
         }

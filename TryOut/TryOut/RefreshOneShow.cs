@@ -2,6 +2,8 @@
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 using Entities_Lib;
 
 namespace RefreshOneShow;
@@ -16,6 +18,8 @@ internal static class RefreshOneShow
         log.Start();
 
         const int theShowToRefresh = 49333;
+
+        ActionItemModel.RecordActionItem(thisProgram, "Did not find any ShowIds for {pwi.ShowName}", log);
 
         MariaDb mDbR = new(appInfo);
 
