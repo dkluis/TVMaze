@@ -5,12 +5,15 @@ using Common_Lib;
 using DB_Lib;
 
 using DB_Lib_EF.Entities;
+using DB_Lib_EF.Models.MariaDB;
 
 using DB_Lib.Tvmaze;
 
 using Entities_Lib;
 
 using Web_Lib;
+
+using Show = Entities_Lib.Show;
 
 namespace UpdateShowEpochs;
 
@@ -42,9 +45,29 @@ internal static class UpdateShowEpochs
         var highestShowId = lastEvaluatedShow;
         log.Write($"Last Evaluated ShowId = {lastEvaluatedShow}", "", 2);
 
+        var logRec = new Log
+                  {
+                      RecordedDate = DateTime.Now,
+                      Program      = thisProgram,
+                      Function     = "Main",
+                      Message      = $"Last Evaluated ShowId = {lastEvaluatedShow}",
+                      Level        = 2,
+                  };
+        LogModel.Record(logRec);
+
         using WebApi tvmApi      = new(appInfo);
         var          jsonContent = tvmApi.ConvertHttpToJObject(tvmApi.GetShowUpdateEpochs("day"));
         log.Write($"Found {jsonContent.Count} updates on Tvmaze", thisProgram, 2);
+
+        logRec = new Log
+                  {
+                      RecordedDate = DateTime.Now,
+                      Program      = thisProgram,
+                      Function     = "Main",
+                      Message      = $"Found {jsonContent.Count} updates on Tvmaze",
+                      Level        = 2,
+                  };
+        LogModel.Record(logRec);
 
         Show tvmShow = new(appInfo);
 
@@ -62,11 +85,31 @@ internal static class UpdateShowEpochs
             {
                 log.Write($"Skipping {showId} since show is already up to date", "", 4);
 
+                logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = thisProgram,
+                             Function     = "Main",
+                             Message      = $"Skipping {showId} since show is already up to date",
+                             Level        = 4,
+                         };
+                LogModel.Record(logRec);
+
                 continue;
             }
 
             tvmShow.FillViaTvmaze(showId);
             log.Write($"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}", "", 4);
+
+            logRec = new Log
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = thisProgram,
+                         Function     = "Main",
+                         Message      = $"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}",
+                         Level        = 4,
+                     };
+            LogModel.Record(logRec);
 
             if (inDbEpoch == 0)
             {
@@ -76,6 +119,16 @@ internal static class UpdateShowEpochs
 
                 log.Write($"Inserted Epoch Record {showId} {tvmShow.ShowName}");
 
+                logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = thisProgram,
+                             Function     = "Main",
+                             Message      = $"Inserted Epoch Record {showId} {tvmShow.ShowName}",
+                             Level        = 3,
+                         };
+                LogModel.Record(logRec);
+
                 if (showId > lastEvaluatedShow)
                 {
                     if (showId > highestShowId) highestShowId = showId;
@@ -84,11 +137,31 @@ internal static class UpdateShowEpochs
                     {
                         log.Write($"Show {showId} is rejected because of review rules {tvmShow.TvmUrl}");
 
+                        logRec = new Log
+                                 {
+                                     RecordedDate = DateTime.Now,
+                                     Program      = thisProgram,
+                                     Function     = "Main",
+                                     Message      = $"Show {showId} is rejected because of review rules {tvmShow.TvmUrl}",
+                                     Level        = 3,
+                                 };
+                        LogModel.Record(logRec);
+
                         continue;
                     }
                 } else
                 {
                     log.Write("This show is evaluated already");
+
+                    logRec = new Log
+                             {
+                                 RecordedDate = DateTime.Now,
+                                 Program      = thisProgram,
+                                 Function     = "Main",
+                                 Message      = "This show is evaluated already",
+                                 Level        = 3,
+                             };
+                    LogModel.Record(logRec);
 
                     continue;
                 }
@@ -99,9 +172,29 @@ internal static class UpdateShowEpochs
                 if (!tvmShow.DbInsert(false, "UpdateShowEpochs"))
                 {
                     log.Write($"Insert of Show {showId} Failed #############################", "", 0);
+
+                    logRec = new Log
+                             {
+                                 RecordedDate = DateTime.Now,
+                                 Program      = thisProgram,
+                                 Function     = "Main",
+                                 Message      = $"Insert of Show {showId} Failed #############################",
+                                 Level        = 0,
+                             };
+                    LogModel.Record(logRec);
                 } else
                 {
                     log.Write($"Inserted new Show {showId}, {tvmShow.ShowName}", "", 2);
+
+                    logRec = new Log
+                             {
+                                 RecordedDate = DateTime.Now,
+                                 Program      = thisProgram,
+                                 Function     = "Main",
+                                 Message      = $"Inserted new Show {showId}, {tvmShow.ShowName}",
+                                 Level        = 2,
+                             };
+                    LogModel.Record(logRec);
                     var idxEpsByShow = 0;
 
                     using (EpisodesByShow epsByShow = new())
@@ -111,9 +204,33 @@ internal static class UpdateShowEpochs
                         foreach (var eps in ebs)
                         {
                             if (!eps.DbInsert())
+                            {
                                 log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} #######################", "", 0);
-                            else
+
+                                logRec = new Log
+                                         {
+                                             RecordedDate = DateTime.Now,
+                                             Program      = thisProgram,
+                                             Function     = "Main",
+                                             Message      = $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} #######################",
+                                             Level        = 0,
+                                         };
+                                LogModel.Record(logRec);
+                            } else
+                            {
                                 log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}");
+
+                                logRec = new Log
+                                         {
+                                             RecordedDate = DateTime.Now,
+                                             Program      = thisProgram,
+                                             Function     = "Main",
+                                             Message      = $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}",
+                                             Level        = 3,
+                                         };
+                                LogModel.Record(logRec);
+                            }
+
                             idxEpsByShow++;
                         }
                     }
@@ -131,6 +248,16 @@ internal static class UpdateShowEpochs
                 if (!tvmShow.DbUpdate())
                 {
                     log.Write($"Update of Show {showId} Failed ###################", "", 0);
+
+                    logRec = new Log
+                             {
+                                 RecordedDate = DateTime.Now,
+                                 Program      = thisProgram,
+                                 Function     = "Main",
+                                 Message      = $"Update of Show {showId} Failed ###################",
+                                 Level        = 0,
+                             };
+                    LogModel.Record(logRec);
                     ActionItemModel.RecordActionItem(thisProgram, $"Update of Show {showId} Failed", log);
                 } else
                 {
@@ -142,21 +269,61 @@ internal static class UpdateShowEpochs
                     {
                         log.Write($"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", "", 4);
 
+                        logRec = new Log
+                                 {
+                                     RecordedDate = DateTime.Now,
+                                     Program      = thisProgram,
+                                     Function     = "Main",
+                                     Message      = $"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}",
+                                     Level        = 4,
+                                 };
+                        LogModel.Record(logRec);
+
                         if (!eps.IsDbFilled)
                         {
                             if (!eps.DbInsert())
                             {
                                 log.Write($"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ##################", "", 0);
+
+                                logRec = new Log
+                                         {
+                                             RecordedDate = DateTime.Now,
+                                             Program      = thisProgram,
+                                             Function     = "Main",
+                                             Message      = $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ##################",
+                                             Level        = 0,
+                                         };
+                                LogModel.Record(logRec);
                                 ActionItemModel.RecordActionItem(thisProgram, $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", log);
                             } else
                             {
                                 log.Write($"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}");
+
+                                logRec = new Log
+                                         {
+                                             RecordedDate = DateTime.Now,
+                                             Program      = thisProgram,
+                                             Function     = "Main",
+                                             Message      = $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}",
+                                             Level        = 3,
+                                         };
+                                LogModel.Record(logRec);
                             }
                         } else
                         {
                             if (!eps.DbUpdate())
                             {
                                 log.Write($"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ####################", "", 0);
+
+                                logRec = new Log
+                                         {
+                                             RecordedDate = DateTime.Now,
+                                             Program      = thisProgram,
+                                             Function     = "Main",
+                                             Message      = $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ####################",
+                                             Level        = 0,
+                                         };
+                                LogModel.Record(logRec);
                                 ActionItemModel.RecordActionItem(thisProgram, $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", log);
                             }
                         }
@@ -165,9 +332,29 @@ internal static class UpdateShowEpochs
                     }
 
                     log.Write($"Number of Episodes for Show {showId}: {idxEpsByShow}", "", 2);
+
+                    logRec = new Log
+                             {
+                                 RecordedDate = DateTime.Now,
+                                 Program      = thisProgram,
+                                 Function     = "Main",
+                                 Message      = $"Number of Episodes for Show {showId}: {idxEpsByShow}",
+                                 Level        = 2,
+                             };
+                    LogModel.Record(logRec);
                 }
 
                 log.Write($"Updated Show {showId}");
+
+                logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = thisProgram,
+                             Function     = "Main",
+                             Message      = $"Updated Show {showId}",
+                             Level        = 3,
+                         };
+                LogModel.Record(logRec);
             }
 
             tvmShow.Reset();
