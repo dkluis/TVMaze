@@ -3,6 +3,7 @@
 using DB_Lib;
 
 using DB_Lib_EF.Entities;
+using DB_Lib_EF.Models.MariaDB;
 
 using Entities_Lib;
 
@@ -17,9 +18,12 @@ internal static class RefreshOneShow
         var          log         = appInfo.TxtFile;
         log.Start();
 
-        const int theShowToRefresh = 49333;
+        using var views  = new ViewEntities();
+        var result = views.GetEpisodesToAcquire();
 
         ActionItemModel.RecordActionItem(thisProgram, "Did not find any ShowIds for {pwi.ShowName}", log);
+
+        const int theShowToRefresh = 49333;
 
         MariaDb mDbR = new(appInfo);
 

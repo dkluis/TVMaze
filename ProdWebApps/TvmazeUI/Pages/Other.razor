@@ -1,24 +1,20 @@
 @namespace TvmazeUI.Pages
 @page "/other"
-@using DB_Lib_EF.Entities
-@using DB_Lib_EF.Models.MariaDB
 
-@inject WebShows          _webShowsService
-@inject DataExchange      _dataExchangeService
-
+@inject DataExchange      DataExchangeService
 
 @code {
-    private         int                       _idx;
-    static readonly AppInfo                   AppInfo    = new("Tvmaze", "WebUI", "DbAlternate");
+    private static readonly AppInfo AppInfo = new("Tvmaze", "WebUI", "DbAlternate");
 
-    private void DeleteActionItem(ActionItem actionItem)
+    private void DeleteActionItem(ActionItem rec)
     {
-        AppInfo.TxtFile.Write($"Deleting ActionItem {actionItem.Id}: {actionItem.Program}: {actionItem.Message}");
+        AppInfo.TxtFile.Write($"Deleting ActionItem {rec.Id}: {rec.Program}: {rec.Message}");
+        ActionItemModel.DeleteActionItem(rec, AppInfo.Program, AppInfo.TxtFile);
     }
 }
 
 @{
-    _dataExchangeService.LastPage = "Other";
+    DataExchangeService.LastPage = "Other";
     var result      = ActionItemModel.GetAllActionItems();
     var actionItems = new List<ActionItem>();
 
@@ -50,8 +46,6 @@
         </thead>
         <tbody>
         @{
-            _idx = 0;
-
             foreach (var rec in actionItems)
             {
                 <tr>
@@ -61,7 +55,6 @@
                     <td>@rec.UpdateDateTime</td>
                     <button class="btn btn-danger" @onclick="@(() => DeleteActionItem(rec))">Delete</button>
                 </tr>
-                _idx++;
             }
         }
         </tbody>

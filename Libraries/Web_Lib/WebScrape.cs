@@ -51,7 +51,7 @@ public class WebScrape : IDisposable
         return titles;
     }
 
-    public void GetEztvMagnets(string showName, string seasEpi, ChromeDriver browserDriver = null)
+    public void GetEztvMagnets(string showName, string seasEpi, ChromeDriver browserDriver)
     {
         if (browserDriver == null) return;
 

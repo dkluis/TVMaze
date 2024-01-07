@@ -37,6 +37,35 @@ public class ActionItemEntity : ActionItem, IDisposable
         return resp;
     }
 
+    public Response Delete(ActionItem record)
+    {
+        var resp = new Response();
+
+        try
+        {
+            using var db   = new TvMaze();
+            var       item = db.ActionItems.FirstOrDefault(a => a.Id == record.Id);
+
+            if (item != null)
+            {
+                db.ActionItems.Remove(item);
+                db.SaveChanges();
+                resp.WasSuccess = true;
+            } else
+            {
+                resp.Message = $"ActionItem with Id {record.Id} not found";
+            }
+
+            return resp;
+        }
+        catch (DbUpdateException e) // catch specific exception
+        {
+            resp.Message = $"An error occurred while updating the database. Record: {record}. Error: {e.Message} {e.InnerException}";
+
+            return resp;
+        }
+    }
+
     private bool Validate(ActionItem check)
     {
         return !(string.IsNullOrEmpty(check.Message) && string.IsNullOrEmpty(check.Program));
@@ -100,5 +129,23 @@ public static class ActionItemModel
         }
 
         return response;
+    }
+
+    public static Response? DeleteActionItem(ActionItem rec, string program, TextFileHandler log)
+    {
+        using (var entity = new ActionItemEntity())
+        {
+            var result = entity.Delete(rec);
+
+            if (result == null)
+            {
+                log.Write("Error: ActionItem was not recorded", program, 0);
+            } else if (!result.WasSuccess)
+            {
+                log.Write(result.Message!, program);
+            }
+
+            return result;
+        }
     }
 }
