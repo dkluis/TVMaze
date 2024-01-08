@@ -20,6 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Common_Lib\Common_Lib.csproj"/>
+        <ProjectReference Include="..\DB_Lib_EF\DB_Lib_EF.csproj" />
     </ItemGroup>
 
     <ItemGroup>

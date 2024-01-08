@@ -2,6 +2,9 @@ using System;
 
 using Common_Lib;
 
+using DB_Lib_EF.Entities;
+using DB_Lib_EF.Models.MariaDB;
+
 using MySqlConnector;
 
 namespace DB_Lib;
@@ -14,14 +17,15 @@ public class MariaDb : IDisposable
     private          MySqlCommand     _cmd = new();
     private          bool             _connOpen;
     private          MySqlDataReader? _rdr;
+    private          string           _thisProgram;
     private          int              _rows;
     public           bool             Success;
 
     public MariaDb(AppInfo appInfo)
     {
-        _mDbLog = appInfo.TxtFile;
-
-        Success = false;
+        _mDbLog      = appInfo.TxtFile;
+        _thisProgram = appInfo.Program;
+        Success      = false;
 
         try
         {
@@ -31,6 +35,16 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", Function, 0);
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Connecting To DB",
+                             Message      = $"Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
         }
     }
 
@@ -52,6 +66,17 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             _mDbLog.Write($"MariaDB Class Open Error: {e.Message}", Function, 0);
+
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Opening To DB",
+                             Message      = $"Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
             Success = false;
         }
     }
@@ -67,7 +92,17 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            _mDbLog.Write($"MariaDB Class Close Error: {e.Message}", Function, 0);
+            _mDbLog.Write($"Error: {e.Message}", Function, 0);
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Closing DB",
+                             Message      = $"MariaDB Class Connection Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
             Success = false;
         }
     }
@@ -86,6 +121,16 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             _mDbLog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", Function, 0);
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Execute Command",
+                             Message      = $"Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
             Success = false;
 
             return _cmd;
@@ -106,6 +151,16 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", Function, 0);
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Execute Query Cmd",
+                             Message      = $"Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
             Success = false;
 
             return _rdr!;
@@ -127,6 +182,16 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", Function, 0);
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Execute Query String",
+                             Message      = $"Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
             Success = false;
 
             return _rdr!;
@@ -148,6 +213,16 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", Function, 0);
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Execute NonQuery Cmd",
+                             Message      = $"Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
             Success = false;
 
             return _rows;
@@ -170,6 +245,16 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", Function, 0);
+
+            var logRec = new Log
+                         {
+                             RecordedDate = DateTime.Now,
+                             Program      = _thisProgram,
+                             Function     = "Execute NonQuery String",
+                             Message      = $"Error: {e.Message}",
+                             Level        = 0,
+                         };
+            LogModel.Record(logRec);
             Success = false;
 
             return _rows;

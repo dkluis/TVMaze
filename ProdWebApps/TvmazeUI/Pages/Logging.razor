@@ -1,0 +1,109 @@
+@page "/Logging"
+@using System.Runtime.InteropServices.JavaScript
+@inject DataExchange DataExchangeService
+
+@code {
+    private static readonly AppInfo  AppInfo        = new("Tvmaze", "WebUI", "DbAlternate");
+    private                 int      _minLevel      = 0;
+    private                 int      _maxLevel      = 5;
+    private                 DateTime _fromDate      = DateTime.Now.AddDays(-1);
+    private                 DateTime _toDate        = DateTime.Now;
+    private                 string   _includeString = string.Empty;
+    private                 string   _excludeString = string.Empty;
+    private                 List<Log> _logs = new ();
+
+}
+
+@{
+    DataExchangeService.LastPage = "Other";
+
+    //logs = logs.Where(l => l.Function == "WebApi").ToArray();
+    //logs = logs.Where(l => !l.Message.Contains("Skipping")).ToArray();
+    //logs = logs.Where(l => !l.Program.Contains("Epoch")).ToArray();
+    //logs = logs.Where(l => l.Level < 3).ToArray();
+
+    void SearchLogs()
+    {
+        if (!string.IsNullOrEmpty(_includeString))
+            _logs = _logs.Where(l => l.Program.Contains(_includeString) || l.Function.Contains(_includeString) || l.Message.Contains(_includeString)).ToList();
+        if (!string.IsNullOrEmpty(_excludeString))
+            _logs = _logs.Where(l => !l.Program.Contains(_excludeString) && !l.Function.Contains(_excludeString) && !l.Message.Contains(_excludeString)).ToList();
+    }
+
+    void RefreshLogs()
+    {
+        using var db = new TvMaze();
+        _logs = db.Logs.OrderByDescending(l => l.RecordedDate).ToList();
+        _logs = _logs.Where(l => l.Level        >= _minLevel && l.Level        <= _maxLevel).ToList();
+        _logs = _logs.Where(l => l.RecordedDate >= _fromDate && l.RecordedDate <= _toDate).ToList();
+    }
+}
+
+
+
+<h1>Logging</h1>
+
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <span class="input-group-text">Min Level</span>
+    </div>
+    <input @bind="_minLevel"/>
+    <div class="input-group-prepend">
+        <span class="input-group-text">Max Level</span>
+    </div>
+    <input @bind="_maxLevel"/>
+    <button class="btn btn-info" @onclick="RefreshLogs">Get Logs</button>
+</div>
+
+
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <span class="input-group-text">Incl: %</span>
+    </div>
+    <input @bind="_includeString"/>
+    <div class="input-group-append">
+        <span class="input-group-text">%</span>
+    </div>
+    <div class="input-group-prepend">
+        <span class="input-group-text">Excl: %</span>
+    </div>
+    <input @bind="_excludeString"/>
+    <div class="input-group-append">
+        <span class="input-group-text">%</span>
+    </div>
+    <button class="btn btn-info" @onclick="SearchLogs">Search Logs</button>
+</div>
+
+<div>
+    <p></p>
+    <h6>Logging - Table</h6>
+    <p></p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>DateTime</th>
+            <th>Program</th>
+            <th>Function</th>
+            <th>Details</th>
+            <th>Level</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            if (_logs != null && _logs.Count > 0)
+            {
+                foreach (var rec in _logs)
+                {
+                    <tr>
+                        <td>@rec.RecordedDate</td>
+                        <td>@rec.Program</td>
+                        <td>@rec.Function</td>
+                        <td>@rec.Message</td>
+                        <td>@rec.Level</td>
+                    </tr>
+                }
+            }
+        }
+        </tbody>
+    </table>
+</div>
