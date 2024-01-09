@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
 
 using Common_Lib;
 
@@ -39,42 +41,72 @@ internal static class UpdateShowEpochs
         var     log     = appInfo.TxtFile;
         log.Start();
 
+        var logRec = new Log
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = thisProgram,
+                         Function     = "Main",
+                         Message      = $"Starting the Processing",
+                         Level        = 3,
+                     };
+        LogModel.Record(logRec);
+
         using TvmCommonSql ge                = new(appInfo);
         var                lastEvaluatedShow = ge.GetLastEvaluatedShow();
 
         var highestShowId = lastEvaluatedShow;
         log.Write($"Last Evaluated ShowId = {lastEvaluatedShow}", "", 2);
 
-        var logRec = new Log
+        logRec = new Log
                   {
                       RecordedDate = DateTime.Now,
                       Program      = thisProgram,
                       Function     = "Main",
                       Message      = $"Last Evaluated ShowId = {lastEvaluatedShow}",
-                      Level        = 2,
+                      Level        = 3,
                   };
         LogModel.Record(logRec);
 
-        using WebApi tvmApi      = new(appInfo);
-        var          jsonContent = tvmApi.ConvertHttpToJObject(tvmApi.GetShowUpdateEpochs("day"));
-        log.Write($"Found {jsonContent.Count} updates on Tvmaze", thisProgram, 2);
+        using WebApi tvmApi          = new(appInfo);
+        var          updateResult    = tvmApi.GetShowUpdateEpochs("day");
+        var          content         = updateResult.Content.ReadAsStringAsync().Result;
+        var          updates         = JsonSerializer.Deserialize<SortedDictionary<int, int>>(content);
+
+        if (updates == null)
+        {
+            log.Write($"Failed to retrieve updates from Tvmaze", thisProgram, 1);
+
+            logRec = new Log
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = thisProgram,
+                         Function     = "Main",
+                         Message      = $"Failed to retrieve updates from Tvmaze",
+                         Level        = 3,
+                     };
+            LogModel.Record(logRec);
+        } else
+        {
+        //var          jsonContent  = tvmApi.ConvertHttpToJObject(tvmApi.GetShowUpdateEpochs("day"));
+
+        log.Write($"Found {updates.Count} updates on Tvmaze", thisProgram, 2);
 
         logRec = new Log
                   {
                       RecordedDate = DateTime.Now,
                       Program      = thisProgram,
                       Function     = "Main",
-                      Message      = $"Found {jsonContent.Count} updates on Tvmaze",
-                      Level        = 2,
+                      Message      = $"Found {updates.Count} updates on Tvmaze",
+                      Level        = 3,
                   };
         LogModel.Record(logRec);
 
         Show tvmShow = new(appInfo);
 
-        foreach (var show in jsonContent)
+        foreach (var show in updates)
         {
-            var                showId    = int.Parse(show.Key);
-            var                showEpoch = int.Parse(show.Value!.ToString());
+            var                showId    = show.Key;
+            var                showEpoch = show.Value;
             using TvmCommonSql gse       = new(appInfo);
 
             if (gse.IsShowSkipping(showId)) continue;
@@ -179,7 +211,7 @@ internal static class UpdateShowEpochs
                                  Program      = thisProgram,
                                  Function     = "Main",
                                  Message      = $"Insert of Show {showId} Failed #############################",
-                                 Level        = 0,
+                                 Level        = 4,
                              };
                     LogModel.Record(logRec);
                 } else
@@ -192,7 +224,7 @@ internal static class UpdateShowEpochs
                                  Program      = thisProgram,
                                  Function     = "Main",
                                  Message      = $"Inserted new Show {showId}, {tvmShow.ShowName}",
-                                 Level        = 2,
+                                 Level        = 3,
                              };
                     LogModel.Record(logRec);
                     var idxEpsByShow = 0;
@@ -213,7 +245,7 @@ internal static class UpdateShowEpochs
                                              Program      = thisProgram,
                                              Function     = "Main",
                                              Message      = $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} #######################",
-                                             Level        = 0,
+                                             Level        = 4,
                                          };
                                 LogModel.Record(logRec);
                             } else
@@ -255,7 +287,7 @@ internal static class UpdateShowEpochs
                                  Program      = thisProgram,
                                  Function     = "Main",
                                  Message      = $"Update of Show {showId} Failed ###################",
-                                 Level        = 0,
+                                 Level        = 4,
                              };
                     LogModel.Record(logRec);
                     ActionItemModel.RecordActionItem(thisProgram, $"Update of Show {showId} Failed", log);
@@ -275,7 +307,7 @@ internal static class UpdateShowEpochs
                                      Program      = thisProgram,
                                      Function     = "Main",
                                      Message      = $"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}",
-                                     Level        = 4,
+                                     Level        = 3,
                                  };
                         LogModel.Record(logRec);
 
@@ -291,7 +323,7 @@ internal static class UpdateShowEpochs
                                              Program      = thisProgram,
                                              Function     = "Main",
                                              Message      = $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ##################",
-                                             Level        = 0,
+                                             Level        = 4,
                                          };
                                 LogModel.Record(logRec);
                                 ActionItemModel.RecordActionItem(thisProgram, $"Episode Insert Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", log);
@@ -321,7 +353,7 @@ internal static class UpdateShowEpochs
                                              Program      = thisProgram,
                                              Function     = "Main",
                                              Message      = $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode} ####################",
-                                             Level        = 0,
+                                             Level        = 4,
                                          };
                                 LogModel.Record(logRec);
                                 ActionItemModel.RecordActionItem(thisProgram, $"Episode Update Failed {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}", log);
@@ -339,7 +371,7 @@ internal static class UpdateShowEpochs
                                  Program      = thisProgram,
                                  Function     = "Main",
                                  Message      = $"Number of Episodes for Show {showId}: {idxEpsByShow}",
-                                 Level        = 2,
+                                 Level        = 4,
                              };
                     LogModel.Record(logRec);
                 }
@@ -366,5 +398,6 @@ internal static class UpdateShowEpochs
         }
 
         log.Stop();
+        }
     }
 }

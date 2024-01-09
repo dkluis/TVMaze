@@ -10,12 +10,9 @@ using System.Threading.Tasks;
 using Common_Lib;
 
 using DB_Lib_EF.Entities;
-using DB_Lib_EF.Models.MariaDB;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-using OpenQA.Selenium.DevTools;
 
 using Log = DB_Lib_EF.Models.MariaDB.Log;
 
@@ -100,48 +97,54 @@ public class WebApi : IDisposable
         t.Wait();
 
         execTime.Stop();
-        _log.Write($"TVMApi Exec time: {execTime.ElapsedMilliseconds} ms.", "", 4);
 
         var logRec = new Log()
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
                          Function     = ThisFunction,
-                         Message      = $"TVMApi Exec time: {execTime.ElapsedMilliseconds} ms for {api}",
-                         Level        = 4,
+                         Message      = $"TVMApi Exec time: {execTime.ElapsedMilliseconds} ms for {_client.BaseAddress}{api}",
+                         Level        = 5,
                      };
         LogModel.Record(logRec);
 
         if (IsTimedOut)
         {
-            _log.Write($"TimedOut --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Exec");
-
             logRec = new Log()
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
                          Function     = ThisFunction,
-                         Message      = $"TimedOut --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
-                         Level        = 3,
+                         Message      = $"TimedOut --> Http Response Code is: {_httpResponse.StatusCode} {_httpResponse.Content} for API {_client.BaseAddress}{api}",
+                         Level        = 5,
                      };
             LogModel.Record(logRec);
             _httpResponse = new HttpResponseMessage();
-            Environment.Exit(99);
+
+            return;
         } else if (!_httpResponse.IsSuccessStatusCode)
         {
-            _log.Write($"Status Code --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Exec", 4);
-
             logRec = new Log()
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
                          Function     = ThisFunction,
-                         Message      = $"Status Code --> Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
-                         Level        = 4,
+                         Message      = $"Http Response Code is: {_httpResponse.StatusCode} {_httpResponse.Content} for API {_client.BaseAddress}{api}",
+                         Level        = 5,
                      };
             LogModel.Record(logRec);
             _httpResponse = new HttpResponseMessage();
         }
+
+        logRec = new Log()
+                 {
+                     RecordedDate = DateTime.Now,
+                     Program      = _thisProgram,
+                     Function     = ThisFunction,
+                     Message      = $"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
+                     Level        = 5,
+                 };
+        LogModel.Record(logRec);
     }
 
     private async Task PerformTvmApiAsync(string api)
@@ -153,15 +156,13 @@ public class WebApi : IDisposable
         }
         catch (Exception e)
         {
-            _log.Write($"Exception: {e.Message}  {e.InnerException}", "WebAPI Async", 0);
-
             var logRec = new Log()
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
                              Function     = ThisFunction,
                              Message      = $"Exception: {e.Message}  {e.InnerException}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
 
@@ -175,7 +176,7 @@ public class WebApi : IDisposable
                              Program      = _thisProgram,
                              Function     = ThisFunction,
                              Message      = $"Retrying Now: {api}",
-                             Level        = 3,
+                             Level        = 5,
                          };
                 LogModel.Record(logRec);
 
@@ -185,20 +186,17 @@ public class WebApi : IDisposable
                 }
                 catch (Exception ee)
                 {
-                    _log.Write($"2nd Exception: {ee.Message}  {ee.InnerException}", "WebAPI Async");
-
                     logRec = new Log()
                              {
                                  RecordedDate = DateTime.Now,
                                  Program      = _thisProgram,
                                  Function     = ThisFunction,
                                  Message      = $"2nd Exception: {ee.Message}  {ee.InnerException}",
-                                 Level        = 3,
+                                 Level        = 6,
                              };
                     LogModel.Record(logRec);
                     _httpResponse = new HttpResponseMessage();
                     IsTimedOut    = true;
-                    Environment.Exit(99);
                 }
             }
         }
@@ -220,7 +218,6 @@ public class WebApi : IDisposable
         t.Wait();
 
         stopwatch.Stop();
-        _log.Write($"TVMApi Exec time: {stopwatch.ElapsedMilliseconds} ms.", "", 4);
 
         var logRec = new Log()
                      {
@@ -228,22 +225,20 @@ public class WebApi : IDisposable
                          Program      = _thisProgram,
                          Function     = ThisFunction,
                          Message      = $"TVMApi Exec time: {stopwatch.ElapsedMilliseconds} ms. or {api} with {content}",
-                         Level        = 4,
+                         Level        = 5,
                      };
         LogModel.Record(logRec);
 
         if (!_httpResponse.IsSuccessStatusCode)
         {
-            _log.Write($"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", "WebAPI Put Exec", 4);
-
             logRec = new Log()
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = ThisFunction,
-                             Message      = $"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
-                             Level        = 4,
-                         };
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
+                         Level        = 5,
+                     };
             LogModel.Record(logRec);
             _httpResponse = new HttpResponseMessage();
         }
@@ -252,16 +247,15 @@ public class WebApi : IDisposable
     private async Task PerformPutTvmApiAsync(string api, string json)
     {
         StringContent stringContent = new(json, Encoding.UTF8, "application/json");
-        _log.Write($"json content now is {json} for api {_client.BaseAddress + api}", "WebAPI PPTAA", 4);
 
         var logRec = new Log()
-                 {
-                     RecordedDate = DateTime.Now,
-                     Program      = _thisProgram,
-                     Function     = ThisFunction,
-                     Message      = $"json content now is {json} for api {_client.BaseAddress + api}",
-                     Level        = 4,
-                 };
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"json content now is {json} for api {_client.BaseAddress + api}",
+                         Level        = 5,
+                     };
         LogModel.Record(logRec);
 
         try
@@ -270,16 +264,14 @@ public class WebApi : IDisposable
         }
         catch (Exception e)
         {
-            _log.Write($"Exception: {e.Message} for {api}", $"WebAPI Put Async {e.InnerException}");
-
             logRec = new Log()
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = ThisFunction,
-                             Message      = $"Exception: for {api} WebAPI Put Async {e.InnerException}",
-                             Level        = 0,
-                         };
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"Exception: for {api} WebAPI Put Async {e.InnerException}",
+                         Level        = 6,
+                     };
             LogModel.Record(logRec);
         }
     }
@@ -314,16 +306,15 @@ public class WebApi : IDisposable
         SetTvmaze();
         var api = $"shows/{showid}";
         PerformWaitTvmApi(api);
-        _log.Write($"API String = {TvmazeUrl}{api}", "WebAPI GS Int", 4);
 
         var logRec = new Log()
-                 {
-                     RecordedDate = DateTime.Now,
-                     Program      = _thisProgram,
-                     Function     = ThisFunction,
-                     Message      = $"API String = {TvmazeUrl}{api}",
-                     Level        = 3,
-                 };
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"API String = {TvmazeUrl}{api}",
+                         Level        = 5,
+                     };
         LogModel.Record(logRec);
 
         return _httpResponse;
@@ -334,7 +325,6 @@ public class WebApi : IDisposable
         SetTvmaze();
         var api = $"shows/{showid}/episodes";
         PerformWaitTvmApi(api);
-        _log.Write($"API String = {TvmazeUrl}{api}", "WebAPI GEBS", 4);
 
         var logRec = new Log()
                      {
@@ -342,7 +332,7 @@ public class WebApi : IDisposable
                          Program      = _thisProgram,
                          Function     = ThisFunction,
                          Message      = $"API String = {TvmazeUrl}{api}",
-                         Level        = 3,
+                         Level        = 5,
                      };
         LogModel.Record(logRec);
 
@@ -354,7 +344,6 @@ public class WebApi : IDisposable
         SetTvmazeUser();
         var api = "episodes";
         PerformWaitTvmApi(api);
-        _log.Write($"API String = {TvmazeUserUrl}{api}", "WebAPI GEBS", 4);
 
         var logRec = new Log()
                      {
@@ -362,7 +351,7 @@ public class WebApi : IDisposable
                          Program      = _thisProgram,
                          Function     = ThisFunction,
                          Message      = $"API String = {TvmazeUrl}{api}",
-                         Level        = 3,
+                         Level        = 5,
                      };
         LogModel.Record(logRec);
 
@@ -375,7 +364,6 @@ public class WebApi : IDisposable
         SetTvmaze();
         var api = $"updates/shows?since={period}";
         PerformWaitTvmApi(api);
-        _log.Write($"API String = {TvmazeUrl}{api}", "WebAPI GSUE", 4);
 
         var logRec = new Log()
                      {
@@ -383,10 +371,11 @@ public class WebApi : IDisposable
                          Program      = _thisProgram,
                          Function     = ThisFunction,
                          Message      = $"API String = {TvmazeUrl}{api}",
-                         Level        = 3,
+                         Level        = 5,
                      };
         LogModel.Record(logRec);
-        var json = _httpResponse.Content.ReadAsStringAsync().Result;
+
+        //var json = _httpResponse.Content.ReadAsStringAsync().Result;
 
         return _httpResponse;
     }
@@ -396,7 +385,6 @@ public class WebApi : IDisposable
         SetTvmazeUser();
         var api = "follows/shows";
         PerformWaitTvmApi(api);
-        _log.Write($"API String = {TvmazeUserUrl}{api}", "WebAPI GFS", 4);
 
         var logRec = new Log()
                      {
@@ -404,7 +392,7 @@ public class WebApi : IDisposable
                          Program      = _thisProgram,
                          Function     = ThisFunction,
                          Message      = $"API String = {TvmazeUrl}{api}",
-                         Level        = 3,
+                         Level        = 5,
                      };
         LogModel.Record(logRec);
 
@@ -417,7 +405,6 @@ public class WebApi : IDisposable
         SetTvmazeUser();
         var api = $"follows/shows/{showid}";
         PerformWaitTvmApi(api);
-        _log.Write($"API String = {TvmazeUserUrl}{api}", "WebAPI GFS", 4);
 
         var logRec = new Log()
                      {
@@ -425,7 +412,7 @@ public class WebApi : IDisposable
                          Program      = _thisProgram,
                          Function     = ThisFunction,
                          Message      = $"API String = {TvmazeUrl}{api}",
-                         Level        = 3,
+                         Level        = 5,
                      };
         LogModel.Record(logRec);
         if (_httpResponse.IsSuccessStatusCode) isFollowed = true;
@@ -437,21 +424,39 @@ public class WebApi : IDisposable
 
     #region Tvmaze Episode APIs
 
-    public HttpResponseMessage GetEpisode(int episodeid)
+    public HttpResponseMessage GetEpisode(int episodeId)
     {
         SetTvmaze();
-        var api = $"episodes/{episodeid}?embed=show";
-        _log.Write($"API String = {TvmazeUrl}{api}", "WebAPI G Epi", 4);
+        var api = $"episodes/{episodeId}?embed=show";
+
+        var logRec = new Log()
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"API String = {TvmazeUrl}{api}",
+                         Level        = 5,
+                     };
+        LogModel.Record(logRec);
         PerformWaitTvmApi(api);
 
         return _httpResponse;
     }
 
-    public HttpResponseMessage GetEpisodeMarks(int episodeid)
+    public HttpResponseMessage GetEpisodeMarks(int episodeId)
     {
         SetTvmazeUser();
-        var api = $"episodes/{episodeid}";
-        _log.Write($"API String = {TvmazeUserUrl}{api}", "WebAPI GM Epi", 4);
+        var api = $"episodes/{episodeId}";
+
+        var logRec = new Log()
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"API String = {TvmazeUrl}{api}",
+                         Level        = 5,
+                     };
+        LogModel.Record(logRec);
         PerformWaitTvmApi(api);
 
         /*
@@ -461,75 +466,63 @@ public class WebApi : IDisposable
         return _httpResponse;
     }
 
-    public HttpResponseMessage PutEpisodeToWatched(int episodeid, string? watcheddate = "")
+    public HttpResponseMessage PutEpisodeToWatched(int episodeId, string? watchedDate = "")
     {
         SetTvmazeUser();
-        var api                            = $"episodes/{episodeid}";
-        if (watcheddate == "") watcheddate = DateTime.Now.ToString("yyyy-MM-dd");
-        PerformWaitPutTvmApiAsync(api, episodeid, watcheddate, "Watched");
+        var api                            = $"episodes/{episodeId}";
+        if (watchedDate == "") watchedDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        var logRec = new Log()
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"API String = {TvmazeUrl}{api} with watched date {watchedDate}",
+                         Level        = 5,
+                     };
+        LogModel.Record(logRec);
+        PerformWaitPutTvmApiAsync(api, episodeId, watchedDate, "Watched");
 
         return _httpResponse;
     }
 
-    public HttpResponseMessage PutEpisodeToAcquired(int episodeid, string? acquiredate = "")
+    public HttpResponseMessage PutEpisodeToAcquired(int episodeId, string? acquireDate = "")
     {
         SetTvmazeUser();
-        var api                            = $"episodes/{episodeid}";
-        if (acquiredate == "") acquiredate = DateTime.Now.ToString("yyyy-MM-dd");
-        PerformWaitPutTvmApiAsync(api, episodeid, acquiredate, "Acquired");
+        var api                            = $"episodes/{episodeId}";
+        if (acquireDate == "") acquireDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        var logRec = new Log()
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"API String = {TvmazeUrl}{api} with watched date {acquireDate}",
+                         Level        = 5,
+                     };
+        PerformWaitPutTvmApiAsync(api, episodeId, acquireDate, "Acquired");
 
         return _httpResponse;
     }
 
-    public HttpResponseMessage PutEpisodeToSkipped(int episodeid, string? skipdate = "")
+    public HttpResponseMessage PutEpisodeToSkipped(int episodeId, string? skipDate = "")
     {
         SetTvmazeUser();
-        var api                      = $"episodes/{episodeid}";
-        if (skipdate == "") skipdate = DateTime.Now.ToString("yyyy-MM-dd");
-        PerformWaitPutTvmApiAsync(api, episodeid, skipdate, "Skipped");
+        var api                      = $"episodes/{episodeId}";
+        if (skipDate == "") skipDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        var logRec = new Log()
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = _thisProgram,
+                         Function     = ThisFunction,
+                         Message      = $"API String = {TvmazeUrl}{api} with watched date {skipDate}",
+                         Level        = 5,
+                     };
+        PerformWaitPutTvmApiAsync(api, episodeId, skipDate, "Skipped");
 
         return _httpResponse;
     }
-
-    #endregion
-
-    #region Scrape APIs
-
-    #region Torrentz2API
-
-    /*
-    public HttpResponseMessage GetTorrentz2Magnets(string searchfor)
-    {
-        _Torrentz2Client             = new HttpClient();
-        _Torrentz2Client.BaseAddress = new Uri(Torrentz2ApiUrlPre);
-        _Torrentz2Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var productvalue = new ProductInfoHeaderValue("Safari", "13.0");
-        _Torrentz2Client.DefaultRequestHeaders.UserAgent.Add(productvalue);
-        var t = GetShowTorrentz2(searchfor);
-        t.Wait();
-        return _httpResponse;
-    }
-    private async Task GetShowTorrentz2(string searchfor)
-    {
-        try
-        {
-            var url = GetTorrentz2MagnetsApi(searchfor);
-            _httpResponse = await _Torrentz2Client.GetAsync(url).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            _log.Write($"Exception {e.Message} {e.InnerException}", "WebAPI Torrentz2", 0);
-        }
-    }
-    private string GetTorrentz2MagnetsApi(string searchFor)
-    {
-        var api = $"{Torrentz2ApiUrlPre}{Common.RemoveSpecialCharsInShowName(searchFor)}'";
-        _log.Write($"API String = {api}", "Torrentz2API", 4);
-        return api;
-    }
-    */
-
-    #endregion
 
     #endregion
 }

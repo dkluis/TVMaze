@@ -1,60 +1,154 @@
 @page "/Logging"
-@using System.Runtime.InteropServices.JavaScript
 @inject DataExchange DataExchangeService
 
 @code {
-    private static readonly AppInfo  AppInfo        = new("Tvmaze", "WebUI", "DbAlternate");
-    private                 int      _minLevel      = 0;
-    private                 int      _maxLevel      = 5;
-    private                 DateTime _fromDate      = DateTime.Now.AddDays(-1);
-    private                 DateTime _toDate        = DateTime.Now;
-    private                 string   _includeString = string.Empty;
-    private                 string   _excludeString = string.Empty;
-    private                 List<Log> _logs = new ();
+    private static readonly AppInfo   AppInfo          = new("Tvmaze", "WebUI", "DbAlternate");
+    private                 int       _minLevel        = 0;
+    private                 int       _maxLevel        = 3;
+    private                 DateTime  _fromDate        = DateTime.Now.AddHours(-1);
+    private                 DateTime  _toDate          = DateTime.Now;
+    private                 DateTime  _upToDate        = DateTime.Now.AddDays(-2).Date;
+    private                 string    _includeString   = string.Empty;
+    private                 string    _excludeString   = string.Empty;
+    private                 List<Log> _logs            = new();
+    private                 List<Log> _initialLogs     = new();
+    private                 int       _recordsReturned = 0;
+    private                 int       _recordsFiltered = 0;
+    private                 int       _recordsToTake   = 10000;
 
 }
 
 @{
     DataExchangeService.LastPage = "Other";
 
-    //logs = logs.Where(l => l.Function == "WebApi").ToArray();
-    //logs = logs.Where(l => !l.Message.Contains("Skipping")).ToArray();
-    //logs = logs.Where(l => !l.Program.Contains("Epoch")).ToArray();
-    //logs = logs.Where(l => l.Level < 3).ToArray();
-
     void SearchLogs()
     {
+        var logsTemp = _initialLogs;
+
         if (!string.IsNullOrEmpty(_includeString))
-            _logs = _logs.Where(l => l.Program.Contains(_includeString) || l.Function.Contains(_includeString) || l.Message.Contains(_includeString)).ToList();
+        {
+            if (_includeString.Contains(";"))
+            {
+                var splitIncludes = _includeString.Split(";");
+
+                var includeStrings = new List<string>();
+
+                foreach (var include in splitIncludes)
+                {
+                    if (include != "")
+                        includeStrings.Add(include);
+                }
+
+                logsTemp = logsTemp.Where(log => includeStrings.Any(includeString => log.Program.Contains(includeString) || log.Function.Contains(includeString) || log.Message.Contains(includeString))).ToList();
+            } else
+            {
+                logsTemp = logsTemp.Where(l => l.Program.Contains(_includeString) || l.Function.Contains(_includeString) || l.Message.Contains(_includeString)).ToList();
+            }
+        }
+
         if (!string.IsNullOrEmpty(_excludeString))
-            _logs = _logs.Where(l => !l.Program.Contains(_excludeString) && !l.Function.Contains(_excludeString) && !l.Message.Contains(_excludeString)).ToList();
+            if (_excludeString.Contains(";"))
+            {
+                var splitExcludes = _excludeString.Split(";");
+
+                foreach (var exclude in splitExcludes)
+                {
+                    logsTemp = logsTemp.Where(l => !l.Program.Contains(exclude) && !l.Function.Contains(exclude) && !l.Message.Contains(exclude)).ToList();
+                }
+            } else
+            {
+                logsTemp = logsTemp.Where(l => !l.Program.Contains(_excludeString) && !l.Function.Contains(_excludeString) && !l.Message.Contains(_excludeString)).ToList();
+            }
+
+        _logs            = logsTemp;
+        _recordsFiltered = _logs.Count();
     }
 
     void RefreshLogs()
     {
         using var db = new TvMaze();
-        _logs = db.Logs.OrderByDescending(l => l.RecordedDate).ToList();
-        _logs = _logs.Where(l => l.Level        >= _minLevel && l.Level        <= _maxLevel).ToList();
-        _logs = _logs.Where(l => l.RecordedDate >= _fromDate && l.RecordedDate <= _toDate).ToList();
+        _logs = db.Logs
+                  .Where(l => (l.Level >= _minLevel && l.Level <= _maxLevel) && (l.RecordedDate >= _fromDate && l.RecordedDate <= _toDate))
+                  .OrderByDescending(l => l.RecordedDate).Take(_recordsToTake).ToList();
+        _initialLogs     = _logs;
+        _recordsReturned = _initialLogs.Count();
+        _recordsFiltered = _recordsReturned;
+    }
+
+    void ResetLevels()
+    {
+        _maxLevel = 3;
+        _minLevel = 0;
+        ResetData();
+    }
+
+    void ResetData()
+    {
+        _initialLogs     = new List<Log>();
+        _logs            = _initialLogs;
+        _recordsFiltered = 0;
+        _recordsReturned = 0;
+    }
+
+    void ResetDates()
+    {
+        _fromDate        = DateTime.Now.AddHours(-1);
+        _toDate          = DateTime.Now;
+        ResetData();
+    }
+
+    void ResetAll()
+    {
+        ResetLevels();
+        ResetDates();
+    }
+
+    void DeleteEntries()
+    {
+        using var db       = new TvMaze();
+        var       toDelete = db.Logs.Where(l => l.RecordedDate < _upToDate).ToList();
+        db.Logs.RemoveRange(toDelete);
+        db.SaveChanges();
+        ResetAll();
     }
 }
 
-
-
-<h1>Logging</h1>
+<h3>Logging</h3>
 
 <div class="input-group mb-3">
     <div class="input-group-prepend">
         <span class="input-group-text">Min Level</span>
     </div>
-    <input @bind="_minLevel"/>
+    <input @bind="_minLevel" Style="width: 50px"/>
     <div class="input-group-prepend">
         <span class="input-group-text">Max Level</span>
     </div>
-    <input @bind="_maxLevel"/>
+    <input @bind="_maxLevel" Style="width: 50px"/>
+    <div class="input-group-prepend">
+        <span class="input-group-text">From (incl)</span>
+    </div>
+    <input @bind="_fromDate" Style="width: 200px"/>
+    <div class="input-group-prepend">
+        <span class="input-group-text">To (incl)</span>
+    </div>
+    <input @bind="_toDate" Style="width: 200px"/>
+    <div class="input-group-append">
+        <span class="input-group-text">No of Recs</span>
+    </div>
+    <input @bind="_recordsToTake"/>
     <button class="btn btn-info" @onclick="RefreshLogs">Get Logs</button>
-</div>
+    <div>
+        <div class="mt-2">
+            <span>
+                &#8195;<b>Records Returned: @_recordsReturned && Records: Filtered: @_recordsFiltered</b>
+            </span>
+        </div>
+        &#8195;<button class="btn btn-info" @onclick="ResetLevels">Reset Levels</button>
+        &#8195;<button class="btn btn-info" @onclick="ResetDates">Reset Dates</button>
+        &#8195;<button class="btn btn-info" @onclick="ResetAll">Reset All</button>
+    </div>
 
+</div>
 
 <div class="input-group mb-3">
     <div class="input-group-prepend">
@@ -72,6 +166,14 @@
         <span class="input-group-text">%</span>
     </div>
     <button class="btn btn-info" @onclick="SearchLogs">Search Logs</button>
+</div>
+
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <span class="input-group-text">Up To: </span>
+    </div>
+    <input @bind="_upToDate" Style="width: 200px"/>
+    <button class="btn btn-info" @onclick="DeleteEntries">Delete Entries</button>
 </div>
 
 <div>
@@ -102,6 +204,11 @@
                         <td>@rec.Level</td>
                     </tr>
                 }
+            } else
+            {
+                <tr>
+                    <td>No Records Returned</td>
+                </tr>
             }
         }
         </tbody>
