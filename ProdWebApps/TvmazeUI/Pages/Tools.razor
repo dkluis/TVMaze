@@ -370,7 +370,11 @@
         {
             @foreach (var line in _logContent!)
             {
-                if (line.Contains("########################################################################################") || line.Contains("Finished ####") || line.ToLower().Contains("chromedriver") || line.ToLower().Contains("connection"))
+                if (line.Contains("########################################################################################") ||
+                    line.Contains("Finished ####")                                                                            ||
+                    line.ToLower().Contains("chromedriver")                                                                   ||
+                    line.ToLower().Contains("connection")                                                                     ||
+                    line.ToLower().Contains("bind() failed"))
                 {
                     continue;
                 }

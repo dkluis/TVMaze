@@ -14,6 +14,7 @@ public class AppInfo
     public readonly string          Torrentz2Token;
     public readonly string          TvmazeToken;
     public readonly TextFileHandler TxtFile;
+    public readonly bool            IsDebugOn;
 
     public AppInfo(string application, string program, string dbConnection)
     {
@@ -55,9 +56,11 @@ public class AppInfo
 
         TxtFile = new TextFileHandler(fileName, Program, filePath, logLevel);
 
-        //CnfFile = new TextFileHandler(ConfigFileName, Program, ConfigPath, LogLevel);
-        var dbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
-        var dbTestConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
+        if (ReadKeyFromFile.FindInArray(ConfigFullPath, "Debug") == "Yes") IsDebugOn = true;
+        else IsDebugOn                                                               = false;
+
+        var dbProdConn                                                               = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
+        var dbTestConn                                                               = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
         DbAltConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
 
         TvmazeToken    = ReadKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");

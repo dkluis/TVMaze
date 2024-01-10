@@ -151,10 +151,11 @@ public class WebScrape : IDisposable
         {
             htmlDoc = web.Load(html);
         }
-        catch (HtmlWebException ex)
+        catch (HtmlWebException e)
         {
             _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
-            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets Found: {foundMagnets}", 3);
+            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Web.Load exception {e.Message}", 6);
+            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets Found: {foundMagnets}", 4);
 
             return;
         }
@@ -315,6 +316,9 @@ public class WebScrape : IDisposable
 
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
+
+        if (_appInfo.IsDebugOn)
+            LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Debug {html}", 10);
 
         var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
                                  .Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))

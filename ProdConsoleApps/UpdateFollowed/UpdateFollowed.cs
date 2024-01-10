@@ -52,8 +52,10 @@ internal static class UpdateFollowed
         LogModel.Record(thisProgram, "Main", $"There are {records} records in Following Table", 3);
 
         Show      theShow          = new(appInfo);
-        var       idx              = 0;
-        var       delIdx           = 0;
+        var       processedIdx     = 0;
+        var       deletedIdx       = 0;
+        var       addedIdx         = 0;
+        var       updatedIdx       = 0;
         List<int> allFollowedShows = new();
 
         using MariaDb mDbWrite        = new(appInfo);
@@ -64,8 +66,8 @@ internal static class UpdateFollowed
             var jtShow = int.Parse(show["show_id"]!.ToString());
             allFollowedShows.Add(jtShow);
 
-            log.Write($"Processing {jtShow}", "", 4);
-            LogModel.Record(thisProgram, "Main", $"Processing {jtShow}", 5);
+            // log.Write($"Processing {jtShow}", "", 4);
+            // LogModel.Record(thisProgram, "Main", $"Processing {jtShow}", 5);
             inFollowedTable.GetFollowed(jtShow);
 
             if (inFollowedTable.InDb)
@@ -75,7 +77,7 @@ internal static class UpdateFollowed
                     uts.ToFollowed(appInfo, jtShow);
                 }
 
-                idx++;
+                processedIdx++;
             } else
             {
                 theShow.FillViaTvmaze(jtShow);
@@ -105,9 +107,14 @@ internal static class UpdateFollowed
                 }
 
                 if (theShow.IsDbFilled)
+                {
                     theShow.DbUpdate();
-                else
+                    updatedIdx++;
+                } else
+                {
                     theShow.DbInsert(true);
+                    addedIdx++;
+                }
 
                 theShow.Reset();
                 inFollowedTable.DbInsert(true);
@@ -118,8 +125,7 @@ internal static class UpdateFollowed
                     sae.Refresh(jtShow);
                 }
 
-                idx++;
-
+                processedIdx++;
                 inFollowedTable.Reset();
 
                 //allFollowedShows.Add(int.Parse(show["show_id"].ToString()));
@@ -127,8 +133,8 @@ internal static class UpdateFollowed
             }
         }
 
-        log.Write($"Updated or Inserted {idx} Shows", "", 2);
-        LogModel.Record(thisProgram, "Main", $"Updated or Inserted {idx} Shows", 3);
+        // log.Write($"Updated or Inserted {processedIdx} Shows", "", 2);
+        // LogModel.Record(thisProgram, "Main", $"Updated or Inserted {processedIdx} Shows", 3);
 
         // Delete Shows that are no longer being followed with a limit of 10 at a time.
         Followed followed = new(appInfo);
@@ -144,7 +150,7 @@ internal static class UpdateFollowed
                     theShow.Reset();
                     followed.DbDelete(showId);
                     followed.Reset();
-                    delIdx++;
+                    deletedIdx++;
                 }
             else
             {
@@ -152,8 +158,8 @@ internal static class UpdateFollowed
                 LogModel.Record(thisProgram, "Main", $"Too Many Shows are flagged for deletion {toDelete.Count}", 3);
             }
 
-            log.Write($"Deleted {delIdx} Shows", "", 1);
-            LogModel.Record(thisProgram, "Main", $"Deleted {delIdx} Shows", 3);
+            // log.Write($"Deleted {deletedIdx} Shows", "", 1);
+            // LogModel.Record(thisProgram, "Main", $"Deleted {deletedIdx} Shows", 3);
         }
 
         MariaDb mdb  = new(appInfo);
@@ -166,6 +172,8 @@ internal static class UpdateFollowed
             log.Write($"Reset {rdr[0]} to New ---> Should not occur ###################", "", 0);
             LogModel.Record(thisProgram, "Main", $"Reset {rdr[0]} to New ---> Should not occur ###################", 6);
         }
+
+        LogModel.Record(thisProgram, "Main", $"Numbers: Processed {processedIdx}, Added {addedIdx}, Updated {updatedIdx}, Deleted {deletedIdx}", 3);
 
         log.Stop();
         LogModel.Record(thisProgram, "Main", "Stopping Processing", 3);

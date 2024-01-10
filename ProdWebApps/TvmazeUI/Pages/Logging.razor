@@ -4,7 +4,8 @@
 @code {
     private static readonly AppInfo   AppInfo          = new("Tvmaze", "WebUI", "DbAlternate");
     private                 int       _minLevel        = 0;
-    private                 int       _maxLevel        = 3;
+    private                 int       _maxLevel        = 10;
+    private                 int       _singleLevel     = 99;
     private                 DateTime  _fromDate        = DateTime.Now.AddHours(-1);
     private                 DateTime  _toDate          = DateTime.Now;
     private                 DateTime  _upToDate        = DateTime.Now.AddDays(-2).Date;
@@ -14,8 +15,7 @@
     private                 List<Log> _initialLogs     = new();
     private                 int       _recordsReturned = 0;
     private                 int       _recordsFiltered = 0;
-    private                 int       _recordsToTake   = 10000;
-
+    private                 int       _recordsToTake   = 25000;
 }
 
 @{
@@ -66,6 +66,11 @@
 
     void RefreshLogs()
     {
+        if (_singleLevel != 99)
+        {
+            _minLevel = _singleLevel;
+            _maxLevel = _singleLevel;
+        }
         using var db = new TvMaze();
         _logs = db.Logs
                   .Where(l => (l.Level >= _minLevel && l.Level <= _maxLevel) && (l.RecordedDate >= _fromDate && l.RecordedDate <= _toDate))
@@ -77,8 +82,9 @@
 
     void ResetLevels()
     {
-        _maxLevel = 3;
-        _minLevel = 0;
+        _maxLevel    = 10;
+        _minLevel    = 0;
+        _singleLevel = 99;
         ResetData();
     }
 
@@ -92,8 +98,9 @@
 
     void ResetDates()
     {
-        _fromDate        = DateTime.Now.AddHours(-1);
-        _toDate          = DateTime.Now;
+        _fromDate = DateTime.Now.AddHours(-1);
+        _toDate   = DateTime.Now.AddHours(1);
+        _upToDate = DateTime.Now.AddDays(-2).Date;
         ResetData();
     }
 
@@ -124,6 +131,10 @@
         <span class="input-group-text">Max Level</span>
     </div>
     <input @bind="_maxLevel" Style="width: 50px"/>
+    <div class="input-group-prepend">
+        <span class="input-group-text">Single Level</span>
+    </div>
+    <input @bind="_singleLevel" Style="width: 50px"/>
     <div class="input-group-prepend">
         <span class="input-group-text">From (incl)</span>
     </div>

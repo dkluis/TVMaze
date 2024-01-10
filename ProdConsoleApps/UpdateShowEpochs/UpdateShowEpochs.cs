@@ -123,7 +123,7 @@ internal static class UpdateShowEpochs
                              Program      = thisProgram,
                              Function     = "Main",
                              Message      = $"Skipping {showId} since show is already up to date",
-                             Level        = 4,
+                             Level        = 5,
                          };
                 LogModel.Record(logRec);
 
@@ -307,7 +307,7 @@ internal static class UpdateShowEpochs
                                      Program      = thisProgram,
                                      Function     = "Main",
                                      Message      = $"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}",
-                                     Level        = 4,
+                                     Level        = 5,
                                  };
                         LogModel.Record(logRec);
 
