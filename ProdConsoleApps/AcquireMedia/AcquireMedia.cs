@@ -26,11 +26,11 @@ internal static class Program
         using GetEpisodesToBeAcquired gea   = new();
         var                           rdr   = gea.Find(appInfo);
 
-        // log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
-        // var options = new ChromeOptions();
-        // options.AddArgument("--headless");
-        // options.AddArgument("--whitelisted-ips=''");
-        // var browserDriver = new ChromeDriver(options);
+        log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
+        var options = new ChromeOptions();
+        options.AddArgument("--headless");
+        options.AddArgument("--whitelisted-ips=''");
+        var browserDriver = new ChromeDriver(options);
 
         var isSeason = false;
         var showId   = 0;
@@ -41,7 +41,7 @@ internal static class Program
             showId = 0;
             var showName  = rdr["AltShowName"].ToString() != "" ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "") : rdr["ShowName"].ToString()!;
             var episodeId = int.Parse(rdr["TvmEpisodeId"].ToString()!);
-            var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName, int.Parse(rdr["Season"].ToString()!), int.Parse(rdr["Episode"].ToString()!), log);
+            var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName, int.Parse(rdr["Season"].ToString()!), int.Parse(rdr["Episode"].ToString()!), log, browserDriver);
             isSeason                = seasonInd;
 
             if (magnet == "")
@@ -94,8 +94,8 @@ internal static class Program
             }
         }
 
-        // log.Write("Quiting Chrome Selenium Driver", thisProgram, 4);
-        // browserDriver.Quit();
+        log.Write("Quiting Chrome Selenium Driver", thisProgram, 4);
+        browserDriver.Quit();
         log.Stop();
     }
 }

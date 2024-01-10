@@ -1,3 +1,5 @@
+using Common_Lib;
+
 using DB_Lib_EF.Models.MariaDB;
 
 namespace DB_Lib_EF.Entities;
@@ -34,9 +36,22 @@ public class LogEntity : IDisposable
 
     public bool RecordEntry(Log rec)
     {
-        var db = new TvMaze();
-        db.Logs.Add(rec);
-        db.SaveChanges();
+        try
+        {
+            var db                                     = new TvMaze();
+            if (rec.Program.Length  > 30) rec.Program  = rec.Program.Substring(0, 30);
+            if (rec.Function.Length > 30) rec.Function = rec.Function.Substring(0, 30);
+            if (rec.Message.Length  > 300) rec.Message = rec.Message.Substring(0, 300);
+            db.Logs.Add(rec);
+            db.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            var appInfo = new AppInfo("CronLog", "LogEntity", "DbAlternate");
+            appInfo.TxtFile.Write($"Abort: {e.Message}");
+            
+            return false;
+        }
 
         return true;
     }
