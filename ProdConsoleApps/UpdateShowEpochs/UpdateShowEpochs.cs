@@ -131,7 +131,7 @@ internal static class UpdateShowEpochs
             }
 
             tvmShow.FillViaTvmaze(showId);
-            log.Write($"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}; Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}", "", 4);
+            log.Write($"TvmShowId: {tvmShow.TvmShowId},  Name: {tvmShow.ShowName}: Tvmaze Epoch: {showEpoch}, In DB Epoch {inDbEpoch}", "", 4);
 
             logRec = new Log
                      {
@@ -174,7 +174,7 @@ internal static class UpdateShowEpochs
                                      RecordedDate = DateTime.Now,
                                      Program      = thisProgram,
                                      Function     = "Main",
-                                     Message      = $"Show {showId} is rejected because of review rules {tvmShow.TvmUrl}",
+                                     Message      = $"Show {showId} {tvmShow.ShowName}is rejected because of review rules {tvmShow.TvmUrl}",
                                      Level        = 3,
                                  };
                         LogModel.Record(logRec);
@@ -190,7 +190,7 @@ internal static class UpdateShowEpochs
                                  RecordedDate = DateTime.Now,
                                  Program      = thisProgram,
                                  Function     = "Main",
-                                 Message      = "This show is evaluated already",
+                                 Message      = $"This show {tvmShow.TvmShowId}: {tvmShow.ShowName} is evaluated already",
                                  Level        = 3,
                              };
                     LogModel.Record(logRec);
@@ -210,7 +210,7 @@ internal static class UpdateShowEpochs
                                  RecordedDate = DateTime.Now,
                                  Program      = thisProgram,
                                  Function     = "Main",
-                                 Message      = $"Insert of Show {showId} Failed #############################",
+                                 Message      = $"Insert of Show {showId}: {tvmShow.ShowName} Failed #############################",
                                  Level        = 4,
                              };
                     LogModel.Record(logRec);
@@ -267,7 +267,7 @@ internal static class UpdateShowEpochs
                         }
                     }
 
-                    log.Write($"Number of Episodes for Show {showId}: {idxEpsByShow}", "", 2);
+                    log.Write($"Number of Episodes for Show {showId} {tvmShow.ShowName}: {idxEpsByShow}", "", 2);
                 }
             } else
             {
@@ -307,7 +307,7 @@ internal static class UpdateShowEpochs
                                      Program      = thisProgram,
                                      Function     = "Main",
                                      Message      = $"Processing {eps.TvmShowId} {eps.TvmEpisodeId} {eps.SeasonEpisode}",
-                                     Level        = 3,
+                                     Level        = 4,
                                  };
                         LogModel.Record(logRec);
 
@@ -383,7 +383,7 @@ internal static class UpdateShowEpochs
                              RecordedDate = DateTime.Now,
                              Program      = thisProgram,
                              Function     = "Main",
-                             Message      = $"Updated Show {showId}",
+                             Message      = $"Updated Show {showId} {tvmShow.ShowName}",
                              Level        = 3,
                          };
                 LogModel.Record(logRec);
@@ -398,6 +398,16 @@ internal static class UpdateShowEpochs
         }
 
         log.Stop();
+
+        logRec = new Log
+                     {
+                         RecordedDate = DateTime.Now,
+                         Program      = thisProgram,
+                         Function     = "Main",
+                         Message      = $"Stopping the Processing",
+                         Level        = 3,
+                     };
+        LogModel.Record(logRec);
         }
     }
 }

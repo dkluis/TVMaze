@@ -42,7 +42,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Connecting To DB",
                              Message      = $"Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
         }
@@ -74,7 +74,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Opening To DB",
                              Message      = $"Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
             Success = false;
@@ -100,7 +100,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Closing DB",
                              Message      = $"MariaDB Class Connection Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
             Success = false;
@@ -128,7 +128,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Execute Command",
                              Message      = $"Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
             Success = false;
@@ -158,7 +158,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Execute Query Cmd",
                              Message      = $"Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
             Success = false;
@@ -189,7 +189,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Execute Query String",
                              Message      = $"Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
             Success = false;
@@ -220,7 +220,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Execute NonQuery Cmd",
                              Message      = $"Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
             Success = false;
@@ -252,7 +252,7 @@ public class MariaDb : IDisposable
                              Program      = _thisProgram,
                              Function     = "Execute NonQuery String",
                              Message      = $"Error: {e.Message}",
-                             Level        = 0,
+                             Level        = 6,
                          };
             LogModel.Record(logRec);
             Success = false;

@@ -197,7 +197,8 @@
                 foreach (var rec in _logs)
                 {
                     <tr>
-                        <td>@rec.RecordedDate</td>
+                        @*<td>@rec.RecordedDate</td>*@
+                        <td>@rec.RecordedDate.ToString("MM/dd/yyyy hh:mm:ss.fff tt")</td>
                         <td>@rec.Program</td>
                         <td>@rec.Function</td>
                         <td>@rec.Message</td>

@@ -5,6 +5,8 @@ using Microsoft.Data.Sqlite;
 
 using Common_Lib;
 
+using DB_Lib_EF.Entities;
+
 namespace DB_Lib;
 
 public static class PlexSqlLite
@@ -29,12 +31,17 @@ public static class PlexSqlLite
 
         if (reader is null) return watchedEpisodes;
 
+        var showNames = "";
+
         while (reader.Read())
         {
             PlexWatchedInfo record = new();
             record.Fill(reader[0].ToString()!, int.Parse(reader[1].ToString()!), int.Parse(reader[2].ToString()!), int.Parse(reader[3].ToString()!));
             watchedEpisodes.Add(record);
+            showNames += record.ShowName + "; ";
         }
+
+        LogModel.Record("Update Plex Watched", "Sqlite", $"Found: {watchedEpisodes.Count} -> {showNames}", 3);
 
         return watchedEpisodes;
     }

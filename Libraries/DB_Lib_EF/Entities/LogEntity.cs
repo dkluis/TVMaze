@@ -50,4 +50,46 @@ public static class LogModel
 
         return logs.RecordEntry(rec);
     }
+
+    public static bool Record(string program, string function, string message, int level = 3)
+    {
+        var log = new Log
+                  {
+                      RecordedDate = DateTime.Now,
+                      Program      = program,
+                      Function     = function,
+                      Message      = message,
+                      Level        = level,
+                  };
+
+        return Record(log);
+    }
+
+    public static bool Start(string program, string function = "Main", string message = "Starting Processing", int level = 3)
+    {
+        var log = new Log
+                  {
+                      RecordedDate = DateTime.Now,
+                      Program      = program,
+                      Function     = function,
+                      Message      = message,
+                      Level        = level
+                  };
+
+        return Record(log);
+    }
+
+    public static bool Stop(string program, string function = "Main", string message = "Stopped Processing", int level = 3)
+    {
+        var log = new Log
+                  {
+                      RecordedDate = DateTime.Now,
+                      Program      = program,
+                      Function     = function,
+                      Message      = message,
+                      Level        = level
+                  };
+
+        return Record(log);
+    }
 }

@@ -5,6 +5,8 @@ using Common_Lib;
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 using Entities_Lib;
 
 using Web_Lib;
@@ -27,21 +29,27 @@ internal static class UpdateFollowed
         var     log     = appInfo.TxtFile;
         log.Start();
 
+        LogModel.Record(thisProgram, "Main", "Starting Processing", 3);
+
         using WebApi tvmApi = new(appInfo);
         var          gfs    = tvmApi.GetFollowedShows();
 
         if (tvmApi.IsTimedOut)
         {
             log.Write("Getting an Time Out twice on the GetFollowedShows call to TVMaze");
+            LogModel.Record(thisProgram, "Main", "Getting an TimeOut twice on the Get FollowedShows call to TVMaze", 3);
+            LogModel.Record(thisProgram, "Main", "Stopping Processing",                                              3);
             Environment.Exit(99);
         }
 
         var followedShowOnTvmaze = tvmApi.ConvertHttpToJArray(gfs);
         log.Write($"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze", "", 2);
+        LogModel.Record(thisProgram, "Main", $"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze", 3);
 
         CheckDb cdb     = new();
         var     records = CheckDb.FollowedCount(appInfo);
         log.Write($"There are {records} records in Following Table", "", 2);
+        LogModel.Record(thisProgram, "Main", $"There are {records} records in Following Table", 3);
 
         Show      theShow          = new(appInfo);
         var       idx              = 0;
@@ -57,6 +65,7 @@ internal static class UpdateFollowed
             allFollowedShows.Add(jtShow);
 
             log.Write($"Processing {jtShow}", "", 4);
+            LogModel.Record(thisProgram, "Main", $"Processing {jtShow}", 5);
             inFollowedTable.GetFollowed(jtShow);
 
             if (inFollowedTable.InDb)
@@ -85,9 +94,11 @@ internal static class UpdateFollowed
                     if (rows == 1)
                     {
                         log.Write($"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
+                        LogModel.Record(thisProgram, "Main", $"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 3);
                     } else
                     {
                         log.Write($"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
+                        LogModel.Record(thisProgram, "Main", $"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 3);
 
                         continue;
                     }
@@ -117,6 +128,7 @@ internal static class UpdateFollowed
         }
 
         log.Write($"Updated or Inserted {idx} Shows", "", 2);
+        LogModel.Record(thisProgram, "Main", $"Updated or Inserted {idx} Shows", 3);
 
         // Delete Shows that are no longer being followed with a limit of 10 at a time.
         Followed followed = new(appInfo);
@@ -135,9 +147,13 @@ internal static class UpdateFollowed
                     delIdx++;
                 }
             else
+            {
                 log.Write($"Too Many Shows are flagged for deletion {toDelete.Count}", "", 0);
+                LogModel.Record(thisProgram, "Main", $"Too Many Shows are flagged for deletion {toDelete.Count}", 3);
+            }
 
             log.Write($"Deleted {delIdx} Shows", "", 1);
+            LogModel.Record(thisProgram, "Main", $"Deleted {delIdx} Shows", 3);
         }
 
         MariaDb mdb  = new(appInfo);
@@ -148,8 +164,10 @@ internal static class UpdateFollowed
         {
             mDbW.ExecQuery($"update Shows set `TvmStatus` = 'New' where `TvmShowId` = {int.Parse(rdr[0].ToString()!)}");
             log.Write($"Reset {rdr[0]} to New ---> Should not occur ###################", "", 0);
+            LogModel.Record(thisProgram, "Main", $"Reset {rdr[0]} to New ---> Should not occur ###################", 6);
         }
 
         log.Stop();
+        LogModel.Record(thisProgram, "Main", "Stopping Processing", 3);
     }
 }
