@@ -1,5 +1,7 @@
 ﻿using Common_Lib;
 
+using DB_Lib_EF.Entities;
+
 using Entities_Lib;
 
 namespace CleanupPlexMedia;
@@ -13,6 +15,7 @@ internal static class CleanupPlexMedia
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
+        LogModel.Start(thisProgram, "Cleanup Plex Media");
 
         MediaFileHandler mfh              = new(appInfo);
         List<string>     showDirsToDelete = new();
@@ -24,6 +27,8 @@ internal static class CleanupPlexMedia
         tvKimShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
         tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length + tvKimShowDirs.Length);
 
+        LogModel.Record(thisProgram, "Cleanup Plex Media", $"Directory Counts:  TV Shows: {tvShowDirs.Length}, Kim's TV Shows {tvKimShowDirs.Length}, Dick's TvShows {tvDickShowDirs.Length}");
+
         foreach (var dir in allTvShowDirs)
         {
             var seasonDirs = Directory.GetDirectories(dir);
@@ -32,7 +37,13 @@ internal static class CleanupPlexMedia
             {
                 var files = Directory.GetFiles(seasonDir);
 
-                if (files.Length != 0) continue;
+                if (files.Length != 0)
+                {
+                    LogModel.Record(thisProgram, "Cleanup Plex Media", $"{seasonDir} has files {files.Length}", 5);
+
+                    continue;
+                }
+
                 const bool deleteDir = true;
 
                 try
@@ -41,11 +52,12 @@ internal static class CleanupPlexMedia
                 }
                 catch (Exception ex)
                 {
-                    log.Write($"Delete of {seasonDir} went wrong {ex}");
+                    LogModel.Record(thisProgram, "Cleanup Plex Media", $"Exception on Delete of {seasonDir}: {ex.Message}", 6);
                 }
 
                 if (deleteDir) showDirsToDelete.Add(dir);
                 log.Write($"Deleted directory: {seasonDir}");
+                LogModel.Record(thisProgram, "Cleanup Plex Media", $"Deleted of {seasonDir}");
             }
         }
 
@@ -58,12 +70,14 @@ internal static class CleanupPlexMedia
                 }
                 catch (Exception ex)
                 {
-                    log.Write($"Delete of {dir} went wrong {ex}");
+                    LogModel.Record(thisProgram, "Cleanup Plex Media", $"Exception on Delete of {dir}: {ex.Message}", 6);
                 }
 
             log.Write($"Deleted directory: {dir}");
+            LogModel.Record(thisProgram, "Cleanup Plex Media", $"Deleted of {dir}");
         }
 
         log.Stop();
+        LogModel.Stop(thisProgram, "Cleanup Plex Media");
     }
 }

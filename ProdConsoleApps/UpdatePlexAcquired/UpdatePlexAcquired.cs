@@ -24,6 +24,7 @@ internal static class UpdatePlexAcquired
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
+        LogModel.Start(thisProgram, "Plex Acquired");
 
         // Read the Acquired Media txt file
         var plexAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "PlexAcquired.log");
@@ -31,7 +32,9 @@ internal static class UpdatePlexAcquired
         if (!File.Exists(plexAcquired))
         {
             log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
+            LogModel.Record(thisProgram, "Plex Acquired", "Nothing To Process");
             log.Stop();
+            LogModel.Stop(thisProgram, "Plex Acquired");
             Environment.Exit(0);
         }
 
@@ -40,6 +43,7 @@ internal static class UpdatePlexAcquired
         File.AppendAllLinesAsync(allAcquired, acquired);
         File.Delete(plexAcquired);
         log.Write($"Found {acquired.Length} records in {plexAcquired}");
+        LogModel.Record(thisProgram, "Plex Acquired", $"Found {acquired.Length} records in {plexAcquired}");
 
         // Process all media lines
         foreach (var acq in acquired)
@@ -65,16 +69,15 @@ internal static class UpdatePlexAcquired
                 var epiNum = int.Parse(seas[1]);
 
                 // Special section to handle the Dexter versus Dexter New Blood season mix up on the internet.
-                if (show.ToLower() == "dexter" && seasonNum > 8)
-                {
-                    show          =  "Dexter New Blood";
-                    seasonNum     -= 8;
-                    episodeString =  Common.BuildSeasonEpisodeString(seasonNum, epiNum);
-                    log.Write("Changed Dexter to Dexter New Blood", "", 2);
-                }
+                // if (show.ToLower() == "dexter" && seasonNum > 8)
+                // {
+                //     show          =  "Dexter New Blood";
+                //     seasonNum     -= 8;
+                //     episodeString =  Common.BuildSeasonEpisodeString(seasonNum, epiNum);
+                //     log.Write("Changed Dexter to Dexter New Blood", "", 2);
+                // }
 
-                //
-                log.Write($"Found show {show} episode {episodeString}", "", 4);
+                LogModel.Record(thisProgram, "Plex Acquired", $"Found show {show} episode {episodeString}", 4);
             } else
             {
                 if (acqSeas.Length == 2)
@@ -82,10 +85,10 @@ internal static class UpdatePlexAcquired
                     isSeason  = true;
                     show      = acqSeas[0].Replace(".", " ").Trim();
                     seasonNum = int.Parse(acq.Replace(acqSeas[0], "").Replace(acqSeas[1], "").Replace(".", "").ToLower().Replace("s", ""));
-                    log.Write($"Found the show's {show} whole season {seasonNum}", "", 4);
+                    LogModel.Record(thisProgram, "Plex Acquired", $"Found the show's {show} whole season {seasonNum}");
                 } else
                 {
-                    log.Write($"Could not find a show and episode for {acq}, is probably a movie or music #################", "", 2);
+                    LogModel.Record(thisProgram, "Plex Acquired", $"Could not find a show and episode for {acq}, is probably a movie or music");
                     using MediaFileHandler mfh = new(appInfo);
                     mfh.MoveNonTvMediaToPlex(acq);
 
@@ -99,6 +102,7 @@ internal static class UpdatePlexAcquired
             if (showId.Count != 1)
             {
                 log.Write($"Could not determine ShowId for: {show}, found {showId.Count} records", "", 2);
+                LogModel.Record(thisProgram, "Plex Acquired", $"Could not determine ShowId for: {show}, found {showId.Count} records", 4);
 
                 if (showId.Count == 0)
                 {
@@ -108,10 +112,19 @@ internal static class UpdatePlexAcquired
                     if (reducedShowToUpdate.Count == 1)
                     {
                         log.Write($"Found {reducedShow} trying this one", "", 2);
+                        LogModel.Record(thisProgram, "Plex Acquired", $"After reducing search Found {reducedShow} trying this one", 4);
                         showId = reducedShowToUpdate;
                     } else
                     {
                         ActionItemModel.RecordActionItem(thisProgram, $"Could not determine ShowId for: {show}, found {showId.Count} records", log);
+                        var showIds = "";
+
+                        foreach (var shw in showId)
+                        {
+                            showIds = showIds + shw.ToString() + ": ";
+                        }
+
+                        LogModel.Record(thisProgram, "Plex Acquired", $"Multiple Shows found for: {show}, found {showId.Count}: {showIds}", 4);
 
                         continue;
                     }
@@ -126,6 +139,7 @@ internal static class UpdatePlexAcquired
                 epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episodeString);
                 epsToUpdate.Add(epiId);
                 log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
+                LogModel.Record(thisProgram, "Plex Acquired", $"Working on ShowId {showId[0]} and EpisodeId {epiId}", 4);
             }
 
             Show foundShow = new(appInfo);
@@ -210,5 +224,6 @@ internal static class UpdatePlexAcquired
         }
 
         log.Stop();
+        LogModel.Stop(thisProgram, "Plex Acquired");
     }
 }
