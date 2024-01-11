@@ -23,5 +23,6 @@
         <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj"/>
         <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj"/>
         <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj"/>
+        <ProjectReference Include="..\..\ProdWebApps\TvmazeUI\TvmazeUI.csproj" />
     </ItemGroup>
 </Project>

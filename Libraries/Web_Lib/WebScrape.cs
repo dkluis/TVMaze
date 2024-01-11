@@ -111,7 +111,7 @@ public class WebScrape : IDisposable
         }
 
         _log.Write($"Found {foundMagnets} via EZTV", "Acquire Media");
-        LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Found {foundMagnets} via EZTV", 3);
+        LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Number of {showName} magnets found: {foundMagnets}", 3);
 
         if (foundMagnets == 0)
         {
@@ -155,7 +155,7 @@ public class WebScrape : IDisposable
         {
             _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
             LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Web.Load exception {e.Message}", 6);
-            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets Found: {foundMagnets}", 4);
+            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of {showName} magnets found: {foundMagnets}", 3);
 
             return;
         }
@@ -187,7 +187,7 @@ public class WebScrape : IDisposable
             }
 
         _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
-        LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets found: {foundMagnets}", 3);
+        LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets {showName} found: {foundMagnets}", 3);
 
         if (foundMagnets == 0)
         {
@@ -252,6 +252,7 @@ public class WebScrape : IDisposable
                 {
                     var prioritizedMagnet = priority + "#$# " + magnet;
                     _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "TorrentZ", 4);
+                    LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ", $"Prioritized Magnet recorded: {prioritizedMagnet}", 5);
                     Magnets.Add(prioritizedMagnet);
                     foundMagnets++;
                 }
@@ -267,6 +268,7 @@ public class WebScrape : IDisposable
             Magnets.Sort();
             Magnets.Reverse();
             _log.Write($"Found {foundMagnets} via TorrentZ", "Acquire Media");
+            LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ2", $"Number of magnets {showName} found: {foundMagnets}", 3);
         }
         catch (Exception e)
         {
@@ -338,14 +340,14 @@ public class WebScrape : IDisposable
             {
                 var prioritizedMagnet = priority + "#$# " + magnet;
                 _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "PirateBay", 4);
-                LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", "Prioritized Magnet recorded: {prioritizedMagnet}", 4);
+                LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Prioritized Magnet recorded: {prioritizedMagnet}", 4);
                 Magnets.Add(prioritizedMagnet);
                 foundMagnets++;
             }
         }
 
         _log.Write($"Found {foundMagnets} via PirateBay", "Acquire Media");
-        LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Number of magnets found: {foundMagnets}", 4);
+        LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Number of {showName} magnets found: {foundMagnets}", 3);
 
         if (foundMagnets == 0)
         {
