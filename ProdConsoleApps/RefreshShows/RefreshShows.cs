@@ -7,8 +7,6 @@ using DB_Lib_EF.Models.MariaDB;
 
 using Entities_Lib;
 
-
-
 namespace RefreshShows;
 
 internal static class RefreshShows
@@ -22,51 +20,50 @@ internal static class RefreshShows
         log.Start();
         LogModel.Start(thisProgram);
 
-        MariaDb   mDbR = new(appInfo);
-        using var db   = new TvMaze();
-
-        // Doing Skipping shows on Sunday Only
-        if (DateTime.Now.ToString("ddd") == "Sun")
+        try
         {
-            var skippingShows = db.Shows.Where(s => s.TvmStatus == "Skipping" && s.ShowStatus != "Ended") // && s.ShowStatus != "To Be Determined")
-                            .OrderByDescending(s => s.TvmShowId)
-                            .ToList();
+            using var db = new TvMaze();
 
-            if (skippingShows != null)
+            // Doing Skipping shows on Sunday Only
+            if (DateTime.Now.ToString("ddd") == "Sun")
             {
-                LogModel.Record(thisProgram, "Main", $"Starting Skipping Shows: {skippingShows.Count}");
+                var skippingShows = db.Shows.Where(s => s.TvmStatus == "Skipping" && s.ShowStatus != "Ended") // && s.ShowStatus != "To Be Determined")
+                                      .OrderByDescending(s => s.TvmShowId)
+                                      .ToList();
 
-                foreach (var rec in skippingShows)
+                if (skippingShows != null)
                 {
-                    using ShowAndEpisodes sae = new(appInfo);
-                    sae.Refresh(rec.TvmShowId);
-                    log.Write($"Finished Refreshing Show {rec.ShowName}, {rec.TvmShowId}", "", 2);
-                    LogModel.Record(thisProgram, "Main", $"Refreshing 'Skipping' show {rec.ShowName}, {rec.TvmShowId}", 4);
+                    LogModel.Record(thisProgram, "Main", $"Starting Skipping Shows: {skippingShows.Count}");
+
+                    foreach (var rec in skippingShows)
+                    {
+                        using ShowAndEpisodes sae = new(appInfo);
+                        sae.Refresh(rec.TvmShowId);
+                        log.Write($"Finished Refreshing Show {rec.ShowName}, {rec.TvmShowId}", "", 2);
+                        LogModel.Record(thisProgram, "Main", $"Refreshing 'Skipping' show {rec.ShowName}, {rec.TvmShowId}", 4);
+                    }
+
+                    LogModel.Record(thisProgram, "Main", $"Finished Skipping Shows: {skippingShows.Count}");
                 }
-
-                LogModel.Record(thisProgram, "Main", $"Finished Skipping Shows: {skippingShows.Count}");
             }
-        }
 
-        // Get all Shows to refresh today
-        var response = ViewEntities.GetShowsToRefresh();
+            // Get all Shows to refresh today
+            var response = ViewEntities.GetShowsToRefresh();
 
-        if (response != null && !response.WasSuccess)
-        {
-            log.Write("Error occurred while getting shows to refresh", "Main", 1);
-            LogModel.Record(thisProgram, "Main", $"Error Occurred Getting the base Shows To Refresh Information: {response.Message}", 6);
-            LogModel.Stop(thisProgram);
-            Environment.Exit(9);
-        }
+            if (response != null && !response.WasSuccess)
+            {
+                log.Write("Error occurred while getting shows to refresh", "Main", 1);
+                LogModel.Record(thisProgram, "Main", $"Error Occurred Getting the base Shows To Refresh Information: {response.Message}", 6);
 
-        var allShowsToRefreshInfo = (List<ViewEntities.ShowToRefresh>) response!.ResponseObject!;
+                // LogModel.Stop(thisProgram);
+                // Environment.Exit(9);
+            }
 
-        if (allShowsToRefreshInfo.Count > 0)
-        {
-            LogModel.Record(thisProgram, "Main", $"Found {allShowsToRefreshInfo.Count} shows to refresh");
+            var allShowsToRefreshInfo = (List<ViewEntities.ShowToRefresh>) response!.ResponseObject!;
+            LogModel.Record(thisProgram, "Main", $"Found {allShowsToRefreshInfo.Count} total shows to refresh");
 
             var showsToday = allShowsToRefreshInfo.Where(s => s.TvmStatus != "Skipping").Take(300).ToList();
-            LogModel.Record(thisProgram, "Main", $"Found {showsToday.Count} shows in the 7 to 31 day range to refresh");
+            LogModel.Record(thisProgram, "Main", $"Processing {showsToday.Count} shows in the 7 to 31 day range to refresh");
 
             foreach (var rec in showsToday)
             {
@@ -84,44 +81,52 @@ internal static class RefreshShows
             {
                 using ShowAndEpisodes sae = new(appInfo);
                 sae.Refresh(showId);
-                log.Write($"Refreshing Show not updated in 7 to 31 days {showId}", "", 2);
+                log.Write($"Refreshing Show that has episodes without a broadcast date {showId}", "", 2);
                 LogModel.Record(thisProgram, "Main", $"Refreshing show {showId} that has episodes without a broadcast date", 4);
             }
 
             // Refresh all shows with Orphaned Episodes
-            var showWithOrphanedEpisode = ViewEntities.GetEpisodesFullInfo(applyOrphanedFilter: true);
-            var rdr                     = mDbR.ExecQuery("select distinct `TvmShowId` from OrphanedEpisodes order by `TvmShowId`;");
+            response = ViewEntities.GetEpisodesFullInfo(applyOrphanedFilter: true);
 
-            while (rdr.Read())
+            if (response != null && response.WasSuccess && response.ResponseObject != null)
             {
-                using ShowAndEpisodes sae = new(appInfo);
-                log.Write($"Working on Epi Update for Orphaned Episodes {rdr[0]}", "", 2);
-                sae.Refresh(int.Parse(rdr[0].ToString()!));
+                var showWithOrphanedEpisode = (List<int>) response.ResponseObject;
+                LogModel.Record(thisProgram, "Main", $"Found {showWithOrphanedEpisode.Count} shows with orphaned episodes");
 
-                //Thread.Sleep(1000);
+                foreach (var showId in showWithOrphanedEpisode)
+                {
+                    using ShowAndEpisodes sae = new(appInfo);
+                    sae.Refresh(showId);
+                    log.Write($"Refreshing Show with Orphaned episodes {showId}", "", 2);
+                    LogModel.Record(thisProgram, "Main", $"Refreshing Show with Orphaned episodes {showId}", 4);
+                }
             }
 
-            mDbR.Close();
-        } else
-        {
-            LogModel.Record(thisProgram, "Main", "No Shows found to Refresh");
+            // Get all Shows that will need to be acquired today to refresh
+            response = ViewEntities.GetEpisodesToAcquire();
+
+            if (response != null && response.WasSuccess && response.ResponseObject != null)
+            {
+                var showsToAcquire = (List<ViewEntities.ShowEpisode>) response.ResponseObject;
+                LogModel.Record(thisProgram, "Main", $"Found {showsToAcquire.Count} shows with to acquire today");
+
+                foreach (var rec in showsToAcquire)
+                {
+                    using ShowAndEpisodes sae = new(appInfo);
+                    sae.Refresh(rec.TvmShowId);
+                    log.Write($"Refreshing Show to acquire {rec.TvmShowId}", "", 2);
+                    LogModel.Record(thisProgram, "Main", $"Refreshing Show to acquire {rec.TvmShowId}", 4);
+                }
+            }
+
+            log.Stop();
+            LogModel.Stop(thisProgram);
         }
-
-        // Get all Shows that will need to be acquired today to refresh
-        var rdr1 = mDbR.ExecQuery("select distinct `TvmShowId` from EpisodesFromTodayBack order by `TvmShowId` desc;");
-
-        while (rdr1.Read())
+        catch (Exception e)
         {
-            using ShowAndEpisodes sae = new(appInfo);
-            log.Write($"Working on Today's Show {rdr1[0]}", "", 2);
-            sae.Refresh(int.Parse(rdr1[0].ToString()!));
-
-            //Thread.Sleep(1000);
+            LogModel.Record(thisProgram, "Main", $"Error Occured {e.Message}", 6);
+            log.Stop();
+            LogModel.Stop(thisProgram);
         }
-
-        mDbR.Close();
-
-        log.Stop();
-        LogModel.Stop(thisProgram);
     }
 }

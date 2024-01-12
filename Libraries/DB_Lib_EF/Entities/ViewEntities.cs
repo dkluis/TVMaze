@@ -37,7 +37,7 @@ public class ViewEntities : IDisposable
 
     #region GetEpisodesToAcquire
 
-    public Response GetEpisodesToAcquire()
+    public static Response GetEpisodesToAcquire()
     {
         var resp = new Response();
 
@@ -49,7 +49,7 @@ public class ViewEntities : IDisposable
             var query = from e in db.Episodes
                         join s in db.Shows on e.TvmShowId equals s.TvmShowId
                         where e.BroadcastDate.HasValue && e.BroadcastDate.Value <= today && e.PlexStatus == " " && s.TvmStatus == "Following" && s.Finder != "Skip"
-                        orderby e.BroadcastDate, e.TvmShowId, e.SeasonEpisode
+                        orderby e.TvmShowId, e.SeasonEpisode
                         select new ShowEpisode
                                {
                                    TvmShowId       = e.TvmShowId,

@@ -146,7 +146,7 @@ public class MediaFileHandler : IDisposable
         foreach (var file in mediaFiles)
         foreach (var ext in _appInfo.MediaExtensions)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 4);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 5);
 
             if (!file.Contains(ext)) continue;
             media.Add(file);

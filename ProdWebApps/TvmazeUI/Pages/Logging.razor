@@ -6,8 +6,8 @@
     private                 int       _minLevel        = 0;
     private                 int       _maxLevel        = 3;
     private                 int       _singleLevel     = 99;
-    private                 DateTime  _fromDate        = DateTime.Now.AddHours(-1);
-    private                 DateTime  _toDate          = DateTime.Now;
+    private                 DateTime  _fromDate        = DateTime.Now.AddHours(-2);
+    private                 DateTime  _toDate          = DateTime.Now.AddHours(2);
     private                 DateTime  _upToDate        = DateTime.Now.AddDays(-2).Date;
     private                 string    _includeString   = string.Empty;
     private                 string    _excludeString   = string.Empty;
@@ -98,8 +98,8 @@
 
     void ResetDates()
     {
-        _fromDate = DateTime.Now.AddHours(-1);
-        _toDate   = DateTime.Now.AddHours(1);
+        _fromDate = DateTime.Now.AddHours(-2);
+        _toDate   = DateTime.Now.AddHours(2);
         _upToDate = DateTime.Now.AddDays(-2).Date;
         ResetData();
     }
