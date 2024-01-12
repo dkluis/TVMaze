@@ -91,6 +91,17 @@ public static class LogModel
                       Level        = level
                   };
 
+        log.Program  = "CronLog";
+        log.Function = program;
+        log.Level    = 0;
+        Record(log);
+        Thread.Sleep(100);
+
+        log.Program      = program;
+        log.Function     = function;
+        log.Level        = level;
+        log.RecordedDate = DateTime.Now;
+
         return Record(log);
     }
 
@@ -104,6 +115,14 @@ public static class LogModel
                       Message      = message,
                       Level        = level
                   };
+
+        Record(log);
+        Thread.Sleep(100);
+
+        log.RecordedDate = DateTime.Now;
+        log.Program      = "CronLog";
+        log.Function     = program;
+        log.Level        = 0;
 
         return Record(log);
     }

@@ -86,16 +86,6 @@ internal static class RefreshShowRssFeed
                                   };
             db.ShowRssFeeds.Add(recordToAdd);
             db.SaveChanges();
-
-            // var       sql         = "insert ShowRssFeed values (";
-            // sql += "0, ";
-            // sql += $"'{show.Title}', ";
-            // sql += "0, ";
-            // sql += $"'{show.Link}', ";
-            // sql += $"'{DateTime.Now.Date:yyyy-MM-dd}') ";
-            // var row = mdb.ExecNonQuery(sql);
-            // mdb.Close();
-            //log.Write(row != 1 ? $"Insert of Episode {show.Title} Failed" : $"Inserted Episode {show.Title} successfully", "", 4);
         }
 
         log.Write($"Processed {idx} records from ShowRss");
