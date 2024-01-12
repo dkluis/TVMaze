@@ -104,6 +104,11 @@
         ResetData();
     }
 
+    void SetToAllDay()
+    {
+        _fromDate = DateTime.Now.Date;
+    }
+
     void ResetAll()
     {
         ResetLevels();
@@ -154,6 +159,7 @@
     <div class="btn-group ml-3">
         <button class="btn btn-info me-2 " @onclick="ResetLevels">Reset Levels</button>
         <button class="btn btn-info me-2" @onclick="ResetDates">Reset Dates</button>
+        <button class="btn btn-info me-2" @onclick="SetToAllDay">All Day</button>
         <button class="btn btn-info me-2" @onclick="ResetAll">Reset All</button>
     </div>
     <div>

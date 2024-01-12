@@ -1,5 +1,7 @@
 ﻿using Common_Lib;
 
+using DB_Lib_EF.Entities;
+
 using Entities_Lib;
 
 using Web_Lib;
@@ -15,16 +17,19 @@ internal static class RefreshShowRss
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
+        LogModel.Start(thisProgram);
+
         WebScrape           showScrape         = new(appInfo);
         var                 showRssShows       = showScrape.GetShowRssInfo();
         SearchShowsViaNames searchShowViaNames = new();
-        UpdateFinder        updateFinder       = new();
         log.Write($"Found {showRssShows.Count} in the ShowRss HTML download");
         var idx = 1;
+        LogModel.Record(thisProgram, "Main", $"Found {showRssShows.Count} in the feed", 3);
 
         foreach (var show in showRssShows)
         {
             log.Write($"On ShowRss: {show}", "", 4);
+            LogModel.Record(thisProgram, "Main", $"Processing: {show}", 3);
             var cleanShow = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(show));
             var foundInDb = searchShowViaNames.Find(appInfo, cleanShow);
 
@@ -67,5 +72,6 @@ internal static class RefreshShowRss
 
         log.Write($"Updated {idx} Shows to Finder ShowRss");
         log.Stop();
+        LogModel.Stop(thisProgram);
     }
 }
