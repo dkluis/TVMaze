@@ -158,17 +158,17 @@ internal static class UpdateShowEpochs
 
                     if (!tvmShow.IsForReview)
                     {
-                        log.Write($"Show {showId} is rejected because of review rules {tvmShow.TvmUrl}");
-
-                        logRec = new Log
-                                 {
-                                     RecordedDate = DateTime.Now,
-                                     Program      = thisProgram,
-                                     Function     = "Main",
-                                     Message      = $"Show {showId} {tvmShow.ShowName}is rejected because of review rules {tvmShow.TvmUrl}",
-                                     Level        = 1,
-                                 };
-                        LogModel.Record(logRec);
+                        // log.Write($"Show {showId} is rejected because of review rules {tvmShow.TvmUrl}");
+                        //
+                        // logRec = new Log
+                        //          {
+                        //              RecordedDate = DateTime.Now,
+                        //              Program      = thisProgram,
+                        //              Function     = "Main",
+                        //              Message      = $"Show {showId} {tvmShow.ShowName}is rejected because of review rules {tvmShow.TvmUrl}",
+                        //              Level        = 1,
+                        //          };
+                        // LogModel.Record(logRec);
 
                         continue;
                     }

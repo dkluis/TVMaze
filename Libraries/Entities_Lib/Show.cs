@@ -130,7 +130,7 @@ public class Show : IDisposable
         if (!IsForReview && !IsFollowed && !overRide)
         {
             _log.Write($"New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false");
-            LogModel.Record(_appInfo.Program, "Show Entity", "New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false", 4);
+            LogModel.Record(_appInfo.Program, "Show Entity", "New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false", 3);
             _mdb.Success = true;
 
             return _mdb.Success;
@@ -301,7 +301,7 @@ public class Show : IDisposable
             if (TvmLanguage.ToLower() != "english")
             {
                 _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
-                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}", 3);
+                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}: {TvmUrl}");
 
                 return;
             }
@@ -314,7 +314,7 @@ public class Show : IDisposable
             if (premiereDate < compareDate && PremiereDate != "1900-01-01")
             {
                 _log.Write($"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
-                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}", 3);
+                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}: {TvmUrl}");
 
                 return;
             }
@@ -331,7 +331,7 @@ public class Show : IDisposable
             case "award show":
             case "reality":
                 _log.Write($"Rejected {TvmShowId} due to Type {TvmType}");
-                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Type {TvmType}", 3);
+                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Type {TvmType}:  {TvmUrl}");
 
                 return;
         }
@@ -369,7 +369,7 @@ public class Show : IDisposable
                 case "rutube":
                     // ReSharper restore StringLiteralTypo
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
-                    LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}", 3);
+                    LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}:  {TvmUrl}");
 
                     return;
             }
@@ -385,7 +385,7 @@ public class Show : IDisposable
                 case "ЦТ СССР":
                     // ReSharper restore StringLiteralTypo
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
-                    LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}", 3);
+                    LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}: {TvmUrl}");
 
                     return;
             }

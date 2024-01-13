@@ -28,8 +28,7 @@ internal static class UpdateFollowed
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
-
-        LogModel.Record(thisProgram, "Main", "Starting Processing", 1);
+        LogModel.Start(thisProgram);
 
         using WebApi tvmApi = new(appInfo);
         var          gfs    = tvmApi.GetFollowedShows();
