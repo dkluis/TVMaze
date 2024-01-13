@@ -39,7 +39,7 @@ internal static class Program
 
                 foreach (var rec in episodesToBeAcquired)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Processing: {rec.ShowName}, {rec.SeasonEpisode}", 3);
+                    LogModel.Record(thisProgram, "Main", $"Processing: {rec.ShowName}, {rec.SeasonEpisode}", 1);
                     log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
                     LogModel.Record(thisProgram, "Main", "Starting Chrome Selenium Driver", 5);
                     var options = new ChromeOptions();
@@ -62,7 +62,7 @@ internal static class Program
                     if (magnet == "")
                     {
                         log.Write($"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}");
-                        LogModel.Record(thisProgram, "Main", $"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}", 3);
+                        LogModel.Record(thisProgram, "Main", $"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}", 1);
 
                         if (isSeleniumStarted)
                         {
@@ -85,7 +85,7 @@ internal static class Program
                         acquireMediaScript.StartInfo.RedirectStandardOutput = false;
                         var result = acquireMediaScript.Start();
                         acquireMediaScript.WaitForExit();
-                        LogModel.Record(thisProgram, "Main", $"Transferred magnet to Transmission {magnet}", 3);
+                        LogModel.Record(thisProgram, "Main", $"Transferred magnet to Transmission {magnet}", 1);
                     }
 
                     if (!isSeason)
@@ -126,12 +126,12 @@ internal static class Program
                 }
             } else
             {
-                LogModel.Record(thisProgram, "Main", $"Nothing was returned from ViewItem.EpisodesToAcquire", 3);
+                LogModel.Record(thisProgram, "Main", $"Nothing was returned from ViewItem.EpisodesToAcquire", 1);
             }
         }
         catch (Exception e)
         {
-            LogModel.Record(thisProgram, "Main", $"Exception Occurred {e.Message}", 6);
+            LogModel.Record(thisProgram, "Main", $"Exception Occurred {e.Message}", 0);
         }
 
         log.Stop();

@@ -24,12 +24,12 @@ internal static class RefreshShowRss
         SearchShowsViaNames searchShowViaNames = new();
         log.Write($"Found {showRssShows.Count} in the ShowRss HTML download");
         var idx = 1;
-        LogModel.Record(thisProgram, "Main", $"Found {showRssShows.Count} in the feed", 3);
+        LogModel.Record(thisProgram, "Main", $"Found {showRssShows.Count} in the feed", 1);
 
         foreach (var show in showRssShows)
         {
             log.Write($"On ShowRss: {show}", "", 4);
-            LogModel.Record(thisProgram, "Main", $"Processing: {show}", 3);
+            LogModel.Record(thisProgram, "Main", $"Processing: {show}", 1);
             var cleanShow = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(show));
             var foundInDb = searchShowViaNames.Find(appInfo, cleanShow);
 

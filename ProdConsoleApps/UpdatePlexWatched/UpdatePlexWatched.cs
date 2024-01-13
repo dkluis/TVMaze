@@ -97,14 +97,14 @@ internal static class UpdatePlexWatched
                 epi.PlexStatus = "Watched";
                 epi.DbUpdate();
                 log.Write($"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
-                LogModel.Record(thisProgram, "Main", $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", 3);
+                LogModel.Record(thisProgram, "Main", $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", 1);
                 pwi.ProcessedToTvmaze = true;
                 pwi.DbUpdate(appInfo);
 
                 if (epi.IsAutoDelete)
                 {
                     log.Write($"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file");
-                    LogModel.Record(thisProgram, "Main", $"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file", 3);
+                    LogModel.Record(thisProgram, "Main", $"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file", 1);
                     using MediaFileHandler mfh = new(appInfo);
                     _ = mfh.DeleteEpisodeFiles(epi);
                 }
@@ -114,7 +114,7 @@ internal static class UpdatePlexWatched
         } else
         {
             log.Write("No Watched Episodes Found");
-            LogModel.Record(thisProgram, "Main", "No Watched Episodes Found", 3);
+            LogModel.Record(thisProgram, "Main", "No Watched Episodes Found", 1);
         }
 
         log.Stop();

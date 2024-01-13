@@ -47,7 +47,7 @@ internal static class UpdateShowEpochs
                          Program      = thisProgram,
                          Function     = "Main",
                          Message      = $"Starting the Processing",
-                         Level        = 3,
+                         Level        = 1,
                      };
         LogModel.Record(logRec);
 
@@ -63,7 +63,7 @@ internal static class UpdateShowEpochs
                       Program      = thisProgram,
                       Function     = "Main",
                       Message      = $"Last Evaluated ShowId = {lastEvaluatedShow}",
-                      Level        = 3,
+                      Level        = 1,
                   };
         LogModel.Record(logRec);
 
@@ -82,7 +82,7 @@ internal static class UpdateShowEpochs
                          Program      = thisProgram,
                          Function     = "Main",
                          Message      = $"Failed to retrieve updates from Tvmaze",
-                         Level        = 3,
+                         Level        = 1,
                      };
             LogModel.Record(logRec);
         } else
@@ -97,7 +97,7 @@ internal static class UpdateShowEpochs
                       Program      = thisProgram,
                       Function     = "Main",
                       Message      = $"Found {updates.Count} updates on Tvmaze",
-                      Level        = 3,
+                      Level        = 1,
                   };
         LogModel.Record(logRec);
 
@@ -157,7 +157,7 @@ internal static class UpdateShowEpochs
                              Program      = thisProgram,
                              Function     = "Main",
                              Message      = $"Inserted Epoch Record {showId} {tvmShow.ShowName}",
-                             Level        = 3,
+                             Level        = 1,
                          };
                 LogModel.Record(logRec);
 
@@ -175,7 +175,7 @@ internal static class UpdateShowEpochs
                                      Program      = thisProgram,
                                      Function     = "Main",
                                      Message      = $"Show {showId} {tvmShow.ShowName}is rejected because of review rules {tvmShow.TvmUrl}",
-                                     Level        = 3,
+                                     Level        = 1,
                                  };
                         LogModel.Record(logRec);
 
@@ -191,7 +191,7 @@ internal static class UpdateShowEpochs
                                  Program      = thisProgram,
                                  Function     = "Main",
                                  Message      = $"This show {tvmShow.TvmShowId}: {tvmShow.ShowName} is evaluated already",
-                                 Level        = 3,
+                                 Level        = 1,
                              };
                     LogModel.Record(logRec);
 
@@ -224,7 +224,7 @@ internal static class UpdateShowEpochs
                                  Program      = thisProgram,
                                  Function     = "Main",
                                  Message      = $"Inserted new Show {showId}, {tvmShow.ShowName}",
-                                 Level        = 3,
+                                 Level        = 1,
                              };
                     LogModel.Record(logRec);
                     var idxEpsByShow = 0;
@@ -258,7 +258,7 @@ internal static class UpdateShowEpochs
                                              Program      = thisProgram,
                                              Function     = "Main",
                                              Message      = $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}",
-                                             Level        = 3,
+                                             Level        = 1,
                                          };
                                 LogModel.Record(logRec);
                             }
@@ -337,7 +337,7 @@ internal static class UpdateShowEpochs
                                              Program      = thisProgram,
                                              Function     = "Main",
                                              Message      = $"Inserted Episode {eps.TvmShowId}, {eps.ShowName}, {eps.TvmEpisodeId}, {eps.SeasonEpisode}",
-                                             Level        = 3,
+                                             Level        = 1,
                                          };
                                 LogModel.Record(logRec);
                             }
@@ -384,7 +384,7 @@ internal static class UpdateShowEpochs
                              Program      = thisProgram,
                              Function     = "Main",
                              Message      = $"Updated Show {showId} {tvmShow.ShowName}",
-                             Level        = 3,
+                             Level        = 1,
                          };
                 LogModel.Record(logRec);
             }
@@ -405,7 +405,7 @@ internal static class UpdateShowEpochs
                          Program      = thisProgram,
                          Function     = "Main",
                          Message      = $"Stopping the Processing",
-                         Level        = 3,
+                         Level        = 1,
                      };
         LogModel.Record(logRec);
         }

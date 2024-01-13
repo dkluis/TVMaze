@@ -29,7 +29,7 @@ internal static class UpdateFollowed
         var     log     = appInfo.TxtFile;
         log.Start();
 
-        LogModel.Record(thisProgram, "Main", "Starting Processing", 3);
+        LogModel.Record(thisProgram, "Main", "Starting Processing", 1);
 
         using WebApi tvmApi = new(appInfo);
         var          gfs    = tvmApi.GetFollowedShows();
@@ -37,19 +37,19 @@ internal static class UpdateFollowed
         if (tvmApi.IsTimedOut)
         {
             log.Write("Getting an Time Out twice on the GetFollowedShows call to TVMaze");
-            LogModel.Record(thisProgram, "Main", "Getting an TimeOut twice on the Get FollowedShows call to TVMaze", 3);
+            LogModel.Record(thisProgram, "Main", "Getting an TimeOut twice on the Get FollowedShows call to TVMaze", 1);
             LogModel.Record(thisProgram, "Main", "Stopping Processing",                                              3);
             Environment.Exit(99);
         }
 
         var followedShowOnTvmaze = tvmApi.ConvertHttpToJArray(gfs);
         log.Write($"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze", "", 2);
-        LogModel.Record(thisProgram, "Main", $"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze", 3);
+        LogModel.Record(thisProgram, "Main", $"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze", 1);
 
         CheckDb cdb     = new();
         var     records = CheckDb.FollowedCount(appInfo);
         log.Write($"There are {records} records in Following Table", "", 2);
-        LogModel.Record(thisProgram, "Main", $"There are {records} records in Following Table", 3);
+        LogModel.Record(thisProgram, "Main", $"There are {records} records in Following Table", 1);
 
         Show      theShow          = new(appInfo);
         var       processedIdx     = 0;
@@ -96,11 +96,11 @@ internal static class UpdateFollowed
                     if (rows == 1)
                     {
                         log.Write($"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
-                        LogModel.Record(thisProgram, "Main", $"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 3);
+                        LogModel.Record(thisProgram, "Main", $"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 1);
                     } else
                     {
                         log.Write($"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
-                        LogModel.Record(thisProgram, "Main", $"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 3);
+                        LogModel.Record(thisProgram, "Main", $"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 1);
 
                         continue;
                     }
@@ -134,7 +134,7 @@ internal static class UpdateFollowed
         }
 
         // log.Write($"Updated or Inserted {processedIdx} Shows", "", 2);
-        // LogModel.Record(thisProgram, "Main", $"Updated or Inserted {processedIdx} Shows", 3);
+        // LogModel.Record(thisProgram, "Main", $"Updated or Inserted {processedIdx} Shows", 1);
 
         // Delete Shows that are no longer being followed with a limit of 10 at a time.
         Followed followed = new(appInfo);
@@ -155,11 +155,11 @@ internal static class UpdateFollowed
             else
             {
                 log.Write($"Too Many Shows are flagged for deletion {toDelete.Count}", "", 0);
-                LogModel.Record(thisProgram, "Main", $"Too Many Shows are flagged for deletion {toDelete.Count}", 3);
+                LogModel.Record(thisProgram, "Main", $"Too Many Shows are flagged for deletion {toDelete.Count}", 1);
             }
 
             // log.Write($"Deleted {deletedIdx} Shows", "", 1);
-            // LogModel.Record(thisProgram, "Main", $"Deleted {deletedIdx} Shows", 3);
+            // LogModel.Record(thisProgram, "Main", $"Deleted {deletedIdx} Shows", 1);
         }
 
         MariaDb mdb  = new(appInfo);
@@ -173,9 +173,9 @@ internal static class UpdateFollowed
             LogModel.Record(thisProgram, "Main", $"Reset {rdr[0]} to New ---> Should not occur ###################", 6);
         }
 
-        LogModel.Record(thisProgram, "Main", $"Numbers: Processed {processedIdx}, Added {addedIdx}, Updated {updatedIdx}, Deleted {deletedIdx}", 3);
+        LogModel.Record(thisProgram, "Main", $"Numbers: Processed {processedIdx}, Added {addedIdx}, Updated {updatedIdx}, Deleted {deletedIdx}", 1);
 
         log.Stop();
-        LogModel.Record(thisProgram, "Main", "Stopping Processing", 3);
+        LogModel.Record(thisProgram, "Main", "Stopping Processing", 1);
     }
 }

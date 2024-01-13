@@ -162,7 +162,7 @@ public class WebApi : IDisposable
                              Program      = _thisProgram,
                              Function     = ThisFunction,
                              Message      = $"Exception: {e.Message}  {e.InnerException}",
-                             Level        = 6,
+                             Level        = 0,
                          };
             LogModel.Record(logRec);
 
@@ -192,7 +192,7 @@ public class WebApi : IDisposable
                                  Program      = _thisProgram,
                                  Function     = ThisFunction,
                                  Message      = $"2nd Exception: {ee.Message}  {ee.InnerException}",
-                                 Level        = 6,
+                                 Level        = 0,
                              };
                     LogModel.Record(logRec);
                     _httpResponse = new HttpResponseMessage();
@@ -270,7 +270,7 @@ public class WebApi : IDisposable
                          Program      = _thisProgram,
                          Function     = ThisFunction,
                          Message      = $"Exception: for {api} WebAPI Put Async {e.InnerException}",
-                         Level        = 6,
+                         Level        = 0,
                      };
             LogModel.Record(logRec);
         }

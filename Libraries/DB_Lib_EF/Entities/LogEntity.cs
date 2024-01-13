@@ -66,7 +66,7 @@ public static class LogModel
         return logs.RecordEntry(rec);
     }
 
-    public static bool Record(string program, string function, string message, int level = 3)
+    public static bool Record(string program, string function, string message, int level = 1)
     {
         var log = new Log
                   {
@@ -80,7 +80,7 @@ public static class LogModel
         return Record(log);
     }
 
-    public static bool Start(string program, string function = "Main", string message = "Starting Processing", int level = 3)
+    public static bool Start(string program, string function = "Main", string message = "Started Processing", int level = 1)
     {
         var log = new Log
                   {
@@ -105,7 +105,7 @@ public static class LogModel
         return Record(log);
     }
 
-    public static bool Stop(string program, string function = "Main", string message = "Stopped Processing", int level = 3)
+    public static bool Stop(string program, string function = "Main", string message = "Stopped Processing", int level = 1)
     {
         var log = new Log
                   {

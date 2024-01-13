@@ -75,6 +75,7 @@ public class ViewEntities : IDisposable
         catch (DbUpdateException e) // catch specific exception
         {
             resp.Message = $"An error occurred retrieving Episode to Acquire. Error: {e.Message} {e.InnerException}";
+            LogModel.Record("Exceptions", "GetEpisodesToAcquire", $"Error: {e.Message}", 0);
         }
 
         return resp;
@@ -110,36 +111,44 @@ public class ViewEntities : IDisposable
         var thirtyOneDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-31));
         var oldDate          = DateOnly.FromDateTime(new DateTime(1900, 1, 1));
 
-        using var db = new TvMaze();
-
-        var query = db.Shows
-                      .Where(s => ((s.TvmStatus  != "Ended"   && s.TvmStatus    != "Skipping" && s.UpdateDate < sevenDaysAgo) ||
-                                   (s.ShowStatus == "Ended"   && s.PremiereDate == oldDate    && s.UpdateDate < sevenDaysAgo) ||
-                                   (s.ShowStatus == "Running" && s.UpdateDate   < sevenDaysAgo)                               ||
-                                   s.UpdateDate <= thirtyOneDaysAgo))
-                      .OrderBy(s => s.TvmShowId)
-                      .Select(s => new ShowToRefresh()
-                                   {
-                                       TvmShowId    = s.TvmShowId,
-                                       TvmStatus    = s.TvmStatus,
-                                       PremiereDate = s.PremiereDate,
-                                       UpdateDate   = s.UpdateDate,
-                                       ShowName     = s.ShowName,
-                                       TvmUrl       = s.TvmUrl,
-                                       ShowStatus   = s.ShowStatus
-                                   });
-        var showsToRefresh = query.ToList();
-
-        if (showsToRefresh == null)
+        try
         {
-            response.Message    = "No shows to refresh.";
-            response.WasSuccess = false;
+            using var db = new TvMaze();
 
-            return response;
+            var query = db.Shows
+                          .Where(s => ((s.TvmStatus  != "Ended"   && s.TvmStatus    != "Skipping" && s.UpdateDate < sevenDaysAgo) ||
+                                       (s.ShowStatus == "Ended"   && s.PremiereDate == oldDate    && s.UpdateDate < sevenDaysAgo) ||
+                                       (s.ShowStatus == "Running" && s.UpdateDate   < sevenDaysAgo)                               ||
+                                       s.UpdateDate <= thirtyOneDaysAgo))
+                          .OrderBy(s => s.TvmShowId)
+                          .Select(s => new ShowToRefresh()
+                                       {
+                                           TvmShowId    = s.TvmShowId,
+                                           TvmStatus    = s.TvmStatus,
+                                           PremiereDate = s.PremiereDate,
+                                           UpdateDate   = s.UpdateDate,
+                                           ShowName     = s.ShowName,
+                                           TvmUrl       = s.TvmUrl,
+                                           ShowStatus   = s.ShowStatus
+                                       });
+            var showsToRefresh = query.ToList();
+
+            if (showsToRefresh == null)
+            {
+                response.Message    = "No shows to refresh.";
+                response.WasSuccess = false;
+
+                return response;
+            }
+
+            response.ResponseObject = showsToRefresh;
+            response.WasSuccess     = true;
         }
-
-        response.ResponseObject = showsToRefresh;
-        response.WasSuccess     = true;
+        catch (Exception e)
+        {
+            response.Message = $"An error occurred retrieving Episode to Acquire. Error: {e.Message} {e.InnerException}";
+            LogModel.Record("Exceptions", "GetShowsToRefresh", $"Error: {e.Message}", 0);
+        }
 
         return response;
     }
@@ -214,6 +223,7 @@ public class ViewEntities : IDisposable
         catch (DbUpdateException e) // catch specific exception
         {
             resp.Message = $"An error occurred retrieving Episode to Acquire. Error: {e.Message} {e.InnerException}";
+            LogModel.Record("Exceptions", "GetEpisodesFullInfo", $"Error: {e.Message}", 0);
         }
 
         return resp;

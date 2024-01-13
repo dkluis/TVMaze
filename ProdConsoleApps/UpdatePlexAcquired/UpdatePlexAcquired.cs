@@ -24,7 +24,7 @@ internal static class UpdatePlexAcquired
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
-        LogModel.Start(thisProgram, "Plex Acquired");
+        LogModel.Start(thisProgram);
 
         // Read the Acquired Media txt file
         var plexAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "PlexAcquired.log");
@@ -32,9 +32,9 @@ internal static class UpdatePlexAcquired
         if (!File.Exists(plexAcquired))
         {
             log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
-            LogModel.Record(thisProgram, "Plex Acquired", "Nothing To Process");
+            LogModel.Record(thisProgram, "Main", "Nothing To Process");
             log.Stop();
-            LogModel.Stop(thisProgram, "Plex Acquired");
+            LogModel.Stop(thisProgram);
             Environment.Exit(0);
         }
 
@@ -43,7 +43,7 @@ internal static class UpdatePlexAcquired
         File.AppendAllLinesAsync(allAcquired, acquired);
         File.Delete(plexAcquired);
         log.Write($"Found {acquired.Length} records in {plexAcquired}");
-        LogModel.Record(thisProgram, "Plex Acquired", $"Found {acquired.Length} records in {plexAcquired}");
+        LogModel.Record(thisProgram, "Main", $"Found {acquired.Length} records in {plexAcquired}");
 
         // Process all media lines
         foreach (var acq in acquired)
@@ -77,7 +77,7 @@ internal static class UpdatePlexAcquired
                 //     log.Write("Changed Dexter to Dexter New Blood", "", 2);
                 // }
 
-                LogModel.Record(thisProgram, "Plex Acquired", $"Found show {show} episode {episodeString}", 4);
+                LogModel.Record(thisProgram, "Main", $"Found show {show} episode {episodeString}", 4);
             } else
             {
                 if (acqSeas.Length == 2)
@@ -85,10 +85,10 @@ internal static class UpdatePlexAcquired
                     isSeason  = true;
                     show      = acqSeas[0].Replace(".", " ").Trim();
                     seasonNum = int.Parse(acq.Replace(acqSeas[0], "").Replace(acqSeas[1], "").Replace(".", "").ToLower().Replace("s", ""));
-                    LogModel.Record(thisProgram, "Plex Acquired", $"Found the show's {show} whole season {seasonNum}");
+                    LogModel.Record(thisProgram, "Main", $"Found the show's {show} whole season {seasonNum}");
                 } else
                 {
-                    LogModel.Record(thisProgram, "Plex Acquired", $"Could not find a show and episode for {acq}, is probably a movie or music");
+                    LogModel.Record(thisProgram, "Main", $"Could not find a show and episode for {acq}, is probably a movie or music");
                     using MediaFileHandler mfh = new(appInfo);
                     mfh.MoveNonTvMediaToPlex(acq);
 
@@ -102,7 +102,7 @@ internal static class UpdatePlexAcquired
             if (showId.Count != 1)
             {
                 log.Write($"Could not determine ShowId for: {show}, found {showId.Count} records", "", 2);
-                LogModel.Record(thisProgram, "Plex Acquired", $"Could not determine ShowId for: {show}, found {showId.Count} records", 4);
+                LogModel.Record(thisProgram, "Main", $"Could not determine ShowId for: {show}, found {showId.Count} records", 4);
 
                 if (showId.Count == 0)
                 {
@@ -112,7 +112,7 @@ internal static class UpdatePlexAcquired
                     if (reducedShowToUpdate.Count == 1)
                     {
                         log.Write($"Found {reducedShow} trying this one", "", 2);
-                        LogModel.Record(thisProgram, "Plex Acquired", $"After reducing search Found {reducedShow} trying this one", 4);
+                        LogModel.Record(thisProgram, "Main", $"After reducing search Found {reducedShow} trying this one", 4);
                         showId = reducedShowToUpdate;
                     } else
                     {
@@ -124,7 +124,7 @@ internal static class UpdatePlexAcquired
                             showIds = showIds + shw.ToString() + ": ";
                         }
 
-                        LogModel.Record(thisProgram, "Plex Acquired", $"Multiple Shows found for: {show}, found {showId.Count}: {showIds}", 4);
+                        LogModel.Record(thisProgram, "Main", $"Multiple Shows found for: {show}, found {showId.Count}: {showIds}", 4);
 
                         continue;
                     }
@@ -139,7 +139,7 @@ internal static class UpdatePlexAcquired
                 epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episodeString);
                 epsToUpdate.Add(epiId);
                 log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
-                LogModel.Record(thisProgram, "Plex Acquired", $"Working on ShowId {showId[0]} and EpisodeId {epiId}", 4);
+                LogModel.Record(thisProgram, "Main", $"Working on ShowId {showId[0]} and EpisodeId {epiId}", 4);
             }
 
             Show foundShow = new(appInfo);
@@ -224,6 +224,6 @@ internal static class UpdatePlexAcquired
         }
 
         log.Stop();
-        LogModel.Stop(thisProgram, "Plex Acquired");
+        LogModel.Stop(thisProgram);
     }
 }

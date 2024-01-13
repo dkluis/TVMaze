@@ -41,7 +41,7 @@ public static class PlexSqlLite
             showNames += record.ShowName + "; ";
         }
 
-        LogModel.Record("Update Plex Watched", "Sqlite", $"Found: {watchedEpisodes.Count} -> {showNames}", 3);
+        LogModel.Record("Update Plex Watched", "Sqlite", $"Found: {watchedEpisodes.Count} -> {showNames}", 1);
 
         return watchedEpisodes;
     }

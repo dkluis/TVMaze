@@ -16,13 +16,11 @@ namespace Web_Lib;
 public class WebScrape : IDisposable
 {
     private readonly AppInfo         _appInfo;
-    private readonly TextFileHandler _log;
     public           List<string>    Magnets = new();
 
     public WebScrape(AppInfo info)
     {
         _appInfo = info;
-        _log     = _appInfo.TxtFile;
     }
 
     public void Dispose()
@@ -61,7 +59,6 @@ public class WebScrape : IDisposable
         var url          = BuildEztvUrl(showName, seasEpi);
 
         var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
-        _log.Write($"Compare string = {compareWithMagnet}", "Eztv", 4);
         LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Compare string = {compareWithMagnet}", 5);
 
         var html = "";
@@ -73,14 +70,12 @@ public class WebScrape : IDisposable
 
             if (string.IsNullOrEmpty(html))
             {
-                _log.Write($"Error occurred in Eztv WebScrape {html}", "Acquire Media", 0);
                 LogModel.Record(_appInfo.Program, "WebScrape - Eztv", "No HTML was returned", 5);
             }
         }
         catch (Exception e)
         {
-            _log.Write($"Error occurred in Eztv WebScrape {e.Message}", "Acquire Media", 0);
-            LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Error occurred in Eztv WebScrape {e.Message}", 6);
+            LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Error occurred in Eztv WebScrape {e.Message}", 0);
         }
 
         var htmlDoc = new HtmlDocument();
@@ -103,15 +98,13 @@ public class WebScrape : IDisposable
             if (priority > 130)
             {
                 var prioritizedMagnet = priority + "#$# " + magnet;
-                _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "Eztv", 4);
                 LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Prioritized Magnet recorded: {prioritizedMagnet}", 5);
                 Magnets.Add(prioritizedMagnet);
                 foundMagnets++;
             }
         }
 
-        _log.Write($"Found {foundMagnets} via EZTV", "Acquire Media");
-        LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 3);
+        LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
         if (foundMagnets == 0)
         {
@@ -128,7 +121,6 @@ public class WebScrape : IDisposable
         showName =  Common.RemoveSpecialCharsInShowName(showName);
         showName =  showName.Replace(" ", "-");
         eztvUrl  += showName + "-" + seasEpi;
-        _log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
         LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"URL EZTV is {eztvUrl}", 4);
 
         return eztvUrl;
@@ -141,7 +133,6 @@ public class WebScrape : IDisposable
 
         var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
         var compareWithMagnet2 = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") + "+" + seasEpi + "+";
-        _log.Write($"Compare string = {compareWithMagnet}", "MagnetDL", 4);
         LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Compare string = {compareWithMagnet} and {compareWithMagnet2}", 5);
 
         HtmlWeb      web = new();
@@ -153,9 +144,8 @@ public class WebScrape : IDisposable
         }
         catch (HtmlWebException e)
         {
-            _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
-            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Web.Load exception {e.Message}",                                   6);
-            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 3);
+            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Web.Load exception {e.Message}",                                   0);
+            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
             return;
         }
@@ -164,8 +154,7 @@ public class WebScrape : IDisposable
 
         if (table is null)
         {
-            _log.Write($"No HTML returned from MagnetDL", "Acquire Media");
-            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: 0", 3);
+            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: 0", 2);
 
             return;
         }
@@ -179,15 +168,13 @@ public class WebScrape : IDisposable
                 if (priority > 130)
                 {
                     var prioritizedMagnet = priority + "#$# " + node.Attributes["href"].Value;
-                    _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "AcquireMedia", 5);
                     LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Prioritized Magnet recorded: {prioritizedMagnet}", 5);
                     Magnets.Add(prioritizedMagnet);
                     foundMagnets++;
                 }
             }
 
-        _log.Write($"Found {foundMagnets} via MagnetDL", "Acquire Media");
-        LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 3);
+        LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
         if (foundMagnets == 0)
         {
@@ -204,7 +191,6 @@ public class WebScrape : IDisposable
         showName = Common.RemoveSpecialCharsInShowName(showName);
         showName = showName.Replace(" ", "-");
         url      = url + "/" + showName[0].ToString().ToLower() + "/" + showName + "/";
-        _log.Write($"URL MagnetDL is {url}", "MagnetDL", 4);
 
         return url;
     }
@@ -251,7 +237,6 @@ public class WebScrape : IDisposable
                 if (priority > 130)
                 {
                     var prioritizedMagnet = priority + "#$# " + magnet;
-                    _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "TorrentZ", 4);
                     LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ", $"Prioritized Magnet recorded: {prioritizedMagnet}", 5);
                     Magnets.Add(prioritizedMagnet);
                     foundMagnets++;
@@ -260,19 +245,18 @@ public class WebScrape : IDisposable
 
             if (foundMagnets == 0)
             {
-                _log.Write("No result returned from the WebScrape TorrentZ", "Acquire Media", 4);
-
+                //_log.Write("No result returned from the WebScrape TorrentZ", "Acquire Media", 4);
                 return;
             }
 
             Magnets.Sort();
             Magnets.Reverse();
-            _log.Write($"Found {foundMagnets} via TorrentZ", "Acquire Media");
-            LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ2", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 3);
+            LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ2", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
         }
         catch (Exception e)
         {
-            _log.Write($"Error occurred in TorrentZ2 WebScrape {e}", "Acquire Media", 0);
+            //_log.Write($"Error occurred in TorrentZ2 WebScrape {e}", "Acquire Media", 0);
+            LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ2", $"Error: {e.Message}", 0);
         }
     }
 
@@ -282,7 +266,8 @@ public class WebScrape : IDisposable
         showName =  Common.RemoveSpecialCharsInShowName(showName);
         showName =  showName.Replace(" ", "+");
         eztvUrl  += showName;
-        _log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
+
+        //_log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
 
         return eztvUrl;
     }
@@ -294,7 +279,6 @@ public class WebScrape : IDisposable
 
         var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") + "+" + seasEpi + "+";
         var compareWithMagnet2 = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
-        _log.Write($"Compare string = {compareWithMagnet}", "PirateBay", 4);
         LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Compare string = {compareWithMagnet} and {compareWithMagnet2}", 5);
 
         var html = "";
@@ -306,14 +290,12 @@ public class WebScrape : IDisposable
 
             if (string.IsNullOrEmpty(html))
             {
-                _log.Write($"Error occurred in PirateBay Page Returned {html}", "Acquire Media", 0);
                 LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", "No HTML was returned", 6);
             }
         }
         catch (Exception e)
         {
-            _log.Write($"Error occurred in PirateBay WebScrape {e.Message}", "Acquire Media", 0);
-            LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Error occurred in Eztv WebScrape {e.Message}", 6);
+            LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Error occurred in Eztv WebScrape {e.Message}", 0);
         }
 
         var htmlDoc = new HtmlDocument();
@@ -339,15 +321,13 @@ public class WebScrape : IDisposable
             if (priority > 130)
             {
                 var prioritizedMagnet = priority + "#$# " + magnet;
-                _log.Write($"Prioritized Magnet recorded: {prioritizedMagnet}", "PirateBay", 4);
                 LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Prioritized Magnet recorded: {prioritizedMagnet}", 4);
                 Magnets.Add(prioritizedMagnet);
                 foundMagnets++;
             }
         }
 
-        _log.Write($"Found {foundMagnets} via PirateBay", "Acquire Media");
-        LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 3);
+        LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
         if (foundMagnets == 0)
         {
@@ -365,7 +345,8 @@ public class WebScrape : IDisposable
         showName = Common.RemoveSpecialCharsInShowName(showName);
         showName = showName.Replace(" ", "%20");
         url      = url + showName + "%20" + seasEpi+ "/1/99/0";
-        _log.Write($"URL PirateBay is {url}", "PirateBay", 4);
+
+        //_log.Write($"URL PirateBay is {url}", "PirateBay", 4);
 
         return url;
     }

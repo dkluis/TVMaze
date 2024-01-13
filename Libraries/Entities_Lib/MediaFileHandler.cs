@@ -97,14 +97,14 @@ public class MediaFileHandler : IDisposable
                     }
                     catch (Exception e)
                     {
-                        LogModel.Record(_appInfo.Program, "Media File Handler", $"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}", 6);
+                        LogModel.Record(_appInfo.Program, "Media File Handler", $"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}", 0);
                         ActionItemModel.RecordActionItem(_appInfo.Program, $"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}", _log);
                     }
                 }
             }
             catch (Exception e)
             {
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Error on getting Files for {Path.Combine(directory, showName, seas)}: {e.Message}",6);
+                LogModel.Record(_appInfo.Program, "Media File Handler", $"Error on getting Files for {Path.Combine(directory, showName, seas)}: {e.Message}",0);
             }
         else
             LogModel.Record(_appInfo.Program, "Media File Handler", $"Directory {findIn} does not exist", 6);
@@ -131,7 +131,7 @@ public class MediaFileHandler : IDisposable
         }
         catch (Exception ex)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Got an error {ex.Message} trying to access {fullMediaPath}", 6);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Got an error {ex.Message} trying to access {fullMediaPath}", 0);
 
             return false;
         }
@@ -200,7 +200,7 @@ public class MediaFileHandler : IDisposable
         }
         catch (Exception ex)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Got an error {ex} trying to access {fullMediaPath}", 6);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Got an error {ex} trying to access {fullMediaPath}", 0);
 
             return false;
         }
@@ -269,7 +269,7 @@ public class MediaFileHandler : IDisposable
             }
             catch (Exception ex)
             {
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Error Moving File {file} to {toPath} >>> {ex.Message}", 4);
+                LogModel.Record(_appInfo.Program, "Media File Handler", $"Error Moving File {file} to {toPath} >>> {ex.Message}", 0);
             }
         }
 
