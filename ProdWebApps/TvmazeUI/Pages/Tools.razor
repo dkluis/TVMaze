@@ -2,6 +2,7 @@
 @inject DataExchange _dataExchangeService
 
 @page "/tools"
+@using OpenQA.Selenium.DevTools.V85.CacheStorage
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 
@@ -13,6 +14,9 @@
     string        _currentLog = "";
     List<string>? _logContent;
     bool          _logRequested;
+    List<Log>     _logTable = new();
+    bool          _logTableRequested;
+    const string  NoRecsFound = "No Records Found";
 
     private void ExecScripts(string scriptRequested = "")
     {
@@ -92,8 +96,9 @@
         }
 
         string program;
-        _logView      = logRequested + " Log";
-        _logRequested = true;
+        _logView           = logRequested + " Log";
+        _logRequested      = true;
+        ClearLogTable();
 
         switch (logRequested)
         {
@@ -287,6 +292,42 @@
         }
     }
 
+    private List<Log> GetLogInfo(string program, int fromLevel, int toLevel, bool allData = true)
+    {
+        try
+        {
+            using var db         = new TvMaze();
+
+            if (allData)
+            {
+                return db.Logs.Where(l => l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")).ToList().OrderByDescending(l => l.RecordedDate).ToList();
+            } else
+            {
+                return db.Logs.Where(l => l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")).OrderByDescending(l => l.RecordedDate).ToList();
+            }
+        }
+        catch (Exception e)
+        {
+            LogModel.Record("WebUI", "Logs", $"Error Occurred retrieving log records {e.Message}", 0);
+
+            return new List<Log>();
+        }
+    }
+
+    private void ShowCronlogTable()
+    {
+        _logTable          = GetLogInfo("CronLog", 0, 0, true);
+        _logTableRequested = true;
+        ClearLog();
+
+    }
+
+    private void ClearLogTable()
+    {
+        _logTable          = new List<Log>();
+        _logTableRequested = false;
+    }
+
 }
 
 @{ _dataExchangeService.LastPage = "Tools"; }
@@ -346,7 +387,7 @@
             <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh One")'><i class="bi bi-binoculars"></i>&nbsp;One Show</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("WebUI")'><i class="bi bi-binoculars"></i>&nbsp;Web UI</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("CronLog")'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
+            <button class="btn btn-info" @onclick='() => ShowCronlogTable()'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("TransmissionLog")'><i class="bi bi-binoculars"></i>&nbsp;TransmissonLog</button>
         </div>
         <div class="row">
@@ -368,21 +409,62 @@
     <p>
         @if (_logRequested)
         {
-            @foreach (var line in _logContent!)
-            {
-                if (line.Contains("########################################################################################") ||
-                    line.Contains("Finished ####")                                                                            ||
-                    line.ToLower().Contains("chromedriver")                                                                   ||
-                    line.ToLower().Contains("connection")                                                                     ||
-                    line.ToLower().Contains("bind() failed"))
+            if (_logContent!.Count > 0)
+                foreach (var line in _logContent!)
                 {
-                    continue;
-                }
+                    if (line.Contains("########################################################################################") || line.Contains("Finished ####") || line.ToLower().Contains("chromedriver") || line.ToLower().Contains("connection") || line.ToLower().Contains("bind() failed"))
+                    {
+                        continue;
+                    }
 
-                @line<br/>
+                    @line<br/>
+                }
+            else
+            {
+                @NoRecsFound;
             }
         }
     </p>
-    <p></p>
-    <em>End of Log @_logView</em>
+        @if (_logTableRequested)
+        {
+            <div>
+                <p></p>
+                <h6>Logging - Table</h6>
+                <p></p>
+                <table class="table table-striped" style="font-size: smaller; line-height: 75%">
+                    <thead>
+                    <tr>
+                        <th>DateTime</th>
+                        <th>Program</th>
+                        <th>Function</th>
+                        <th>Details</th>
+                        <th>Level</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @{
+                        if (_logTable != null && _logTable.Count > 0)
+                        {
+                            foreach (var rec in _logTable)
+                            {
+                                <tr>
+                                    @*<td>@rec.RecordedDate</td>*@
+                                    <td>@rec.RecordedDate.ToString("MM/dd/yyyy hh:mm:ss.fff tt")</td>
+                                    <td>@rec.Program</td>
+                                    <td>@rec.Function</td>
+                                    <td>@rec.Message</td>
+                                    <td>@rec.Level</td>
+                                </tr>
+                            }
+                        } else
+                        {
+                            <tr>
+                                <td>@NoRecsFound</td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
 </div>
