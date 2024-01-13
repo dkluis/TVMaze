@@ -40,16 +40,7 @@ internal static class UpdateShowEpochs
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
         log.Start();
-
-        var logRec = new Log
-                     {
-                         RecordedDate = DateTime.Now,
-                         Program      = thisProgram,
-                         Function     = "Main",
-                         Message      = $"Starting the Processing",
-                         Level        = 1,
-                     };
-        LogModel.Record(logRec);
+        LogModel.Start(thisProgram);
 
         using TvmCommonSql ge                = new(appInfo);
         var                lastEvaluatedShow = ge.GetLastEvaluatedShow();
@@ -57,7 +48,7 @@ internal static class UpdateShowEpochs
         var highestShowId = lastEvaluatedShow;
         log.Write($"Last Evaluated ShowId = {lastEvaluatedShow}", "", 2);
 
-        logRec = new Log
+        var logRec = new Log
                   {
                       RecordedDate = DateTime.Now,
                       Program      = thisProgram,
@@ -398,16 +389,7 @@ internal static class UpdateShowEpochs
         }
 
         log.Stop();
-
-        logRec = new Log
-                     {
-                         RecordedDate = DateTime.Now,
-                         Program      = thisProgram,
-                         Function     = "Main",
-                         Message      = $"Stopping the Processing",
-                         Level        = 1,
-                     };
-        LogModel.Record(logRec);
+        LogModel.Stop(thisProgram);
         }
     }
 }

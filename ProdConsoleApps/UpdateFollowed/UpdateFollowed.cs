@@ -38,7 +38,7 @@ internal static class UpdateFollowed
         {
             log.Write("Getting an Time Out twice on the GetFollowedShows call to TVMaze");
             LogModel.Record(thisProgram, "Main", "Getting an TimeOut twice on the Get FollowedShows call to TVMaze", 1);
-            LogModel.Record(thisProgram, "Main", "Stopping Processing",                                              3);
+            LogModel.Stop(thisProgram);
             Environment.Exit(99);
         }
 
@@ -174,8 +174,7 @@ internal static class UpdateFollowed
         }
 
         LogModel.Record(thisProgram, "Main", $"Numbers: Processed {processedIdx}, Added {addedIdx}, Updated {updatedIdx}, Deleted {deletedIdx}", 1);
-
+        LogModel.Stop(thisProgram);
         log.Stop();
-        LogModel.Record(thisProgram, "Main", "Stopping Processing", 1);
     }
 }
