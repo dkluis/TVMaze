@@ -17,6 +17,7 @@
     private                 int       _recordsReturned = 0;
     private                 int       _recordsFiltered = 0;
     private                 int       _recordsToTake   = 25000;
+    private                 string    _statusMessage   = "";
 }
 
 @{
@@ -67,6 +68,7 @@
 
     async Task RefreshLogs()
     {
+        _statusMessage = "Retrieving the Log Entries";
         if (_singleLevel != 99)
         {
             _minLevel = _singleLevel;
@@ -78,13 +80,14 @@
         _initialLogs     = _logs;
         _recordsReturned = _initialLogs.Count();
         _recordsFiltered = _recordsReturned;
+        _statusMessage   = "";
     }
 
     void ResetLevels()
     {
-        _maxLevel    = 1;
-        _minLevel    = 1;
-        _singleLevel = 99;
+        _maxLevel      = 1;
+        _minLevel      = 1;
+        _singleLevel   = 99;
         ResetData();
     }
 
@@ -98,15 +101,15 @@
 
     void ResetDates()
     {
-        _fromDate = DateTime.Now.AddHours(-2);
-        _toDate   = DateTime.Now.AddHours(2);
-        _upToDate = DateTime.Now.AddDays(-2).Date;
+        _fromDate      = DateTime.Now.AddHours(-2);
+        _toDate        = DateTime.Now.AddHours(2);
+        _upToDate      = DateTime.Now.AddDays(-2).Date;
         ResetData();
     }
 
     void SetToAllDay()
     {
-        _fromDate = DateTime.Now.Date;
+        _fromDate      = DateTime.Now.Date;
     }
 
     void ResetAll()
@@ -117,10 +120,12 @@
 
     async Task DeleteEntries()
     {
+        _statusMessage = $"Starting Delete of Entries up to {_upToDate}";
         await using var db       = new TvMaze();
         var             toDelete = db.Logs.Where(l => l.RecordedDate < _upToDate).ToList();
         db.Logs.RemoveRange(toDelete);
         await db.SaveChangesAsync();
+        _statusMessage = $"Finished Delete of Entries up to {_upToDate}";
         ResetAll();
     }
 }
@@ -194,6 +199,10 @@
         <input @bind="_upToDate" Style="width: 180px"/>
         <button class="btn btn-info" @onclick="DeleteEntries">Delete Entries</button>
     </div>
+</div>
+
+<div>
+    <p><em>Status: @_statusMessage</em></p>
 </div>
 
 <div>
