@@ -31,7 +31,7 @@ public class ActionItemEntity : ActionItem, IDisposable
         }
         catch (DbUpdateException e) // catch specific exception
         {
-            resp.Message = $"An error occurred while updating the database. Record: {record}. Error: {e.Message} {e.InnerException}";
+            resp.Message = $"An error occurred while updating the database. Record: {record}. Error: {e.Message} ::: {e.InnerException}";
         }
 
         return resp;
@@ -60,7 +60,7 @@ public class ActionItemEntity : ActionItem, IDisposable
         }
         catch (DbUpdateException e) // catch specific exception
         {
-            resp.Message = $"An error occurred while updating the database. Record: {record}. Error: {e.Message} {e.InnerException}";
+            resp.Message = $"An error occurred while updating the database. Record: {record}. Error: {e.Message} ::: {e.InnerException}";
 
             return resp;
         }
@@ -104,7 +104,7 @@ public static class ActionItemModel
     {
         using (var entity = new ActionItemEntity())
         {
-            var result =  entity.Record(new ActionItemEntity() {Program = program, Message = message});
+            var result = entity.Record(new ActionItemEntity() {Program = program, Message = message});
 
             if (result == null)
             {

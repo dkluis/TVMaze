@@ -26,12 +26,12 @@ internal static class Program
 
         try
         {
-            Magnets                       media    = new(appInfo);
-            var                           response = ViewEntities.GetEpisodesToAcquire();
+            Magnets media    = new(appInfo);
+            var     response = ViewEntities.GetEpisodesToAcquire();
 
             if (response != null && response.WasSuccess && response.ResponseObject != null)
             {
-                var                           episodesToBeAcquired = (List<ViewEntities.ShowEpisode>) response.ResponseObject;
+                var episodesToBeAcquired = (List<ViewEntities.ShowEpisode>) response.ResponseObject;
 
                 var  isSeason = false;
                 var  showId   = 0;
@@ -100,15 +100,13 @@ internal static class Program
                         wai.PutEpisodeToAcquired(episodeId);
                     } else
                     {
-                        using var     db       = new TvMaze();
+                        using var db = new TvMaze();
 
-                        var           episodes = db.Episodes.Where(e => e.TvmShowId == rec.TvmShowId && e.Season == rec.Season)
-                                                   .Select(e => e.TvmEpisodeId)
-                                                   .ToList();
+                        var episodes = db.Episodes.Where(e => e.TvmShowId == rec.TvmShowId && e.Season == rec.Season).Select(e => e.TvmEpisodeId).ToList();
 
                         foreach (var seasEpiId in episodes)
                         {
-                            using Episode seasEpi   = new(appInfo);
+                            using Episode seasEpi = new(appInfo);
                             seasEpi.FillViaTvmaze(seasEpiId);
                             seasEpi.PlexStatus = "Acquired";
                             seasEpi.PlexDate   = DateTime.Now.ToString("yyyy-MM-dd");
@@ -132,7 +130,7 @@ internal static class Program
         }
         catch (Exception e)
         {
-            LogModel.Record(thisProgram, "Main", $"Exception Occurred {e.Message}", 0);
+            LogModel.Record(thisProgram, "Main", $"Exception Occurred {e.Message}  ::: {e.InnerException}", 20);
         }
 
         log.Stop();

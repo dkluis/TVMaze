@@ -92,7 +92,7 @@
 
 <div>
     <h6>Shows - Table</h6>
-    <table class="table table-striped" style="font-size: 85%; line-height: 85%" >
+    <table class="table table-striped" style="font-size: 85%; line-height: 85%">
         <thead>
         <tr>
             <th>Show Id</th>
@@ -115,8 +115,8 @@
             var findItE = FindUrlE + ei.ShowName!.Replace(" ", "-")             + "-"                                     + seasEpi;
             var findItM = FindUrlM + $"/{ei.ShowName[0].ToString().ToLower()}/" + ei.ShowName.Replace(" ", "-").ToLower() + "-" + seasEpi.ToLower();
             var findItP = FindUrlP + ei.ShowName!.Replace(" ", "-")             + "-"                                     + seasEpi;
-            var upD = ei.UpdateDate;
-            var brD = ei.BroadcastDate;
+            var upD     = ei.UpdateDate;
+            var brD     = ei.BroadcastDate;
             <tr>
                 <td>@ei.TvmShowId</td>
                 <td>@ei.ShowName</td>

@@ -20,7 +20,7 @@ public static partial class Common
         {
             Console.WriteLine($"Error reading app settings in Common {e.Message}");
 
-            return $"Error Reading app.config: {e.BareMessage}";
+            return $"Error Reading app.config: {e.BareMessage} ::: {e.InnerException}";
         }
     }
 

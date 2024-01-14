@@ -19,7 +19,7 @@ internal static class RefreshOneShow
         log.Start();
 
         using var views  = new ViewEntities();
-        var result = ViewEntities.GetEpisodesToAcquire();
+        var       result = ViewEntities.GetEpisodesToAcquire();
 
         ActionItemModel.RecordActionItem(thisProgram, "Did not find any ShowIds for {pwi.ShowName}", log);
 

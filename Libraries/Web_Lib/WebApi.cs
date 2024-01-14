@@ -161,8 +161,8 @@ public class WebApi : IDisposable
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
                              Function     = ThisFunction,
-                             Message      = $"Exception: {e.Message}  {e.InnerException}",
-                             Level        = 0,
+                             Message      = $"Exception: {e.Message} ::: {e.InnerException}",
+                             Level        = 20,
                          };
             LogModel.Record(logRec);
 
@@ -191,8 +191,8 @@ public class WebApi : IDisposable
                                  RecordedDate = DateTime.Now,
                                  Program      = _thisProgram,
                                  Function     = ThisFunction,
-                                 Message      = $"2nd Exception: {ee.Message}  {ee.InnerException}",
-                                 Level        = 0,
+                                 Message      = $"2nd Exception: {ee.Message} ::: {ee.InnerException}",
+                                 Level        = 20,
                              };
                     LogModel.Record(logRec);
                     _httpResponse = new HttpResponseMessage();
@@ -269,8 +269,8 @@ public class WebApi : IDisposable
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
                          Function     = ThisFunction,
-                         Message      = $"Exception: for {api} WebAPI Put Async {e.InnerException}",
-                         Level        = 0,
+                         Message      = $"Exception: for {api} WebAPI Put Async {e.Message} ::: {e.InnerException}",
+                         Level        = 20,
                      };
             LogModel.Record(logRec);
         }

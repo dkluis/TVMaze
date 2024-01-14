@@ -16,6 +16,7 @@
     bool          _logRequested;
     List<Log>     _logTable = new();
     bool          _logTableRequested;
+    int           _upToLevel  = 4;
     const string  NoRecsFound = "No Records Found";
 
     private void ExecScripts(string scriptRequested = "")
@@ -96,8 +97,8 @@
         }
 
         string program;
-        _logView           = logRequested + " Log";
-        _logRequested      = true;
+        _logView      = logRequested + " Log";
+        _logRequested = true;
         ClearLogTable();
 
         switch (logRequested)
@@ -296,19 +297,19 @@
     {
         try
         {
-            using var db         = new TvMaze();
+            using var db = new TvMaze();
 
             if (allData)
             {
-                return db.Logs.Where(l => l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")).ToList().OrderByDescending(l => l.RecordedDate).ToList();
+                return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).ToList().OrderByDescending(l => l.RecordedDate).ToList();
             } else
             {
-                return db.Logs.Where(l => l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")).OrderByDescending(l => l.RecordedDate).ToList();
+                return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).OrderByDescending(l => l.RecordedDate).ToList();
             }
         }
         catch (Exception e)
         {
-            LogModel.Record("WebUI", "Logs", $"Error Occurred retrieving log records {e.Message}", 0);
+            LogModel.Record("WebUI", "Logs", $"Error Occurred retrieving log records {e.Message} ::: {e.InnerException}", 20);
 
             return new List<Log>();
         }
@@ -319,7 +320,13 @@
         _logTable          = GetLogInfo("CronLog", 0, 0, true);
         _logTableRequested = true;
         ClearLog();
+    }
 
+    private void ShowNamedTable(string logName)
+    {
+        _logTable          = GetLogInfo(logName, 0, _upToLevel, true);
+        _logTableRequested = true;
+        ClearLog();
     }
 
     private void ClearLogTable()
@@ -351,7 +358,7 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
-                <input class="col-sm-1 m-1" @bind="@_refreshShowId"/>
+                <input class="col-sm-1 m-1" style="width: 50px"@bind="@_refreshShowId"/>
                 <button class="btn btn-primary" @onclick="RefreshOneShow"><i class="bi bi-database-down"></i>&nbsp;One Show</button>
                 <button class="btn btn-warning" @onclick="RestartPlex"><i class="bi bi-sign-stop"></i>&nbsp;Restart Plex&nbsp;<i class="bi bi-skip-start"></i></button>
             </div>
@@ -376,14 +383,15 @@
     <h2>View the Logs</h2>
     <div class="row">
         <div class="col-md-12 mb-2">
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Followed")'><i class="bi bi-binoculars"></i>&nbsp;Followed</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Plex Acquired")'><i class="bi bi-binoculars"></i>&nbsp;Acquired</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Plex Watched")'><i class="bi bi-binoculars"></i>&nbsp;Watched</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Acquire")'><i class="bi bi-binoculars"></i>&nbsp;Acquire</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Show Epochs")'><i class="bi bi-binoculars"></i>&nbsp;Epochs</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Cleanup Media")'><i class="bi bi-binoculars"></i>&nbsp;Cleanup</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh Shows")'><i class="bi bi-binoculars"></i>&nbsp;Shows</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("ShowRss Feed")'><i class="bi bi-binoculars"></i>&nbsp;Feed</button>
+            <input class="col-sm-1 m-1" style="width: 50px"@bind="@_upToLevel"/>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Update Followed")'><i class="bi bi-binoculars"></i>&nbsp;Followed</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Update Plex Acquired")'><i class="bi bi-binoculars"></i>&nbsp;Acquired</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Update Plex Watched")'><i class="bi bi-binoculars"></i>&nbsp;Watched</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Acquire Media")'><i class="bi bi-binoculars"></i>&nbsp;Acquire</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Update Show Epochs")'><i class="bi bi-binoculars"></i>&nbsp;Epochs</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Cleanup Plex Media")'><i class="bi bi-binoculars"></i>&nbsp;Cleanup</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Refresh Shows")'><i class="bi bi-binoculars"></i>&nbsp;Shows</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Refresh ShowRss Feed")'><i class="bi bi-binoculars"></i>&nbsp;Feed</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh One")'><i class="bi bi-binoculars"></i>&nbsp;One Show</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("WebUI")'><i class="bi bi-binoculars"></i>&nbsp;Web UI</button>
@@ -421,50 +429,51 @@
                 }
             else
             {
-                @NoRecsFound;
+                @NoRecsFound
+                ;
             }
         }
     </p>
-        @if (_logTableRequested)
-        {
-            <div>
-                <p></p>
-                <h6>Logging - Table</h6>
-                <p></p>
-                <table class="table table-striped" style="font-size: 85%; line-height: 85%">
-                    <thead>
-                    <tr>
-                        <th>DateTime</th>
-                        <th>Program</th>
-                        <th>Function</th>
-                        <th>Details</th>
-                        <th>Level</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @{
-                        if (_logTable != null && _logTable.Count > 0)
-                        {
-                            foreach (var rec in _logTable)
-                            {
-                                <tr>
-                                    @*<td>@rec.RecordedDate</td>*@
-                                    <td>@rec.RecordedDate.ToString("hh:mm:ss.fff tt")</td>
-                                    <td>@rec.Program</td>
-                                    <td>@rec.Function</td>
-                                    <td>@rec.Message</td>
-                                    <td>@rec.Level</td>
-                                </tr>
-                            }
-                        } else
+    @if (_logTableRequested)
+    {
+        <div>
+            <p></p>
+            <h6>Logging - Table</h6>
+            <p></p>
+            <table class="table table-striped" style="font-size: 85%; line-height: 85%">
+                <thead>
+                <tr>
+                    <th>DateTime</th>
+                    <th>Program</th>
+                    <th>Function</th>
+                    <th>Details</th>
+                    <th>Level</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    if (_logTable != null && _logTable.Count > 0)
+                    {
+                        foreach (var rec in _logTable)
                         {
                             <tr>
-                                <td>@NoRecsFound</td>
+                                @*<td>@rec.RecordedDate</td>*@
+                                <td>@rec.RecordedDate.ToString("hh:mm:ss.fff tt")</td>
+                                <td>@rec.Program</td>
+                                <td>@rec.Function</td>
+                                <td>@rec.Message</td>
+                                <td>@rec.Level</td>
                             </tr>
                         }
+                    } else
+                    {
+                        <tr>
+                            <td>@NoRecsFound</td>
+                        </tr>
                     }
-                    </tbody>
-                </table>
-            </div>
-        }
+                }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>

@@ -230,7 +230,7 @@ internal static class UpdatePlexAcquired
         }
         catch (Exception e)
         {
-            LogModel.Record(thisProgram, "Main", $"Error Occurred: {e.Message} ::: {e.InnerException}", 0);
+            LogModel.Record(thisProgram, "Main", $"Error Occurred: {e.Message} ::: {e.InnerException}", 20);
             LogModel.Stop(thisProgram);
         }
     }

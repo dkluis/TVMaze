@@ -11,14 +11,14 @@
 
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.57" />
-        <PackageReference Include="Selenium.Support" Version="4.16.2" />
-        <PackageReference Include="Selenium.WebDriver" Version="4.16.2" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.57"/>
+        <PackageReference Include="Selenium.Support" Version="4.16.2"/>
+        <PackageReference Include="Selenium.WebDriver" Version="4.16.2"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Common_Lib\Common_Lib.csproj"/>
-        <ProjectReference Include="..\DB_Lib_EF\DB_Lib_EF.csproj" />
+        <ProjectReference Include="..\DB_Lib_EF\DB_Lib_EF.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

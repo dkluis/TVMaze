@@ -59,8 +59,8 @@ public class AppInfo
         if (ReadKeyFromFile.FindInArray(ConfigFullPath, "Debug") == "Yes") IsDebugOn = true;
         else IsDebugOn                                                               = false;
 
-        var dbProdConn                                                               = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
-        var dbTestConn                                                               = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
+        var dbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
+        var dbTestConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
         DbAltConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
 
         TvmazeToken    = ReadKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");

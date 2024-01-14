@@ -124,7 +124,7 @@ internal static class RefreshShows
         }
         catch (Exception e)
         {
-            LogModel.Record(thisProgram, "Main", $"Error Occured {e.Message}", 0);
+            LogModel.Record(thisProgram, "Main", $"Error Occured {e.Message} ::: {e.InnerException}", 20);
             log.Stop();
             LogModel.Stop(thisProgram);
         }

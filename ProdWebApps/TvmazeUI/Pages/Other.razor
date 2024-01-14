@@ -1,11 +1,11 @@
 @namespace TvmazeUI.Pages
 @page "/other"
 
-@inject DataExchange      DataExchangeService
+@inject DataExchange DataExchangeService
 
 @code {
     private static readonly AppInfo                            AppInfo             = new("Tvmaze", "WebUI", "DbAlternate");
-    private                 List<ActionItem>                   _actionItems        = new ();
+    private                 List<ActionItem>                   _actionItems        = new();
     private                 List<ViewEntities.EpisodeShowInfo> _episodes           = new();
     private                 bool                               _displayActionItems = false;
     private                 bool                               _displayEpisodes    = false;
@@ -18,7 +18,7 @@
 
     void GetActionItems()
     {
-        var result      = ActionItemModel.GetAllActionItems();
+        var result = ActionItemModel.GetAllActionItems();
 
         if (result != null && result.ResponseObject != null)
         {
@@ -31,6 +31,7 @@
     void GetEpisodes()
     {
         var result = ViewEntities.GetEpisodesFullInfo();
+
         if (result != null && result.ResponseObject != null)
         {
             _episodes           = (List<ViewEntities.EpisodeShowInfo>) result.ResponseObject!;
@@ -39,13 +40,14 @@
             _displayEpisodes    = true;
         }
     }
+
 }
 
 @{
     DataExchangeService.LastPage = "Other";
 }
 
-<h1>Misc:  Tables</h1>
+<h1>Misc: Tables</h1>
 
 <div>
     <button class="btn btn-info" @onclick="GetActionItems">Action Items</button>

@@ -75,7 +75,7 @@ public class ViewEntities : IDisposable
         catch (DbUpdateException e) // catch specific exception
         {
             resp.Message = $"An error occurred retrieving Episode to Acquire. Error: {e.Message} {e.InnerException}";
-            LogModel.Record("Exceptions", "GetEpisodesToAcquire", $"Error: {e.Message}", 0);
+            LogModel.Record("Exceptions", "GetEpisodesToAcquire", $"Error: {e.Message} ::: {e.InnerException}", 20);
         }
 
         return resp;
@@ -147,7 +147,7 @@ public class ViewEntities : IDisposable
         catch (Exception e)
         {
             response.Message = $"An error occurred retrieving Episode to Acquire. Error: {e.Message} {e.InnerException}";
-            LogModel.Record("Exceptions", "GetShowsToRefresh", $"Error: {e.Message}", 0);
+            LogModel.Record("Exceptions", "GetShowsToRefresh", $"Error: {e.Message} ::: {e.InnerException}", 20);
         }
 
         return response;
@@ -223,7 +223,7 @@ public class ViewEntities : IDisposable
         catch (DbUpdateException e) // catch specific exception
         {
             resp.Message = $"An error occurred retrieving Episode to Acquire. Error: {e.Message} {e.InnerException}";
-            LogModel.Record("Exceptions", "GetEpisodesFullInfo", $"Error: {e.Message}", 0);
+            LogModel.Record("Exceptions", "GetEpisodesFullInfo", $"Error: {e.Message} ::: {e.InnerException}", 20);
         }
 
         return resp;

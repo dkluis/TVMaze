@@ -52,7 +52,7 @@ internal static class CleanupPlexMedia
                 }
                 catch (Exception ex)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Exception on Delete of {seasonDir}: {ex.Message}", 0);
+                    LogModel.Record(thisProgram, "Main", $"Exception on Delete of {seasonDir}: {ex.Message}  ::: {ex.InnerException}", 20);
                 }
 
                 if (deleteDir) showDirsToDelete.Add(dir);
@@ -70,7 +70,7 @@ internal static class CleanupPlexMedia
                 }
                 catch (Exception ex)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Exception on Delete of {dir}: {ex.Message}", 0);
+                    LogModel.Record(thisProgram, "Main", $"Exception on Delete of {dir}: {ex.Message}  ::: {ex.InnerException}", 20);
                 }
 
             log.Write($"Deleted directory: {dir}");

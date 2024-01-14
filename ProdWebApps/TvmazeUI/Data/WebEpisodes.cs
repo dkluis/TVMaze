@@ -22,6 +22,7 @@ public class WebEpisodes
         while (rdr.Read())
         {
             var broadcastDate = DateTime.Parse(rdr["BroadcastDate"].ToString()!).ToString("yyyy-MM-dd");
+
             EpisodeInfo episodeInfo = new()
                                       {
                                           TvmShowId     = int.Parse(rdr["TvmShowId"].ToString()!),

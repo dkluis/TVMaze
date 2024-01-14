@@ -15,8 +15,8 @@ namespace Web_Lib;
 
 public class WebScrape : IDisposable
 {
-    private readonly AppInfo         _appInfo;
-    public           List<string>    Magnets = new();
+    private readonly AppInfo      _appInfo;
+    public           List<string> Magnets = new();
 
     public WebScrape(AppInfo info)
     {
@@ -75,7 +75,7 @@ public class WebScrape : IDisposable
         }
         catch (Exception e)
         {
-            LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Error occurred in Eztv WebScrape {e.Message}", 0);
+            LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Error occurred in Eztv WebScrape {e.Message}  ::: {e.InnerException}", 20);
         }
 
         var htmlDoc = new HtmlDocument();
@@ -131,7 +131,7 @@ public class WebScrape : IDisposable
         var foundMagnets = 0;
         var html         = BuildMagnetDownloadUrl($"{showName}-{seasEpi}");
 
-        var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
+        var compareWithMagnet  = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
         var compareWithMagnet2 = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") + "+" + seasEpi + "+";
         LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Compare string = {compareWithMagnet} and {compareWithMagnet2}", 5);
 
@@ -144,7 +144,7 @@ public class WebScrape : IDisposable
         }
         catch (HtmlWebException e)
         {
-            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Web.Load exception {e.Message}",                                   0);
+            LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Web.Load exception {e.Message}  ::: {e.InnerException}",           20);
             LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
             return;
@@ -256,7 +256,7 @@ public class WebScrape : IDisposable
         catch (Exception e)
         {
             //_log.Write($"Error occurred in TorrentZ2 WebScrape {e}", "Acquire Media", 0);
-            LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ2", $"Error: {e.Message}", 0);
+            LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ2", $"Error: {e.Message}  ::: {e.InnerException}", 20);
         }
     }
 
@@ -277,7 +277,7 @@ public class WebScrape : IDisposable
         var foundMagnets = 0;
         var url          = BuildPirateBayUrl(showName, seasEpi);
 
-        var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") + "+" + seasEpi + "+";
+        var compareWithMagnet  = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") + "+" + seasEpi + "+";
         var compareWithMagnet2 = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
         LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Compare string = {compareWithMagnet} and {compareWithMagnet2}", 5);
 
@@ -295,7 +295,7 @@ public class WebScrape : IDisposable
         }
         catch (Exception e)
         {
-            LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Error occurred in Eztv WebScrape {e.Message}", 0);
+            LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Error occurred in Eztv WebScrape {e.Message} ::: {e.InnerException}", 20);
         }
 
         var htmlDoc = new HtmlDocument();
@@ -314,7 +314,7 @@ public class WebScrape : IDisposable
 
             if ((!mgi.Contains(compareWithMagnet) && !mgi.Contains(compareWithMagnet2)) || mgi == "") continue;
             var magnetReplace = mgi.Replace("<a href=\"", "");
-            var magnetSplit     = magnetReplace.Split("><img src=");
+            var magnetSplit   = magnetReplace.Split("><img src=");
             var magnet        = magnetSplit[0];
             var priority      = PrioritizeMagnet(magnet, "PirateBay");
 
@@ -344,7 +344,7 @@ public class WebScrape : IDisposable
         var url = "https://prbay.top/search/";
         showName = Common.RemoveSpecialCharsInShowName(showName);
         showName = showName.Replace(" ", "%20");
-        url      = url + showName + "%20" + seasEpi+ "/1/99/0";
+        url      = url + showName + "%20" + seasEpi + "/1/99/0";
 
         //_log.Write($"URL PirateBay is {url}", "PirateBay", 4);
 

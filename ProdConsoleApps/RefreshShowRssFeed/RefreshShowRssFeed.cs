@@ -36,7 +36,7 @@ internal static class RefreshShowRssFeed
         catch (Exception ex)
         {
             log.Write($"########################################## Exception during FeedReading: {ex}", "", 0);
-            LogModel.Record(thisProgram, "Main", $"Error: with the RssShow feed {ex.Message}", 0);
+            LogModel.Record(thisProgram, "Main", $"Error: with the RssShow feed {ex.Message}  ::: {ex.InnerException}", 20);
             log.Stop();
             LogModel.Stop(thisProgram);
             Environment.Exit(99);
@@ -75,15 +75,12 @@ internal static class RefreshShowRssFeed
             log.Write($"Added {show.Title} to Transmission");
             LogModel.Record(thisProgram, "Main", $"Processing magnet for show: {show.Title}", 1);
 
-            using var db          = new TvMaze();
+            using var db = new TvMaze();
 
             var recordToAdd = new ShowRssFeed
                               {
-                                  ShowName   = show.Title,
-                                  Processed  = true,
-                                  Url        = show.Link,
-                                  UpdateDate = DateTime.Now.ToString("yyy-MM-dd"),
-                                  };
+                                  ShowName = show.Title, Processed = true, Url = show.Link, UpdateDate = DateTime.Now.ToString("yyy-MM-dd"),
+                              };
             db.ShowRssFeeds.Add(recordToAdd);
             db.SaveChanges();
         }
@@ -96,8 +93,8 @@ internal static class RefreshShowRssFeed
 
     private static bool CheckIfProcessed(AppInfo appInfo, string showName)
     {
-        using var db                 = new TvMaze();
-        var       result             = db.ShowRssFeeds.SingleOrDefault(s => s.ShowName == showName);
+        using var db     = new TvMaze();
+        var       result = db.ShowRssFeeds.SingleOrDefault(s => s.ShowName == showName);
 
         if (result != null)
         {
