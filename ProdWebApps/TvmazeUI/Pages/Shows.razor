@@ -103,7 +103,7 @@
 
 <div>
     <h6>Shows - Table</h6>
-    <table class="table table-striped">
+    <table class="table table-striped" style="font-size: 85%; line-height: 85%">
         <thead>
         <tr>
             <th>Show Id</th>
@@ -153,27 +153,27 @@
                     var splitDate = si.UpdateDate!.Split(' ');
                     <td>@splitDate[0]</td>
                 }
-                <td>
+                <td class="p-0">
                     @if (si.TvmStatus != "Reviewing")
                     {
                         if (si.TvmStatus == "New")
                         {
-                            <button class="btn btn-primary" @onclick="@(() => EditShow(si))">Set Reviewing</button>
+                            <button class="btn btn-primary" style="font-size: 85%; line-height: 85%" @onclick="@(() => EditShow(si))">Set Reviewing</button>
                         } else
                         {
-                            <button class="btn btn-warning" @onclick="@(() => EditShow(si))">Submit Edit</button>
+                            <button class="btn btn-warning" style="font-size: 85%; line-height: 85%" @onclick="@(() => EditShow(si))">Submit Edit</button>
 
                             if (si.TvmStatus != "Skipping")
                             {
-                                <button class="btn btn-danger" @onclick="@(() => SkipShow(si))">Skip</button>
+                                <button class="btn btn-danger" style="font-size: 85%; line-height: 85%" @onclick="@(() => SkipShow(si))">Skip</button>
                             }
                         }
                     }
                     @if (si.TvmStatus != "Following")
                     {
-                        <button class="btn btn-danger" @onclick="@(() => DeleteShow(si))">Delete</button>
+                        <button class="btn btn-danger mt-0 mb-0" style="font-size: 85%; line-height: 85%" @onclick="@(() => DeleteShow(si))">Delete</button>
                     }
-                    <button class="btn btn-info" @onclick="@(() => FindEpisodes(si))">Episodes</button>
+                    <button class="btn btn-info mt-0 mb-0" style="font-size: 85%; line-height: 85%" @onclick="@(() => FindEpisodes(si))">Episodes</button>
                 </td>
             </tr>
             _idx++;

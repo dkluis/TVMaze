@@ -304,7 +304,10 @@ public class EpisodeSearch : IDisposable
         var     epiId = 0;
         MariaDb mdb   = new(appInfo);
 
-        var rdr                  = mdb.ExecQuery($"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showId} and `SeasonEpisode` = '{seasonEpisode}; ");
+        var rdr = mdb.ExecQuery($"select `TvmEpisodeId` from Episodes where `TvmShowId` = {showId} and `SeasonEpisode` = '{seasonEpisode}'; ");
+
+        if (rdr == null) return 0;
+
         while (rdr.Read()) epiId = int.Parse(rdr[0].ToString()!);
 
         return epiId;

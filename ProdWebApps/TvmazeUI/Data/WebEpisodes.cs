@@ -21,20 +21,19 @@ public class WebEpisodes
 
         while (rdr.Read())
         {
+            var broadcastDate = DateTime.Parse(rdr["BroadcastDate"].ToString()!).ToString("yyyy-MM-dd");
             EpisodeInfo episodeInfo = new()
                                       {
                                           TvmShowId     = int.Parse(rdr["TvmShowId"].ToString()!),
                                           ShowName      = rdr["ShowName"].ToString()!,
                                           Season        = rdr["Season"].ToString()!,
                                           Episode       = rdr["Episode"].ToString()!,
-                                          BroadcastDate = rdr["BroadcastDate"].ToString()!,
+                                          BroadcastDate = DateTime.Parse(rdr["BroadcastDate"].ToString()!).ToString("yyyy-MM-dd"),
                                           TvmUrl        = rdr["TvmUrl"].ToString()!,
                                           PlexStatus    = rdr["PlexStatus"].ToString()!,
-                                          PlexDate      = rdr["PlexDate"].ToString()!,
-                                          UpdateDate    = rdr["UpdateDate"].ToString()![..10],
+                                          PlexDate      = DateTime.Parse(rdr["PlexDate"].ToString()!).ToString("yyyy-MM-dd"),
+                                          UpdateDate    = DateTime.Parse(rdr["UpdateDate"].ToString()!).ToString("yyyy-MM-dd"),
                                       };
-            if (episodeInfo.BroadcastDate!.Length > 10) episodeInfo.BroadcastDate = episodeInfo.BroadcastDate[..10];
-            if (episodeInfo.PlexDate!.Length      > 10) episodeInfo.PlexDate      = episodeInfo.PlexDate[..10];
             episodeInfoList.Add(episodeInfo);
         }
 
@@ -60,13 +59,12 @@ public class WebEpisodes
                                  ShowName      = rdr["ShowName"].ToString()!,
                                  Season        = rdr["Season"].ToString()!,
                                  Episode       = rdr["Episode"].ToString()!,
-                                 BroadcastDate = rdr["BroadcastDate"].ToString()!,
+                                 BroadcastDate = DateTime.Parse(rdr["BroadcastDate"].ToString()!).ToString("yyyy-MM-dd"),
                                  TvmUrl        = rdr["TvmUrl"].ToString()!,
                                  PlexStatus    = rdr["PlexStatus"].ToString()!,
-                                 PlexDate      = "",
-                                 UpdateDate    = rdr["UpdateDate"].ToString()![..10],
+                                 PlexDate      = null,
+                                 UpdateDate    = DateTime.Parse(rdr["UpdateDate"].ToString()!).ToString("yyyy-MM-dd"),
                              };
-            if (ei.BroadcastDate!.Length > 10) ei.BroadcastDate = ei.BroadcastDate[..10];
             episodeInfoList.Add(ei);
         }
 

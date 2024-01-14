@@ -86,14 +86,14 @@ public class MediaFileHandler : IDisposable
                 {
                     var mediaName = file.Replace(findIn, "").Replace("/", "");
                     var trashLoc  = Path.Combine(_appInfo.HomeDir!, "Trash", mediaName);
-                    LogModel.Record(_appInfo.Program, "Media File Handler", $"File to Delete {mediaName} for episode {seasonEpisode}", 4);
+                    LogModel.Record(_appInfo.Program, "Media File Handler", $"Evaluating File {mediaName} for episode {seasonEpisode}", 5);
 
                     if (!file.Contains(seasonEpisode, StringComparison.CurrentCultureIgnoreCase)) continue;
 
                     try
                     {
                         File.Move(file, trashLoc);
-                        LogModel.Record(_appInfo.Program, "Media File Handler", $"Delete {mediaName}, to {trashLoc}", 4);
+                        LogModel.Record(_appInfo.Program, "Media File Handler", $"Deleted {mediaName}, to {trashLoc}", 2);
                     }
                     catch (Exception e)
                     {

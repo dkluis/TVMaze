@@ -48,6 +48,15 @@ internal static class UpdatePlexWatched
                         pwi.TvmShowId = foundInDb[0];
                         using EpisodeSearch es = new();
                         pwi.TvmEpisodeId = es.Find(appInfo, pwi.TvmShowId, pwi.SeasonEpisode);
+
+                        if (pwi.TvmEpisodeId == 0)
+                        {
+                            LogModel.Record(thisProgram, "Main", $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File", 1);
+                            ActionItemModel.RecordActionItem(thisProgram, $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File", log);
+
+                            continue;
+                        }
+
                         LogModel.Record(thisProgram, "Main", $"Found Show: {pwi.ShowName}", 5);
 
                         break;
