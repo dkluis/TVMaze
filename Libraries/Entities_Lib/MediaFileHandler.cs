@@ -86,7 +86,7 @@ public class MediaFileHandler : IDisposable
                 {
                     var mediaName = file.Replace(findIn, "").Replace("/", "");
                     var trashLoc  = Path.Combine(_appInfo.HomeDir!, "Trash", mediaName);
-                    LogModel.Record(_appInfo.Program, "Media File Handler", $"Evaluating File {mediaName} for episode {seasonEpisode}", 5);
+                    LogModel.Record(_appInfo.Program, "Media File Handler", $"Evaluating File {mediaName} for episode {seasonEpisode}", 4);
 
                     if (!file.Contains(seasonEpisode, StringComparison.CurrentCultureIgnoreCase)) continue;
 
@@ -107,7 +107,7 @@ public class MediaFileHandler : IDisposable
                 LogModel.Record(_appInfo.Program, "Media File Handler", $"Error on getting Files for {Path.Combine(directory, showName, seas)}: {e.Message}",0);
             }
         else
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Directory {findIn} does not exist", 6);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Directory {findIn} does not exist", 0);
 
         return false;
     }
@@ -138,7 +138,7 @@ public class MediaFileHandler : IDisposable
 
         if (mediaFiles.Count <= 0)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 6);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 0);
 
             return false;
         }
@@ -146,7 +146,7 @@ public class MediaFileHandler : IDisposable
         foreach (var file in mediaFiles)
         foreach (var ext in _appInfo.MediaExtensions)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 5);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 4);
 
             if (!file.Contains(ext)) continue;
             media.Add(file);
@@ -156,7 +156,7 @@ public class MediaFileHandler : IDisposable
 
         if (media.Count <= 0)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find the right Media at {fullMediaPath}", 6);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find the right Media at {fullMediaPath}", 0);
 
             return false;
         }
@@ -168,7 +168,7 @@ public class MediaFileHandler : IDisposable
     {
         if (episode is null && show is null)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Episode and Show are set to null, cannot process the move for {mediainfo}", 6);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Episode and Show are set to null, cannot process the move for {mediainfo}", 0);
             ActionItemModel.RecordActionItem(_appInfo.Program, $"Episode and Show are set to null, cannot process the move for {mediainfo}", _log);
 
             return false;
@@ -207,7 +207,7 @@ public class MediaFileHandler : IDisposable
 
         if (!foundDir && !foundFile)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 6);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 0);
 
             return false;
         }
@@ -233,7 +233,7 @@ public class MediaFileHandler : IDisposable
             foreach (var file in filesInDirectory)
             foreach (var ext in _appInfo.MediaExtensions)
             {
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 4);
+                LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 3);
 
                 if (!file.Contains(ext)) continue;
                 media.Add(file);
@@ -245,7 +245,7 @@ public class MediaFileHandler : IDisposable
         if (media.Count == 0)
         {
             _log.Write($"There was nothing to move {mediainfo}");
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 4);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 2);
         }
 
         // if (string.IsNullOrEmpty(shown) || string.IsNullOrWhiteSpace(shown))
@@ -264,7 +264,7 @@ public class MediaFileHandler : IDisposable
             try
             {
                 File.Move(file, toPath);
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved To: {toPath}", 4);
+                LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved To: {toPath}", 2);
                 _log.Write($"Moved To: {toPath}");
             }
             catch (Exception ex)
@@ -276,7 +276,7 @@ public class MediaFileHandler : IDisposable
         if (isDirectory)
         {
             Directory.Move(fullMediaPath, $"{PlexMediaAcquire}/Processed/{mediainfo}");
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved {fullMediaPath} to {PlexMediaAcquire}/Processed/{mediainfo}", 4);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved {fullMediaPath} to {PlexMediaAcquire}/Processed/{mediainfo}", 3);
         }
 
         return false;

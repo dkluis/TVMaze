@@ -41,7 +41,7 @@ public class LogEntity : IDisposable
             var db                                     = new TvMaze();
             if (rec.Program.Length  > 30) rec.Program  = rec.Program.Substring(0, 30);
             if (rec.Function.Length > 30) rec.Function = rec.Function.Substring(0, 30);
-            if (rec.Message.Length  > 300) rec.Message = rec.Message.Substring(0, 300);
+            if (rec.Message.Length  > 5000) rec.Message = rec.Message.Substring(0, 5000);
             db.Logs.Add(rec);
             db.SaveChanges();
         }

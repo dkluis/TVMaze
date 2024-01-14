@@ -249,15 +249,15 @@ public partial class TvMaze : DbContext
 
         modelBuilder.Entity<Log>(entity =>
         {
-            entity.HasKey(e => new { e.RecordedDate, e.Program, e.Function, e.Message, e.Level })
+            entity.HasKey(e => new { e.RecordedDate, e.Program, e.Function, e.Level })
                 .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0, 0 });
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0 });
 
-            entity.Property(e => e.RecordedDate).HasColumnType("datetime");
+            entity.Property(e => e.RecordedDate).HasColumnType("datetime(3)");
             entity.Property(e => e.Program).HasMaxLength(30);
             entity.Property(e => e.Function).HasMaxLength(30);
-            entity.Property(e => e.Message).HasMaxLength(300);
             entity.Property(e => e.Level).HasColumnType("int(2)");
+            entity.Property(e => e.Message).HasMaxLength(5000);
         });
 
         modelBuilder.Entity<MediaType>(entity =>

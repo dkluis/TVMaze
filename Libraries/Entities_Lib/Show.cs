@@ -438,7 +438,7 @@ public class SearchShowsViaNames
             mDbR.Close();
 
             sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != `Skipping`;";
+                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Skipping';";
             rdr = mDbR.ExecQuery(sql);
         }
 

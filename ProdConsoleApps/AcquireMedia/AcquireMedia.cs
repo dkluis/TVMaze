@@ -85,7 +85,8 @@ internal static class Program
                         acquireMediaScript.StartInfo.RedirectStandardOutput = false;
                         var result = acquireMediaScript.Start();
                         acquireMediaScript.WaitForExit();
-                        LogModel.Record(thisProgram, "Main", $"Transferred magnet to Transmission {magnet}", 1);
+                        LogModel.Record(thisProgram, "Main", $"Transferred magnet to Transmission {magnet}",                    2);
+                        LogModel.Record(thisProgram, "Main", $"Transmission is loading {rec.SeasonEpisode} for {rec.ShowName}", 1);
                     }
 
                     if (!isSeason)

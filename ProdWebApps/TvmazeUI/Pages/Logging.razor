@@ -1,10 +1,11 @@
 @page "/Logging"
+@using Microsoft.EntityFrameworkCore
 @inject DataExchange DataExchangeService
 
 @code {
     private static readonly AppInfo   AppInfo          = new("Tvmaze", "WebUI", "DbAlternate");
-    private                 int       _minLevel        = 0;
-    private                 int       _maxLevel        = 3;
+    private                 int       _minLevel        = 1;
+    private                 int       _maxLevel        = 1;
     private                 int       _singleLevel     = 99;
     private                 DateTime  _fromDate        = DateTime.Now.AddHours(-2);
     private                 DateTime  _toDate          = DateTime.Now.AddHours(2);
@@ -39,10 +40,10 @@
                         includeStrings.Add(include);
                 }
 
-                logsTemp = logsTemp.Where(log => includeStrings.Any(includeString => log.Program.Contains(includeString) || log.Function.Contains(includeString) || log.Message.Contains(includeString))).ToList();
+                logsTemp = logsTemp.Where(log => includeStrings.Any(includeString => log.Program.Contains(includeString, StringComparison.OrdinalIgnoreCase) || log.Function.Contains(includeString, StringComparison.OrdinalIgnoreCase) || log.Message.Contains(includeString, StringComparison.OrdinalIgnoreCase))).ToList();
             } else
             {
-                logsTemp = logsTemp.Where(l => l.Program.Contains(_includeString) || l.Function.Contains(_includeString) || l.Message.Contains(_includeString)).ToList();
+                logsTemp = logsTemp.Where(l => l.Program.Contains(_includeString, StringComparison.OrdinalIgnoreCase) || l.Function.Contains(_includeString, StringComparison.OrdinalIgnoreCase) || l.Message.Contains(_includeString, StringComparison.OrdinalIgnoreCase)).ToList();
             }
         }
 
@@ -53,28 +54,27 @@
 
                 foreach (var exclude in splitExcludes)
                 {
-                    logsTemp = logsTemp.Where(l => !l.Program.Contains(exclude) && !l.Function.Contains(exclude) && !l.Message.Contains(exclude)).ToList();
+                    logsTemp = logsTemp.Where(l => !l.Program.Contains(exclude, StringComparison.OrdinalIgnoreCase) && !l.Function.Contains(exclude, StringComparison.OrdinalIgnoreCase) && !l.Message.Contains(exclude, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
             } else
             {
-                logsTemp = logsTemp.Where(l => !l.Program.Contains(_excludeString) && !l.Function.Contains(_excludeString) && !l.Message.Contains(_excludeString)).ToList();
+                logsTemp = logsTemp.Where(l => !l.Program.Contains(_excludeString, StringComparison.OrdinalIgnoreCase) && !l.Function.Contains(_excludeString, StringComparison.Ordinal) && !l.Message.Contains(_excludeString, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
         _logs            = logsTemp;
         _recordsFiltered = _logs.Count();
     }
 
-    void RefreshLogs()
+    async Task RefreshLogs()
     {
         if (_singleLevel != 99)
         {
             _minLevel = _singleLevel;
             _maxLevel = _singleLevel;
         }
-        using var db = new TvMaze();
-        _logs = db.Logs
-                  .Where(l => (l.Level >= _minLevel && l.Level <= _maxLevel) && (l.RecordedDate >= _fromDate && l.RecordedDate <= _toDate))
-                  .OrderByDescending(l => l.RecordedDate).Take(_recordsToTake).ToList();
+
+        await using var db = new TvMaze();
+        _logs            = await db.Logs.Where(l => (l.Level >= _minLevel && l.Level <= _maxLevel) && (l.RecordedDate >= _fromDate && l.RecordedDate <= _toDate)).OrderByDescending(l => l.RecordedDate).Take(_recordsToTake).ToListAsync();
         _initialLogs     = _logs;
         _recordsReturned = _initialLogs.Count();
         _recordsFiltered = _recordsReturned;
@@ -82,8 +82,8 @@
 
     void ResetLevels()
     {
-        _maxLevel    = 3;
-        _minLevel    = 0;
+        _maxLevel    = 1;
+        _minLevel    = 1;
         _singleLevel = 99;
         ResetData();
     }
@@ -115,12 +115,12 @@
         ResetDates();
     }
 
-    void DeleteEntries()
+    async Task DeleteEntries()
     {
-        using var db       = new TvMaze();
-        var       toDelete = db.Logs.Where(l => l.RecordedDate < _upToDate).ToList();
+        await using var db       = new TvMaze();
+        var             toDelete = db.Logs.Where(l => l.RecordedDate < _upToDate).ToList();
         db.Logs.RemoveRange(toDelete);
-        db.SaveChanges();
+        await db.SaveChangesAsync();
         ResetAll();
     }
 }
@@ -130,32 +130,32 @@
         <div class="input-group-prepend">
             <span class="input-group-text">Min Level</span>
         </div>
-        <input @bind="_minLevel" Style="width: 50px"/>
+        <input @bind="_minLevel" style="width: 50px"/>
         <div class="input-group-prepend">
             <span class="input-group-text">Max Level</span>
         </div>
-        <input @bind="_maxLevel" Style="width: 50px"/>
+        <input @bind="_maxLevel" style="width: 50px"/>
         <div class="input-group-prepend">
             <span class="input-group-text">Single Level</span>
         </div>
-        <input @bind="_singleLevel" Style="width: 50px"/>
+        <input @bind="_singleLevel" style="width: 50px"/>
         <div class="input-group-prepend">
             <span class="input-group-text">From (incl)</span>
         </div>
-        <input @bind="_fromDate" Style="width: 200px"/>
+        <input @bind="_fromDate" style="width: 180px"/>
         <div class="input-group-prepend">
             <span class="input-group-text">To (incl)</span>
         </div>
-        <input @bind="_toDate" Style="width: 200px"/>
+        <input @bind="_toDate" style="width: 180px"/>
         <div class="input-group-append">
             <span class="input-group-text">No of Recs</span>
         </div>
-        <input @bind="_recordsToTake"/>
+        <input @bind="_recordsToTake" style="width: 75px"/>
         <button class="btn btn-info" @onclick="RefreshLogs">Get Logs</button>
     </div>
 </div>
 
-<div class="d-flex align-items-center mb-3">
+<div class="d-flex align-items-center mb-3" style="font-size: 85%; line-height: 85%">
     <div class="btn-group ml-3">
         <button class="btn btn-info me-2 " @onclick="ResetLevels">Reset Levels</button>
         <button class="btn btn-info me-2" @onclick="ResetDates">Reset Dates</button>
@@ -172,14 +172,14 @@
         <div class="input-group-prepend">
             <span class="input-group-text">Incl: %</span>
         </div>
-        <input @bind="_includeString"/>
+        <input @bind="_includeString" style="width: 350px"/>
         <div class="input-group-append">
             <span class="input-group-text">%</span>
         </div>
         <div class="input-group-prepend">
             <span class="input-group-text">Excl: %</span>
         </div>
-        <input @bind="_excludeString"/>
+        <input @bind="_excludeString" style="width: 350px"/>
         <div class="input-group-append">
             <span class="input-group-text">%</span>
         </div>
@@ -191,7 +191,7 @@
         <div class="input-group-prepend">
             <span class="input-group-text">Up To: </span>
         </div>
-        <input @bind="_upToDate" Style="width: 200px"/>
+        <input @bind="_upToDate" Style="width: 180px"/>
         <button class="btn btn-info" @onclick="DeleteEntries">Delete Entries</button>
     </div>
 </div>

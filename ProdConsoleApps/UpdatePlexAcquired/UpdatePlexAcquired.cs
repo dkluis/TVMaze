@@ -26,182 +26,154 @@ internal static class UpdatePlexAcquired
         log.Start();
         LogModel.Start(thisProgram);
 
-        // Read the Acquired Media txt file
-        var plexAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "PlexAcquired.log");
-
-        if (!File.Exists(plexAcquired))
+        try
         {
-            log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
-            LogModel.Record(thisProgram, "Main", "Nothing To Process");
-            log.Stop();
-            LogModel.Stop(thisProgram);
-            Environment.Exit(0);
-        }
+            // Read the Acquired Media txt file
+            var plexAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "PlexAcquired.log");
 
-        var acquired    = File.ReadAllLines(plexAcquired);
-        var allAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "AllAcquired.log");
-        File.AppendAllLinesAsync(allAcquired, acquired);
-        File.Delete(plexAcquired);
-        log.Write($"Found {acquired.Length} records in {plexAcquired}");
-        LogModel.Record(thisProgram, "Main", $"Found {acquired.Length} records in {plexAcquired}");
-
-        // Process all media lines
-        foreach (var acq in acquired)
-        {
-            log.Write($"Processing acquired {acq}");
-            var       acqInfo = Regex.Split(acq, "S[0-9]+E[0-9]+.", RegexOptions.IgnoreCase);
-            var       acqSeas = Regex.Split(acq, "S[0-9]+.",        RegexOptions.IgnoreCase);
-            string    show;
-            var       episodeString = "";
-            var       isSeason      = false;
-            int       seasonNum;
-            List<int> epsToUpdate = new();
-
-            if (acqInfo.Length == 2)
+            if (!File.Exists(plexAcquired))
             {
-                show = acqInfo[0].Replace(".", " ").Trim();
-
-                // ReSharper disable once StringLiteralTypo
-                show          = show.Replace("WWW SCENETIME COM - ", "");
-                episodeString = acq.Replace(acqInfo[1], "").Replace(acqInfo[0], "").Replace(".", " ").Trim();
-                var seas = episodeString.ToLower().Split("e");
-                seasonNum = int.Parse(seas[0].Replace("s", ""));
-                var epiNum = int.Parse(seas[1]);
-
-                // Special section to handle the Dexter versus Dexter New Blood season mix up on the internet.
-                // if (show.ToLower() == "dexter" && seasonNum > 8)
-                // {
-                //     show          =  "Dexter New Blood";
-                //     seasonNum     -= 8;
-                //     episodeString =  Common.BuildSeasonEpisodeString(seasonNum, epiNum);
-                //     log.Write("Changed Dexter to Dexter New Blood", "", 2);
-                // }
-
-                LogModel.Record(thisProgram, "Main", $"Found show {show} episode {episodeString}", 4);
-            } else
-            {
-                if (acqSeas.Length == 2)
-                {
-                    isSeason  = true;
-                    show      = acqSeas[0].Replace(".", " ").Trim();
-                    seasonNum = int.Parse(acq.Replace(acqSeas[0], "").Replace(acqSeas[1], "").Replace(".", "").ToLower().Replace("s", ""));
-                    LogModel.Record(thisProgram, "Main", $"Found the show's {show} whole season {seasonNum}");
-                } else
-                {
-                    LogModel.Record(thisProgram, "Main", $"Could not find a show and episode for {acq}, is probably a movie or music");
-                    using MediaFileHandler mfh = new(appInfo);
-                    mfh.MoveNonTvMediaToPlex(acq);
-
-                    continue;
-                }
+                log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
+                LogModel.Record(thisProgram, "Main", "Nothing To Process");
+                log.Stop();
+                LogModel.Stop(thisProgram);
+                Environment.Exit(0);
             }
 
-            SearchShowsViaNames showToUpdate = new();
-            var                 showId       = showToUpdate.Find(appInfo, show);
+            var acquired    = File.ReadAllLines(plexAcquired);
+            var allAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "AllAcquired.log");
+            File.AppendAllLinesAsync(allAcquired, acquired);
+            File.Delete(plexAcquired);
+            log.Write($"Found {acquired.Length} records in {plexAcquired}");
+            LogModel.Record(thisProgram, "Main", $"Found {acquired.Length} records in {plexAcquired}");
 
-            if (showId.Count != 1)
+            // Process all media lines
+            foreach (var acq in acquired)
             {
-                log.Write($"Could not determine ShowId for: {show}, found {showId.Count} records", "", 2);
-                LogModel.Record(thisProgram, "Main", $"Could not determine ShowId for: {show}, found {showId.Count} records", 4);
+                log.Write($"Processing acquired {acq}");
+                var       acqInfo = Regex.Split(acq, "S[0-9]+E[0-9]+.", RegexOptions.IgnoreCase);
+                var       acqSeas = Regex.Split(acq, "S[0-9]+.",        RegexOptions.IgnoreCase);
+                string    show;
+                var       episodeString = "";
+                var       isSeason      = false;
+                int       seasonNum;
+                List<int> epsToUpdate = new();
 
-                if (showId.Count == 0)
+                if (acqInfo.Length == 2)
                 {
-                    var reducedShow         = Common.RemoveSuffixFromShowName(show);
-                    var reducedShowToUpdate = showToUpdate.Find(appInfo, reducedShow);
+                    show = acqInfo[0].Replace(".", " ").Trim();
 
-                    if (reducedShowToUpdate.Count == 1)
+                    // ReSharper disable once StringLiteralTypo
+                    show          = show.Replace("WWW SCENETIME COM - ", "");
+                    episodeString = acq.Replace(acqInfo[1], "").Replace(acqInfo[0], "").Replace(".", " ").Trim();
+                    var seas = episodeString.ToLower().Split("e");
+                    seasonNum = int.Parse(seas[0].Replace("s", ""));
+                    var epiNum = int.Parse(seas[1]);
+
+                    // Special section to handle the Dexter versus Dexter New Blood season mix up on the internet.
+                    // if (show.ToLower() == "dexter" && seasonNum > 8)
+                    // {
+                    //     show          =  "Dexter New Blood";
+                    //     seasonNum     -= 8;
+                    //     episodeString =  Common.BuildSeasonEpisodeString(seasonNum, epiNum);
+                    //     log.Write("Changed Dexter to Dexter New Blood", "", 2);
+                    // }
+
+                    LogModel.Record(thisProgram, "Main", $"Found show {show} episode {episodeString}", 4);
+                } else
+                {
+                    if (acqSeas.Length == 2)
                     {
-                        log.Write($"Found {reducedShow} trying this one", "", 2);
-                        LogModel.Record(thisProgram, "Main", $"After reducing search Found {reducedShow} trying this one", 4);
-                        showId = reducedShowToUpdate;
+                        isSeason  = true;
+                        show      = acqSeas[0].Replace(".", " ").Trim();
+                        seasonNum = int.Parse(acq.Replace(acqSeas[0], "").Replace(acqSeas[1], "").Replace(".", "").ToLower().Replace("s", ""));
+                        LogModel.Record(thisProgram, "Main", $"Found the show's {show} whole season {seasonNum}");
                     } else
                     {
-                        ActionItemModel.RecordActionItem(thisProgram, $"Could not determine ShowId for: {show}, found {showId.Count} records", log);
-                        var showIds = "";
-
-                        foreach (var shw in showId)
-                        {
-                            showIds = showIds + shw.ToString() + ": ";
-                        }
-
-                        LogModel.Record(thisProgram, "Main", $"Multiple Shows found for: {show}, found {showId.Count}: {showIds}", 4);
+                        LogModel.Record(thisProgram, "Main", $"Could not find a show and episode for {acq}, is probably a movie or music");
+                        using MediaFileHandler mfh = new(appInfo);
+                        mfh.MoveNonTvMediaToPlex(acq);
 
                         continue;
                     }
                 }
-            }
 
-            var epiId = 0;
+                SearchShowsViaNames showToUpdate = new();
+                var                 showId       = showToUpdate.Find(appInfo, show);
 
-            if (!isSeason)
-            {
-                EpisodeSearch episodeToUpdate = new();
-                epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episodeString);
-                epsToUpdate.Add(epiId);
-                log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
-                LogModel.Record(thisProgram, "Main", $"Working on ShowId {showId[0]} and EpisodeId {epiId}", 4);
-            }
-
-            Show foundShow = new(appInfo);
-
-            switch (isSeason)
-            {
-                case false when epiId == 0:
+                if (showId.Count != 1)
                 {
-                    log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
-                    ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}", log);
-                    foundShow.FillViaTvmaze(showId[0]);
-                    using MediaFileHandler mfh = new(appInfo);
-                    mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
-                    foundShow.Reset();
+                    log.Write($"Could not determine ShowId for: {show}, found {showId.Count} records", "", 2);
+                    LogModel.Record(thisProgram, "Main", $"Could not determine ShowId for: {show}, found {showId.Count} records", 4);
 
-                    continue;
+                    if (showId.Count == 0)
+                    {
+                        var reducedShow         = Common.RemoveSuffixFromShowName(show);
+                        var reducedShowToUpdate = showToUpdate.Find(appInfo, reducedShow);
+
+                        if (reducedShowToUpdate.Count == 1)
+                        {
+                            log.Write($"Found {reducedShow} trying this one", "", 2);
+                            LogModel.Record(thisProgram, "Main", $"After reducing search Found {reducedShow} trying this one", 4);
+                            showId = reducedShowToUpdate;
+                        } else
+                        {
+                            ActionItemModel.RecordActionItem(thisProgram, $"Could not determine ShowId for: {show}, found {showId.Count} records", log);
+                            var showIds = "";
+
+                            foreach (var shw in showId)
+                            {
+                                showIds = showIds + shw.ToString() + ": ";
+                            }
+
+                            LogModel.Record(thisProgram, "Main", $"Multiple Shows found for: {show}, found {showId.Count}: {showIds}", 4);
+
+                            continue;
+                        }
+                    }
                 }
 
-                case true:
-                {
-                    using MariaDb mDbE = new(appInfo);
-                    var           rdrE = mDbE.ExecQuery($"select TvmEpisodeId from Episodes where `TvmShowId` = {showId[0]} and `Season` = {seasonNum}");
-                    while (rdrE.Read()) epsToUpdate.Add(int.Parse(rdrE[0].ToString()!));
+                var epiId = 0;
 
-                    break;
-                }
-            }
-
-            if (!isSeason)
-            {
-                using Episode epiToUpdate = new(appInfo);
-                epiToUpdate.FillViaTvmaze(epiId);
-
-                if (epiToUpdate.PlexStatus != " ")
+                if (!isSeason)
                 {
-                    log.Write($"Not updating Tvmaze status already is {epiToUpdate.PlexStatus} on {epiToUpdate.PlexDate}", "", 2);
-                } else
-                {
-                    using WebApi uts = new(appInfo);
-                    uts.PutEpisodeToAcquired(epiToUpdate.TvmEpisodeId);
-                    epiToUpdate.PlexStatus = "Acquired";
-                    epiToUpdate.PlexDate   = DateTime.Now.ToString("yyyy-MM-dd");
+                    EpisodeSearch episodeToUpdate = new();
+                    epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episodeString);
+                    epsToUpdate.Add(epiId);
+                    log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
+                    LogModel.Record(thisProgram, "Main", $"Working on ShowId {showId[0]} and EpisodeId {epiId}");
                 }
 
-                if (!epiToUpdate.DbUpdate())
-                    log.Write($"Error Updating Episode {epiToUpdate.TvmEpisodeId}", "", 0);
+                Show foundShow = new(appInfo);
 
-                using MediaFileHandler mfh = new(appInfo);
-                mfh.MoveMediaToPlex(acq, epiToUpdate);
-            } else
-            {
-                Episode firstEpi = new(appInfo);
-                firstEpi.FillViaTvmaze(epsToUpdate[0]);
-
-                foreach (var epi in epsToUpdate)
+                switch (isSeason)
                 {
-                    Episode epiToUpdate = new(appInfo);
+                    case false when epiId == 0:
+                    {
+                        log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
+                        ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}", log);
+                        foundShow.FillViaTvmaze(showId[0]);
+                        using MediaFileHandler mfh = new(appInfo);
+                        mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
+                        foundShow.Reset();
 
-                    if (firstEpi.TvmEpisodeId != epi)
-                        epiToUpdate.FillViaTvmaze(epi);
-                    else
-                        epiToUpdate = firstEpi;
+                        continue;
+                    }
+
+                    case true:
+                    {
+                        using MariaDb mDbE = new(appInfo);
+                        var           rdrE = mDbE.ExecQuery($"select TvmEpisodeId from Episodes where `TvmShowId` = {showId[0]} and `Season` = {seasonNum}");
+                        while (rdrE.Read()) epsToUpdate.Add(int.Parse(rdrE[0].ToString()!));
+
+                        break;
+                    }
+                }
+
+                if (!isSeason)
+                {
+                    using Episode epiToUpdate = new(appInfo);
+                    epiToUpdate.FillViaTvmaze(epiId);
 
                     if (epiToUpdate.PlexStatus != " ")
                     {
@@ -216,14 +188,50 @@ internal static class UpdatePlexAcquired
 
                     if (!epiToUpdate.DbUpdate())
                         log.Write($"Error Updating Episode {epiToUpdate.TvmEpisodeId}", "", 0);
+
+                    using MediaFileHandler mfh = new(appInfo);
+                    mfh.MoveMediaToPlex(acq, epiToUpdate);
+                } else
+                {
+                    Episode firstEpi = new(appInfo);
+                    firstEpi.FillViaTvmaze(epsToUpdate[0]);
+
+                    foreach (var epi in epsToUpdate)
+                    {
+                        Episode epiToUpdate = new(appInfo);
+
+                        if (firstEpi.TvmEpisodeId != epi)
+                            epiToUpdate.FillViaTvmaze(epi);
+                        else
+                            epiToUpdate = firstEpi;
+
+                        if (epiToUpdate.PlexStatus != " ")
+                        {
+                            log.Write($"Not updating Tvmaze status already is {epiToUpdate.PlexStatus} on {epiToUpdate.PlexDate}", "", 2);
+                        } else
+                        {
+                            using WebApi uts = new(appInfo);
+                            uts.PutEpisodeToAcquired(epiToUpdate.TvmEpisodeId);
+                            epiToUpdate.PlexStatus = "Acquired";
+                            epiToUpdate.PlexDate   = DateTime.Now.ToString("yyyy-MM-dd");
+                        }
+
+                        if (!epiToUpdate.DbUpdate())
+                            log.Write($"Error Updating Episode {epiToUpdate.TvmEpisodeId}", "", 0);
+                    }
+
+                    using MediaFileHandler mfh = new(appInfo);
+                    mfh.MoveMediaToPlex(acq, firstEpi);
                 }
-
-                using MediaFileHandler mfh = new(appInfo);
-                mfh.MoveMediaToPlex(acq, firstEpi);
             }
-        }
 
-        log.Stop();
-        LogModel.Stop(thisProgram);
+            log.Stop();
+            LogModel.Stop(thisProgram);
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(thisProgram, "Main", $"Error Occurred: {e.Message} ::: {e.InnerException}", 0);
+            LogModel.Stop(thisProgram);
+        }
     }
 }
