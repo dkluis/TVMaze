@@ -180,11 +180,25 @@ public class MediaFileHandler : IDisposable
         if (show != null)
         {
             destDirectory = GetMediaDirectory(show!.MediaType);
-            shown         = show.AltShowName != "" ? show.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
+
+            if (string.IsNullOrEmpty(show.AltShowName) && string.IsNullOrEmpty(show.CleanedShowName))
+            {
+                shown = string.IsNullOrEmpty(show.AltShowName) ? show.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
+            } else
+            {
+                shown = show.ShowName;
+            }
         } else
         {
             destDirectory = GetMediaDirectory(episode!.MediaType);
-            shown         = episode.AltShowName != "" ? episode.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
+
+            if (string.IsNullOrEmpty(episode.AltShowName) && string.IsNullOrEmpty(episode.CleanedShowName))
+            {
+                shown = string.IsNullOrWhiteSpace(episode.AltShowName) ? episode.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
+            } else
+            {
+                shown = episode.ShowName;
+            }
         }
 
         var          fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo);
@@ -253,7 +267,7 @@ public class MediaFileHandler : IDisposable
         //     shown = showName;
         // }
 
-        var toDir = Path.Combine(destDirectory, shown, episode is not null ? $"Season {episode.SeasonNum}" : $"Season {season}");
+        var toDir       = Path.Combine(destDirectory, shown, episode != null && episode.SeasonNum != 0 ? $"Season {episode.SeasonNum}" : $"Season {season}");
         if (!Directory.Exists(toDir)) Directory.CreateDirectory(toDir);
 
         foreach (var file in media)

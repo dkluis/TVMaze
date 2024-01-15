@@ -154,7 +154,7 @@ internal static class UpdatePlexAcquired
                         ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}", log);
                         foundShow.FillViaTvmaze(showId[0]);
                         using MediaFileHandler mfh = new(appInfo);
-                        mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
+                        mfh.MoveMediaToPlex(mediainfo: acq, episode: null, show: foundShow, season: seasonNum);
                         foundShow.Reset();
 
                         continue;
@@ -190,7 +190,7 @@ internal static class UpdatePlexAcquired
                         log.Write($"Error Updating Episode {epiToUpdate.TvmEpisodeId}", "", 0);
 
                     using MediaFileHandler mfh = new(appInfo);
-                    mfh.MoveMediaToPlex(acq, epiToUpdate);
+                    mfh.MoveMediaToPlex(mediainfo: acq, episode: epiToUpdate, show: foundShow, season: seasonNum);
                 } else
                 {
                     Episode firstEpi = new(appInfo);
@@ -221,7 +221,7 @@ internal static class UpdatePlexAcquired
                     }
 
                     using MediaFileHandler mfh = new(appInfo);
-                    mfh.MoveMediaToPlex(acq, firstEpi);
+                    mfh.MoveMediaToPlex(mediainfo: acq, episode: firstEpi, show: foundShow, season: seasonNum);
                 }
             }
 
