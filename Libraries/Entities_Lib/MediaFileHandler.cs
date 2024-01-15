@@ -107,7 +107,7 @@ public class MediaFileHandler : IDisposable
                 LogModel.Record(_appInfo.Program, "Media File Handler", $"Error on getting Files for {Path.Combine(directory, showName, seas)}: {e.Message}", 20);
             }
         else
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Directory {findIn} does not exist", 0);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Directory {findIn} does not exist", 20);
 
         return false;
     }
@@ -138,7 +138,7 @@ public class MediaFileHandler : IDisposable
 
         if (mediaFiles.Count <= 0)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 0);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 20);
 
             return false;
         }
@@ -156,7 +156,7 @@ public class MediaFileHandler : IDisposable
 
         if (media.Count <= 0)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find the right Media at {fullMediaPath}", 0);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find the right Media at {fullMediaPath}", 20);
 
             return false;
         }
@@ -168,7 +168,7 @@ public class MediaFileHandler : IDisposable
     {
         if (episode is null && show is null)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Episode and Show are set to null, cannot process the move for {mediainfo}", 0);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Episode and Show are set to null, cannot process the move for {mediainfo}", 20);
             ActionItemModel.RecordActionItem(_appInfo.Program, $"Episode and Show are set to null, cannot process the move for {mediainfo}", _log);
 
             return false;
@@ -177,13 +177,13 @@ public class MediaFileHandler : IDisposable
         string destDirectory;
         string shown;
 
-        if (show != null)
+        if (show != null && show.ShowName != "")
         {
             destDirectory = GetMediaDirectory(show!.MediaType);
 
-            if (string.IsNullOrEmpty(show.AltShowName) && string.IsNullOrEmpty(show.CleanedShowName))
+            if (!string.IsNullOrEmpty(show.AltShowName) || !string.IsNullOrEmpty(show.CleanedShowName))
             {
-                shown = string.IsNullOrEmpty(show.AltShowName) ? show.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
+                shown = !string.IsNullOrEmpty(show.AltShowName) ? show.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
             } else
             {
                 shown = show.ShowName;
@@ -192,14 +192,15 @@ public class MediaFileHandler : IDisposable
         {
             destDirectory = GetMediaDirectory(episode!.MediaType);
 
-            if (string.IsNullOrEmpty(episode.AltShowName) && string.IsNullOrEmpty(episode.CleanedShowName))
+            if (!string.IsNullOrEmpty(episode.AltShowName) || !string.IsNullOrEmpty(episode.CleanedShowName))
             {
-                shown = string.IsNullOrWhiteSpace(episode.AltShowName) ? episode.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
+                shown = !string.IsNullOrEmpty(episode.AltShowName) ? episode.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
             } else
             {
                 shown = episode.ShowName;
             }
         }
+
 
         var          fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo);
         var          isDirectory   = false;
@@ -221,7 +222,7 @@ public class MediaFileHandler : IDisposable
 
         if (!foundDir && !foundFile)
         {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 0);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Could not find dir and file for {fullMediaPath}", 20);
 
             return false;
         }
@@ -247,7 +248,7 @@ public class MediaFileHandler : IDisposable
             foreach (var file in filesInDirectory)
             foreach (var ext in _appInfo.MediaExtensions)
             {
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 3);
+                LogModel.Record(_appInfo.Program, "Media File Handler", $"Processing {file} with extension {ext}", 4);
 
                 if (!file.Contains(ext)) continue;
                 media.Add(file);
@@ -259,13 +260,14 @@ public class MediaFileHandler : IDisposable
         if (media.Count == 0)
         {
             _log.Write($"There was nothing to move {mediainfo}");
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 2);
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 20);
         }
 
-        // if (string.IsNullOrEmpty(shown) || string.IsNullOrWhiteSpace(shown))
-        // {
-        //     shown = showName;
-        // }
+        if (string.IsNullOrEmpty(shown) || string.IsNullOrWhiteSpace(shown))
+        {
+            if (show         != null && show.ShowName != "") shown = show.ShowName;
+            else if (episode != null) shown = episode.ShowName;
+        }
 
         var toDir       = Path.Combine(destDirectory, shown, episode != null && episode.SeasonNum != 0 ? $"Season {episode.SeasonNum}" : $"Season {season}");
         if (!Directory.Exists(toDir)) Directory.CreateDirectory(toDir);
@@ -283,7 +285,9 @@ public class MediaFileHandler : IDisposable
             }
             catch (Exception ex)
             {
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Error Moving File {file} to {toPath} >>> {ex.Message}", 20);
+                LogModel.Record(_appInfo.Program, "Media File Handler", $"Error Moving File {file} to {toPath} ::: {ex.Message}", 20);
+
+                return false;
             }
         }
 

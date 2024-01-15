@@ -301,10 +301,20 @@
 
             if (allData)
             {
+                if (program == "CronLog")
+                {
+                    return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || (l.Level == 20)).ToList().OrderByDescending(l => l.RecordedDate).ToList();
+                }
                 return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).ToList().OrderByDescending(l => l.RecordedDate).ToList();
             } else
             {
-                return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).OrderByDescending(l => l.RecordedDate).ToList();
+                if (program == "CronLog")
+                {
+                    return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || (l.Level == 20)).OrderByDescending(l => l.RecordedDate).ToList();
+                } else
+                {
+                    return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).OrderByDescending(l => l.RecordedDate).ToList();
+                }
             }
         }
         catch (Exception e)
@@ -457,12 +467,11 @@
                         foreach (var rec in _logTable)
                         {
                             <tr>
-                                @*<td>@rec.RecordedDate</td>*@
-                                <td>@rec.RecordedDate.ToString("hh:mm:ss.fff tt")</td>
-                                <td>@rec.Program</td>
-                                <td>@rec.Function</td>
-                                <td>@rec.Message</td>
-                                <td>@rec.Level</td>
+                                <td style="width: 250px; color: @(rec.Level == 20 ? "red" : "black");">@rec.RecordedDate.ToString("hh:mm:ss.fff tt")</td>
+                                <td style="width: 250px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Program</td>
+                                <td style="width: 250px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Function</td>
+                                <td style="width: 500px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Message</td>
+                                <td style="width: 50px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Level</td>
                             </tr>
                         }
                     } else

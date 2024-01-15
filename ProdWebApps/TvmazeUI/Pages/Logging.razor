@@ -229,12 +229,11 @@
                 foreach (var rec in _logs)
                 {
                     <tr>
-                        @*<td>@rec.RecordedDate</td>*@
-                        <td>@rec.RecordedDate.ToString("MM/dd/yyyy hh:mm:ss.fff tt")</td>
-                        <td>@rec.Program</td>
-                        <td>@rec.Function</td>
-                        <td>@rec.Message</td>
-                        <td>@rec.Level</td>
+                        <td style="width: 250px; color: @(rec.Level == 20 ? "red" : "black");">@rec.RecordedDate.ToString("hh:mm:ss.fff tt")</td>
+                        <td style="width: 250px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Program</td>
+                        <td style="width: 250px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Function</td>
+                        <td style="width: 500px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Message</td>
+                        <td style="width: 50px; color: @(rec.Level == 20 ? "red" : "black");">@rec.Level</td>
                     </tr>
                 }
             } else
