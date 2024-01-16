@@ -25,7 +25,6 @@ internal static class UpdatePlexWatched
     private static void Main()
     {
         const string thisProgram = "Update Plex Watched";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
 

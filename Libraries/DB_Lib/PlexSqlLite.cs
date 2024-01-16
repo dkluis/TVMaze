@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.JavaScript;
 
 using Microsoft.Data.Sqlite;
 
@@ -13,12 +14,12 @@ public static class PlexSqlLite
 {
     public static List<PlexWatchedInfo> PlexWatched(AppInfo appInfo)
     {
-        var timeSpan  = DateTime.Now.Subtract(DateTime.Now.TimeOfDay).AddDays(-1) - new DateTime(1970, 1, 1);
-        var yesterday = (int) timeSpan.TotalSeconds                               + 60 * 60 * 4 + 1;
+        var epochBase = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Local);;
+        var epoch     = (DateTime.Now.Date.AddDays(-1) - epochBase).TotalSeconds;
 
         var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
-                              $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.viewed_at > {yesterday} "                     +
-                              "and miv.account_id = 1 order by miv.grandparent_title, miv.parent_index, miv.`index`; ";
+                              $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.`viewed_at` >= {epoch} "                     +
+                              "and miv.account_id = 1 order by miv.`viewed_at` desc; ";
 
         List<PlexWatchedInfo> watchedEpisodes         = new();
         var                   connectionStringBuilder = new SqliteConnectionStringBuilder();
@@ -36,6 +37,11 @@ public static class PlexSqlLite
         while (reader.Read())
         {
             PlexWatchedInfo record = new();
+
+            // var             field1 = reader[0].ToString()!;
+            // var             field2 = reader[1].ToString()!;
+            // var             field3 = reader[2].ToString()!;
+            // var             field4 = reader[3].ToString()!;
             record.Fill(reader[0].ToString()!, int.Parse(reader[1].ToString()!), int.Parse(reader[2].ToString()!), int.Parse(reader[3].ToString()!));
             watchedEpisodes.Add(record);
             showNames += record.ShowName + "; ";
