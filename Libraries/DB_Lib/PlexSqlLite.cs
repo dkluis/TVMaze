@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.JavaScript;
 
 using Microsoft.Data.Sqlite;
+using System.Data.SQLite;
 
 using Common_Lib;
 
@@ -14,14 +14,40 @@ public static class PlexSqlLite
 {
     public static List<PlexWatchedInfo> PlexWatched(AppInfo appInfo)
     {
-        var epochBase = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Local);;
-        var epoch     = (DateTime.Now.Date.AddDays(-1) - epochBase).TotalSeconds;
+        var epochBase = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);;
+        var epoch     = (DateTime.UtcNow.Date.AddDays(-1) - epochBase).TotalSeconds;
 
         var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
                               $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.`viewed_at` >= {epoch} "                     +
-                              "and miv.account_id = 1 order by miv.`viewed_at` desc; ";
+                              "and miv.account_id = 1 order by miv.`viewed_at` ";
 
-        List<PlexWatchedInfo> watchedEpisodes         = new();
+        var  watchedEpisodes = new List<PlexWatchedInfo>();
+        var                   showNames       = "";
+
+        using (var connection = new SQLiteConnection("Data Source=/media/psf/TVMazeLinux/Plex/Plex.db"))
+        {
+            connection.Open();
+
+            using (var command = new SQLiteCommand(plexPlayedItems, connection))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var record = new PlexWatchedInfo();
+                        record.Fill(reader[0].ToString()!, int.Parse(reader[1].ToString()!), int.Parse(reader[2].ToString()!), int.Parse(reader[3].ToString()!));
+                        watchedEpisodes.Add(record);
+                        showNames += record.ShowName + "; ";
+                    }
+                }
+            }
+        }
+
+        LogModel.Record("Update Plex Watched", "Sqlite", $"Found: {watchedEpisodes.Count} -> {showNames}", 1);
+
+        return watchedEpisodes;
+
+        /*List<PlexWatchedInfo> watchedEpisodes         = new();
         var                   connectionStringBuilder = new SqliteConnectionStringBuilder();
         connectionStringBuilder.DataSource = "/media/psf/TVMazeLinux/Plex/Plex.db";
         using var connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
@@ -46,10 +72,7 @@ public static class PlexSqlLite
             watchedEpisodes.Add(record);
             showNames += record.ShowName + "; ";
         }
-
-        LogModel.Record("Update Plex Watched", "Sqlite", $"Found: {watchedEpisodes.Count} -> {showNames}", 1);
-
-        return watchedEpisodes;
+        */
     }
 }
 

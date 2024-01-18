@@ -367,6 +367,7 @@ public class Show : IDisposable
                 case "dmc":
                 case "ktk":
                 case "rutube":
+                case "ard mediathek":
                     // ReSharper restore StringLiteralTypo
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}:  {TvmUrl}");

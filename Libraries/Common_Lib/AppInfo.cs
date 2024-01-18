@@ -24,17 +24,6 @@ public class AppInfo
         Common.EnvInfo envInfo = new();
         Drive = envInfo.Drive;
 
-        // HomeDir = envInfo.Os == "Windows" ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%") : Environment.GetEnvironmentVariable("HOME");
-        //
-        // if (HomeDir is not null)
-        // {
-        //     HomeDir = Path.Combine(HomeDir, Application);
-        // } else
-        // {
-        //     Console.WriteLine("Could not determine HomeDir");
-        //     Environment.Exit(666);
-        // }
-
         HomeDir = "/media/psf/TVMazeLinux";
 
         ConfigFileName = Application + ".cnf";
@@ -43,11 +32,10 @@ public class AppInfo
 
         if (!File.Exists(ConfigFullPath))
         {
-            Console.WriteLine($"Log File Does not Exist {ConfigFullPath}");
+            Console.WriteLine($"Config File Does not Exist {ConfigFullPath}");
             Environment.Exit(666);
         }
 
-        ReadKeyFromFile readKeyFromFile = new();
         var             logLevel        = int.Parse(ReadKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
 
         var fileName = Program + ".log";
