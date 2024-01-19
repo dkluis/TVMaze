@@ -15,7 +15,7 @@ public static class PlexSqlLite
     public static List<PlexWatchedInfo> PlexWatched(AppInfo appInfo)
     {
         var epochBase = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);;
-        var epoch     = (DateTime.UtcNow.Date.AddDays(-1) - epochBase).TotalSeconds;
+        var epoch     = (DateTime.UtcNow.Date.AddDays(-2) - epochBase).TotalSeconds;
 
         var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
                               $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.`viewed_at` >= {epoch} "                     +
