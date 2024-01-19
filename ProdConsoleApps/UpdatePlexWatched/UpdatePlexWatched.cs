@@ -1,14 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 using Common_Lib;
 
 using DB_Lib;
 
 using DB_Lib_EF.Entities;
+using DB_Lib_EF.Models.MariaDB;
 
 using Entities_Lib;
 
+using Newtonsoft.Json;
+
 using Web_Lib;
+
+using Episode = Entities_Lib.Episode;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace UpdatePlexWatched;
 
@@ -31,7 +41,50 @@ internal static class UpdatePlexWatched
         log.Start();
         LogModel.Start(thisProgram);
 
-        var watchedEpisodes = PlexSqlLite.PlexWatched(appInfo);
+        //var watchedEpisodes = PlexSqlLite.PlexWatched(appInfo);
+        var watchedEpisodes = new List<PlexWatchedInfo>();
+
+        try
+        {
+            var filePath   = "/media/psf/TVMazeLinux/Inputs/WatchedEpisodes.log";
+            var toFilePath = $"/media/psf/TVMazeLinux/Inputs/WatchedEpisodes{DateTime.Now.ToString("-yyyy-M-d")}.log";
+            var lines      = File.ReadAllLines(filePath);
+
+            foreach (var line in lines)
+            {
+                var watchedEpi   = JsonSerializer.Deserialize<ShowData>(line);
+
+                if (watchedEpi == null)
+                {
+                    LogModel.Record(thisProgram, "Main", $"Error Occurred with Json Deserialize of a line: {line}", 20);
+                    LogModel.Stop(thisProgram);
+
+                    break;
+                };
+                var watchedInfo = new PlexWatchedInfo();
+                watchedInfo.ShowName          = watchedEpi.ShowName!;
+                watchedInfo.SeasonEpisode     = watchedEpi.SeasonEpisode!;
+                watchedInfo.CleanedShowName   = watchedEpi.CleanedShowName!;
+                watchedInfo.UpdateDate        = watchedEpi.UpdateDate!;
+                watchedInfo.WatchedDate       = watchedEpi.WatchedDate;
+                watchedInfo.TvmEpisodeId      = watchedEpi.TvmEpisodeId;
+                watchedInfo.TvmShowId         = watchedEpi.TvmShowId;
+                watchedInfo.ProcessedToTvmaze = watchedEpi.ProcessedToTvmaze;
+                var match = Regex.Match(watchedEpi.SeasonEpisode!, @"s(\d+)e(\d+)", RegexOptions.IgnoreCase);
+                watchedInfo.Season  = int.Parse(match.Groups[1].Value);
+                watchedInfo.Episode = int.Parse(match.Groups[2].Value);
+                watchedEpisodes.Add(watchedInfo);
+            }
+            
+            // Delete the file
+            File.Move(filePath, toFilePath);
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(thisProgram, "Main", $"Error Occured Reading WatchedEpisodes.log {e.Message} ::: {e.InnerException}", 20);
+
+            throw;
+        }
 
         if (watchedEpisodes.Count > 0)
         {
@@ -84,9 +137,15 @@ internal static class UpdatePlexWatched
                 }
 
                 log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
-                LogModel.Record(thisProgram, "Main", $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", 4);
+                LogModel.Record(thisProgram, "Main", $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", 1);
 
-                if (!pwi.DbInsert(appInfo)) continue;
+
+                if (!pwi.DbInsert(appInfo))
+                {
+                    LogModel.Record(thisProgram, "Main", $"Show and Episode already updated", 1);
+
+                    continue;
+                }
 
                 if (pwi.TvmEpisodeId == 0)
                 {
@@ -127,5 +186,19 @@ internal static class UpdatePlexWatched
 
         log.Stop();
         LogModel.Stop(thisProgram);
+    }
+
+    public class ShowData
+    {
+        public string? ShowName          { get; set; }
+        public string? SeasonEpisode     { get; set; }
+        public string? CleanedShowName   { get; set; }
+        public string? UpdateDate        { get; set; }
+        public string? WatchedDate       { get; set; }
+        public int     TvmEpisodeId      { get; set; }
+        public int     TvmShowId         { get; set; }
+        public bool    ProcessedToTvmaze { get; set; }
+        public int     Season            { get; set; }
+        public int     Episode           { get; set; }
     }
 }
