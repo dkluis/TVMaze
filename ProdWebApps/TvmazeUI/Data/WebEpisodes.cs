@@ -6,7 +6,7 @@ namespace TvmazeUI.Data;
 
 public class WebEpisodes
 {
-    public readonly AppInfo AppInfo = new("Tvmaze", "WebUI", "DbAlternate");
+    public readonly AppInfo AppInfo = new("Tvmaze", "Web UI", "DbAlternate");
 
     public List<EpisodeInfo> GetEpisodes(string showName, string season, string episode)
     {

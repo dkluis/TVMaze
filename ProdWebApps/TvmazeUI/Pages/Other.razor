@@ -4,7 +4,7 @@
 @inject DataExchange DataExchangeService
 
 @code {
-    private static readonly AppInfo                            AppInfo             = new("Tvmaze", "WebUI", "DbAlternate");
+    private static readonly AppInfo                            AppInfo             = new("Tvmaze", "Web UI", "DbAlternate");
     private                 List<ActionItem>                   _actionItems        = new();
     private                 List<ViewEntities.EpisodeShowInfo> _episodes           = new();
     private                 bool                               _displayActionItems = false;
@@ -12,8 +12,9 @@
 
     private void DeleteActionItem(ActionItem rec)
     {
-        AppInfo.TxtFile.Write($"Deleting ActionItem {rec.Id}: {rec.Program}: {rec.Message}");
+        LogModel.Record("Web UI", "Misc: Tables", $"Deleting ActionItem {rec.Id}: {rec.Program}: {rec.Message}", 1);
         ActionItemModel.DeleteActionItem(rec, AppInfo.Program, AppInfo.TxtFile);
+        GetActionItems();
     }
 
     void GetActionItems()

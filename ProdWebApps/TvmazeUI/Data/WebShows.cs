@@ -6,7 +6,7 @@ namespace TvmazeUI.Data;
 
 public class WebShows
 {
-    public readonly AppInfo AppInfo = new("Tvmaze", "WebUI", "DbAlternate");
+    public readonly AppInfo AppInfo = new("Tvmaze", "Web UI", "DbAlternate");
 
     public List<ShowsInfo> GetShowsByTvmStatus(string tvmStatus)
     {

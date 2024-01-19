@@ -4,7 +4,7 @@
 @inject DataExchange _dataExchangeService
 
 @{
-    AppInfo appInfo = new("Tvmaze", "WebUI", "DbAlternate");
+    AppInfo appInfo = new("Tvmaze", "Web UI", "DbAlternate");
 
     const string showCount           = "select count(*) from Shows";
     const string followedCount       = "select count(*) from Followed"; // Change Later to exclude the skipped show
