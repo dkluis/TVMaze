@@ -126,6 +126,7 @@ public class Common
                            .Replace("&amp;",  "and")
                            .Replace("&",      "and")
                            .Replace("°",      "")
+                           .Replace("\u2026", "")
                            .Trim()
                            .ToLower();
 

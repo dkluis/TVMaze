@@ -26,7 +26,7 @@ public static partial class Common
 
     public static string RemoveSpecialCharsInShowName(string showName)
     {
-        showName = showName.Replace("...", "")
+        showName = showName.Replace("\u2026", "")
                            .Replace("..",     "")
                            .Replace(".",      " ")
                            .Replace(",",      "")
@@ -45,12 +45,6 @@ public static partial class Common
                            .Replace("°",      "")
                            .Trim()
                            .ToLower();
-
-        // Was put in for the What If...? situation: showName = showName.Substring(0, showName.Length);
-        if (showName.Length <= 7) return showName;
-
-        if (showName.ToLower()[..7] == "what if")
-            showName = "What If";
 
         return showName;
     }

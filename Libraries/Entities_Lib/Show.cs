@@ -408,6 +408,7 @@ public class SearchShowsViaNames
     public List<int> Find(AppInfo appInfo, string showName, string cleanedShowName = "", string altShowName = "")
     {
         _found      = new List<int>();
+        var found = false;
         showName    = showName.Replace("'", "''").Replace(" ", " ");
         altShowName = altShowName.Replace("'", "''").Replace(" ", " ");
 
@@ -422,29 +423,46 @@ public class SearchShowsViaNames
                   $"(`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Ended' and `ShowStatus` != 'Skipping';";
         var rdr = mDbR.ExecQuery(sql);
 
-        if (!rdr.HasRows)
+        while (rdr.Read())
+        {
+            if (!string.IsNullOrEmpty(rdr["TvmShowId"].ToString()))
+            {
+                _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
+                found = true;
+            }
+        }
+
+        if (!found)
         {
             mDbR.Close();
 
             sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
                   $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Skipping';";
             rdr = mDbR.ExecQuery(sql);
+
+            while (rdr.Read())
+            {
+                if (!string.IsNullOrEmpty(rdr["TvmShowId"].ToString()))
+                {
+                    _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
+                    found = true;
+                }
+            }
         }
 
-        var splitShowName                         = altShowName.Split(" (");
-        if (splitShowName.Length > 0) altShowName = splitShowName[0];
-
-        if (!rdr.HasRows)
+        if (!found)
         {
             mDbR.Close();
+
+            var splitShowName                         = altShowName.Split(" (");
+            if (splitShowName.Length > 0) altShowName = splitShowName[0];
 
             sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
                   $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Skipping';";
             rdr = mDbR.ExecQuery(sql);
+            while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
+            found = true;
         }
-
-        if (!rdr.HasRows) return _found;
-        while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
 
         return _found;
     }
