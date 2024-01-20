@@ -4,195 +4,32 @@
 @inject DataExchange _dataExchangeService
 
 @{
-    AppInfo appInfo = new("Tvmaze", "Web UI", "DbAlternate");
+    AppInfo   appInfo = new("Tvmaze", "Web UI", "DbAlternate");
+    using var db      = new TvMaze();
 
-    const string showCount           = "select count(*) from Shows";
-    const string followedCount       = "select count(*) from Followed"; // Change Later to exclude the skipped show
-    const string followedShowsCount  = "select count(*) from Shows where `TvmStatus` = 'Following'";
-    const string reviewingShowsCount = "select count(*) from Shows where `TvmStatus` = 'Reviewing'";
-    const string newShowsCount       = "select count(*) from Shows where `TvmStatus` = 'New'";
-    const string skippingShowCount   = "select count(*) from Shows where `TvmStatus` = 'Skipping'";
-    const string runningShowsCount   = "select count(*) from Shows where `ShowStatus` = 'Running' and `TvmStatus` = 'Following'";
-    const string tbdShowsCount       = "select count(*) from Shows where `ShowStatus` = 'To Be Determined' and `TvmStatus` = 'Following'";
-    const string inDevShowsCount     = "select count(*) from Shows where `ShowStatus` = 'In Development' and `TvmStatus` = 'Following'";
-    const string endedShowsCount     = "select count(*) from Shows where `ShowStatus` = 'Ended' and `TvmStatus` = 'Following'";
+    var numShows          = db.Shows.Count();
+    var numFollowed       = db.Followeds.Count();
+    var numFollowedShows  = db.Shows.Where(s => s.TvmStatus == "Following").Count();
+    var numReviewingShows = db.Shows.Where(s => s.TvmStatus == "Reviewing").Count();
+    var numNewShows       = db.Shows.Where(s => s.TvmStatus == "New").Count();
+    var numSkipingShows   = db.Shows.Where(s => s.TvmStatus == "Skipping").Count();
+    var numRunningShows   = db.Shows.Where(s => s.ShowStatus == "Running"          && s.TvmStatus == "Following").Count();
+    var numTbdShows       = db.Shows.Where(s => s.ShowStatus == "To Be Determined" && s.TvmStatus == "Following").Count();
+    var numInDevShows     = db.Shows.Where(s => s.ShowStatus == "In Development"   && s.TvmStatus == "Following").Count();
+    var numEndedShows     = db.Shows.Where(s => s.ShowStatus == "Ended"            && s.TvmStatus == "Following").Count();
 
-    var numShows          = "";
-    var numFollowed       = "";
-    var numFollowedShows  = "";
-    var numReviewingShows = "";
-    var numNewShows       = "";
-    var numSkipingShows   = "";
-    var numRunningShows   = "";
-    var numTbdShows       = "";
-    var numInDevShows     = "";
-    var numEndedShows     = "";
-
-    const string episodeCount              = "select count(*) from Episodes";
-    const string episodeWatchedCount       = "select count(*) from Episodes where `PlexStatus` = 'Watched'";
-    const string episodeAcquiredCount      = "select count(*) from Episodes where `PlexStatus` = 'Acquired'";
-    const string episodeSkippedCount       = "select count(*) from Episodes where `PlexStatus` = 'Skipped'";
-    const string episodeFutureCount        = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is not NULL";
-    const string episodeFutureUnknownCount = "select count(*) from Episodes where `PlexStatus` = ' ' and `BroadcastDate` is NULL";
-
-    var numEpisodes              = "";
-    var numWatchedEpisodes       = "";
-    var numSkippedEpisodes       = "";
-    var numAcquiredEpisodes      = "";
-    var numFutureEpisodes        = "";
-    var numFutureUnknownEpisodes = "";
-
-    MariaDb mdb = new(appInfo);
-
-    var rdr = mdb.ExecQuery(showCount);
-
-    while (rdr.Read())
-    {
-        numShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(followedCount);
-
-    while (rdr.Read())
-    {
-        numFollowed = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(followedShowsCount);
-
-    while (rdr.Read())
-    {
-        numFollowedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(reviewingShowsCount);
-
-    while (rdr.Read())
-    {
-        numReviewingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(newShowsCount);
-
-    while (rdr.Read())
-    {
-        numNewShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(skippingShowCount);
-
-    while (rdr.Read())
-    {
-        numSkipingShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(runningShowsCount);
-
-    while (rdr.Read())
-    {
-        numRunningShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(tbdShowsCount);
-
-    while (rdr.Read())
-    {
-        numTbdShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(inDevShowsCount);
-
-    while (rdr.Read())
-    {
-        numInDevShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(endedShowsCount);
-
-    while (rdr.Read())
-    {
-        numEndedShows = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(episodeCount);
-
-    while (rdr.Read())
-    {
-        numEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(episodeWatchedCount);
-
-    while (rdr.Read())
-    {
-        numWatchedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(episodeAcquiredCount);
-
-    while (rdr.Read())
-    {
-        numAcquiredEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(episodeSkippedCount);
-
-    while (rdr.Read())
-    {
-        numSkippedEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(episodeFutureCount);
-
-    while (rdr.Read())
-    {
-        numFutureEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
-
-    rdr = mdb.ExecQuery(episodeFutureUnknownCount);
-
-    while (rdr.Read())
-    {
-        numFutureUnknownEpisodes = int.Parse(rdr[0].ToString()!).ToString("###,##0");
-    }
-
-    mdb.Close();
+    var numEpisodes              = db.Episodes.Count();
+    var numWatchedEpisodes       = db.Episodes.Where(e => e.PlexStatus == "Watched").Count();
+    var numSkippedEpisodes       = db.Episodes.Where(e => e.PlexStatus == "Skipped").Count();
+    var numAcquiredEpisodes      = db.Episodes.Where(e => e.PlexStatus == "Acquired").Count();
+    var numFutureEpisodes        = db.Episodes.Where(e => e.PlexStatus == " " && e.BroadcastDate != null).Count();
+    var numFutureUnknownEpisodes = db.Episodes.Where(e => e.PlexStatus == " " && e.BroadcastDate == null).Count();
 }
 
 @{ _dataExchangeService.LastPage = "Home"; }
 <div>
     <h4>Shows Statistics</h4>
-    <table class="table table-striped">
+    <table class="table table-striped" style="font-size: 85%; line-height: 85%">
         <thead>
         <tr>
             <th>Type</th>
@@ -257,7 +94,7 @@
 
 <div>
     <h4>Episodes Statistics</h4>
-    <table class="table table-striped">
+    <table class="table table-striped" style="font-size: 85%; line-height: 85%">
         <thead>
         <tr>
             <th>Type</th>
