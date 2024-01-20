@@ -16,13 +16,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/api/weatherforecast", () =>
+app.MapGet("api/ping", () =>
     {
-        var weather = new Weather();
-
-        return Results.Ok(weather.GetWeatherForecast());
+        return Results.Ok("pong");
     })
-   .WithName("GetWeatherForecast")
+   .WithName("ping")
    .WithOpenApi();
 
 app.MapGet("api/RestartPlex", () =>
@@ -35,6 +33,6 @@ app.MapGet("api/RestartPlex", () =>
    .WithName("ExecuteRestartPlex")
    .WithOpenApi();
 
-builder.WebHost.UseUrls("http://*:6002");
+builder.WebHost.UseUrls("http://CA-Server:6002");
 
 app.Run();

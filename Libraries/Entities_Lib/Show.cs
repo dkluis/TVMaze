@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Common_Lib;
 
 using DB_Lib;
 
 using DB_Lib_EF.Entities;
+using DB_Lib_EF.Models.MariaDB;
 
 using DB_Lib.Tvmaze;
 
@@ -100,6 +102,40 @@ public class Show : IDisposable
 
     public bool DbUpdate()
     {
+        try
+        {
+            using var db        = new TvMaze();
+            var       checkShow = db.Shows.SingleOrDefault(s => s.TvmShowId == TvmShowId);
+            var       nowDate   = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            UpdateDate = UpdateDate == "2200-01-01" ? UpdateDate : nowDate;
+
+            if (checkShow != null)
+            {
+                checkShow.TvmStatus       = TvmStatus;
+                checkShow.Finder          = Finder;
+                checkShow.ShowStatus      = ShowStatus;
+                checkShow.MediaType       = MediaType;
+                checkShow.ShowName        = ShowName.Replace("'", "''");
+                checkShow.AltShowname     = AltShowName.Replace("'", "''");
+                checkShow.CleanedShowName = CleanedShowName.Replace("'", "''");
+                checkShow.PremiereDate    = DateOnly.Parse(PremiereDate);
+                checkShow.UpdateDate      = DateOnly.Parse(UpdateDate);
+                db.SaveChanges();
+
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(_appInfo.Program, "Show - DbUpdate", $"Error: {e.Message} ::: {e.InnerException}", 20);
+
+            return false;
+        }
+
+        /*
         _mdb.Success = true;
         var          updateFields                                   = "";
         const string sqlPrefix                                      = "update Shows set ";
@@ -122,7 +158,7 @@ public class Show : IDisposable
         _mdb.Close();
         if (rows == 0) _mdb.Success = false;
 
-        return _mdb.Success;
+        return _mdb.Success;*/
     }
 
     public bool DbInsert(bool overRide = false, string callingApp = "")
@@ -368,6 +404,7 @@ public class Show : IDisposable
                 case "ktk":
                 case "rutube":
                 case "ard mediathek":
+                case "MBS":
                     // ReSharper restore StringLiteralTypo
                     _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}:  {TvmUrl}");
@@ -540,11 +577,16 @@ public class CheckDb
 {
     public static int FollowedCount(AppInfo appInfo)
     {
+        using var     db           = new TvMaze();
+
+        return db.Followeds.Count();
+/*
         var           records      = 0;
         using MariaDb mDbR         = new(appInfo);
         var           rdr          = mDbR.ExecQuery("select count(*) from Followed");
         while (rdr.Read()) records = int.Parse(rdr[0].ToString()!);
 
         return records;
+*/
     }
 }

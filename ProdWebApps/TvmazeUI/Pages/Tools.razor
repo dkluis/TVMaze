@@ -276,15 +276,31 @@
 
     private void RestartPlex()
     {
-        using var client   = new HttpClient();
-        var       response = client.GetAsync("http://ca-server.local:6002/api/RestartPlex").Result;
+        try
+        {
+            using var client     = new HttpClient();
+            var       pingResult = client.GetAsync("http://ca-server.local:6002/api/ping").Result;
 
-        if (response.IsSuccessStatusCode)
+            if (!pingResult.IsSuccessStatusCode)
+            {
+                _message = $"No ping received from CA-Server {pingResult.ReasonPhrase}";
+            } else
+            {
+                var response = client.GetAsync("http://ca-server.local:6002/api/RestartPlex").Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _message = "Plex restart successfully initiated.";
+                } else
+                {
+                    _message = $"Failed to start Plex restart. Received status code: {response.StatusCode}";
+                }
+            }
+        }
+        catch (Exception e)
         {
-            _message = "Plex restart successfully initiated.";
-        } else
-        {
-            _message = $"Failed to start Plex restart. Received status code: {response.StatusCode}";
+            _message = $"Error Occurred: {e.Message}";
+            LogModel.Record("Web UI", "Other - Restart Plex", $"Error Occurred: {e.Message} ::: {e.InnerException}", 20);
         }
     }
 
