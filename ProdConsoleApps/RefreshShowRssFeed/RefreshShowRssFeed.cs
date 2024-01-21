@@ -18,10 +18,8 @@ internal static class RefreshShowRssFeed
     private static void Main()
     {
         const string thisProgram = "Refresh ShowRss Feed";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram} ");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
-        log.Start();
         LogModel.Start(thisProgram);
 
         Feed result = new();
@@ -37,7 +35,6 @@ internal static class RefreshShowRssFeed
         {
             log.Write($"########################################## Exception during FeedReading: {ex}", "", 0);
             LogModel.Record(thisProgram, "Main", $"Error: with the RssShow feed {ex.Message}  ::: {ex.InnerException}", 20);
-            log.Stop();
             LogModel.Stop(thisProgram);
             Environment.Exit(99);
         }
@@ -87,7 +84,6 @@ internal static class RefreshShowRssFeed
 
         log.Write($"Processed {idx} records from ShowRss");
         LogModel.Record(thisProgram, "Main", $"Processed: {idx} ShowRss Feed records", 1);
-        log.Stop();
         LogModel.Stop(thisProgram);
     }
 

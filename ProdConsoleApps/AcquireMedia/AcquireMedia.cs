@@ -18,10 +18,8 @@ internal static class Program
     private static void Main()
     {
         const string thisProgram = "Acquire Media";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
-        log.Start();
         LogModel.Start(thisProgram);
 
         try
@@ -133,7 +131,6 @@ internal static class Program
             LogModel.Record(thisProgram, "Main", $"Exception Occurred {e.Message}  ::: {e.InnerException}", 20);
         }
 
-        log.Stop();
         LogModel.Stop(thisProgram);
     }
 }

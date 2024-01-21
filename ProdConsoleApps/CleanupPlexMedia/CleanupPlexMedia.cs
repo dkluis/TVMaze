@@ -11,10 +11,8 @@ internal static class CleanupPlexMedia
     private static void Main()
     {
         const string thisProgram = "Cleanup Plex Media";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
-        log.Start();
         LogModel.Start(thisProgram, "Main");
 
         MediaFileHandler mfh              = new(appInfo);
@@ -77,7 +75,6 @@ internal static class CleanupPlexMedia
             LogModel.Record(thisProgram, "Main", $"Deleted of {dir}");
         }
 
-        log.Stop();
         LogModel.Stop(thisProgram, "Main");
     }
 }

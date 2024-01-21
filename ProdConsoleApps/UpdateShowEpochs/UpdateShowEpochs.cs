@@ -37,7 +37,6 @@ internal static class UpdateShowEpochs
     private static void Main()
     {
         const string thisProgram = "Update Show Epochs";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         LogModel.Start(thisProgram);
 

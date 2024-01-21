@@ -20,10 +20,8 @@ internal static class UpdatePlexAcquired
     private static void Main()
     {
         const string thisProgram = "Update Plex Acquired";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
-        log.Start();
         LogModel.Start(thisProgram);
 
         try
@@ -35,7 +33,6 @@ internal static class UpdatePlexAcquired
             {
                 log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
                 LogModel.Record(thisProgram, "Main", "Nothing To Process");
-                log.Stop();
                 LogModel.Stop(thisProgram);
                 Environment.Exit(0);
             }
@@ -225,7 +222,6 @@ internal static class UpdatePlexAcquired
                 }
             }
 
-            log.Stop();
             LogModel.Stop(thisProgram);
         }
         catch (Exception e)

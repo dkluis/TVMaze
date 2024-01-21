@@ -16,7 +16,6 @@ internal static class RefreshOneShow
         const string thisProgram = "Refresh all Shows";
         AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         var          log         = appInfo.TxtFile;
-        log.Start();
 
         using var views  = new ViewEntities();
         var       result = ViewEntities.GetEpisodesToAcquire();
@@ -38,7 +37,5 @@ internal static class RefreshOneShow
             log.Write($"Working on Show {rdr[0]} {rdr[1]}", "", 2);
             sae.Refresh(int.Parse(rdr[0].ToString()!));
         }
-
-        log.Stop();
     }
 }

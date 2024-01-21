@@ -24,10 +24,8 @@ internal static class UpdateFollowed
     private static void Main()
     {
         const string thisProgram = "Update Followed";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
-        log.Start();
         LogModel.Start(thisProgram);
 
         using WebApi tvmApi = new(appInfo);
@@ -174,6 +172,5 @@ internal static class UpdateFollowed
 
         LogModel.Record(thisProgram, "Main", $"Numbers: Processed {processedIdx}, Added {addedIdx}, Updated {updatedIdx}, Deleted {deletedIdx}", 1);
         LogModel.Stop(thisProgram);
-        log.Stop();
     }
 }

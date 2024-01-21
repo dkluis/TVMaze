@@ -14,11 +14,9 @@ internal static class RefreshShows
     private static void Main()
     {
         const string thisProgram = "Refresh Shows";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
-        log.Start();
-        LogModel.Start(thisProgram);
+        LogModel.Stop(thisProgram);
 
         try
         {
@@ -119,13 +117,11 @@ internal static class RefreshShows
                 }
             }
 
-            log.Stop();
             LogModel.Stop(thisProgram);
         }
         catch (Exception e)
         {
             LogModel.Record(thisProgram, "Main", $"Error Occured {e.Message} ::: {e.InnerException}", 20);
-            log.Stop();
             LogModel.Stop(thisProgram);
         }
     }

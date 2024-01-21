@@ -13,10 +13,8 @@ internal static class RefreshShowRss
     private static void Main()
     {
         const string thisProgram = "Refresh ShowRss";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
         var     log     = appInfo.TxtFile;
-        log.Start();
         LogModel.Start(thisProgram);
 
         WebScrape           showScrape         = new(appInfo);
@@ -71,7 +69,6 @@ internal static class RefreshShowRss
         }
 
         log.Write($"Updated {idx} Shows to Finder ShowRss");
-        log.Stop();
         LogModel.Stop(thisProgram);
     }
 }

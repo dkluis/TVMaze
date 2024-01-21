@@ -34,7 +34,6 @@ internal static class UpdatePlexWatched
         AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         var          log         = appInfo.TxtFile;
 
-        log.Start();
         LogModel.Start(thisProgram);
 
         //var watchedEpisodes = PlexSqlLite.PlexWatched(appInfo);
@@ -180,7 +179,6 @@ internal static class UpdatePlexWatched
             LogModel.Record(thisProgram, "Main", "No Watched Episodes Found", 1);
         }
 
-        log.Stop();
         LogModel.Stop(thisProgram);
     }
 
