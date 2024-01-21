@@ -457,7 +457,7 @@ public class SearchShowsViaNames
         using MariaDb mDbR = new(appInfo);
 
         var sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where " +
-                  $"(`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Ended' and `ShowStatus` != 'Skipping';";
+                  $"(`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Ended' and `ShowStatus` != 'Skipping' and `PremiereDate` != '1900-01-01'";
         var rdr = mDbR.ExecQuery(sql);
 
         while (rdr.Read())

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 using Common_Lib;
@@ -9,11 +8,8 @@ using Common_Lib;
 using DB_Lib;
 
 using DB_Lib_EF.Entities;
-using DB_Lib_EF.Models.MariaDB;
 
 using Entities_Lib;
-
-using Newtonsoft.Json;
 
 using Web_Lib;
 
@@ -47,7 +43,7 @@ internal static class UpdatePlexWatched
         try
         {
             var filePath   = "/media/psf/TVMazeLinux/Inputs/WatchedEpisodes.log";
-            var toFilePath = $"/media/psf/TVMazeLinux/Inputs/WatchedEpisodes{DateTime.Now.ToString("-yyyy-M-d")}.log";
+            var toFilePath = $"/media/psf/TVMazeLinux/Inputs/WatchedEpisodes{DateTime.Now.ToString("-yyyy-M-d-hh-mm-ss")}.log";
             var lines      = File.ReadAllLines(filePath);
 
             foreach (var line in lines)

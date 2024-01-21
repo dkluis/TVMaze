@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 using Common_Lib;
 
@@ -158,18 +159,6 @@ internal static class UpdateShowEpochs
 
                         if (!tvmShow.IsForReview)
                         {
-                            // log.Write($"Show {showId} is rejected because of review rules {tvmShow.TvmUrl}");
-                            //
-                            // logRec = new Log
-                            //          {
-                            //              RecordedDate = DateTime.Now,
-                            //              Program      = thisProgram,
-                            //              Function     = "Main",
-                            //              Message      = $"Show {showId} {tvmShow.ShowName}is rejected because of review rules {tvmShow.TvmUrl}",
-                            //              Level        = 1,
-                            //          };
-                            // LogModel.Record(logRec);
-
                             continue;
                         }
                     } else
@@ -187,6 +176,11 @@ internal static class UpdateShowEpochs
                         LogModel.Record(logRec);
 
                         continue;
+                    }
+
+                    if (!IsEnglishText(tvmShow.ShowName))
+                    {
+                        LogModel.Record(thisProgram, "Main", $"Should possible be rejected {tvmShow.ShowName} contains non-English characters", 20);
                     }
 
                     tvmShow.TvmStatus  = "New";
@@ -391,5 +385,12 @@ internal static class UpdateShowEpochs
             log.Stop();
             LogModel.Stop(thisProgram);
         }
+    }
+
+    private static bool IsEnglishText(string text)
+    {
+        var regex = new Regex("^[a-zA-Z0-9 .,;:!?()&'*%$@\"-]*$");
+
+        return regex.IsMatch(text);
     }
 }
