@@ -15,14 +15,12 @@ namespace Entities_Lib;
 public class MediaFileHandler : IDisposable
 {
     private readonly AppInfo         _appInfo;
-    private readonly TextFileHandler _log;
     private readonly MariaDb         _mdb;
 
     public MediaFileHandler(AppInfo appInfo)
     {
         _appInfo = appInfo;
         _mdb     = new MariaDb(appInfo);
-        _log     = appInfo.TxtFile;
         GetSetMediaInfo();
     }
 
@@ -98,7 +96,7 @@ public class MediaFileHandler : IDisposable
                     catch (Exception e)
                     {
                         LogModel.Record(_appInfo.Program, "Media File Handler", $"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}", 20);
-                        ActionItemModel.RecordActionItem(_appInfo.Program, $"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}", _log);
+                        ActionItemModel.RecordActionItem(_appInfo.Program, $"Something went wrong moving {mediaName} to {trashLoc}: {e.Message}");
                     }
                 }
             }
@@ -169,7 +167,7 @@ public class MediaFileHandler : IDisposable
         if (episode is null && show is null)
         {
             LogModel.Record(_appInfo.Program, "Media File Handler", $"Episode and Show are set to null, cannot process the move for {mediainfo}", 20);
-            ActionItemModel.RecordActionItem(_appInfo.Program, $"Episode and Show are set to null, cannot process the move for {mediainfo}", _log);
+            ActionItemModel.RecordActionItem(_appInfo.Program, $"Episode and Show are set to null, cannot process the move for {mediainfo}");
 
             return false;
         }
@@ -259,7 +257,6 @@ public class MediaFileHandler : IDisposable
 
         if (media.Count == 0)
         {
-            _log.Write($"There was nothing to move {mediainfo}");
             LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 20);
         }
 
@@ -281,7 +278,6 @@ public class MediaFileHandler : IDisposable
             {
                 File.Move(file, toPath);
                 LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved To: {toPath}", 2);
-                _log.Write($"Moved To: {toPath}");
             }
             catch (Exception ex)
             {

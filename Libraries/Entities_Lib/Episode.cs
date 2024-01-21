@@ -5,6 +5,8 @@ using Common_Lib;
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 using MySqlConnector;
 
 using Newtonsoft.Json.Linq;
@@ -16,7 +18,6 @@ namespace Entities_Lib;
 public class Episode : IDisposable
 {
     private readonly AppInfo         _appInfo;
-    private readonly TextFileHandler _log;
     private readonly MariaDb         _mdb;
     public           string          AltShowName = "";
     public           string?         BroadcastDate;
@@ -47,7 +48,6 @@ public class Episode : IDisposable
     {
         _appInfo   = appInfo;
         _mdb       = new MariaDb(appInfo);
-        _log       = appInfo.TxtFile;
         PlexDate   = "";
         TvmImage   = "";
         TvmSummary = "";
@@ -206,7 +206,7 @@ public class Episode : IDisposable
             values += $"'{PlexDate}', ";
         values += $"'{DateTime.Now:yyyy-MM-dd}' ";
         var rows = _mdb.ExecNonQuery(sqlPre + values + sqlSuf);
-        _log.Write($"DbInsert for Episode: {TvmEpisodeId}", "", 4);
+        LogModel.Record(_appInfo.Program, "Episode Entity", $"DbInsert for Episode: {TvmEpisodeId}", 4);
         _mdb.Close();
         if (rows == 0) _mdb.Success = false;
 
@@ -238,7 +238,7 @@ public class Episode : IDisposable
         values += $"`UpdateDate` = '{DateTime.Now:yyyy-MM-dd}' ";
 
         var rows = _mdb.ExecNonQuery(sqlPre + values + sqlSuf);
-        _log.Write($"DbUpdate for Episode: {TvmEpisodeId}", "", 4);
+        LogModel.Record(_appInfo.Program, "Episode Entity", $"DbUpdate for Episode: {TvmEpisodeId}", 4);
         _mdb.Close();
         if (rows == 0) _mdb.Success = false;
 
@@ -249,7 +249,7 @@ public class Episode : IDisposable
     {
         _mdb.Success = true;
         var rows = _mdb.ExecNonQuery($"delete from Episodes where `TvmEpisodeId` = {TvmEpisodeId}");
-        _log.Write($"DbDelete for Episode: {TvmEpisodeId}", "", 4);
+        LogModel.Record(_appInfo.Program, "Episode Entity", $"DbDelete for Episode: {TvmEpisodeId}", 4);
         _mdb.Close();
 
         if (rows != 0) return _mdb.Success;

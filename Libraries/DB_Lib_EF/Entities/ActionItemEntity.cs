@@ -100,7 +100,7 @@ public class ActionItemEntity : ActionItem, IDisposable
 
 public static class ActionItemModel
 {
-    public static Response? RecordActionItem(string program, string message, TextFileHandler log)
+    public static Response? RecordActionItem(string program, string message)
     {
         using (var entity = new ActionItemEntity())
         {
@@ -108,10 +108,10 @@ public static class ActionItemModel
 
             if (result == null)
             {
-                log.Write("Error: ActionItem was not recorded", program, 0);
+                Console.WriteLine($"Error: ActionItem was not recorded from {program}");
             } else if (!result.WasSuccess)
             {
-                log.Write(result.Message!, program);
+                Console.WriteLine($"Error: {message} :::ActionItem was not recorded from {program}");
             }
 
             return result;
@@ -139,10 +139,10 @@ public static class ActionItemModel
 
             if (result == null)
             {
-                log.Write("Error: ActionItem was not recorded", program, 0);
+                Console.WriteLine("Error: ActionItem was not recorded");
             } else if (!result.WasSuccess)
             {
-                log.Write(result.Message!, program);
+                Console.WriteLine(result.Message!);
             }
 
             return result;

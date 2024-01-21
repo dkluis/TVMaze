@@ -99,7 +99,6 @@ public class ShowAndEpisodes : IDisposable
 
         if (_epsByShowInDb.Count > _epsByShowOnTvmaze.Count)
         {
-            _log.Write($"More Episodes in DB {_epsByShowInDb.Count} than on TVMaze  {_epsByShowOnTvmaze.Count}", "", 0);
             LogModel.Record(_appInfo.Program, "Show And Episodes", $"More Episodes in DB {_epsByShowInDb.Count} Episodes on TVMaze {_epsByShowOnTvmaze.Count}", 5);
             _epsByShowInDb.Sort();
             _epsByShowOnTvmaze.Sort();
@@ -114,7 +113,6 @@ public class ShowAndEpisodes : IDisposable
             }
         } else if (_epsByShowInDb.Count < _epsByShowOnTvmaze.Count)
         {
-            _log.Write($"Less Episodes in DB {_epsByShowInDb.Count} than on TVMaze  {_epsByShowOnTvmaze.Count} ############### Should not happen", "", 0);
             LogModel.Record(_appInfo.Program, "Show And Episodes", $"Less Episodes in DB {_epsByShowInDb.Count} Episodes on TVMaze {_epsByShowOnTvmaze.Count}", 5);
         }
     }

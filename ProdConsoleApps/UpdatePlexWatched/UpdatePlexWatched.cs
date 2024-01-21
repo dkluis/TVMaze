@@ -31,8 +31,8 @@ internal static class UpdatePlexWatched
     private static void Main()
     {
         const string thisProgram = "Update Plex Watched";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
+        var          log         = appInfo.TxtFile;
 
         log.Start();
         LogModel.Start(thisProgram);
@@ -48,15 +48,15 @@ internal static class UpdatePlexWatched
 
             foreach (var line in lines)
             {
-                var watchedEpi   = JsonSerializer.Deserialize<ShowData>(line);
+                var watchedEpi = JsonSerializer.Deserialize<ShowData>(line);
 
                 if (watchedEpi == null)
                 {
                     LogModel.Record(thisProgram, "Main", $"Error Occurred with Json Deserialize of a line: {line}", 20);
-                    LogModel.Stop(thisProgram);
 
-                    break;
-                };
+                    continue;
+                }
+
                 var cleanedShowName = Common.RemoveSpecialCharsInShowName(watchedEpi.ShowName!);
                 var watchedInfo     = new PlexWatchedInfo();
                 watchedInfo.ShowName          = watchedEpi.ShowName!;
@@ -72,7 +72,7 @@ internal static class UpdatePlexWatched
                 watchedInfo.Episode = int.Parse(match.Groups[2].Value);
                 watchedEpisodes.Add(watchedInfo);
             }
-            
+
             // Delete the file
             File.Move(filePath, toFilePath);
         }
@@ -101,7 +101,7 @@ internal static class UpdatePlexWatched
                         if (pwi.TvmEpisodeId == 0)
                         {
                             LogModel.Record(thisProgram, "Main", $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File", 1);
-                            ActionItemModel.RecordActionItem(thisProgram, $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File", log);
+                            ActionItemModel.RecordActionItem(thisProgram, $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File");
 
                             continue;
                         }
@@ -116,7 +116,7 @@ internal static class UpdatePlexWatched
                         foreach (var showId in foundInDb)
                         {
                             log.Write($"Multiple ShowIds found for {pwi.ShowName} is: {showId}", "", 1);
-                            ActionItemModel.RecordActionItem(thisProgram, $"Multiple ShowIds found for {pwi.ShowName} is: {showId}", log);
+                            ActionItemModel.RecordActionItem(thisProgram, $"Multiple ShowIds found for {pwi.ShowName} is: {showId}");
                             LogModel.Record(thisProgram, "Main", $"Found multiple Shows named: {pwi.ShowName}", 5);
                         }
 
@@ -126,7 +126,7 @@ internal static class UpdatePlexWatched
                     default:
                     {
                         log.Write($"Did not find any ShowIds for {pwi.ShowName}", "", 1);
-                        ActionItemModel.RecordActionItem(thisProgram, $"Did not find any ShowIds for {pwi.ShowName}", log);
+                        ActionItemModel.RecordActionItem(thisProgram, $"Did not find any ShowIds for {pwi.ShowName}");
                         LogModel.Record(thisProgram, "Main", $"NotFound Show: {pwi.ShowName}", 5);
 
                         break;
@@ -135,7 +135,6 @@ internal static class UpdatePlexWatched
 
                 log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
                 LogModel.Record(thisProgram, "Main", $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", 1);
-
 
                 if (!pwi.DbInsert(appInfo))
                 {
@@ -148,7 +147,7 @@ internal static class UpdatePlexWatched
                 {
                     log.Write($"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", "", 1);
                     LogModel.Record(thisProgram, "Main", $"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", 4);
-                    ActionItemModel.RecordActionItem(thisProgram, $"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", log);
+                    ActionItemModel.RecordActionItem(thisProgram, $"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}");
 
                     continue;
                 }

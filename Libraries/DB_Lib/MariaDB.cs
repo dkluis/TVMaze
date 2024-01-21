@@ -13,7 +13,6 @@ public class MariaDb : IDisposable
 {
     private const    string           Function = "MariaDb";
     private readonly MySqlConnection  _conn    = new();
-    private readonly TextFileHandler  _mDbLog;
     private          MySqlCommand     _cmd = new();
     private          bool             _connOpen;
     private          MySqlDataReader? _rdr;
@@ -23,7 +22,6 @@ public class MariaDb : IDisposable
 
     public MariaDb(AppInfo appInfo)
     {
-        _mDbLog      = appInfo.TxtFile;
         _thisProgram = appInfo.Program;
         Success      = false;
 
@@ -34,8 +32,6 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", Function, 0);
-
             var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
@@ -65,8 +61,6 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            _mDbLog.Write($"MariaDB Class Open Error: {e.Message}", Function, 0);
-
             var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
@@ -91,8 +85,6 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            _mDbLog.Write($"Error: {e.Message}", Function, 0);
-
             var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
@@ -119,8 +111,6 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            _mDbLog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", Function, 0);
-
             var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
@@ -149,9 +139,7 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", Function, 0);
-
-            var logRec = new Log
+           var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
@@ -180,9 +168,7 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", Function, 0);
-
-            var logRec = new Log
+           var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
@@ -211,9 +197,7 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", Function, 0);
-
-            var logRec = new Log
+           var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
@@ -243,8 +227,6 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-            if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", Function, 0);
-
             var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,

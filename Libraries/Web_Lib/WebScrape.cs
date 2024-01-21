@@ -245,7 +245,6 @@ public class WebScrape : IDisposable
 
             if (foundMagnets == 0)
             {
-                //_log.Write("No result returned from the WebScrape TorrentZ", "Acquire Media", 4);
                 return;
             }
 
@@ -255,7 +254,6 @@ public class WebScrape : IDisposable
         }
         catch (Exception e)
         {
-            //_log.Write($"Error occurred in TorrentZ2 WebScrape {e}", "Acquire Media", 0);
             LogModel.Record(_appInfo.Program, "WebScrape - TorrentZ2", $"Error: {e.Message}  ::: {e.InnerException}", 20);
         }
     }
@@ -266,8 +264,6 @@ public class WebScrape : IDisposable
         showName =  Common.RemoveSpecialCharsInShowName(showName);
         showName =  showName.Replace(" ", "+");
         eztvUrl  += showName;
-
-        //_log.Write($"URL EZTV is {eztvUrl}", "Eztv", 4);
 
         return eztvUrl;
     }
@@ -346,8 +342,6 @@ public class WebScrape : IDisposable
         showName = showName.Replace(" ", "%20");
         url      = url + showName + "%20" + seasEpi + "/1/99/0";
 
-        //_log.Write($"URL PirateBay is {url}", "PirateBay", 4);
-
         return url;
     }
 
@@ -410,9 +404,8 @@ public class Magnets
         _appInfo = info;
     }
 
-    public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showName, int seasNum, int epiNum, TextFileHandler logger, ChromeDriver browserDriver)
+    public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showName, int seasNum, int epiNum, ChromeDriver browserDriver)
     {
-        var                 log = logger;
         string              seasEpi;
         var                 magnet = "";
         Tuple<bool, string> result = new(false, "");
@@ -420,23 +413,21 @@ public class Magnets
         if (epiNum == 1) //Search for whole season first
         {
             seasEpi = Common.BuildSeasonOnly(seasNum);
-            magnet  = PerformFindMagnet(showName, seasEpi, log, browserDriver);
+            magnet  = PerformFindMagnet(showName, seasEpi, browserDriver);
             result  = new Tuple<bool, string>(true, magnet);
         }
 
         if (magnet == "")
         {
-            if (epiNum == 1)
-                log.Write($"No Magnet found for the whole season {seasNum} of {showName}");
             seasEpi = Common.BuildSeasonEpisodeString(seasNum, epiNum);
-            magnet  = PerformFindMagnet(showName, seasEpi, log, browserDriver);
+            magnet  = PerformFindMagnet(showName, seasEpi, browserDriver);
             result  = new Tuple<bool, string>(false, magnet);
         }
 
         return result;
     }
 
-    private string PerformFindMagnet(string showName, string seasEpi, TextFileHandler log, ChromeDriver browserDriver)
+    private string PerformFindMagnet(string showName, string seasEpi, ChromeDriver browserDriver)
     {
         using WebScrape seasonScrape = new(_appInfo);
         seasonScrape.Magnets = new List<string>();
@@ -451,7 +442,6 @@ public class Magnets
         {
             case > 0:
             {
-                log.Write($"Total Magnets found {seasonScrape.Magnets.Count}", "Acquire Media");
                 var temp   = seasonScrape.Magnets[0].Split("#$#");
                 var magnet = temp[1];
 

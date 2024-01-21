@@ -56,7 +56,7 @@ internal static class Program
                     showId = 0;
                     var showName  = rec.AltShowName != "" ? rec.AltShowName!.Replace("(", "").Replace(")", "") : rec.ShowName;
                     var episodeId = rec.TvmEpisodeId;
-                    var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName!, rec.Season, rec.Episode, log, browserDriver);
+                    var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName!, rec.Season, rec.Episode, browserDriver);
                     isSeason                = seasonInd;
 
                     if (magnet == "")

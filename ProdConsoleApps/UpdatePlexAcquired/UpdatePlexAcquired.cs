@@ -118,7 +118,7 @@ internal static class UpdatePlexAcquired
                             showId = reducedShowToUpdate;
                         } else
                         {
-                            ActionItemModel.RecordActionItem(thisProgram, $"Could not determine ShowId for: {show}, found {showId.Count} records", log);
+                            ActionItemModel.RecordActionItem(thisProgram, $"Could not determine ShowId for: {show}, found {showId.Count} records");
                             var showIds = "";
 
                             foreach (var shw in showId)
@@ -151,7 +151,7 @@ internal static class UpdatePlexAcquired
                     case false when epiId == 0:
                     {
                         log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
-                        ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}", log);
+                        ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}");
                         foundShow.FillViaTvmaze(showId[0]);
                         using MediaFileHandler mfh = new(appInfo);
                         mfh.MoveMediaToPlex(mediainfo: acq, episode: null, show: foundShow, season: seasonNum);

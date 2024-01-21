@@ -23,7 +23,6 @@ public class WebApi : IDisposable
     private const    string              TvmazeUrl     = "https://api.tvmaze.com/";
     private const    string              TvmazeUserUrl = "https://api.tvmaze.com/v1/user/";
     private readonly HttpClient          _client       = new();
-    private readonly TextFileHandler     _log;
     private readonly string              _tvmazeSecurity;
     private          HttpResponseMessage _httpResponse = new();
     private          bool                _tvmazeUrlInitialized;
@@ -34,7 +33,6 @@ public class WebApi : IDisposable
 
     public WebApi(AppInfo appInfo)
     {
-        _log         = appInfo.TxtFile;
         _thisProgram = appInfo.Program;
 
         //_Torrentz2ApiUrlSuf = appInfo.Torrentz2Token;
@@ -168,8 +166,6 @@ public class WebApi : IDisposable
 
             if (e.Message.Contains(" seconds elapsing") || e.Message.Contains("Operation timed out"))
             {
-                _log.Write($"Retrying Now: {api}", "WebAPI Async");
-
                 logRec = new Log()
                          {
                              RecordedDate = DateTime.Now,
@@ -213,7 +209,7 @@ public class WebApi : IDisposable
 
         EpisodeMarking em      = new(epi, date, type);
         var            content = em.GetJson();
-        _log.Write($"TVMaze Put Async with {epi} {date} {type} turned into {content}", "", 4);
+        LogModel.Record(_thisProgram, ThisFunction, $"TVMaze Put Async with {epi} {date} {type} turned into {content}", 5);
         var t = PerformPutTvmApiAsync(api, content);
         t.Wait();
 

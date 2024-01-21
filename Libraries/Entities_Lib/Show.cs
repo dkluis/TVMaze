@@ -20,7 +20,6 @@ namespace Entities_Lib;
 public class Show : IDisposable
 {
     private readonly AppInfo         _appInfo;
-    private readonly TextFileHandler _log;
     private readonly MariaDb         _mdb;
     public           string          AltShowName     = "";
     public           string          CleanedShowName = "";
@@ -52,7 +51,6 @@ public class Show : IDisposable
     {
         _appInfo = appInfo;
         _mdb     = new MariaDb(appInfo);
-        _log     = appInfo.TxtFile;
     }
 
     public void Dispose()
@@ -134,38 +132,12 @@ public class Show : IDisposable
 
             return false;
         }
-
-        /*
-        _mdb.Success = true;
-        var          updateFields                                   = "";
-        const string sqlPrefix                                      = "update Shows set ";
-        if (TvmStatus == "Reviewing" && TvmSummary != "") TvmStatus = "New";
-        var now                                                     = DateTime.Now.Date.ToString("yyyy-MM-dd");
-        UpdateDate = UpdateDate == "2200-01-01" ? UpdateDate : now;
-
-        updateFields += $"`TvmStatus` = '{TvmStatus}', ";
-        updateFields += $"`Finder` = '{Finder}', ";
-        updateFields += $"`ShowStatus` = '{ShowStatus}', ";
-        updateFields += $"`MediaType` = '{MediaType}', ";
-        updateFields += $"`ShowName` = '{ShowName.Replace("'", "''")}', ";
-        updateFields += $"`AltShowName` = '{AltShowName.Replace("'", "''")}', ";
-        updateFields += $"`CleanedShowName` = '{CleanedShowName.Replace("'", "''")}', ";
-        updateFields += $"`PremiereDate` = '{PremiereDate}', ";
-        updateFields += $"`UpdateDate` = '{UpdateDate}' ";
-        var sqlSuffix = $"where `TvmShowId` = {TvmShowId};";
-        var rows      = _mdb.ExecNonQuery(sqlPrefix + updateFields + sqlSuffix);
-        _log.Write($"DbUpdate for Show: {TvmShowId}", "", 4);
-        _mdb.Close();
-        if (rows == 0) _mdb.Success = false;
-
-        return _mdb.Success;*/
     }
 
     public bool DbInsert(bool overRide = false, string callingApp = "")
     {
         if (!IsForReview && !IsFollowed && !overRide)
         {
-            _log.Write($"New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false");
             LogModel.Record(_appInfo.Program, "Show Entity", "New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false", 3);
             _mdb.Success = true;
 
@@ -200,7 +172,7 @@ public class Show : IDisposable
         values += $"'{AltShowName.Replace("'", "''")}', ";
         values += $"'{DateTime.Now:yyyy-MM-dd}' ";
         var rows = _mdb.ExecNonQuery(sqlPre + values + sqlSuf);
-        _log.Write($"DbInsert for Show: {TvmShowId}", "", 4);
+        LogModel.Record(_appInfo.Program, "Show Entity", $"Db Insert for Show: {TvmShowId}", 4);
         _mdb.Close();
         if (rows == 0) _mdb.Success = false;
 
@@ -211,7 +183,7 @@ public class Show : IDisposable
     {
         _mdb.Success = true;
         var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {TvmShowId}");
-        _log.Write($"DbDelete for Show: {TvmShowId}", "", 4);
+        LogModel.Record(_appInfo.Program, "Show Entity", $"Db Delete for Show: {TvmShowId}", 4);
         _mdb.Close();
         if (rows == 0) _mdb.Success = false;
 
@@ -222,7 +194,7 @@ public class Show : IDisposable
     {
         _mdb.Success = true;
         var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {showId}");
-        _log.Write($"DbDelete for Show: {showId}", "", 4);
+        LogModel.Record(_appInfo.Program, "Show Entity", $"Db Delete for Show: {showId}", 4);
         _mdb.Close();
         if (rows == 0) _mdb.Success = false;
 
@@ -306,7 +278,7 @@ public class Show : IDisposable
                 TvmStatus   = rdr["TvmStatus"].ToString()!;
                 Finder      = rdr["Finder"].ToString()!;
                 AltShowName = rdr["AltShowName"].ToString()!;
-                if (AltShowName == "" && ShowName!.Contains(":")) AltShowName = ShowName.Replace(":", "");
+                if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
                 UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
                 MediaType  = rdr["MediaType"].ToString()!;
             } else
@@ -318,7 +290,7 @@ public class Show : IDisposable
                 ShowStatus      = rdr["ShowStatus"].ToString()!;
                 PremiereDate    = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
                 CleanedShowName = rdr["CleanedShowName"].ToString()!;
-                if (AltShowName == "" && ShowName!.Contains(":")) AltShowName = ShowName.Replace(":", "");
+                if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
             }
 
             if (IsJsonFilled)
@@ -336,8 +308,7 @@ public class Show : IDisposable
         if (!string.IsNullOrEmpty(TvmLanguage) && !string.IsNullOrWhiteSpace(TvmLanguage))
             if (TvmLanguage.ToLower() != "english")
             {
-                _log.Write($"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}");
-                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}: {TvmUrl}");
+               LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}: {TvmUrl}");
 
                 return;
             }
@@ -349,7 +320,6 @@ public class Show : IDisposable
 
             if (premiereDate < compareDate && PremiereDate != "1900-01-01")
             {
-                _log.Write($"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}");
                 LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Premiere Date {premiereDate}, Comp Date {compareDate} and Status {ShowStatus}: {TvmUrl}");
 
                 return;
@@ -366,7 +336,6 @@ public class Show : IDisposable
             case "panel show":
             case "award show":
             case "reality":
-                _log.Write($"Rejected {TvmShowId} due to Type {TvmType}");
                 LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Type {TvmType}:  {TvmUrl}");
 
                 return;
@@ -406,7 +375,6 @@ public class Show : IDisposable
                 case "ard mediathek":
                 case "MBS":
                     // ReSharper restore StringLiteralTypo
-                    _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}:  {TvmUrl}");
 
                     return;
@@ -422,7 +390,6 @@ public class Show : IDisposable
                 case "Первый канал":
                 case "ЦТ СССР":
                     // ReSharper restore StringLiteralTypo
-                    _log.Write($"Rejected {TvmShowId} due to Network {TvmNetwork}");
                     LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Network {TvmNetwork}: {TvmUrl}");
 
                     return;

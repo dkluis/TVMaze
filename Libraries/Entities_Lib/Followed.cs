@@ -5,22 +5,24 @@ using Common_Lib;
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 namespace Entities_Lib;
 
 public class Followed
 {
-    private readonly TextFileHandler _log;
-    private readonly MariaDb         _mdb;
-    public           string?         Finder;
-    public           int             IdInd = 0;
-    public           bool            InDb;
-    public           int             TvmShowId;
-    public           string          UpdateDate = $"{DateTime.Now.Date:yyyy-MM-dd}";
+    private readonly MariaDb _mdb;
+    private          AppInfo _appInfo;
+    public           string? Finder;
+    public           int     IdInd = 0;
+    public           bool    InDb;
+    public           int     TvmShowId;
+    public           string  UpdateDate = $"{DateTime.Now.Date:yyyy-MM-dd}";
 
     public Followed(AppInfo appInfo)
     {
-        _mdb = new MariaDb(appInfo);
-        _log = appInfo.TxtFile;
+        _mdb     = new MariaDb(appInfo);
+        _appInfo = appInfo;
     }
 
     public void Reset()
@@ -37,7 +39,7 @@ public class Followed
         _mdb.Close();
 
         if (rows == 0) return false;
-        _log.Write($"Followed {TvmShowId} is inserted", "", 4);
+        LogModel.Record(_appInfo.Program, "Followed Entity", $"Followed {TvmShowId} is inserted", 4);
 
         return true;
     }
@@ -50,7 +52,7 @@ public class Followed
         _mdb.Close();
 
         if (rows == 0) return false;
-        _log.Write($"Followed {TvmShowId} is updated", "", 4);
+        LogModel.Record(_appInfo.Program, "Followed Entity", $"Followed {TvmShowId} is updated", 4);
 
         return true;
     }
@@ -61,7 +63,7 @@ public class Followed
         _mdb.Close();
 
         if (rows == 0) return false;
-        _log.Write($"Followed {TvmShowId} is deleted", "", 4);
+        LogModel.Record(_appInfo.Program, "Followed Entity", $"Followed {TvmShowId} is deleted", 4);
 
         return true;
     }
@@ -72,7 +74,7 @@ public class Followed
         _mdb.Close();
 
         if (rows == 0) return false;
-        _log.Write($"Followed {showId} is deleted", "", 4);
+        LogModel.Record(_appInfo.Program, "Followed Entity", $"Followed {showId} is inserted", 4);
 
         return true;
     }

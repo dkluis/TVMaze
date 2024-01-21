@@ -316,6 +316,7 @@
                 {
                     return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || (l.Level == 20)).ToList().OrderByDescending(l => l.RecordedDate).ToList();
                 }
+
                 return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).ToList().OrderByDescending(l => l.RecordedDate).ToList();
             } else
             {

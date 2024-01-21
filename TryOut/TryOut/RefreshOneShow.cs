@@ -21,7 +21,7 @@ internal static class RefreshOneShow
         using var views  = new ViewEntities();
         var       result = ViewEntities.GetEpisodesToAcquire();
 
-        ActionItemModel.RecordActionItem(thisProgram, "Did not find any ShowIds for {pwi.ShowName}", log);
+        ActionItemModel.RecordActionItem(thisProgram, "Did not find any ShowIds for {pwi.ShowName}");
 
         const int theShowToRefresh = 49333;
 

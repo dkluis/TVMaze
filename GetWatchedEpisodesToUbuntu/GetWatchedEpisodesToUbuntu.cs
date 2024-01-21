@@ -9,8 +9,6 @@ internal static class UpdatePlexWatchedMacOs
 {
     private static void Main()
     {
-        const string thisProgram = "Update Watched MacOs";
-
         var    watchedEpisodes = SqlLiteMacOs.PlexWatched();
         string json;
         var    list = new List<string>();
@@ -32,7 +30,7 @@ internal static class UpdatePlexWatchedMacOs
             list.Add(json);
         }
 
-        using StreamWriter file = new ("/Users/dick/TVMazeLinux/Inputs/WatchedEpisodes.log", append: true);
+        using StreamWriter file = new("/Users/dick/TVMazeLinux/Inputs/WatchedEpisodes.log", append: true);
 
         foreach (var entry in list)
         {

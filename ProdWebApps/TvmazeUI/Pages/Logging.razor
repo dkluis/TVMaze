@@ -3,20 +3,20 @@
 @inject DataExchange DataExchangeService
 
 @code {
-    private                 int       _minLevel        = 1;
-    private                 int       _maxLevel        = 1;
-    private                 int       _singleLevel     = 99;
-    private                 DateTime  _fromDate        = DateTime.Now.AddHours(-2);
-    private                 DateTime  _toDate          = DateTime.Now.AddHours(2);
-    private                 DateTime  _upToDate        = DateTime.Now.AddDays(-2).Date;
-    private                 string    _includeString   = string.Empty;
-    private                 string    _excludeString   = string.Empty;
-    private                 List<Log> _logs            = new();
-    private                 List<Log> _initialLogs     = new();
-    private                 int       _recordsReturned = 0;
-    private                 int       _recordsFiltered = 0;
-    private                 int       _recordsToTake   = 25000;
-    private                 string    _statusMessage   = "";
+    private int       _minLevel        = 1;
+    private int       _maxLevel        = 1;
+    private int       _singleLevel     = 99;
+    private DateTime  _fromDate        = DateTime.Now.AddHours(-2);
+    private DateTime  _toDate          = DateTime.Now.AddHours(2);
+    private DateTime  _upToDate        = DateTime.Now.AddDays(-2).Date;
+    private string    _includeString   = string.Empty;
+    private string    _excludeString   = string.Empty;
+    private List<Log> _logs            = new();
+    private List<Log> _initialLogs     = new();
+    private int       _recordsReturned = 0;
+    private int       _recordsFiltered = 0;
+    private int       _recordsToTake   = 25000;
+    private string    _statusMessage   = "";
 }
 
 @{

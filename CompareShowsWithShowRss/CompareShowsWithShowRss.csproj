@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Libraries\DB_Lib_EF\DB_Lib_EF.csproj" />
+        <ProjectReference Include="..\Libraries\DB_Lib_EF\DB_Lib_EF.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="HtmlAgilityPack" Version="1.11.57" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.57"/>
     </ItemGroup>
 
 </Project>
