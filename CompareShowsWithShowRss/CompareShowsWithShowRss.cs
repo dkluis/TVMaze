@@ -36,9 +36,13 @@ internal static class CompareShowsWithShowRss
             }
         }
 
+        LogModel.Record(thisProgram, "Main", $"Found {showNamesFound.Count} records at ShowRss.info", 1);
+
         using var db = new TvMaze();
 
         var foundCount = 0;
+        var multiCount = 0;
+        var notCount   = 0;
 
         foreach (var rssShowName in showNamesFound)
         {
@@ -49,17 +53,21 @@ internal static class CompareShowsWithShowRss
 
             if (showRec.Count() > 1)
             {
+                multiCount++;
+
                 foreach (var show in showRec)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Multiple records found for show: {compareShowName}, ShowId: {show.Id}, ShowName: {show.ShowName}", 2);
+                    LogModel.Record(thisProgram, "Main", $"Multiple records found for show: {compareShowName}, ShowId: {show.Id}, ShowName: {show.ShowName}", 3);
 
                     continue;
                 }
             } else
             {
+                notCount++;
+
                 if (showRec.Count() == 0)
                 {
-                    LogModel.Record(thisProgram, "Main", $"No record found for show: {compareShowName}", 3);
+                    LogModel.Record(thisProgram, "Main", $"No record found for show: {compareShowName}", 4);
 
                     continue;
                 }
@@ -68,7 +76,7 @@ internal static class CompareShowsWithShowRss
 
                 foreach (var show in showRec)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Found Combination for show: {compareShowName}, ShowId: {show.Id}, ShowName: {show.ShowName}", 1);
+                    LogModel.Record(thisProgram, "Main", $"Found Combination for show: {compareShowName}, ShowId: {show.Id}, ShowName: {show.ShowName}", 2);
 
                     show.Finder = "ShowRss";
                 }
@@ -77,6 +85,7 @@ internal static class CompareShowsWithShowRss
             }
         }
 
+        LogModel.Record(thisProgram, "Main", $"Processed: Found {foundCount} and Multiple {multiCount} and Not Found {notCount} records", 1);
         LogModel.Stop(thisProgram);
     }
 }

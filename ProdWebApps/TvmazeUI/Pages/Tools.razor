@@ -76,7 +76,7 @@
                 break;
 
             case "Refresh ShowRss":
-                RunScript("/Users/dick/TVMaze/Scripts/RefreshShowRss.sh");
+                RunApp("CompareShowsWithShowRss");
                 _message = "Finished Refresh ShowRss";
 
                 break;
@@ -413,7 +413,7 @@
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Cleanup Plex Media")'><i class="bi bi-binoculars"></i>&nbsp;Cleanup</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Refresh Shows")'><i class="bi bi-binoculars"></i>&nbsp;Shows</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Refresh ShowRss Feed")'><i class="bi bi-binoculars"></i>&nbsp;Feed</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
+            <button class="btn btn-info" @onclick='() => ShowNamedTable("Compare ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
             <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh One")'><i class="bi bi-binoculars"></i>&nbsp;One Show</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Web UI")'><i class="bi bi-binoculars"></i>&nbsp;Web UI</button>
             <button class="btn btn-info" @onclick='() => ShowCronlogTable()'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
