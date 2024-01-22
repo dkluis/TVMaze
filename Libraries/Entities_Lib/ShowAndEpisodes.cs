@@ -15,7 +15,6 @@ namespace Entities_Lib;
 public class ShowAndEpisodes : IDisposable
 {
     private readonly AppInfo         _appInfo;
-    private readonly TextFileHandler _log;
     private readonly Show            _show;
     private          List<Episode>   _epsByShow;
     private          List<int>       _epsByShowInDb;
@@ -25,7 +24,6 @@ public class ShowAndEpisodes : IDisposable
     {
         _appInfo           = appInfo;
         _show              = new Show(_appInfo);
-        _log               = _appInfo.TxtFile;
         _epsByShowOnTvmaze = new List<int>();
         _epsByShow         = new List<Episode>();
         _epsByShowInDb     = new List<int>();

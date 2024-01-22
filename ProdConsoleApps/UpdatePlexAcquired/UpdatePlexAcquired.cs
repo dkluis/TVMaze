@@ -31,7 +31,6 @@ internal static class UpdatePlexAcquired
 
             if (!File.Exists(plexAcquired))
             {
-                log.Write($"Plex Acquired Log File Does not Exist {plexAcquired}");
                 LogModel.Record(thisProgram, "Main", "Nothing To Process");
                 LogModel.Stop(thisProgram);
                 Environment.Exit(0);
@@ -41,13 +40,11 @@ internal static class UpdatePlexAcquired
             var allAcquired = Path.Combine(appInfo.ConfigPath!, "Inputs", "AllAcquired.log");
             File.AppendAllLinesAsync(allAcquired, acquired);
             File.Delete(plexAcquired);
-            log.Write($"Found {acquired.Length} records in {plexAcquired}");
             LogModel.Record(thisProgram, "Main", $"Found {acquired.Length} records in {plexAcquired}");
 
             // Process all media lines
             foreach (var acq in acquired)
             {
-                log.Write($"Processing acquired {acq}");
                 var       acqInfo = Regex.Split(acq, "S[0-9]+E[0-9]+.", RegexOptions.IgnoreCase);
                 var       acqSeas = Regex.Split(acq, "S[0-9]+.",        RegexOptions.IgnoreCase);
                 string    show;
@@ -100,7 +97,6 @@ internal static class UpdatePlexAcquired
 
                 if (showId.Count != 1)
                 {
-                    log.Write($"Could not determine ShowId for: {show}, found {showId.Count} records", "", 2);
                     LogModel.Record(thisProgram, "Main", $"Could not determine ShowId for: {show}, found {showId.Count} records", 4);
 
                     if (showId.Count == 0)
@@ -110,7 +106,6 @@ internal static class UpdatePlexAcquired
 
                         if (reducedShowToUpdate.Count == 1)
                         {
-                            log.Write($"Found {reducedShow} trying this one", "", 2);
                             LogModel.Record(thisProgram, "Main", $"After reducing search Found {reducedShow} trying this one", 4);
                             showId = reducedShowToUpdate;
                         } else
@@ -137,7 +132,6 @@ internal static class UpdatePlexAcquired
                     EpisodeSearch episodeToUpdate = new();
                     epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episodeString);
                     epsToUpdate.Add(epiId);
-                    log.Write($"Working on ShowId {showId[0]} and EpisodeId {epiId}", "", 4);
                     LogModel.Record(thisProgram, "Main", $"Working on ShowId {showId[0]} and EpisodeId {epiId}");
                 }
 
@@ -147,7 +141,7 @@ internal static class UpdatePlexAcquired
                 {
                     case false when epiId == 0:
                     {
-                        log.Write($"Could not find episode for Show {show} and Episode String {episodeString}", "", 2);
+                        LogModel.Record(thisProgram, "Main", $"Could not find episode for Show {show} and Episode String {episodeString}", 2);
                         ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}");
                         foundShow.FillViaTvmaze(showId[0]);
                         using MediaFileHandler mfh = new(appInfo);
@@ -174,7 +168,7 @@ internal static class UpdatePlexAcquired
 
                     if (epiToUpdate.PlexStatus != " ")
                     {
-                        log.Write($"Not updating Tvmaze status already is {epiToUpdate.PlexStatus} on {epiToUpdate.PlexDate}", "", 2);
+                        LogModel.Record(thisProgram, "Main", $"Not updating Tvmaze status already is {epiToUpdate.PlexStatus} on {epiToUpdate.PlexDate}", 2);
                     } else
                     {
                         using WebApi uts = new(appInfo);
@@ -184,7 +178,7 @@ internal static class UpdatePlexAcquired
                     }
 
                     if (!epiToUpdate.DbUpdate())
-                        log.Write($"Error Updating Episode {epiToUpdate.TvmEpisodeId}", "", 0);
+                        LogModel.Record(thisProgram, "Main", $"Error Updating Episode {epiToUpdate.TvmEpisodeId}", 2);
 
                     using MediaFileHandler mfh = new(appInfo);
                     mfh.MoveMediaToPlex(mediainfo: acq, episode: epiToUpdate, show: foundShow, season: seasonNum);
@@ -204,7 +198,7 @@ internal static class UpdatePlexAcquired
 
                         if (epiToUpdate.PlexStatus != " ")
                         {
-                            log.Write($"Not updating Tvmaze status already is {epiToUpdate.PlexStatus} on {epiToUpdate.PlexDate}", "", 2);
+                            LogModel.Record(thisProgram, "Main", $"Not updating Tvmaze status already is {epiToUpdate.PlexStatus} on {epiToUpdate.PlexDate}", 2);
                         } else
                         {
                             using WebApi uts = new(appInfo);
@@ -214,7 +208,7 @@ internal static class UpdatePlexAcquired
                         }
 
                         if (!epiToUpdate.DbUpdate())
-                            log.Write($"Error Updating Episode {epiToUpdate.TvmEpisodeId}", "", 0);
+                            LogModel.Record(thisProgram, "Main", $"Error Updating Episode {epiToUpdate.TvmEpisodeId}", 2);
                     }
 
                     using MediaFileHandler mfh = new(appInfo);

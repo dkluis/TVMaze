@@ -114,7 +114,6 @@ internal static class UpdatePlexWatched
                     {
                         foreach (var showId in foundInDb)
                         {
-                            log.Write($"Multiple ShowIds found for {pwi.ShowName} is: {showId}", "", 1);
                             ActionItemModel.RecordActionItem(thisProgram, $"Multiple ShowIds found for {pwi.ShowName} is: {showId}");
                             LogModel.Record(thisProgram, "Main", $"Found multiple Shows named: {pwi.ShowName}", 5);
                         }
@@ -124,7 +123,6 @@ internal static class UpdatePlexWatched
 
                     default:
                     {
-                        log.Write($"Did not find any ShowIds for {pwi.ShowName}", "", 1);
                         ActionItemModel.RecordActionItem(thisProgram, $"Did not find any ShowIds for {pwi.ShowName}");
                         LogModel.Record(thisProgram, "Main", $"NotFound Show: {pwi.ShowName}", 5);
 
@@ -132,7 +130,6 @@ internal static class UpdatePlexWatched
                     }
                 }
 
-                log.Write($"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", "", 4);
                 LogModel.Record(thisProgram, "Main", $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", 1);
 
                 if (!pwi.DbInsert(appInfo))
@@ -144,7 +141,6 @@ internal static class UpdatePlexWatched
 
                 if (pwi.TvmEpisodeId == 0)
                 {
-                    log.Write($"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", "", 1);
                     LogModel.Record(thisProgram, "Main", $"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}", 4);
                     ActionItemModel.RecordActionItem(thisProgram, $"TvmEpisodeId is 0 for {pwi.ShowName} - {pwi.SeasonEpisode}");
 
@@ -158,14 +154,12 @@ internal static class UpdatePlexWatched
                 epi.PlexDate   = pwi.WatchedDate;
                 epi.PlexStatus = "Watched";
                 epi.DbUpdate();
-                log.Write($"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", "", 2);
                 LogModel.Record(thisProgram, "Main", $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", 1);
                 pwi.ProcessedToTvmaze = true;
                 pwi.DbUpdate(appInfo);
 
                 if (epi.IsAutoDelete)
                 {
-                    log.Write($"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file");
                     LogModel.Record(thisProgram, "Main", $"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file", 1);
                     using MediaFileHandler mfh = new(appInfo);
                     _ = mfh.DeleteEpisodeFiles(epi);
@@ -175,7 +169,6 @@ internal static class UpdatePlexWatched
             }
         } else
         {
-            log.Write("No Watched Episodes Found");
             LogModel.Record(thisProgram, "Main", "No Watched Episodes Found", 1);
         }
 

@@ -131,7 +131,7 @@ public static class ActionItemModel
         return response;
     }
 
-    public static Response? DeleteActionItem(ActionItem rec, string program, TextFileHandler log)
+    public static Response? DeleteActionItem(ActionItem rec, string program)
     {
         using (var entity = new ActionItemEntity())
         {

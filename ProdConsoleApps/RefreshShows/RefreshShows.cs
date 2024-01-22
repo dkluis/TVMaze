@@ -37,7 +37,6 @@ internal static class RefreshShows
                     {
                         using ShowAndEpisodes sae = new(appInfo);
                         sae.Refresh(rec.TvmShowId);
-                        log.Write($"Finished Refreshing Show {rec.ShowName}, {rec.TvmShowId}", "", 2);
                         LogModel.Record(thisProgram, "Main", $"Refreshing 'Skipping' show {rec.ShowName}, {rec.TvmShowId}", 4);
                     }
 
@@ -50,7 +49,6 @@ internal static class RefreshShows
 
             if (response != null && !response.WasSuccess)
             {
-                log.Write("Error occurred while getting shows to refresh", "Main", 1);
                 LogModel.Record(thisProgram, "Main", $"Error Occurred Getting the base Shows To Refresh Information: {response.Message}", 6);
 
                 // LogModel.Stop(thisProgram);
@@ -67,7 +65,6 @@ internal static class RefreshShows
             {
                 using ShowAndEpisodes sae = new(appInfo);
                 sae.Refresh(rec.TvmShowId);
-                log.Write($"Refreshing Show not updated in 7 to 31 days  {rec.ShowName}, {rec.TvmShowId}", "", 2);
                 LogModel.Record(thisProgram, "Main", $"Refreshing show not updated in 7 to 31 days {rec.ShowName}, {rec.TvmShowId}", 4);
             }
 
@@ -79,7 +76,6 @@ internal static class RefreshShows
             {
                 using ShowAndEpisodes sae = new(appInfo);
                 sae.Refresh(showId);
-                log.Write($"Refreshing Show that has episodes without a broadcast date {showId}", "", 2);
                 LogModel.Record(thisProgram, "Main", $"Refreshing show {showId} that has episodes without a broadcast date", 4);
             }
 
@@ -95,7 +91,6 @@ internal static class RefreshShows
                 {
                     using ShowAndEpisodes sae = new(appInfo);
                     sae.Refresh(showId);
-                    log.Write($"Refreshing Show with Orphaned episodes {showId}", "", 2);
                     LogModel.Record(thisProgram, "Main", $"Refreshing Show with Orphaned episodes {showId}", 4);
                 }
             }
@@ -112,7 +107,6 @@ internal static class RefreshShows
                 {
                     using ShowAndEpisodes sae = new(appInfo);
                     sae.Refresh(rec.TvmShowId);
-                    log.Write($"Refreshing Show to acquire {rec.TvmShowId}", "", 2);
                     LogModel.Record(thisProgram, "Main", $"Refreshing Show to acquire {rec.TvmShowId}", 4);
                 }
             }

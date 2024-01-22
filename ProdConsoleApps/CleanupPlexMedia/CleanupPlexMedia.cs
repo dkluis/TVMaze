@@ -54,7 +54,6 @@ internal static class CleanupPlexMedia
                 }
 
                 if (deleteDir) showDirsToDelete.Add(dir);
-                log.Write($"Deleted directory: {seasonDir}");
                 LogModel.Record(thisProgram, "Main", $"Deleted of {seasonDir}");
             }
         }
@@ -71,7 +70,6 @@ internal static class CleanupPlexMedia
                     LogModel.Record(thisProgram, "Main", $"Exception on Delete of {dir}: {ex.Message}  ::: {ex.InnerException}", 20);
                 }
 
-            log.Write($"Deleted directory: {dir}");
             LogModel.Record(thisProgram, "Main", $"Deleted of {dir}");
         }
 

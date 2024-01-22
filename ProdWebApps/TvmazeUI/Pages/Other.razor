@@ -13,7 +13,7 @@
     private void DeleteActionItem(ActionItem rec)
     {
         LogModel.Record("Web UI", "Misc: Tables", $"Deleting ActionItem {rec.Id}: {rec.Program}: {rec.Message}", 1);
-        ActionItemModel.DeleteActionItem(rec, AppInfo.Program, AppInfo.TxtFile);
+        ActionItemModel.DeleteActionItem(rec, AppInfo.Program);
         GetActionItems();
     }
 

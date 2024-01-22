@@ -34,7 +34,6 @@ internal static class RefreshOneShow
         while (rdr.Read())
         {
             using ShowAndEpisodes sae = new(appInfo);
-            log.Write($"Working on Show {rdr[0]} {rdr[1]}", "", 2);
             sae.Refresh(int.Parse(rdr[0].ToString()!));
         }
     }

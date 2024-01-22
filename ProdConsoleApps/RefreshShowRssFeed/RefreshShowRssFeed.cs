@@ -33,7 +33,6 @@ internal static class RefreshShowRssFeed
         }
         catch (Exception ex)
         {
-            log.Write($"########################################## Exception during FeedReading: {ex}", "", 0);
             LogModel.Record(thisProgram, "Main", $"Error: with the RssShow feed {ex.Message}  ::: {ex.InnerException}", 20);
             LogModel.Stop(thisProgram);
             Environment.Exit(99);
@@ -55,7 +54,6 @@ internal static class RefreshShowRssFeed
 
             if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack"))
             {
-                log.Write($"Found Repack or Proper Version: {show.Title}");
                 LogModel.Record(thisProgram, "Main", $"Found Repack or Proper Version: {show.Title}", 1);
             }
 
@@ -69,7 +67,6 @@ internal static class RefreshShowRssFeed
                 acquireMediaScript.WaitForExit();
             }
 
-            log.Write($"Added {show.Title} to Transmission");
             LogModel.Record(thisProgram, "Main", $"Processing magnet for show: {show.Title}", 1);
 
             using var db = new TvMaze();
@@ -82,7 +79,6 @@ internal static class RefreshShowRssFeed
             db.SaveChanges();
         }
 
-        log.Write($"Processed {idx} records from ShowRss");
         LogModel.Record(thisProgram, "Main", $"Processed: {idx} ShowRss Feed records", 1);
         LogModel.Stop(thisProgram);
     }

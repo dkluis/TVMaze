@@ -38,7 +38,6 @@ internal static class Program
                 foreach (var rec in episodesToBeAcquired)
                 {
                     LogModel.Record(thisProgram, "Main", $"Processing: {rec.ShowName}, {rec.SeasonEpisode}", 1);
-                    log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
                     LogModel.Record(thisProgram, "Main", "Starting Chrome Selenium Driver", 5);
                     var options = new ChromeOptions();
                     options.AddArgument("--headless");
@@ -59,7 +58,6 @@ internal static class Program
 
                     if (magnet == "")
                     {
-                        log.Write($"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}");
                         LogModel.Record(thisProgram, "Main", $"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}", 1);
 
                         if (isSeleniumStarted)
@@ -72,7 +70,6 @@ internal static class Program
                     }
 
                     var temp = magnet.Split("tr=");
-                    log.Write($"Found Magnet for {rec.ShowName}, {rec.SeasonEpisode} "                            + $"Processing Whole Season is {isSeason}: {temp[0]}");
                     LogModel.Record(thisProgram, "Main", $"Found Magnet for {rec.ShowName}, {rec.SeasonEpisode} " + $"Processing Whole Season is {isSeason}: {temp[0]}", 4);
 
                     using (Process acquireMediaScript = new())
