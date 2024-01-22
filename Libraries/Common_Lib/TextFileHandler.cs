@@ -19,17 +19,20 @@ public class TextFileHandler
         _app          = application;
         _level        = loglevel;
         _fullFilePath = Path.Combine(inFilePath, filename);
-        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
+
+        //if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
     }
 
     public void Start()
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         EmptyLine();
         Write($"{_app} Started  ########################################################################################", _app, 0);
     }
 
     public void Stop()
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         _timer.Stop();
         Write($"{_app} Finished ####################################  in {_timer.ElapsedMilliseconds} mSec  ####################################", _app, 0);
     }
@@ -41,6 +44,7 @@ public class TextFileHandler
 
     public void Write(string message, string function = "", int loglevel = 3, bool append = true)
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         if (string.IsNullOrEmpty(function)) function = _app;
         if (function.Length > 19) function           = function[..19];
 
@@ -51,6 +55,7 @@ public class TextFileHandler
 
     public void Write(IEnumerable<string> messages, string function = "", int loglevel = 3, bool append = true)
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         if (string.IsNullOrEmpty(function)) function = _app;
         if (function.Length > 19) function           = function[..19];
 
@@ -68,6 +73,7 @@ public class TextFileHandler
 
     private void EmptyLine(int lines = 1)
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         var                idx  = 1;
         using StreamWriter file = new(_fullFilePath, true);
 
@@ -80,6 +86,7 @@ public class TextFileHandler
 
     public void WriteNoHead(string message, bool newline = true, bool append = true)
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         using StreamWriter file = new(_fullFilePath, append);
 
         if (newline)
@@ -90,6 +97,7 @@ public class TextFileHandler
 
     public void WriteNoHead(IEnumerable<string> messages, bool newline = true, bool append = true)
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         using StreamWriter file = new(_fullFilePath, append);
 
         foreach (var msg in messages)
@@ -101,6 +109,7 @@ public class TextFileHandler
 
     public List<string> ReturnLogContent()
     {
+        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         var fileContent = File.ReadAllLines(_fullFilePath);
         var content     = fileContent.ToList();
         content.Reverse();

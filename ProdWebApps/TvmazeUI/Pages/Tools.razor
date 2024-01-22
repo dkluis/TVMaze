@@ -13,9 +13,10 @@
     string        _currentLog = "";
     List<string>? _logContent;
     bool          _logRequested;
-    List<Log>     _logTable = new();
+    List<Log>     _logTable     = new();
+    string        _logTableName = "";
     bool          _logTableRequested;
-    int           _upToLevel  = 2;
+    int           _upToLevel  = 1;
     const string  NoRecsFound = "No Records Found";
 
     private void ExecScripts(string scriptRequested = "")
@@ -96,8 +97,9 @@
         }
 
         string program;
-        _logView      = logRequested + " Log";
+        _logView      = logRequested;
         _logRequested = true;
+        _logTableName = logRequested + " Txt File";
         ClearLogTable();
 
         switch (logRequested)
@@ -341,6 +343,7 @@
     {
         _logTable          = GetLogInfo("CronLog", 0, 0, true);
         _logTableRequested = true;
+        _logTableName      = "CronLog";
         ClearLog();
     }
 
@@ -348,6 +351,7 @@
     {
         _logTable          = GetLogInfo(logName, 0, _upToLevel, true);
         _logTableRequested = true;
+        _logTableName      = logName;
         ClearLog();
     }
 
@@ -415,10 +419,10 @@
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Refresh Shows")'><i class="bi bi-binoculars"></i>&nbsp;Shows</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Refresh ShowRss Feed")'><i class="bi bi-binoculars"></i>&nbsp;Feed</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Compare ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("Refresh One")'><i class="bi bi-binoculars"></i>&nbsp;One Show</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Web UI")'><i class="bi bi-binoculars"></i>&nbsp;Web UI</button>
             <button class="btn btn-info" @onclick='() => ShowCronlogTable()'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
-            <button class="btn btn-info" @onclick='() => ExecLogViewer("TransmissionLog")'><i class="bi bi-binoculars"></i>&nbsp;TransmissonLog</button>
+            <button class="btn btn-warning" @onclick='() => ExecLogViewer("TransmissionLog")'><i class="bi bi-binoculars"></i>&nbsp;TransmissonLog</button>
+            <button class="btn btn-warning" @onclick='() => ExecLogViewer("CronLog")'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
@@ -434,33 +438,39 @@
 </div>
 
 <div>
-    <h4>@_logView</h4>
-    <p></p>
-    <p>
-        @if (_logRequested)
+    @{
+        if (_logRequested)
         {
-            if (_logContent!.Count > 0)
+            <h6>@_logView - Txt File</h6>
+            <p></p>
+
+            @if (_logContent!.Count > 0)
+            {
+                var displayed = 0;
                 foreach (var line in _logContent!)
                 {
                     if (line.Contains("########################################################################################") || line.Contains("Finished ####") || line.ToLower().Contains("chromedriver") || line.ToLower().Contains("connection") || line.ToLower().Contains("bind() failed"))
                     {
                         continue;
                     }
-
+                    displayed++;
                     @line<br/>
                 }
+                <p>Found @_logContent.Count() records, Displayed @displayed records </p>
+            }
+
             else
             {
-                @NoRecsFound
-                ;
+                <p>@NoRecsFound</p>
             }
         }
-    </p>
+    }
+
     @if (_logTableRequested)
     {
         <div>
             <p></p>
-            <h6>Logging - Table</h6>
+            <h6>@_logTableName - Table</h6>
             <p></p>
             <table class="table table-striped" style="font-size: 85%; line-height: 85%">
                 <thead>

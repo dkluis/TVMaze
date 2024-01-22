@@ -47,7 +47,7 @@ public class LogEntity : IDisposable
         }
         catch (Exception e)
         {
-            var appInfo = new AppInfo("CronLog", "LogEntity", "DbAlternate");
+            var appInfo = new AppInfo("TVMaze", "LogEntity", "DbAlternate");
             appInfo.TxtFile.Write($"Abort: {e.Message}");
 
             return false;

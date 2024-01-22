@@ -69,7 +69,7 @@ public partial class TvMaze : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var appInfo = new AppInfo("TVMaze", "TVMaze-EF", "DbAlternate");
+        var appInfo = new AppInfo("TVMaze", "TVMaze", "DbAlternate");
         optionsBuilder.UseMySql(appInfo.ActiveDbConn, ServerVersion.Parse("10.6.16-mariadb"));
     }
 
