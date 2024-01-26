@@ -24,6 +24,16 @@
     var numAcquiredEpisodes      = db.Episodes.Where(e => e.PlexStatus == "Acquired").Count();
     var numFutureEpisodes        = db.Episodes.Where(e => e.PlexStatus == " " && e.BroadcastDate != null).Count();
     var numFutureUnknownEpisodes = db.Episodes.Where(e => e.PlexStatus == " " && e.BroadcastDate == null).Count();
+
+    var numLogs            = db.Logs.Count();
+    var numLogCron         = db.Logs.Where(l => l.Program == "Cronlog").Count();
+    var numLogWatched      = db.Logs.Where(l => l.Program == "Update Plex Watched").Count();
+    var numLogCleaned      = db.Logs.Where(l => l.Program == "Cleanup Plex Media").Count();
+    var numLogFollowed     = db.Logs.Where(l => l.Program == "Update Followed").Count();
+    var numLogAcquired     = db.Logs.Where(l => l.Program == "Update Plex Acquired").Count();
+    var numLogAcquire      = db.Logs.Where(l => l.Program == "Acquire Media").Count();
+    var numLogRefreshShows = db.Logs.Where(l => l.Program == "Refresh Shows").Count();
+    var numLogEpochs       = db.Logs.Where(l => l.Program == "Update Show Epochs").Count();
 }
 
 @{ _dataExchangeService.LastPage = "Home"; }
@@ -132,6 +142,66 @@
             <td>...Episodes</td>
             <td>Status: Coming Unknown</td>
             <td>@numFutureUnknownEpisodes</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <h4>Logging Statistics</h4>
+    <table class="table table-striped" style="font-size: 85%; line-height: 85%">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Description</th>
+            <th ># of Records</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Logs Table</td>
+            <td>Total</td>
+            <td>@numLogs</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Cron</td>
+            <td>@numLogCron</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Refresh Shows</td>
+            <td>@numLogRefreshShows</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Epochs</td>
+            <td>@numLogEpochs</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Followed</td>
+            <td>@numLogFollowed</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Watched</td>
+            <td>@numLogWatched</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Cleanup</td>
+            <td>@numLogCleaned</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Acquire</td>
+            <td>@numLogAcquire</td>
+        </tr>
+        <tr>
+            <td>...Logs</td>
+            <td>Status: Acquired</td>
+            <td>@numLogAcquired</td>
         </tr>
         </tbody>
     </table>

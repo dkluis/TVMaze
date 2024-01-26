@@ -19,7 +19,6 @@ internal static class Program
     {
         const string thisProgram = "Acquire Media";
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
         LogModel.Start(thisProgram);
 
         try

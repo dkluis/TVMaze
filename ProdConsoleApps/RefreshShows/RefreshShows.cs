@@ -15,8 +15,7 @@ internal static class RefreshShows
     {
         const string thisProgram = "Refresh Shows";
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
-        LogModel.Stop(thisProgram);
+        LogModel.Start(thisProgram);
 
         try
         {
@@ -50,13 +49,11 @@ internal static class RefreshShows
             if (response != null && !response.WasSuccess)
             {
                 LogModel.Record(thisProgram, "Main", $"Error Occurred Getting the base Shows To Refresh Information: {response.Message}", 6);
-
-                // LogModel.Stop(thisProgram);
-                // Environment.Exit(9);
             }
 
             var allShowsToRefreshInfo = (List<ViewEntities.ShowToRefresh>) response!.ResponseObject!;
-            LogModel.Record(thisProgram, "Main", $"Found {allShowsToRefreshInfo.Count} total shows to refresh");
+
+            //LogModel.Record(thisProgram, "Main", $"Found {allShowsToRefreshInfo.Count} total shows to refresh");
 
             var showsToday = allShowsToRefreshInfo.Where(s => s.TvmStatus != "Skipping").Take(300).ToList();
             LogModel.Record(thisProgram, "Main", $"Processing {showsToday.Count} shows in the 7 to 31 day range to refresh");
@@ -65,7 +62,7 @@ internal static class RefreshShows
             {
                 using ShowAndEpisodes sae = new(appInfo);
                 sae.Refresh(rec.TvmShowId);
-                LogModel.Record(thisProgram, "Main", $"Refreshing show not updated in 7 to 31 days {rec.ShowName}, {rec.TvmShowId}", 4);
+                LogModel.Record(thisProgram, "Main", $"Refreshing show not updated in 7 to 31 days {rec.ShowName}, {rec.TvmShowId}", 2);
             }
 
             // Get all shows to refresh that have episodes that without a broadcast date
@@ -76,7 +73,7 @@ internal static class RefreshShows
             {
                 using ShowAndEpisodes sae = new(appInfo);
                 sae.Refresh(showId);
-                LogModel.Record(thisProgram, "Main", $"Refreshing show {showId} that has episodes without a broadcast date", 4);
+                LogModel.Record(thisProgram, "Main", $"Refreshing show {showId} that has episodes without a broadcast date", 2);
             }
 
             // Refresh all shows with Orphaned Episodes
@@ -91,7 +88,7 @@ internal static class RefreshShows
                 {
                     using ShowAndEpisodes sae = new(appInfo);
                     sae.Refresh(showId);
-                    LogModel.Record(thisProgram, "Main", $"Refreshing Show with Orphaned episodes {showId}", 4);
+                    LogModel.Record(thisProgram, "Main", $"Refreshing Show with Orphaned episodes {showId}", 2);
                 }
             }
 
@@ -100,14 +97,15 @@ internal static class RefreshShows
 
             if (response != null && response.WasSuccess && response.ResponseObject != null)
             {
-                var showsToAcquire = (List<ViewEntities.ShowEpisode>) response.ResponseObject;
+                var episodesToAcquire = (List<ViewEntities.ShowEpisode>) response.ResponseObject;
+                var showsToAcquire    = episodesToAcquire.OrderBy(e => e.TvmShowId).DistinctBy(e => e.TvmShowId).ToList();
                 LogModel.Record(thisProgram, "Main", $"Found {showsToAcquire.Count} shows with to acquire today");
 
                 foreach (var rec in showsToAcquire)
                 {
                     using ShowAndEpisodes sae = new(appInfo);
                     sae.Refresh(rec.TvmShowId);
-                    LogModel.Record(thisProgram, "Main", $"Refreshing Show to acquire {rec.TvmShowId}", 4);
+                    LogModel.Record(thisProgram, "Main", $"Refreshing Show to acquire {rec.TvmShowId}", 2);
                 }
             }
 
