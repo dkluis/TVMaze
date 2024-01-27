@@ -113,9 +113,9 @@ public class Show : IDisposable
                 checkShow.Finder          = Finder;
                 checkShow.ShowStatus      = ShowStatus;
                 checkShow.MediaType       = MediaType;
-                checkShow.ShowName        = ShowName.Replace("'", "''");
-                checkShow.AltShowname     = AltShowName.Replace("'", "''");
-                checkShow.CleanedShowName = CleanedShowName.Replace("'", "''");
+                checkShow.ShowName        = ShowName;
+                checkShow.AltShowname     = AltShowName;
+                checkShow.CleanedShowName = CleanedShowName;
                 checkShow.PremiereDate    = DateOnly.Parse(PremiereDate);
                 checkShow.UpdateDate      = DateOnly.Parse(UpdateDate);
                 db.SaveChanges();
@@ -144,39 +144,66 @@ public class Show : IDisposable
             return _mdb.Success;
         }
 
-        _mdb.Success = true;
+        try
+        {
+            _mdb.Success = true;
 
-        var          values = "";
-        const string sqlPre = "insert into Shows values (";
-        const string sqlSuf = ");";
+            var db      = new TvMaze();
+            var showRec = new DB_Lib_EF.Models.MariaDB.Show();
+            showRec.TvmShowId       = TvmShowId;
+            showRec.TvmStatus       = callingApp == "UpdateShowEpochs" ? "New" : IsFollowed ? "Following" : "New";
+            showRec.TvmUrl          = TvmUrl;
+            showRec.ShowName        = ShowName;
+            showRec.ShowStatus      = ShowStatus;
+            showRec.PremiereDate    = DateOnly.Parse(PremiereDate);
+            showRec.Finder          = Finder;
+            showRec.MediaType       = MediaType;
+            showRec.CleanedShowName = CleanedShowName;
+            if (AltShowName == "" && ShowName.Contains(':')) AltShowName = ShowName.Replace(":", "");
+            showRec.AltShowname = AltShowName;
+            showRec.UpdateDate  = DateOnly.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+            db.Shows.Add(showRec);
+            db.SaveChanges();
 
-        values += "0, ";
-        values += $"{TvmShowId}, ";
+            /*var          values = "";
+            const string sqlPre = "insert into Shows values (";
+            const string sqlSuf = ");";
 
-        if (callingApp == "UpdateShowEpochs")
-            values += "'New', ";
-        else if (IsFollowed)
-            values += "'Following', ";
-        else
-            values += "'New', ";
+            values += "0, ";
+            values += $"{TvmShowId}, ";
 
-        values += $"'{TvmUrl}', ";
-        values += $"'{ShowName.Replace("'", "''")}', ";
-        values += $"'{ShowStatus}', ";
-        values += $"'{PremiereDate}', ";
-        values += $"'{Finder}', ";
-        values += $"'{MediaType}', ";
-        values += $"'{CleanedShowName.Replace("'", "''")}', ";
-        if (AltShowName == "" && ShowName.Contains(':')) AltShowName = ShowName.Replace(":", "");
+            if (callingApp == "UpdateShowEpochs")
+                values += "'New', ";
+            else if (IsFollowed)
+                values += "'Following', ";
+            else
+                values += "'New', ";
 
-        values += $"'{AltShowName.Replace("'", "''")}', ";
-        values += $"'{DateTime.Now:yyyy-MM-dd}' ";
-        var rows = _mdb.ExecNonQuery(sqlPre + values + sqlSuf);
-        LogModel.Record(_appInfo.Program, "Show Entity", $"Db Insert for Show: {TvmShowId}", 4);
-        _mdb.Close();
-        if (rows == 0) _mdb.Success = false;
+            values += $"'{TvmUrl}', ";
+            values += $"'{ShowName.Replace("'", "''")}', ";
+            values += $"'{ShowStatus}', ";
+            values += $"'{PremiereDate}', ";
+            values += $"'{Finder}', ";
+            values += $"'{MediaType}', ";
+            values += $"'{CleanedShowName.Replace("'", "''")}', ";
+            if (AltShowName == "" && ShowName.Contains(':')) AltShowName = ShowName.Replace(":", "");
 
-        return _mdb.Success;
+            values += $"'{AltShowName.Replace("'", "''")}', ";
+            values += $"'{DateTime.Now:yyyy-MM-dd}' ";
+            var rows = _mdb.ExecNonQuery(sqlPre + values + sqlSuf);
+            LogModel.Record(_appInfo.Program, "Show Entity", $"Db Insert for Show: {TvmShowId}", 4);
+            _mdb.Close();
+            if (rows == 0) _mdb.Success = false;*/
+
+            return _mdb.Success;
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(_appInfo.Program, "Show Entity", $"Error: {e.Message} ::: {e.InnerException}", 20);
+            _mdb.Success = false;
+
+            return _mdb.Success;
+        }
     }
 
     public bool DbDelete()

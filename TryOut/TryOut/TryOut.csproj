@@ -8,6 +8,7 @@
         <Platforms>AnyCPU</Platforms>
         <LangVersion>11</LangVersion>
         <Nullable>enable</Nullable>
+        <RootNamespace>TryOut</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

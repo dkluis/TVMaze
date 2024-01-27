@@ -6,6 +6,8 @@ using DB_Lib_EF.Entities;
 
 using System.Collections.Generic;
 
+using Common_Lib;
+
 using DB_Lib_EF.Models.MariaDB;
 
 namespace CompareShowsWithShowRss;
@@ -49,8 +51,15 @@ internal static class CompareShowsWithShowRss
 
         foreach (var rssShowName in showNamesFound)
         {
-            var compareShowName = rssShowName.Replace("&amp;", "&").Replace("&#039;", "'");
-            var showRec         = db.Shows.Where(s => (s.ShowName == compareShowName || s.CleanedShowName == compareShowName || s.AltShowname == compareShowName) && s.Finder != "Skip");
+            if (string.IsNullOrEmpty(rssShowName) || string.IsNullOrWhiteSpace(rssShowName)) continue;
+            var compareShowName        = rssShowName.Replace("&amp;", "&").Replace("&#039;", "'");
+            var compareCleanedShowName = Common.RemoveSpecialCharsInShowName(rssShowName);
+
+            var showRec = db.Shows.Where(s => (s.ShowName        == compareShowName         ||
+                                               s.CleanedShowName == compareCleanedShowName  ||
+                                               s.AltShowname     == compareShowName         ||
+                                               s.AltShowname     == compareCleanedShowName) &&
+                                               s.Finder          != "Skip");
 
             if (showRec == null) continue;
 
@@ -61,8 +70,6 @@ internal static class CompareShowsWithShowRss
                 foreach (var show in showRec)
                 {
                     LogModel.Record(thisProgram, "Main", $"Multiple records found for show: {compareShowName}, ShowId: {show.Id}, ShowName: {show.ShowName}", 3);
-
-                    continue;
                 }
             } else
             {

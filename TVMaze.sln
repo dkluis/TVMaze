@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdatePlexWatched", "ProdCo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TryOut", "TryOut", "{32FDA73E-CA69-449A-842D-C4CEE4700A09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefreshOneShow", "TryOut\TryOut\RefreshOneShow.csproj", "{8D0FAC8D-EC3F-42D9-9B49-6D5542218A19}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryOut", "TryOut\TryOut\TryOut.csproj", "{8D0FAC8D-EC3F-42D9-9B49-6D5542218A19}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdatePlexAcquired", "ProdConsoleApps\UpdatePlexAcquired\UpdatePlexAcquired.csproj", "{1C4EFD3E-7DB6-44F0-952F-A16EF2C95034}"
 EndProject
