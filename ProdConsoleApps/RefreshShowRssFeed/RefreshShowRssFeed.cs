@@ -19,7 +19,6 @@ internal static class RefreshShowRssFeed
     {
         const string thisProgram = "Refresh ShowRss Feed";
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
         LogModel.Start(thisProgram);
 
         Feed result = new();

@@ -25,7 +25,6 @@ internal static class UpdateFollowed
     {
         const string thisProgram = "Update Followed";
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
         LogModel.Start(thisProgram);
 
         using WebApi tvmApi = new(appInfo);
@@ -132,7 +131,7 @@ internal static class UpdateFollowed
             if (toDelete.Count <= 10)
                 foreach (var showId in toDelete)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Deleting {showId}", 5);
+                    LogModel.Record(thisProgram, "Main", $"Deleting {showId}", 2);
                     theShow.DbDelete(showId);
                     theShow.Reset();
                     followed.DbDelete(showId);

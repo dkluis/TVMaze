@@ -104,63 +104,13 @@
 
         switch (logRequested)
         {
-            case "Followed":
-                program = "Update Followed";
+            case "Console":
+                program = "Console";
 
                 break;
 
-            case "Plex Acquired":
-                program = "Update Plex Acquired";
-
-                break;
-
-            case "Plex Watched":
-                program = "Update Plex Watched";
-
-                break;
-
-            case "Acquire":
-                program = "Acquire Media";
-
-                break;
-
-            case "Show Epochs":
-                program = "Update Show Epochs";
-
-                break;
-
-            case "ShowRss Feed":
-                program = "Refresh ShowRss Feed";
-
-                break;
-
-            case "Refresh One":
-                program = "RefreshOneShow Web UI";
-
-                break;
-
-            case "Refresh Shows":
-                program = "Refresh Shows";
-
-                break;
-
-            case "Cleanup Media":
-                program = "Cleanup Plex Media";
-
-                break;
-
-            case "Web UI":
-                program = "Web UI";
-
-                break;
-
-            case "Refresh ShowRss":
-                program = "Refresh ShowRss";
-
-                break;
-
-            case "CronLog":
-                program = "CronLog";
+            case "Errors":
+                program = "Errors";
 
                 break;
 
@@ -421,11 +371,12 @@
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Compare ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Web UI")'><i class="bi bi-binoculars"></i>&nbsp;Web UI</button>
             <button class="btn btn-info" @onclick='() => ShowCronlogTable()'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
-            <button class="btn btn-warning" @onclick='() => ExecLogViewer("TransmissionLog")'><i class="bi bi-binoculars"></i>&nbsp;TransmissonLog</button>
-            <button class="btn btn-warning" @onclick='() => ExecLogViewer("CronLog")'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
+                <button class="btn btn-warning" @onclick='() => ExecLogViewer("TransmissionLog")'><i class="bi bi-binoculars"></i>&nbsp;TransmissonLog</button>
+                <button class="btn btn-warning" @onclick='() => ExecLogViewer("Console")'><i class="bi bi-binoculars"></i>&nbsp;Console</button>
+                <button class="btn btn-warning" @onclick='() => ExecLogViewer("Errors")'><i class="bi bi-binoculars"></i>&nbsp;Errors</button>
                 <button class="btn btn-primary" @onclick="ClearLog"><i class="bi bi-box-arrow-left"></i>&nbsp;Clear</button>
                 @if (_logView == "No Active Log to Empty")
                 {

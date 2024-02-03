@@ -283,7 +283,6 @@ public class EpisodesByShow : IDisposable
             using Episode episode = new(appInfo);
 
             if (ep is null) continue;
-            appInfo.TxtFile.Write($"Working on Episode {ep["id"]}", "", 4);
             episode.FillViaTvmaze(int.Parse(ep["id"]!.ToString()));
             _episodesByShowList.Add(episode);
         }

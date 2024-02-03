@@ -66,7 +66,7 @@ public static class LogModel
         return logs.RecordEntry(rec);
     }
 
-    public static bool Record(string program, string function, string message, int level = 1)
+    public static void Record(string program, string function, string message, int level = 1)
     {
         var log = new Log
                   {
@@ -77,10 +77,10 @@ public static class LogModel
                       Level        = level,
                   };
 
-        return Record(log);
+        Record(log);
     }
 
-    public static bool Start(string program, string function = "Main", string message = "Started Processing", int level = 1)
+    public static void Start(string program, string function = "Main", string message = "Started Processing", int level = 1)
     {
         var log = new Log
                   {
@@ -102,10 +102,10 @@ public static class LogModel
         log.Level        = level;
         log.RecordedDate = DateTime.Now;
 
-        return Record(log);
+        Record(log);
     }
 
-    public static bool Stop(string program, string function = "Main", string message = "Stopped Processing", int level = 1)
+    public static void Stop(string program, string function = "Main", string message = "Stopped Processing", int level = 1)
     {
         var log = new Log
                   {
@@ -124,6 +124,6 @@ public static class LogModel
         log.Function     = program;
         log.Level        = 0;
 
-        return Record(log);
+        Record(log);
     }
 }

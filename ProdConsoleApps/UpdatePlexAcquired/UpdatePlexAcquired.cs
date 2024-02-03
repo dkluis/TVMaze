@@ -21,7 +21,6 @@ internal static class UpdatePlexAcquired
     {
         const string thisProgram = "Update Plex Acquired";
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
         LogModel.Start(thisProgram);
 
         try

@@ -21,7 +21,7 @@
         _seasonString  ??= "";
         _episodeString ??= "";
         _searchString  ??= "";
-        _webEpisodesService.AppInfo.TxtFile.Write($"Executing Find Episodes for show {_searchString},  {_seasonString}, {_episodeString}", "", 4);
+        LogModel.Record("Web UI", "Episodes Page", $"Executing Find Episodes for show {_searchString},  {_seasonString}, {_episodeString}", 1);
         _episodesInfoList = _webEpisodesService.GetEpisodes(_searchString, _seasonString, _episodeString);
         _dataExchangeService.Reset();
     }
@@ -39,7 +39,7 @@
 @{
     if (_dataExchangeService.SendingPage == "Shows" && _dataExchangeService.IntendedPage == "Episodes")
     {
-        _webEpisodesService.AppInfo.TxtFile.Write($"Request to Find Episode for show {_dataExchangeService.ShowName} from page {_dataExchangeService.SendingPage}");
+        LogModel.Record("Web UI", "Episodes Page", $"Request to Find Episode for show {_dataExchangeService.ShowName} from page {_dataExchangeService.SendingPage}", 1);
         _searchString = _dataExchangeService.ShowName;
         FindEpisodes();
         _searchString = "";

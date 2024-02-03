@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Libraries\DB_Lib_EF\DB_Lib_EF.csproj"/>
+        <ProjectReference Include="..\Libraries\Web_Lib\Web_Lib.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -65,7 +65,8 @@
 
     private void SkipShow(ShowsInfo si)
     {
-        _webShowsService.AppInfo.TxtFile.Write($"Setting Show to Skipping {si.TvmShowId}: {si.ShowName}");
+        LogModel.Record("Web UI", "Episodes Page", $"Setting Show to Skipping {si.TvmShowId}: {si.ShowName}", 1);
+
         _webShowsService.SkipShow(si.TvmShowId);
         _searchString = si.ShowName;
         FindShows();

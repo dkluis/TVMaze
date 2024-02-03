@@ -1,7 +1,4 @@
 ﻿using System.Text.Json;
-using System.IO;
-
-using DB_Lib_EF.Models.MariaDB;
 
 namespace GetWatchedEpisodesToUbuntu;
 

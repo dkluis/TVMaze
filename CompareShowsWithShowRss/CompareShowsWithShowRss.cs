@@ -10,6 +10,8 @@ using Common_Lib;
 
 using DB_Lib_EF.Models.MariaDB;
 
+using Web_Lib;
+
 namespace CompareShowsWithShowRss;
 
 internal static class CompareShowsWithShowRss
@@ -19,16 +21,53 @@ internal static class CompareShowsWithShowRss
         const string thisProgram = "Compare ShowRss";
         LogModel.Start(thisProgram);
 
-        // Read the HTML file
-        var htmlContent = File.ReadAllText("/media/psf/TVMazeLinux/Inputs/allShowRss.html");
+        // Get the latest from the website
+        var sel = new Selenium(thisProgram);
+        sel.Start();
+        var htmlDoc =sel.GetPage(@"https://showrss.info/browse");
+        sel.Stop();
 
-        // Load the content to HtmlDocument
-        var htmlDoc = new HtmlDocument();
-        htmlDoc.LoadHtml(htmlContent);
+        var dates        = htmlDoc.DocumentNode.SelectNodes("//strong");
+        var showRssDates = new List<string>();
+
+        foreach (var date in dates)
+        {
+            var showRssDate = date.InnerText;
+
+            if (showRssDate.Contains("/"))
+            {
+                var dateStr                  = DateTime.ParseExact(showRssDate, "MM/dd/yyyy", null);
+                var reformattedDateString = dateStr.ToString("yyyy/MM/dd");
+                showRssDates.Add(reformattedDateString);
+            }
+        }
+
+        if (showRssDates.Count < 0)
+        {
+            LogModel.Record(thisProgram, "Main", "No Updates found at ShowRss Browse", 1);
+            LogModel.Stop(thisProgram);
+            Environment.Exit(9);
+        }
+
+        showRssDates.OrderDescending();
+        var       lastDateFound   = showRssDates[0];
+        using var db              = new TvMaze();
+        var       lastShowRssDate = db.Configurations.Single(c => c.Key == "LastShowRssDate").Value;
+
+        if (lastShowRssDate != lastDateFound)
+        {
+            db.Configurations.Single(c => c.Key == "LastShowRssDate").Value = lastDateFound;
+            db.SaveChanges();
+            LogModel.Record(thisProgram, "Main", $"Updated LastShowRssDate to {lastDateFound}", 1);
+        } else
+        {
+            LogModel.Record(thisProgram, "Main", $"Last Update Date {lastDateFound} and {lastShowRssDate} is already processed", 1);
+            LogModel.Stop(thisProgram);
+            Environment.Exit(9);
+        }
 
         // Get all option elements
         var options = htmlDoc.DocumentNode.SelectNodes("//option");
-
         var showNamesFound = new List<string>();
 
         // Process each option
@@ -42,8 +81,6 @@ internal static class CompareShowsWithShowRss
         }
 
         LogModel.Record(thisProgram, "Main", $"Found {showNamesFound.Count} records at ShowRss.info", 1);
-
-        using var db = new TvMaze();
 
         var foundCount = 0;
         var multiCount = 0;
@@ -73,11 +110,10 @@ internal static class CompareShowsWithShowRss
                 }
             } else
             {
-                notCount++;
-
                 if (showRec.Count() == 0)
                 {
-                    LogModel.Record(thisProgram, "Main", $"No record found for show: {compareShowName}", 4);
+                    LogModel.Record(thisProgram, "Main", $"No record found for show: {compareShowName}", 3);
+                    notCount++;
 
                     continue;
                 }

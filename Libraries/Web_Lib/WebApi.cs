@@ -214,28 +214,11 @@ public class WebApi : IDisposable
         t.Wait();
 
         stopwatch.Stop();
-
-        var logRec = new Log()
-                     {
-                         RecordedDate = DateTime.Now,
-                         Program      = _thisProgram,
-                         Function     = ThisFunction,
-                         Message      = $"TVMApi Exec time: {stopwatch.ElapsedMilliseconds} ms. or {api} with {content}",
-                         Level        = 5,
-                     };
-        LogModel.Record(logRec);
+        LogModel.Record(_thisProgram, ThisFunction, $"TVMApi Exec time: {stopwatch.ElapsedMilliseconds} ms. or {api} with {content}", 5);
 
         if (!_httpResponse.IsSuccessStatusCode)
         {
-            logRec = new Log()
-                     {
-                         RecordedDate = DateTime.Now,
-                         Program      = _thisProgram,
-                         Function     = ThisFunction,
-                         Message      = $"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}",
-                         Level        = 5,
-                     };
-            LogModel.Record(logRec);
+            LogModel.Record(_thisProgram, ThisFunction, $"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", 5);
             _httpResponse = new HttpResponseMessage();
         }
     }
@@ -243,16 +226,7 @@ public class WebApi : IDisposable
     private async Task PerformPutTvmApiAsync(string api, string json)
     {
         StringContent stringContent = new(json, Encoding.UTF8, "application/json");
-
-        var logRec = new Log()
-                     {
-                         RecordedDate = DateTime.Now,
-                         Program      = _thisProgram,
-                         Function     = ThisFunction,
-                         Message      = $"json content now is {json} for api {_client.BaseAddress + api}",
-                         Level        = 5,
-                     };
-        LogModel.Record(logRec);
+        LogModel.Record(_thisProgram, ThisFunction, $"json content now is {json} for api {_client.BaseAddress + api}", 5);
 
         try
         {
@@ -260,15 +234,40 @@ public class WebApi : IDisposable
         }
         catch (Exception e)
         {
-            logRec = new Log()
-                     {
-                         RecordedDate = DateTime.Now,
-                         Program      = _thisProgram,
-                         Function     = ThisFunction,
-                         Message      = $"Exception: for {api} WebAPI Put Async {e.Message} ::: {e.InnerException}",
-                         Level        = 20,
-                     };
-            LogModel.Record(logRec);
+            LogModel.Record(_thisProgram, ThisFunction, $"Exception: for {api} WebAPI Put Async {e.Message} ::: {e.InnerException}", 20);
+        }
+    }
+
+    private void PerformWaitDeleteTvmApiAsync(string api, int epi)
+    {
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        LogModel.Record(_thisProgram, ThisFunction, $"TVMaze Unmark Async with {epi}", 5);
+        var t = PerformDeleteTvmApiAsync(api);
+        t.Wait();
+
+        stopwatch.Stop();
+        LogModel.Record(_thisProgram, ThisFunction, $"TVMApi Exec time: {stopwatch.ElapsedMilliseconds} ms. or {api}", 5);
+
+        if (!_httpResponse.IsSuccessStatusCode)
+        {
+            LogModel.Record(_thisProgram, ThisFunction, $"Http Response Code is: {_httpResponse.StatusCode} for API {_client.BaseAddress}{api}", 5);
+            _httpResponse = new HttpResponseMessage();
+        }
+    }
+
+    private async Task PerformDeleteTvmApiAsync(string api)
+    {
+        LogModel.Record(_thisProgram, ThisFunction, $"Set Episode to Unmarked api {_client.BaseAddress + api}", 5);
+
+        try
+        {
+            _httpResponse = await _client.DeleteAsync(_client.BaseAddress + api).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(_thisProgram, ThisFunction, $"Exception: for {api} WebAPI Delete Async {e.Message} ::: {e.InnerException}", 20);
         }
     }
 
@@ -516,6 +515,15 @@ public class WebApi : IDisposable
                          Level        = 5,
                      };
         PerformWaitPutTvmApiAsync(api, episodeId, skipDate, "Skipped");
+
+        return _httpResponse;
+    }
+
+    public HttpResponseMessage PutEpisodesToUnmarked(int episodeId)
+    {
+        SetTvmazeUser();
+        var api = $@"episodes/{episodeId}";
+        PerformWaitDeleteTvmApiAsync(api, episodeId);
 
         return _httpResponse;
     }

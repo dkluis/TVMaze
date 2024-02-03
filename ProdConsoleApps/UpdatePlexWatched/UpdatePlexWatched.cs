@@ -32,8 +32,6 @@ internal static class UpdatePlexWatched
     {
         const string thisProgram = "Update Plex Watched";
         AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
-        var          log         = appInfo.TxtFile;
-
         LogModel.Start(thisProgram);
 
         //var watchedEpisodes = PlexSqlLite.PlexWatched(appInfo);

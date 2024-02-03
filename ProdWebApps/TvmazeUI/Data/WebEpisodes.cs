@@ -2,6 +2,8 @@
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+
 namespace TvmazeUI.Data;
 
 public class WebEpisodes
@@ -22,6 +24,8 @@ public class WebEpisodes
         while (rdr.Read())
         {
             var broadcastDate = DateTime.Parse(rdr["BroadcastDate"].ToString()!).ToString("yyyy-MM-dd");
+            var plexDate      = !string.IsNullOrEmpty(rdr["PlexDate"].ToString()!) ? DateTime.Parse(rdr["PlexDate"].ToString()!).ToString("yyyy-MM-dd") : " ";
+            var updateDate    = DateTime.Parse(rdr["UpdateDate"].ToString()!).ToString("yyyy-MM-dd");
 
             EpisodeInfo episodeInfo = new()
                                       {
@@ -29,16 +33,16 @@ public class WebEpisodes
                                           ShowName      = rdr["ShowName"].ToString()!,
                                           Season        = rdr["Season"].ToString()!,
                                           Episode       = rdr["Episode"].ToString()!,
-                                          BroadcastDate = DateTime.Parse(rdr["BroadcastDate"].ToString()!).ToString("yyyy-MM-dd"),
+                                          BroadcastDate = broadcastDate,
                                           TvmUrl        = rdr["TvmUrl"].ToString()!,
                                           PlexStatus    = rdr["PlexStatus"].ToString()!,
-                                          PlexDate      = DateTime.Parse(rdr["PlexDate"].ToString()!).ToString("yyyy-MM-dd"),
-                                          UpdateDate    = DateTime.Parse(rdr["UpdateDate"].ToString()!).ToString("yyyy-MM-dd"),
+                                          PlexDate      = plexDate,
+                                          UpdateDate    = updateDate,
                                       };
             episodeInfoList.Add(episodeInfo);
         }
 
-        AppInfo.TxtFile.Write($"Executing in Episodes Page: {sql}: found {episodeInfoList.Count} records", "", 4);
+        LogModel.Record(AppInfo.Program, "Web Episodes", $"Executing inEpisodesPage: {sql}: found {episodeInfoList.Count} records", 4);
 
         return episodeInfoList;
     }

@@ -2,6 +2,9 @@
 
 using DB_Lib;
 
+using DB_Lib_EF.Entities;
+using DB_Lib_EF.Models.MariaDB;
+
 namespace TvmazeUI.Data;
 
 public class WebShows
@@ -94,14 +97,19 @@ public class WebShows
 
     public bool SetMtAndAsnShow(int showId, string mediaType, string altShowName)
     {
-        MariaDb mdbShows = new(AppInfo);
-        altShowName = altShowName.Replace("'", "''");
-        var sql        = $"update Shows set `AltShowName` = '{altShowName}', `MediaType` = '{mediaType}' where `TvmShowId` = {showId}";
-        var resultRows = mdbShows.ExecNonQuery(sql);
+        using var db       = new TvMaze();
+        var show = db.Shows.FirstOrDefault(s => s.TvmShowId == showId);
 
-        if (resultRows > 0) return true;
+        if (show != null)
+        {
+            show.AltShowname = altShowName;
+            show.MediaType   = mediaType;
+            db.SaveChanges();
 
-        AppInfo.TxtFile.Write($"Edit ShowName and MediaType unsuccessful:  MediaType = {mediaType}");
+            return true;
+        }
+
+        LogModel.Record("Web UI", "Show Page", $"Edit ShowName and MediaType unsuccessful:  MediaType = {mediaType}");
 
         return false;
     }

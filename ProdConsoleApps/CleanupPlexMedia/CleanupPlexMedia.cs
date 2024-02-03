@@ -12,7 +12,6 @@ internal static class CleanupPlexMedia
     {
         const string thisProgram = "Cleanup Plex Media";
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
         LogModel.Start(thisProgram, "Main");
 
         MediaFileHandler mfh              = new(appInfo);
