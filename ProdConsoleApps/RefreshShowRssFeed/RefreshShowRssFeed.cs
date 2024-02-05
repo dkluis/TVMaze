@@ -11,6 +11,8 @@ using DB_Lib;
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
 
+using Entities_Lib;
+
 namespace RefreshShowRssFeed;
 
 internal static class RefreshShowRssFeed
@@ -51,12 +53,34 @@ internal static class RefreshShowRssFeed
                 continue;
             }
 
-            var a = "magnet:?xt=urn:btih:ED25D3B716C43F5CC3FA47F37B26DB69520A0E25&dn=Hightown+S03E02+1080p+WEB+h264+ETHEL&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2F9.rarbg.me%3A2960&tr=udp%3A%2F%2F9.rarbg.to%3A2980";
+            var showInfo = show.Title.Replace(" ", ".");
+
 
             if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack"))
             {
                 LogModel.Record(thisProgram, "Main", $"Found Repack or Proper Version: {show.Title}", 1);
             }
+
+            var foundInfo = CommonFunctions.FindShowEpisodeInfo(thisProgram, showInfo);
+
+            if (!foundInfo.Found && foundInfo.TvmShowId == 0)
+            {
+                LogModel.Record(thisProgram, "Main", $"Show Episode not found: TvmShowId: {foundInfo.TvmShowId} - {foundInfo.Message}", 3);
+
+                continue;
+            } else if (foundInfo.Message.Contains("Found via") && foundInfo.IsWatched && foundInfo.IsSeason)
+            {
+                LogModel.Record(thisProgram, "Main", $"For whole Season and found via: {foundInfo.Message} and IsWatched: {foundInfo.IsWatched} ", 3);
+
+                continue;
+            } else if (foundInfo.IsWatched)
+            {
+                LogModel.Record(thisProgram, "Main", $"Show Episode already watched: {foundInfo.Message}", 3);
+
+                continue;
+            }
+
+            LogModel.Record(thisProgram, "Main", $"Adding torrent to Transmission for {foundInfo.TvmShowId} with epi {foundInfo.TvmEpisodeId}", 3);
 
             using (Process acquireMediaScript = new())
             {

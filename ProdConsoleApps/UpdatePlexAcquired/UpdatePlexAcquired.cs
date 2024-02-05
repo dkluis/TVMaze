@@ -63,15 +63,6 @@ internal static class UpdatePlexAcquired
                     seasonNum = int.Parse(seas[0].Replace("s", ""));
                     var epiNum = int.Parse(seas[1]);
 
-                    // Special section to handle the Dexter versus Dexter New Blood season mix up on the internet.
-                    // if (show.ToLower() == "dexter" && seasonNum > 8)
-                    // {
-                    //     show          =  "Dexter New Blood";
-                    //     seasonNum     -= 8;
-                    //     episodeString =  Common.BuildSeasonEpisodeString(seasonNum, epiNum);
-                    //     log.Write("Changed Dexter to Dexter New Blood", "", 2);
-                    // }
-
                     LogModel.Record(thisProgram, "Main", $"Found show {show} episode {episodeString}", 4);
                 } else
                 {
