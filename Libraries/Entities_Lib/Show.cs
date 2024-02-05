@@ -4,8 +4,6 @@ using System.Linq;
 
 using Common_Lib;
 
-using DB_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
 
@@ -19,38 +17,37 @@ namespace Entities_Lib;
 
 public class Show : IDisposable
 {
-    private readonly AppInfo         _appInfo;
-    private readonly MariaDb         _mdb;
-    public           string          AltShowName     = "";
-    public           string          CleanedShowName = "";
-    public           string          Finder          = "Multi";
-    public           int             Id;
-    public           bool            IsDbFilled;
-    public           bool            IsFollowed;
-    public           bool            IsForReview;
-    public           bool            IsJsonFilled;
-    public           string          MediaType    = "TS";
-    public           string          PremiereDate = "";
-    public           string          ShowName     = "";
-    public           string          ShowStatus   = "";
-    public           string?         TvmCountry;
-    public           string?         TvmImage;
-    public           string?         TvmImdb;
-    public           string?         TvmLanguage;
-    public           string?         TvmNetwork;
-    public           string?         TvmOfficialSite;
-    public           int             TvmShowId;
-    public           string          TvmStatus = " ";
-    public           string?         TvmSummary;
-    public           string?         TvmType;
-    public           int             TvmUpdatedEpoch;
-    public           string          TvmUrl     = "";
-    public           string          UpdateDate = "1900-01-01";
+    private readonly AppInfo _appInfo;
+    private          bool    _success;
+    public           string  AltShowName     = "";
+    public           string  CleanedShowName = "";
+    public           string  Finder          = "Multi";
+    public           int     Id;
+    public           bool    IsDbFilled;
+    public           bool    IsFollowed;
+    public           bool    IsForReview;
+    public           bool    IsJsonFilled;
+    public           string  MediaType    = "TS";
+    public           string  PremiereDate = "";
+    public           string  ShowName     = "";
+    public           string  ShowStatus   = "";
+    public           string? TvmCountry;
+    public           string? TvmImage;
+    public           string? TvmImdb;
+    public           string? TvmLanguage;
+    public           string? TvmNetwork;
+    public           string? TvmOfficialSite;
+    public           int     TvmShowId;
+    public           string  TvmStatus = " ";
+    public           string? TvmSummary;
+    public           string? TvmType;
+    public           int     TvmUpdatedEpoch;
+    public           string  TvmUrl     = "";
+    public           string  UpdateDate = "1900-01-01";
 
     public Show(AppInfo appInfo)
     {
         _appInfo = appInfo;
-        _mdb     = new MariaDb(appInfo);
     }
 
     public void Dispose()
@@ -93,8 +90,8 @@ public class Show : IDisposable
         using TvmCommonSql ge                = new(_appInfo);
         var                lastEvaluatedShow = ge.GetLastEvaluatedShow();
         using WebApi       js                = new(_appInfo);
-        FillViaJson(js.ConvertHttpToJObject(js.GetShow(showId)));
-        FillViaDb(showId, true);
+        var jFill = FillViaJson(js.ConvertHttpToJObject(js.GetShow(showId)));
+        FillViaDb(showId, jFill);
         if (!IsFollowed && !IsDbFilled) ValidateForReview(lastEvaluatedShow);
     }
 
@@ -139,17 +136,17 @@ public class Show : IDisposable
         if (!IsForReview && !IsFollowed && !overRide)
         {
             LogModel.Record(_appInfo.Program, "Show Entity", "New Show {TvmUrl} is rejected because isForReview and isFollowed are set to false", 3);
-            _mdb.Success = true;
+            _success = true;
 
-            return _mdb.Success;
+            return _success;
         }
 
         try
         {
-            _mdb.Success = true;
+            _success = true;
 
-            var db      = new TvMaze();
-            var showRec = new DB_Lib_EF.Models.MariaDB.Show();
+            using var db      = new TvMaze();
+            var       showRec = new DB_Lib_EF.Models.MariaDB.Show();
             showRec.TvmShowId       = TvmShowId;
             showRec.TvmStatus       = callingApp == "UpdateShowEpochs" ? "New" : IsFollowed ? "Following" : "New";
             showRec.TvmUrl          = TvmUrl;
@@ -165,74 +162,74 @@ public class Show : IDisposable
             db.Shows.Add(showRec);
             db.SaveChanges();
 
-            /*var          values = "";
-            const string sqlPre = "insert into Shows values (";
-            const string sqlSuf = ");";
-
-            values += "0, ";
-            values += $"{TvmShowId}, ";
-
-            if (callingApp == "UpdateShowEpochs")
-                values += "'New', ";
-            else if (IsFollowed)
-                values += "'Following', ";
-            else
-                values += "'New', ";
-
-            values += $"'{TvmUrl}', ";
-            values += $"'{ShowName.Replace("'", "''")}', ";
-            values += $"'{ShowStatus}', ";
-            values += $"'{PremiereDate}', ";
-            values += $"'{Finder}', ";
-            values += $"'{MediaType}', ";
-            values += $"'{CleanedShowName.Replace("'", "''")}', ";
-            if (AltShowName == "" && ShowName.Contains(':')) AltShowName = ShowName.Replace(":", "");
-
-            values += $"'{AltShowName.Replace("'", "''")}', ";
-            values += $"'{DateTime.Now:yyyy-MM-dd}' ";
-            var rows = _mdb.ExecNonQuery(sqlPre + values + sqlSuf);
-            LogModel.Record(_appInfo.Program, "Show Entity", $"Db Insert for Show: {TvmShowId}", 4);
-            _mdb.Close();
-            if (rows == 0) _mdb.Success = false;*/
-
-            return _mdb.Success;
+            return _success;
         }
         catch (Exception e)
         {
             LogModel.Record(_appInfo.Program, "Show Entity", $"Error: {e.Message} ::: {e.InnerException}", 20);
-            _mdb.Success = false;
+            _success = false;
 
-            return _mdb.Success;
+            return _success;
         }
     }
 
     public bool DbDelete()
     {
-        _mdb.Success = true;
-        var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {TvmShowId}");
-        LogModel.Record(_appInfo.Program, "Show Entity", $"Db Delete for Show: {TvmShowId}", 4);
-        _mdb.Close();
-        if (rows == 0) _mdb.Success = false;
+        _success = true;
 
-        return _mdb.Success;
+        try
+        {
+            using var db           = new TvMaze();
+            var       showToDelete = db.Shows.SingleOrDefault(s => s.TvmShowId == TvmShowId);
+
+            if (showToDelete == null)
+            {
+                return false;
+            }
+
+            var episodesToClear = db.Episodes.Where(e => e.TvmShowId == TvmShowId && (e.PlexStatus != " " || e.PlexDate != null)).ToList();
+
+            foreach (var episode in episodesToClear)
+            {
+                var wa     = new WebApi(_appInfo);
+                var result = wa.PutEpisodesToUnmarked(episode.TvmEpisodeId);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    LogModel.Record(_appInfo.Program, "Show Entity", $"Failed to Unmark Episode {episode.TvmEpisodeId} {episode.SeasonEpisode} for {episode.TvmShowId}", 20);
+                }
+            }
+
+            db.Remove(showToDelete);
+            db.SaveChanges();
+
+            return _success;
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(_appInfo.Program, "Show Entity", $"Error: {e.Message} ::: {e.InnerException}", 20);
+            _success = false;
+
+            return _success;
+        }
     }
 
     public bool DbDelete(int showId)
     {
-        _mdb.Success = true;
-        var rows = _mdb.ExecNonQuery($"delete from Shows where `TvmShowId` = {showId}");
-        LogModel.Record(_appInfo.Program, "Show Entity", $"Db Delete for Show: {showId}", 4);
-        _mdb.Close();
-        if (rows == 0) _mdb.Success = false;
+        TvmShowId = showId;
+        DbDelete();
 
-        return _mdb.Success;
+        return _success;
     }
 
-    private void FillViaJson(JObject showJson)
+    private bool FillViaJson(JObject showJson)
     {
+        IsJsonFilled = false;
+
         if (showJson["id"] is not null)
         {
-            TvmShowId = int.Parse(showJson["id"]!.ToString());
+            IsJsonFilled = true;
+            TvmShowId    = int.Parse(showJson["id"]!.ToString());
             using TvmCommonSql tcs = new(_appInfo);
             IsFollowed = tcs.IsShowIdFollowed(TvmShowId);
             TvmStatus  = IsFollowed ? "Following" : "New";
@@ -283,46 +280,53 @@ public class Show : IDisposable
             TvmSummary = showJson["summary"] is not null ? showJson["summary"]!.ToString() : "";
             if (showJson["updated"] is not null) TvmUpdatedEpoch = int.Parse(showJson["updated"]!.ToString());
 
-            IsJsonFilled = true;
-
             if (IsDbFilled)
             {
             }
         }
+
+        return IsJsonFilled;
     }
 
     private void FillViaDb(int showId, bool jsonIsDone)
     {
-        using var rdr = _mdb.ExecQuery($"select * from Shows where `TvmShowId` = {showId};");
-        IsDbFilled = false;
-
-        while (rdr.Read())
+        try
         {
-            IsDbFilled = true;
+            using var db      = new TvMaze();
+            var       showRec = db.Shows.SingleOrDefault(s => s.TvmShowId == showId);
 
-            if (jsonIsDone)
+            if (showRec == null)
             {
-                TvmStatus   = rdr["TvmStatus"].ToString()!;
-                Finder      = rdr["Finder"].ToString()!;
-                AltShowName = rdr["AltShowName"].ToString()!;
-                if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
-                UpdateDate = Convert.ToDateTime(rdr["UpdateDate"]).ToString("yyyy-MM-dd");
-                MediaType  = rdr["MediaType"].ToString()!;
+                IsDbFilled = false;
             } else
             {
-                Id              = int.Parse(rdr["Id"].ToString()!);
-                TvmShowId       = int.Parse(rdr["TvmShowId"].ToString()!);
-                TvmUrl          = rdr["TvmUrl"].ToString()!;
-                ShowName        = rdr["ShowName"].ToString()!;
-                ShowStatus      = rdr["ShowStatus"].ToString()!;
-                PremiereDate    = Convert.ToDateTime(rdr["PremiereDate"]).ToString("yyyy-MM-dd");
-                CleanedShowName = rdr["CleanedShowName"].ToString()!;
-                if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
+                IsDbFilled = true;
             }
 
-            if (IsJsonFilled)
+            if (jsonIsDone && IsDbFilled)
             {
+                TvmStatus   = showRec!.TvmStatus;
+                Finder      = showRec.Finder;
+                AltShowName = showRec.AltShowname;
+                if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
+                UpdateDate = showRec.UpdateDate.ToString();
+                MediaType  = showRec.MediaType!;
+            } else if (IsDbFilled)
+            {
+                Id              = showRec!.Id;
+                TvmShowId       = showRec.TvmShowId;
+                TvmUrl          = showRec.TvmUrl!;
+                ShowName        = showRec.ShowName;
+                ShowStatus      = showRec.ShowStatus;
+                PremiereDate    = showRec.PremiereDate.ToString();
+                CleanedShowName = showRec.CleanedShowName;
+                UpdateDate      = showRec.UpdateDate.ToString();
+                if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
             }
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(_appInfo.Program, $"Show Entity", $"Error: {e.Message} ::: {e.InnerException}", 20);
         }
     }
 
@@ -335,7 +339,7 @@ public class Show : IDisposable
         if (!string.IsNullOrEmpty(TvmLanguage) && !string.IsNullOrWhiteSpace(TvmLanguage))
             if (TvmLanguage.ToLower() != "english")
             {
-               LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}: {TvmUrl}");
+                LogModel.Record(_appInfo.Program, "Show Entity", $"Rejected {TvmShowId} due to Language {TvmLanguage} and  {TvmNetwork}: {TvmUrl}");
 
                 return;
             }
@@ -425,11 +429,6 @@ public class Show : IDisposable
 
         IsForReview = true;
     }
-
-    public void CloseDb()
-    {
-        _mdb.Close();
-    }
 }
 
 public class SearchShowsViaNames
@@ -438,64 +437,67 @@ public class SearchShowsViaNames
 
     public List<int> Find(AppInfo appInfo, string showName, string cleanedShowName = "", string altShowName = "")
     {
-        _found      = new List<int>();
-        var found = false;
-        showName    = showName.Replace("'", "''").Replace(" ", " ");
-        altShowName = altShowName.Replace("'", "''").Replace(" ", " ");
-
-        if (cleanedShowName == "")
-            cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
-
-        if (altShowName == "") altShowName = showName;
-
-        using MariaDb mDbR = new(appInfo);
-
-        var sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where " +
-                  $"(`ShowName` = '{showName}' or `CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Ended' and `ShowStatus` != 'Skipping' and `PremiereDate` != '1900-01-01'";
-        var rdr = mDbR.ExecQuery(sql);
-
-        while (rdr.Read())
+        try
         {
-            if (!string.IsNullOrEmpty(rdr["TvmShowId"].ToString()))
+            _found      = new List<int>();
+            showName    = showName.Replace(" ", " ");
+            altShowName = altShowName.Replace(" ", " ");
+
+            if (cleanedShowName == "")
+                cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
+
+            if (altShowName == "") altShowName = showName;
+
+            var       tvmStatusList = new List<string> {"Ended", "Skipping"};
+            var       dateStr       = "1900-01-01";
+            var       premDate      = DateOnly.Parse(dateStr);
+            using var db            = new TvMaze();
+
+            var shows = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) &&
+                                            !tvmStatusList.Contains(s.TvmStatus)                                                             &&
+                                            s.PremiereDate != premDate)
+                          .ToList();
+
+            if (shows != null && shows.Count > 0)
             {
-                _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
-                found = true;
-            }
-        }
-
-        if (!found)
-        {
-            mDbR.Close();
-
-            sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Skipping';";
-            rdr = mDbR.ExecQuery(sql);
-
-            while (rdr.Read())
-            {
-                if (!string.IsNullOrEmpty(rdr["TvmShowId"].ToString()))
+                foreach (var show in shows)
                 {
-                    _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
-                    found = true;
+                    _found.Add(show.TvmShowId);
+                }
+            } else
+            {
+                shows = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) && s.ShowStatus != "Skipping").ToList();
+
+                if (shows != null && shows.Count > 0)
+                {
+                    foreach (var show in shows)
+                    {
+                        _found.Add(show.TvmShowId);
+                    }
+                } else
+                {
+                    var splitShowName                         = altShowName.Split(" (");
+                    if (splitShowName.Length > 0) altShowName = splitShowName[0];
+                    shows = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) && s.ShowStatus != "Skipping").ToList();
+
+                    if (shows != null && shows.Count > 0)
+                    {
+                        foreach (var show in shows)
+                        {
+                            _found.Add(show.TvmShowId);
+                        }
+                    }
                 }
             }
-        }
 
-        if (!found)
+            return _found;
+        }
+        catch (Exception e)
         {
-            mDbR.Close();
+            LogModel.Record(appInfo.Program, "Show Entity", $"Error during Find {e.Message} :::{e.InnerException}", 20);
 
-            var splitShowName                         = altShowName.Split(" (");
-            if (splitShowName.Length > 0) altShowName = splitShowName[0];
-
-            sql = $"select `Id`, `TvmShowId`, `ShowName`, `ShowStatus` from Shows where (`ShowName` = '{showName}' or " +
-                  $"`CleanedShowName` = '{cleanedShowName}' or `AltShowName` = '{altShowName}') and `ShowStatus` != 'Skipping';";
-            rdr = mDbR.ExecQuery(sql);
-            while (rdr.Read()) _found.Add(int.Parse(rdr["TvmShowId"].ToString()!));
-            found = true;
+            return _found;
         }
-
-        return _found;
     }
 }
 
@@ -505,15 +507,9 @@ public class SearchAllFollowed
 
     public List<int> Find(AppInfo appInfo, string option = "Following")
     {
-        using MariaDb mDbR = new(appInfo);
-        var           sql  = $"select `Id`, `TvmShowId`, `ShowName` from Shows where `TvmStatus` = '{option}' order by `TvmShowId`;";
-        var           rdr  = mDbR.ExecQuery(sql);
-
-        if (rdr is null) return _allFollowed;
-
-        if (!rdr.HasRows) return _allFollowed;
-
-        while (rdr.Read()) _allFollowed.Add(int.Parse(rdr["TvmShowId"].ToString()!));
+        using var db    = new TvMaze();
+        var       shows = db.Shows.Where(s => s.TvmStatus == option).OrderBy(s => s.TvmShowId).Select(s => s.TvmShowId);
+        _allFollowed.AddRange(shows);
 
         return _allFollowed;
     }
@@ -523,10 +519,25 @@ public class UpdateFinder
 {
     public static void ToShowRss(AppInfo appInfo, int showId)
     {
-        using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update Shows set `Finder` = 'ShowRss' where `TvmShowId` = {showId};";
-        appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFinder", 4);
-        if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update of Finder unsuccessful {sql}", "", 4);
+        try
+        {
+            using var db   = new TvMaze();
+            var       show = db.Shows.SingleOrDefault(s => s.TvmShowId == showId);
+
+            if (show == null)
+            {
+                LogModel.Record(appInfo.Program, "Show Entity", $"To ShowRss: Could not find {showId}", 20);
+
+                return;
+            }
+
+            show.Finder = "ShowRss";
+            db.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(appInfo.Program, "Show Entity", $"To ShowRss Error: {e.Message} ::: {e.InnerException}", 20);
+        }
     }
 }
 
@@ -539,20 +550,51 @@ public class UpdateTvmStatus : IDisposable
 
     public void ToFollowed(AppInfo appInfo, int showId)
     {
-        using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update Shows set `TvmStatus` = 'Following' where `TvmShowId` = {showId} and `TvmStatus` != 'Skipping';";
-        appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
+        try
+        {
+            using var db   = new TvMaze();
+            var       show = db.Shows.SingleOrDefault(s => s.TvmShowId == showId);
 
-        if (mDbW.ExecNonQuery(sql) == 0)
-            appInfo.TxtFile.Write($"Update to Following unsuccessful {sql}", "", 4);
+            if (show == null)
+            {
+                LogModel.Record(appInfo.Program, "Show Entity", $"To Followed: Could not find {showId}", 20);
+
+                return;
+            } else
+            {
+                if (show.TvmStatus == "Skipping") return;
+            }
+
+            show.TvmStatus = "Following";
+            db.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(appInfo.Program, "Show Entity", $"To Followed Error: {e.Message} ::: {e.InnerException}", 20);
+        }
     }
 
     public void ToReview(AppInfo appInfo, int showId)
     {
-        using MariaDb mDbW = new(appInfo);
-        var           sql  = $"update Shows set `TvmStatus` = 'Reviewing' where `TvmShowId` = {showId};";
-        appInfo.TxtFile.Write($"Executing: {sql}", "UpdateFollowed", 4);
-        if (mDbW.ExecNonQuery(sql) == 0) appInfo.TxtFile.Write($"Update to Review unsuccessful {sql}", "", 4);
+        try
+        {
+            using var db   = new TvMaze();
+            var       show = db.Shows.SingleOrDefault(s => s.TvmShowId == showId);
+
+            if (show == null)
+            {
+                LogModel.Record(appInfo.Program, "Show Entity", $"To Reviewing: Could not find {showId}", 20);
+
+                return;
+            }
+
+            show.TvmStatus = "Reviewing";
+            db.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            LogModel.Record(appInfo.Program, "Show Entity", $"To Reviewing Error: {e.Message} ::: {e.InnerException}", 20);
+        }
     }
 }
 
@@ -571,16 +613,8 @@ public class CheckDb
 {
     public static int FollowedCount(AppInfo appInfo)
     {
-        using var     db           = new TvMaze();
+        using var db = new TvMaze();
 
         return db.Followeds.Count();
-/*
-        var           records      = 0;
-        using MariaDb mDbR         = new(appInfo);
-        var           rdr          = mDbR.ExecQuery("select count(*) from Followed");
-        while (rdr.Read()) records = int.Parse(rdr[0].ToString()!);
-
-        return records;
-*/
     }
 }

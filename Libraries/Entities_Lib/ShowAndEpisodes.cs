@@ -58,7 +58,13 @@ public class ShowAndEpisodes : IDisposable
             _show.TvmStatus = "Skipping";
         }
 
-        _show.DbUpdate();
+        if (_show.IsDbFilled)
+        {
+            _show.DbUpdate();
+        } else
+        {
+            _show.DbInsert();
+        }
 
         using EpisodesByShow epsByShow = new();
         var                  tvmApi    = new WebApi(_appInfo);

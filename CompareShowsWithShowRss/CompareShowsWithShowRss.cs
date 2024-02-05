@@ -106,7 +106,7 @@ internal static class CompareShowsWithShowRss
 
                 foreach (var show in showRec)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Multiple records found for show: {compareShowName}, ShowId: {show.Id}, ShowName: {show.ShowName}", 3);
+                    LogModel.Record(thisProgram, "Main", $"Multiple records found for show: {compareShowName}, ShowId: {show.TvmShowId}, ShowName: {show.ShowName}", 3);
                 }
             } else
             {
@@ -122,7 +122,7 @@ internal static class CompareShowsWithShowRss
 
                 foreach (var show in showRec)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Found Combination for show: {compareShowName}, ShowId: {show.Id}, ShowName: {show.ShowName}", 2);
+                    LogModel.Record(thisProgram, "Main", $"Found Combination for show: {compareShowName}, ShowId: {show.TvmShowId}, ShowName: {show.ShowName}", 2);
 
                     show.Finder = "ShowRss";
                 }

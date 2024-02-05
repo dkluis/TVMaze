@@ -51,6 +51,8 @@ internal static class RefreshShowRssFeed
                 continue;
             }
 
+            var a = "magnet:?xt=urn:btih:ED25D3B716C43F5CC3FA47F37B26DB69520A0E25&dn=Hightown+S03E02+1080p+WEB+h264+ETHEL&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2F9.rarbg.me%3A2960&tr=udp%3A%2F%2F9.rarbg.to%3A2980";
+
             if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack"))
             {
                 LogModel.Record(thisProgram, "Main", $"Found Repack or Proper Version: {show.Title}", 1);
