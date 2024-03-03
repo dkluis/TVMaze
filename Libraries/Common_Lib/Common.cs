@@ -33,7 +33,6 @@ public static partial class Common
                            .Replace("'",      "")
                            .Replace("   ",    " ")
                            .Replace("  ",     " ")
-                           .Replace("'",      "")
                            .Replace("\"",     "")
                            .Replace("/",      "")
                            .Replace(":",      "")

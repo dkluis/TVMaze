@@ -4,6 +4,8 @@ using Common_Lib;
 
 using DB_Lib_EF.Models.MariaDB;
 
+using Entities_Lib;
+
 namespace TryOut;
 
 internal static class TryOut
@@ -15,21 +17,9 @@ internal static class TryOut
 
         //LogModel.Start(thisProgram);
 
-        var testString    = "Australia''s Ocean Odyssey: A Journey Down the East Australian Current";
-        var onlyString    = testString.Replace("''", "'");
-        var cleanedString = Common.RemoveSpecialCharsInShowName(testString);
+        var test = "Allegiance.S01E01";
 
-        var db    = new TvMaze();
-        var shows = db.Shows.Where(s => s.ShowName.Contains("''") || s.CleanedShowName.Contains("''") || s.AltShowname.Contains("''")).ToList();
-
-        foreach (var show in shows)
-        {
-            show.ShowName        = show.ShowName.Replace("''", "'");
-            show.CleanedShowName = show.CleanedShowName.Replace("''", "'");
-            show.AltShowname     = show.AltShowname.Replace("''", "'");
-        }
-
-        db.SaveChanges();
+        var result = GeneralMethods.FindShowEpisodeInfo("TryOut", test);
 
         //LogModel.Stop(thisProgram);
     }

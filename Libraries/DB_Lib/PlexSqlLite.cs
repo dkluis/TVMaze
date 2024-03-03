@@ -83,16 +83,16 @@ public static class PlexSqlLite
 
 public class PlexWatchedInfo
 {
-    public int     Episode        = 999999;
-    public int     Season         = 999999;
-    public  string  CleanedShowName = "";
-    public  bool    ProcessedToTvmaze;
-    public  string  SeasonEpisode = "";
-    public  string  ShowName      = "";
-    public  int     TvmEpisodeId;
-    public  int     TvmShowId;
-    public  string  UpdateDate  = " ";
-    public  string? WatchedDate = "";
+    public int     Episode         = 999999;
+    public int     Season          = 999999;
+    public string  CleanedShowName = "";
+    public bool    ProcessedToTvmaze;
+    public string  SeasonEpisode = "";
+    public string  ShowName      = "";
+    public int     TvmEpisodeId;
+    public int     TvmShowId;
+    public string  UpdateDate  = " ";
+    public string? WatchedDate = "";
 
     public void Reset()
     {

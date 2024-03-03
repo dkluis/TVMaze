@@ -55,13 +55,12 @@ internal static class RefreshShowRssFeed
 
             var showInfo = show.Title.Replace(" ", ".");
 
-
             if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack"))
             {
                 LogModel.Record(thisProgram, "Main", $"Found Repack or Proper Version: {show.Title}", 1);
             }
 
-            var foundInfo = CommonFunctions.FindShowEpisodeInfo(thisProgram, showInfo);
+            var foundInfo = GeneralMethods.FindShowEpisodeInfo(thisProgram, showInfo);
 
             if (!foundInfo.Found && foundInfo.TvmShowId == 0)
             {

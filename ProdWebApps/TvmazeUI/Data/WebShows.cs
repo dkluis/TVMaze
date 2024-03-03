@@ -13,7 +13,7 @@ public class WebShows
 
     public List<ShowsInfo> GetShowsByTvmStatus(string tvmStatus)
     {
-        MariaDb         mdbShows = new(AppInfo);
+        using MariaDb         mdbShows = new(AppInfo);
         List<ShowsInfo> newShows = new();
         var             sql      = $"select * from Shows where `TvmStatus` = '{tvmStatus}' order by `TvmShowId` desc";
         var             rdr      = mdbShows.ExecQuery(sql);
@@ -34,12 +34,14 @@ public class WebShows
             newShows.Add(rec);
         }
 
+        mdbShows.Close();
+
         return newShows;
     }
 
     public List<ShowsInfo> FindShows(string? showName)
     {
-        MariaDb         mdbShows = new(AppInfo);
+        using MariaDb         mdbShows = new(AppInfo);
         List<ShowsInfo> newShows = new();
         showName = showName?.Replace("'", "''");
         var sql = $"select * from Shows where `ShowName` like '%{showName}%' or `AltShowName` like '%{showName}%' order by `TvmShowId` desc limit 150";
@@ -62,35 +64,43 @@ public class WebShows
             newShows.Add(rec);
         }
 
+        mdbShows.Close();
+
         return newShows;
     }
 
     public bool DeleteShow(int showId)
     {
-        MariaDb mdbShows   = new(AppInfo);
-        var     sql        = $"delete from Shows where `TvmShowId` = {showId}";
-        var     resultRows = mdbShows.ExecNonQuery(sql);
+        using MariaDb mdbShows   = new(AppInfo);
+        var           sql        = $"delete from Shows where `TvmShowId` = {showId}";
+        var           resultRows = mdbShows.ExecNonQuery(sql);
+
+        mdbShows.Close();
 
         return resultRows > 0;
     }
 
     public bool SkipShow(int showId)
     {
-        MariaDb mdbShows   = new(AppInfo);
+        using MariaDb mdbShows   = new(AppInfo);
         var     sql        = $"update Shows set `TvmStatus` = 'Skipping', `Finder` = 'Skip', `UpdateDate` = '2200-01-01' Where `TvmShowId` = {showId}";
         var     resultRows = mdbShows.ExecNonQuery(sql);
+
+        mdbShows.Close();
 
         return resultRows > 0;
     }
 
     public bool SetTvmStatusShow(int showId, string newStatus)
     {
-        MariaDb mdbShows   = new(AppInfo);
+        using MariaDb mdbShows   = new(AppInfo);
         var     sql        = $"update Shows set `TvmStatus` = '{newStatus}' where `TvmShowId` = {showId}";
         var     resultRows = mdbShows.ExecNonQuery(sql);
 
         if (resultRows > 0)
             return true;
+
+        mdbShows.Close();
 
         return false;
     }

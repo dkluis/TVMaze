@@ -112,7 +112,7 @@ public class Show : IDisposable
                 checkShow.MediaType       = MediaType;
                 checkShow.ShowName        = ShowName;
                 checkShow.AltShowname     = AltShowName;
-                checkShow.CleanedShowName = CleanedShowName;
+                checkShow.CleanedShowName = CleanedShowName.Replace("'", "");
                 checkShow.PremiereDate    = DateOnly.Parse(PremiereDate);
                 checkShow.UpdateDate      = DateOnly.Parse(UpdateDate);
                 db.SaveChanges();
@@ -155,7 +155,7 @@ public class Show : IDisposable
             showRec.PremiereDate    = DateOnly.Parse(PremiereDate);
             showRec.Finder          = Finder;
             showRec.MediaType       = MediaType;
-            showRec.CleanedShowName = CleanedShowName;
+            showRec.CleanedShowName = CleanedShowName.Replace("'", "");
             if (AltShowName == "" && ShowName.Contains(':')) AltShowName = ShowName.Replace(":", "");
             showRec.AltShowname = AltShowName;
             showRec.UpdateDate  = DateOnly.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
@@ -319,7 +319,7 @@ public class Show : IDisposable
                 ShowName        = showRec.ShowName;
                 ShowStatus      = showRec.ShowStatus;
                 PremiereDate    = showRec.PremiereDate.ToString();
-                CleanedShowName = showRec.CleanedShowName;
+                CleanedShowName = showRec.CleanedShowName.Replace("'", "");
                 UpdateDate      = showRec.UpdateDate.ToString();
                 if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
             }
@@ -441,21 +441,19 @@ public class SearchShowsViaNames
         {
             _found      = new List<int>();
             showName    = showName.Replace(" ", " ");
-            altShowName = altShowName.Replace(" ", " ");
-
-            if (cleanedShowName == "")
-                cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
-
             if (altShowName == "") altShowName = showName;
+            altShowName = altShowName.Replace(" ", " ").Replace(":", "").Replace("\u2019", "\u0027");
+            if (cleanedShowName == "") cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
 
             var       tvmStatusList = new List<string> {"Ended", "Skipping"};
             var       dateStr       = "1900-01-01";
             var       premDate      = DateOnly.Parse(dateStr);
             using var db            = new TvMaze();
 
-            var shows = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) &&
-                                            !tvmStatusList.Contains(s.TvmStatus)                                                             &&
-                                            s.PremiereDate != premDate)
+            var shows = db.Shows
+                          .Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower()) &&
+                                      !tvmStatusList.Contains(s.TvmStatus)                                                                                                                         &&
+                                      s.PremiereDate != premDate)
                           .ToList();
 
             if (shows != null && shows.Count > 0)
@@ -466,7 +464,9 @@ public class SearchShowsViaNames
                 }
             } else
             {
-                shows = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) && s.ShowStatus != "Skipping").ToList();
+                shows = db.Shows.Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower()) &&
+                                            s.ShowStatus != "Skipping")
+                          .ToList();
 
                 if (shows != null && shows.Count > 0)
                 {
@@ -478,7 +478,10 @@ public class SearchShowsViaNames
                 {
                     var splitShowName                         = altShowName.Split(" (");
                     if (splitShowName.Length > 0) altShowName = splitShowName[0];
-                    shows = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) && s.ShowStatus != "Skipping").ToList();
+
+                    shows = db.Shows.Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower())
+                                             && s.ShowStatus != "Skipping")
+                              .ToList();
 
                     if (shows != null && shows.Count > 0)
                     {

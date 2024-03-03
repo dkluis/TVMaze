@@ -391,6 +391,9 @@ public class WebScrape : IDisposable
         if (magnet.ToLower().Contains("-ethel"))
             priority += 5;
 
+        if (magnet.ToLower().Contains("-minx"))
+            priority -= 75;
+
         return priority;
     }
 }
