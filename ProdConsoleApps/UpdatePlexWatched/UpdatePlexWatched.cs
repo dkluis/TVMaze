@@ -54,11 +54,11 @@ internal static class UpdatePlexWatched
                     continue;
                 }
 
-                var cleanedShowName = Common.RemoveSpecialCharsInShowName(watchedEpi.ShowName!);
+                var cleanedShowName = Common.RemoveSpecialCharsInShowName(watchedEpi.ShowName!).Replace("ʻ", "");
                 var watchedInfo     = new PlexWatchedInfo();
                 watchedInfo.ShowName          = watchedEpi.ShowName!;
                 watchedInfo.SeasonEpisode     = watchedEpi.SeasonEpisode!;
-                watchedInfo.CleanedShowName   = cleanedShowName;
+                watchedInfo.CleanedShowName   = cleanedShowName.Replace("ʻ", "");
                 watchedInfo.UpdateDate        = watchedEpi.UpdateDate!;
                 watchedInfo.WatchedDate       = watchedEpi.WatchedDate;
                 watchedInfo.TvmEpisodeId      = watchedEpi.TvmEpisodeId;

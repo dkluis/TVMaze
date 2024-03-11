@@ -54,7 +54,7 @@ public class ViewEntities : IDisposable
                                {
                                    TvmShowId       = e.TvmShowId,
                                    ShowName        = s.ShowName,
-                                   CleanedShowName = s.CleanedShowName.Replace("'", ""),
+                                   CleanedShowName = s.CleanedShowName.Replace("ʻ", ""),
                                    AltShowName     = s.AltShowname,
                                    ShowStatus      = s.TvmStatus,
                                    TvmEpisodeId    = e.TvmEpisodeId,
@@ -197,7 +197,7 @@ public class ViewEntities : IDisposable
                                                               Id              = esm.Epi.Id,
                                                               TvmShowId       = esm.Epi.TvmShowId,
                                                               ShowName        = esm.Show.ShowName,
-                                                              CleanedShowName = esm.Show.CleanedShowName.Replace("'", ""),
+                                                              CleanedShowName = esm.Show.CleanedShowName.Replace("ʻ", ""),
                                                               TvmStatus       = esm.Show.TvmStatus,
                                                               AltShowName     = esm.Show.AltShowname,
                                                               TvmEpisodeId    = esm.Epi.TvmEpisodeId,

@@ -87,7 +87,7 @@ public class PlexWatchedInfo
         WatchedDate     = Common.ConvertEpochToDate(watchedDate);
         UpdateDate      = DateTime.Now.ToString("yyyy-MM-dd");
         SeasonEpisode   = Common.BuildSeasonEpisodeString(season, episode);
-        CleanedShowName = Common.RemoveSpecialCharsInShowName(showName);
+        CleanedShowName = Common.RemoveSpecialCharsInShowName(showName).Replace("ʻ", "");
     }
 }
 

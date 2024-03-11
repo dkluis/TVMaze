@@ -112,7 +112,7 @@ public class Show : IDisposable
                 checkShow.MediaType       = MediaType;
                 checkShow.ShowName        = ShowName;
                 checkShow.AltShowname     = AltShowName;
-                checkShow.CleanedShowName = CleanedShowName.Replace("'", "");
+                checkShow.CleanedShowName = CleanedShowName.Replace("ʻ", "");
                 checkShow.PremiereDate    = DateOnly.Parse(PremiereDate);
                 checkShow.UpdateDate      = DateOnly.Parse(UpdateDate);
                 db.SaveChanges();
@@ -155,7 +155,7 @@ public class Show : IDisposable
             showRec.PremiereDate    = DateOnly.Parse(PremiereDate);
             showRec.Finder          = Finder;
             showRec.MediaType       = MediaType;
-            showRec.CleanedShowName = CleanedShowName.Replace("'", "");
+            showRec.CleanedShowName = CleanedShowName.Replace("ʻ", "");
             if (AltShowName == "" && ShowName.Contains(':')) AltShowName = ShowName.Replace(":", "");
             showRec.AltShowname = AltShowName;
             showRec.UpdateDate  = DateOnly.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
@@ -245,7 +245,7 @@ public class Show : IDisposable
                 if (date != "") PremiereDate = Convert.ToDateTime(showJson["premiered"]).ToString("yyyy-MM-dd");
             }
 
-            CleanedShowName = Common.RemoveSpecialCharsInShowName(ShowName);
+            CleanedShowName = Common.RemoveSpecialCharsInShowName(ShowName).Replace("ʻ", "");
 
             if (showJson["type"] is not null) TvmType = showJson["type"]!.ToString();
 
@@ -319,7 +319,7 @@ public class Show : IDisposable
                 ShowName        = showRec.ShowName;
                 ShowStatus      = showRec.ShowStatus;
                 PremiereDate    = showRec.PremiereDate.ToString();
-                CleanedShowName = showRec.CleanedShowName.Replace("'", "");
+                CleanedShowName = showRec.CleanedShowName.Replace("ʻ", "");
                 UpdateDate      = showRec.UpdateDate.ToString();
                 if (AltShowName == "" && ShowName.Contains(":")) AltShowName = ShowName.Replace(":", "");
             }

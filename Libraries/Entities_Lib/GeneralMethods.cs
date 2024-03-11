@@ -130,7 +130,7 @@ public static class GeneralMethods
             var found  = new List<int>();
             showName    = showName.Replace(" ", " ");
             var altShowName     = showName;
-            var cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
+            var cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName)).Replace("ʻ", "");
 
             if (altShowName == "") altShowName = showName;
 

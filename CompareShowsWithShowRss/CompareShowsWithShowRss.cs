@@ -90,7 +90,7 @@ internal static class CompareShowsWithShowRss
         {
             if (string.IsNullOrEmpty(rssShowName) || string.IsNullOrWhiteSpace(rssShowName)) continue;
             var compareShowName        = rssShowName.Replace("&amp;", "&").Replace("&#039;", "'");
-            var compareCleanedShowName = Common.RemoveSpecialCharsInShowName(rssShowName);
+            var compareCleanedShowName = Common.RemoveSpecialCharsInShowName(rssShowName).Replace("ʻ", "");
 
             var showRec = db.Shows.Where(s => (s.ShowName        == compareShowName         ||
                                                s.CleanedShowName == compareCleanedShowName  ||
