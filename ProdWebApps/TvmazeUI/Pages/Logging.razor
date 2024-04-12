@@ -36,8 +36,7 @@
 
                 foreach (var include in splitIncludes)
                 {
-                    if (include != "")
-                        includeStrings.Add(include);
+                    if (include != "") includeStrings.Add(include);
                 }
 
                 logsTemp = logsTemp.Where(log => includeStrings.Any(includeString => log.Program.Contains(includeString, StringComparison.OrdinalIgnoreCase) || log.Function.Contains(includeString, StringComparison.OrdinalIgnoreCase) || log.Message.Contains(includeString, StringComparison.OrdinalIgnoreCase))).ToList();
@@ -107,10 +106,7 @@
         ResetData();
     }
 
-    void SetToAllDay()
-    {
-        _fromDate = DateTime.Now.Date;
-    }
+    void SetToAllDay() { _fromDate = DateTime.Now.Date; }
 
     void ResetAll()
     {

@@ -1,7 +1,5 @@
 ﻿using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
 
@@ -13,7 +11,7 @@ public class WebShows
 
     public List<ShowsInfo> GetShowsByTvmStatus(string tvmStatus)
     {
-        using MariaDb         mdbShows = new(AppInfo);
+        using MariaDb   mdbShows = new(AppInfo);
         List<ShowsInfo> newShows = new();
         var             sql      = $"select * from Shows where `TvmStatus` = '{tvmStatus}' order by `TvmShowId` desc";
         var             rdr      = mdbShows.ExecQuery(sql);
@@ -41,7 +39,7 @@ public class WebShows
 
     public List<ShowsInfo> FindShows(string? showName)
     {
-        using MariaDb         mdbShows = new(AppInfo);
+        using MariaDb   mdbShows = new(AppInfo);
         List<ShowsInfo> newShows = new();
         showName = showName?.Replace("'", "''");
         var sql = $"select * from Shows where `ShowName` like '%{showName}%' or `AltShowName` like '%{showName}%' order by `TvmShowId` desc limit 150";
@@ -83,8 +81,8 @@ public class WebShows
     public bool SkipShow(int showId)
     {
         using MariaDb mdbShows   = new(AppInfo);
-        var     sql        = $"update Shows set `TvmStatus` = 'Skipping', `Finder` = 'Skip', `UpdateDate` = '2200-01-01' Where `TvmShowId` = {showId}";
-        var     resultRows = mdbShows.ExecNonQuery(sql);
+        var           sql        = $"update Shows set `TvmStatus` = 'Skipping', `Finder` = 'Skip', `UpdateDate` = '2200-01-01' Where `TvmShowId` = {showId}";
+        var           resultRows = mdbShows.ExecNonQuery(sql);
 
         mdbShows.Close();
 
@@ -94,11 +92,10 @@ public class WebShows
     public bool SetTvmStatusShow(int showId, string newStatus)
     {
         using MariaDb mdbShows   = new(AppInfo);
-        var     sql        = $"update Shows set `TvmStatus` = '{newStatus}' where `TvmShowId` = {showId}";
-        var     resultRows = mdbShows.ExecNonQuery(sql);
+        var           sql        = $"update Shows set `TvmStatus` = '{newStatus}' where `TvmShowId` = {showId}";
+        var           resultRows = mdbShows.ExecNonQuery(sql);
 
-        if (resultRows > 0)
-            return true;
+        if (resultRows > 0) return true;
 
         mdbShows.Close();
 
@@ -107,8 +104,8 @@ public class WebShows
 
     public bool SetMtAndAsnShow(int showId, string mediaType, string altShowName)
     {
-        using var db       = new TvMaze();
-        var show = db.Shows.FirstOrDefault(s => s.TvmShowId == showId);
+        using var db   = new TvMaze();
+        var       show = db.Shows.FirstOrDefault(s => s.TvmShowId == showId);
 
         if (show != null)
         {
