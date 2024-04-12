@@ -334,7 +334,7 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
-                <input class="col-sm-1 m-1" style="width: 50px"@bind="@_refreshShowId"/>
+                <input class="col-sm-1 m-1" style="width: 50px" @bind="@_refreshShowId"/>
                 <button class="btn btn-primary" @onclick="RefreshOneShow"><i class="bi bi-database-down"></i>&nbsp;One Show</button>
                 <button class="btn btn-warning" @onclick="RestartPlex"><i class="bi bi-sign-stop"></i>&nbsp;Restart Plex&nbsp;<i class="bi bi-skip-start"></i></button>
             </div>
@@ -359,7 +359,7 @@
     <h2>View the Logs</h2>
     <div class="row">
         <div class="col-md-12 mb-2">
-            <input class="col-sm-1 m-1" style="width: 50px"@bind="@_upToLevel"/>
+            <input class="col-sm-1 m-1" style="width: 50px" @bind="@_upToLevel"/>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Update Followed")'><i class="bi bi-binoculars"></i>&nbsp;Followed</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Update Plex Acquired")'><i class="bi bi-binoculars"></i>&nbsp;Acquired</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Update Plex Watched")'><i class="bi bi-binoculars"></i>&nbsp;Watched</button>

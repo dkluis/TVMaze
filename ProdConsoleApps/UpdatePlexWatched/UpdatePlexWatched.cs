@@ -23,7 +23,7 @@ namespace UpdatePlexWatched;
 ///     2. Figures out from the Plex ShowName, season and episode numbers what TvmShowId and TvmEpisodeId it is in Tvmaze
 ///     Local
 ///     3. Updates Tvmaze Local and Tvmaze Web with the Watched status and the date
-///     a. Adds a record in Tvmaze Local to track if an episode is already updated
+///         a. Adds a record in Tvmaze Local to track if an episode is already updated
 ///     4. Delete media from Plex if Auto Delete is set for that Show
 /// </summary>
 internal static class UpdatePlexWatched
