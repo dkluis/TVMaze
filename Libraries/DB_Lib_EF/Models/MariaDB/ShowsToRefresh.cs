@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DB_Lib_EF.Models.MariaDB;
 
-namespace DB_Lib_EF.Models.MariaDB;
-
-public partial class ShowsToRefresh
+public class ShowsToRefresh
 {
     public int TvmShowId { get; set; }
 

@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-
 using CodeHollow.FeedReader;
-
 using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-
 using Entities_Lib;
 
 namespace RefreshShowRssFeed;
@@ -20,7 +15,7 @@ internal static class RefreshShowRssFeed
     private static void Main()
     {
         const string thisProgram = "Refresh ShowRss Feed";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         LogModel.Start(thisProgram);
 
         Feed result = new();
@@ -30,7 +25,7 @@ internal static class RefreshShowRssFeed
             var showRssFeed = FeedReader.ReadAsync("http://showrss.info/user/2202.rss?magnets=true&namespaces=true&name=null&quality=null&re=null");
             showRssFeed.Wait();
             result = showRssFeed.Result;
-            LogModel.Record(thisProgram, "Main", $"Received {result.Items.Count} from the RssShow feed", 1);
+            LogModel.Record(thisProgram, "Main", $"Received {result.Items.Count} from the RssShow feed");
         }
         catch (Exception ex)
         {
@@ -55,10 +50,7 @@ internal static class RefreshShowRssFeed
 
             var showInfo = show.Title.Replace(" ", ".");
 
-            if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack"))
-            {
-                LogModel.Record(thisProgram, "Main", $"Found Repack or Proper Version: {show.Title}", 1);
-            }
+            if (show.Title.ToLower().Contains("proper") || show.Title.ToLower().Contains("repack")) LogModel.Record(thisProgram, "Main", $"Found Repack or Proper Version: {show.Title}");
 
             var foundInfo = GeneralMethods.FindShowEpisodeInfo(thisProgram, showInfo);
 
@@ -67,12 +59,14 @@ internal static class RefreshShowRssFeed
                 LogModel.Record(thisProgram, "Main", $"Show Episode not found: TvmShowId: {foundInfo.TvmShowId} - {foundInfo.Message}", 3);
 
                 continue;
-            } else if (foundInfo.Message.Contains("Found via") && foundInfo.IsWatched && foundInfo.IsSeason)
+            }
+            if (foundInfo.Message.Contains("Found via") && foundInfo.IsWatched && foundInfo.IsSeason)
             {
                 LogModel.Record(thisProgram, "Main", $"For whole Season and found via: {foundInfo.Message} and IsWatched: {foundInfo.IsWatched} ", 3);
 
                 continue;
-            } else if (foundInfo.IsWatched)
+            }
+            if (foundInfo.IsWatched)
             {
                 LogModel.Record(thisProgram, "Main", $"Show Episode already watched: {foundInfo.Message}", 3);
 
@@ -91,7 +85,7 @@ internal static class RefreshShowRssFeed
                 acquireMediaScript.WaitForExit();
             }
 
-            LogModel.Record(thisProgram, "Main", $"Processing magnet for show: {show.Title}", 1);
+            LogModel.Record(thisProgram, "Main", $"Processing magnet for show: {show.Title}");
 
             using var db = new TvMaze();
 
@@ -103,7 +97,7 @@ internal static class RefreshShowRssFeed
             db.SaveChanges();
         }
 
-        LogModel.Record(thisProgram, "Main", $"Processed: {idx} ShowRss Feed records", 1);
+        LogModel.Record(thisProgram, "Main", $"Processed: {idx} ShowRss Feed records");
         LogModel.Stop(thisProgram);
     }
 
@@ -113,12 +107,8 @@ internal static class RefreshShowRssFeed
         var       result = db.ShowRssFeeds.SingleOrDefault(s => s.ShowName == showName);
 
         if (result != null)
-        {
             if (result.Processed.HasValue)
-            {
                 return result.Processed.Value;
-            }
-        }
 
         return false;
     }

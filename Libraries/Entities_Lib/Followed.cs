@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
 
 namespace Entities_Lib;
@@ -12,7 +9,7 @@ namespace Entities_Lib;
 public class Followed
 {
     private readonly MariaDb _mdb;
-    private          AppInfo _appInfo;
+    private readonly AppInfo _appInfo;
     public           string? Finder;
     public           int     IdInd = 0;
     public           bool    InDb;

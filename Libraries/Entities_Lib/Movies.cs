@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-
 using Common_Lib;
-
 using DB_Lib;
 
 namespace Entities_Lib;
@@ -27,10 +25,7 @@ public class Movies : IDisposable
         //_log = appInfo.TxtFile;
     }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() { GC.SuppressFinalize(this); }
 
     public bool DbInsert()
     {
@@ -80,10 +75,7 @@ public class MovieSql : IDisposable
         //_log = _appInfo.TxtFile;
     }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() { GC.SuppressFinalize(this); }
 
     /// <summary>
     ///     Retrieve all Movies unless the SingleMovie param is used
@@ -96,10 +88,9 @@ public class MovieSql : IDisposable
         const string sql       = "select * from Movies";
         var          sqlWhere  = "";
 
-        if (singleMovie != "")
-            sqlWhere = $" where Name = '{singleMovie}' or CleanedName = '{singleMovie}' or AltName = '{singleMovie}'";
-        const string sqlOrder = " order by SeriesName, MovieNumber, Name";
-        var          rdr      = _mDb.ExecQuery(sql + sqlWhere + sqlOrder);
+        if (singleMovie != "") sqlWhere = $" where Name = '{singleMovie}' or CleanedName = '{singleMovie}' or AltName = '{singleMovie}'";
+        const string sqlOrder           = " order by SeriesName, MovieNumber, Name";
+        var          rdr                = _mDb.ExecQuery(sql + sqlWhere + sqlOrder);
 
         while (rdr.Read())
         {

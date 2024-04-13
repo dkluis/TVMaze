@@ -26,24 +26,7 @@ public static partial class Common
 
     public static string RemoveSpecialCharsInShowName(string showName)
     {
-        showName = showName.Replace("\u2026", "")
-                           .Replace("..",     "")
-                           .Replace(".",      " ")
-                           .Replace(",",      "")
-                           .Replace("'",      "")
-                           .Replace("   ",    " ")
-                           .Replace("  ",     " ")
-                           .Replace("\"",     "")
-                           .Replace("/",      "")
-                           .Replace(":",      "")
-                           .Replace("?",      "")
-                           .Replace("|",      "")
-                           .Replace("&#039;", "")
-                           .Replace("&amp;",  "and")
-                           .Replace("&",      "and")
-                           .Replace("°",      "")
-                           .Trim()
-                           .ToLower();
+        showName = showName.Replace("\u2026", "").Replace("..", "").Replace(".", " ").Replace(",", "").Replace("'", "").Replace("   ", " ").Replace("  ", " ").Replace("\"", "").Replace("/", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("&#039;", "").Replace("&amp;", "and").Replace("&", "and").Replace("°", "").Trim().ToLower();
 
         return showName;
     }
@@ -63,15 +46,9 @@ public static partial class Common
         return wrappedCountry.Length == 2 ? wrappedCountry[0] : showName;
     }
 
-    public static string BuildSeasonEpisodeString(int seasNum, int epiNum)
-    {
-        return "s" + seasNum.ToString().PadLeft(2, '0') + "e" + epiNum.ToString().PadLeft(2, '0');
-    }
+    public static string BuildSeasonEpisodeString(int seasNum, int epiNum) { return "s" + seasNum.ToString().PadLeft(2, '0') + "e" + epiNum.ToString().PadLeft(2, '0'); }
 
-    public static string BuildSeasonOnly(int seasNum)
-    {
-        return "s" + seasNum.ToString().PadLeft(2, '0');
-    }
+    public static string BuildSeasonOnly(int seasNum) { return "s" + seasNum.ToString().PadLeft(2, '0'); }
 
     public static string? ConvertEpochToDate(int epoch)
     {
@@ -119,14 +96,11 @@ public static partial class Common
         return date;
     }
 
-    [GeneratedRegex("[(]2[0-2][0-3][0-9][)]", RegexOptions.IgnoreCase, "en-US")]
-    private static partial Regex WrappedYearRegex();
+    [GeneratedRegex("[(]2[0-2][0-3][0-9][)]", RegexOptions.IgnoreCase, "en-US")] private static partial Regex WrappedYearRegex();
 
-    [GeneratedRegex("2[0-2][0-3][0-9]", RegexOptions.IgnoreCase, "en-US")]
-    private static partial Regex PlainYearRegex();
+    [GeneratedRegex("2[0-2][0-3][0-9]", RegexOptions.IgnoreCase, "en-US")] private static partial Regex PlainYearRegex();
 
-    [GeneratedRegex("[(][a-z][a-z][)]", RegexOptions.IgnoreCase, "en-US")]
-    private static partial Regex WrappedCountryRegex();
+    [GeneratedRegex("[(][a-z][a-z][)]", RegexOptions.IgnoreCase, "en-US")] private static partial Regex WrappedCountryRegex();
 
     public class EnvInfo
     {

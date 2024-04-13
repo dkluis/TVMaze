@@ -89,10 +89,8 @@ public class TextFileHandler
         if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
         using StreamWriter file = new(_fullFilePath, append);
 
-        if (newline)
-            file.WriteLine(message);
-        else
-            file.Write(message);
+        if (newline) file.WriteLine(message);
+        else file.Write(message);
     }
 
     public void WriteNoHead(IEnumerable<string> messages, bool newline = true, bool append = true)
@@ -101,10 +99,8 @@ public class TextFileHandler
         using StreamWriter file = new(_fullFilePath, append);
 
         foreach (var msg in messages)
-            if (newline)
-                file.WriteLine(msg);
-            else
-                file.Write(msg);
+            if (newline) file.WriteLine(msg);
+            else file.Write(msg);
     }
 
     public List<string> ReturnLogContent()

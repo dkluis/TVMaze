@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DB_Lib_EF.Models.MariaDB;
 
-namespace DB_Lib_EF.Models.MariaDB;
-
-public partial class Episode
+public class Episode
 {
     public int Id { get; set; }
 

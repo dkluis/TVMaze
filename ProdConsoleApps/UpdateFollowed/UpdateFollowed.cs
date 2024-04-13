@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
-
 using Entities_Lib;
-
 using Web_Lib;
 
 namespace UpdateFollowed;
@@ -24,7 +19,7 @@ internal static class UpdateFollowed
     private static void Main()
     {
         const string thisProgram = "Update Followed";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         LogModel.Start(thisProgram);
 
         using WebApi tvmApi = new(appInfo);
@@ -32,17 +27,17 @@ internal static class UpdateFollowed
 
         if (tvmApi.IsTimedOut)
         {
-            LogModel.Record(thisProgram, "Main", "Getting an TimeOut twice on the Get FollowedShows call to TVMaze", 1);
+            LogModel.Record(thisProgram, "Main", "Getting an TimeOut twice on the Get FollowedShows call to TVMaze");
             LogModel.Stop(thisProgram);
             Environment.Exit(99);
         }
 
         var followedShowOnTvmaze = tvmApi.ConvertHttpToJArray(gfs);
-        LogModel.Record(thisProgram, "Main", $"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze", 1);
+        LogModel.Record(thisProgram, "Main", $"Found {followedShowOnTvmaze.Count} Followed Shows Tvmaze");
 
         CheckDb cdb     = new();
         var     records = CheckDb.FollowedCount(appInfo);
-        LogModel.Record(thisProgram, "Main", $"There are {records} records in Following Table", 1);
+        LogModel.Record(thisProgram, "Main", $"There are {records} records in Following Table");
 
         Show      theShow          = new(appInfo);
         var       processedIdx     = 0;
@@ -74,8 +69,7 @@ internal static class UpdateFollowed
             {
                 theShow.FillViaTvmaze(jtShow);
 
-                if (theShow.Finder != "Skip" && theShow.UpdateDate != "2200-01-01")
-                    theShow.TvmStatus                                                                      = "Following";
+                if (theShow.Finder      != "Skip" && theShow.UpdateDate != "2200-01-01") theShow.TvmStatus = "Following";
                 else if (theShow.Finder == "Skip" || theShow.UpdateDate == "2200-01-01") theShow.TvmStatus = "Skipping";
 
                 using MariaDb tsu  = new(appInfo);
@@ -87,10 +81,10 @@ internal static class UpdateFollowed
 
                     if (rows == 1)
                     {
-                        LogModel.Record(thisProgram, "Main", $"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 1);
+                        LogModel.Record(thisProgram, "Main", $"Updated the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
                     } else
                     {
-                        LogModel.Record(thisProgram, "Main", $"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}", 1);
+                        LogModel.Record(thisProgram, "Main", $"Failed to Insert the TvmShowUpdates table with {theShow.TvmUpdatedEpoch}");
 
                         continue;
                     }
@@ -138,10 +132,7 @@ internal static class UpdateFollowed
                     followed.Reset();
                     deletedIdx++;
                 }
-            else
-            {
-                LogModel.Record(thisProgram, "Main", $"Too Many Shows are flagged for deletion {toDelete.Count}", 1);
-            }
+            else LogModel.Record(thisProgram, "Main", $"Too Many Shows are flagged for deletion {toDelete.Count}");
 
             // LogModel.Record(thisProgram, "Main", $"Deleted {deletedIdx} Shows", 1);
         }
@@ -156,7 +147,7 @@ internal static class UpdateFollowed
             LogModel.Record(thisProgram, "Main", $"Reset {rdr[0]} to New ---> Should not occur ###################", 20);
         }
 
-        LogModel.Record(thisProgram, "Main", $"Numbers: Processed {processedIdx}, Added {addedIdx}, Updated {updatedIdx}, Deleted {deletedIdx}", 1);
+        LogModel.Record(thisProgram, "Main", $"Numbers: Processed {processedIdx}, Added {addedIdx}, Updated {updatedIdx}, Deleted {deletedIdx}");
         LogModel.Stop(thisProgram);
     }
 }

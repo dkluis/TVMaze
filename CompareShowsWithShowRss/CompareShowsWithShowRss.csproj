@@ -9,11 +9,11 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Libraries\DB_Lib_EF\DB_Lib_EF.csproj"/>
-        <ProjectReference Include="..\Libraries\Web_Lib\Web_Lib.csproj" />
+        <ProjectReference Include="..\Libraries\Web_Lib\Web_Lib.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.60"/>
     </ItemGroup>
 
 </Project>

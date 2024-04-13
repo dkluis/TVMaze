@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Microsoft.Data.Sqlite;
 using System.Data.SQLite;
 using System.Linq;
-
 using Common_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
 
@@ -16,15 +12,14 @@ public static class PlexSqlLite
 {
     public static List<PlexWatchedInfo> PlexWatched(AppInfo appInfo)
     {
-        var epochBase = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);;
-        var epoch     = (DateTime.UtcNow.Date.AddDays(-2) - epochBase).TotalSeconds;
+        var epochBase = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        ;
+        var epoch = (DateTime.UtcNow.Date.AddDays(-2) - epochBase).TotalSeconds;
 
-        var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
-                              $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.`viewed_at` >= {epoch} "                     +
-                              "and miv.account_id = 1 order by miv.`viewed_at` ";
+        var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " + $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.`viewed_at` >= {epoch} " + "and miv.account_id = 1 order by miv.`viewed_at` ";
 
-        var  watchedEpisodes = new List<PlexWatchedInfo>();
-        var                   showNames       = "";
+        var watchedEpisodes = new List<PlexWatchedInfo>();
+        var showNames       = "";
 
         using (var connection = new SQLiteConnection("Data Source=/media/psf/TVMazeLinux/Plex/Plex.db"))
         {
@@ -48,7 +43,7 @@ public static class PlexSqlLite
             }
         }
 
-        LogModel.Record("Update Plex Watched", "Sqlite", $"Found: {watchedEpisodes.Count} -> {showNames}", 1);
+        LogModel.Record("Update Plex Watched", "Sqlite", $"Found: {watchedEpisodes.Count} -> {showNames}");
 
         return watchedEpisodes;
 
@@ -83,10 +78,10 @@ public static class PlexSqlLite
 
 public class PlexWatchedInfo
 {
-    public int     Episode         = 999999;
-    public int     Season          = 999999;
     public string  CleanedShowName = "";
+    public int     Episode         = 999999;
     public bool    ProcessedToTvmaze;
+    public int     Season        = 999999;
     public string  SeasonEpisode = "";
     public string  ShowName      = "";
     public int     TvmEpisodeId;
@@ -97,8 +92,8 @@ public class PlexWatchedInfo
     public void Reset()
     {
         ShowName          = "";
-        Season           = 999999;
-        Episode          = 999999;
+        Season            = 999999;
+        Episode           = 999999;
         SeasonEpisode     = "";
         WatchedDate       = "";
         ProcessedToTvmaze = false;
@@ -111,8 +106,8 @@ public class PlexWatchedInfo
     public void Fill(string showName, int season, int episode, string watchedDate)
     {
         ShowName        = showName;
-        Season         = season;
-        Episode        = episode;
+        Season          = season;
+        Episode         = episode;
         WatchedDate     = watchedDate;
         UpdateDate      = DateTime.Now.ToString("yyyy-MM-dd");
         SeasonEpisode   = Common.BuildSeasonEpisodeString(season, episode);
@@ -121,16 +116,14 @@ public class PlexWatchedInfo
 
     public bool DbInsert(AppInfo appInfo)
     {
-        var success = false;
+        var       success = false;
         using var db      = new TvMaze();
-        var result  = db.PlexWatchedEpisodes.SingleOrDefault(p => p.TvmShowId == TvmShowId && p.TvmEpisodeId == TvmEpisodeId);
+        var       result  = db.PlexWatchedEpisodes.SingleOrDefault(p => p.TvmShowId == TvmShowId && p.TvmEpisodeId == TvmEpisodeId);
 
         if (result != null) return success;
-        using MariaDb mDbW    = new(appInfo);
+        using MariaDb mDbW = new(appInfo);
 
-        var sql = $"insert into `PlexWatchedEpisodes` values (0, {TvmShowId}, {TvmEpisodeId}, "  +
-                  $"'{ShowName.Replace("'", "''")}', {Season}, {Episode}, '{SeasonEpisode}', " +
-                  $"'{WatchedDate}', 0, '{DateTime.Now:yyyy-MM-dd}' );";
+        var sql                = $"insert into `PlexWatchedEpisodes` values (0, {TvmShowId}, {TvmEpisodeId}, " + $"'{ShowName.Replace("'", "''")}', {Season}, {Episode}, '{SeasonEpisode}', " + $"'{WatchedDate}', 0, '{DateTime.Now:yyyy-MM-dd}' );";
         var rows               = mDbW.ExecNonQuery(sql, true);
         if (rows == 1) success = true;
 

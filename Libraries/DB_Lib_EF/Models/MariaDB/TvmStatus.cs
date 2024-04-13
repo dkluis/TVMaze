@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DB_Lib_EF.Models.MariaDB;
 
-namespace DB_Lib_EF.Models.MariaDB;
-
-public partial class TvmStatus
+public class TvmStatus
 {
     public string TvmStatus1 { get; set; } = null!;
 

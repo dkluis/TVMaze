@@ -1,10 +1,6 @@
 ﻿using Common_Lib;
-
-using DB_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-
 using Entities_Lib;
 
 namespace RefreshShows;
@@ -14,7 +10,7 @@ internal static class RefreshShows
     private static void Main()
     {
         const string thisProgram = "Refresh Shows";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         LogModel.Start(thisProgram);
 
         try
@@ -28,30 +24,24 @@ internal static class RefreshShows
                                       .OrderByDescending(s => s.TvmShowId)
                                       .ToList();
 
-                if (skippingShows != null)
+                LogModel.Record(thisProgram, "Main", $"Starting Skipping Shows: {skippingShows.Count}");
+
+                foreach (var rec in skippingShows)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Starting Skipping Shows: {skippingShows.Count}");
-
-                    foreach (var rec in skippingShows)
-                    {
-                        using ShowAndEpisodes sae = new(appInfo);
-                        sae.Refresh(rec.TvmShowId);
-                        LogModel.Record(thisProgram, "Main", $"Refreshing 'Skipping' show {rec.ShowName}, {rec.TvmShowId}", 4);
-                    }
-
-                    LogModel.Record(thisProgram, "Main", $"Finished Skipping Shows: {skippingShows.Count}");
+                    using ShowAndEpisodes sae = new(appInfo);
+                    sae.Refresh(rec.TvmShowId);
+                    LogModel.Record(thisProgram, "Main", $"Refreshing 'Skipping' show {rec.ShowName}, {rec.TvmShowId}", 4);
                 }
+
+                LogModel.Record(thisProgram, "Main", $"Finished Skipping Shows: {skippingShows.Count}");
             }
 
             // Get all Shows to refresh today
             var response = ViewEntities.GetShowsToRefresh();
 
-            if (response != null && !response.WasSuccess)
-            {
-                LogModel.Record(thisProgram, "Main", $"Error Occurred Getting the base Shows To Refresh Information: {response.Message}", 6);
-            }
+            if (!response.WasSuccess) LogModel.Record(thisProgram, "Main", $"Error Occurred Getting the base Shows To Refresh Information: {response.Message}", 6);
 
-            var allShowsToRefreshInfo = (List<ViewEntities.ShowToRefresh>) response!.ResponseObject!;
+            var allShowsToRefreshInfo = (List<ViewEntities.ShowToRefresh>) response.ResponseObject!;
 
             //LogModel.Record(thisProgram, "Main", $"Found {allShowsToRefreshInfo.Count} total shows to refresh");
 
@@ -77,9 +67,9 @@ internal static class RefreshShows
             }
 
             // Refresh all shows with Orphaned Episodes
-            response = ViewEntities.GetEpisodesFullInfo(applyOrphanedFilter: true);
+            response = ViewEntities.GetEpisodesFullInfo(true);
 
-            if (response != null && response.WasSuccess && response.ResponseObject != null)
+            if (response is {WasSuccess: true, ResponseObject: not null})
             {
                 var showWithOrphanedEpisode = (List<int>) response.ResponseObject;
                 LogModel.Record(thisProgram, "Main", $"Found {showWithOrphanedEpisode.Count} shows with orphaned episodes");
@@ -95,7 +85,7 @@ internal static class RefreshShows
             // Get all Shows that will need to be acquired today to refresh
             response = ViewEntities.GetEpisodesToAcquire();
 
-            if (response != null && response.WasSuccess && response.ResponseObject != null)
+            if (response is {WasSuccess: true, ResponseObject: not null})
             {
                 var episodesToAcquire = (List<ViewEntities.ShowEpisode>) response.ResponseObject;
                 var showsToAcquire    = episodesToAcquire.OrderBy(e => e.TvmShowId).DistinctBy(e => e.TvmShowId).ToList();

@@ -1,7 +1,5 @@
 ﻿using System;
-
 using Common_Lib;
-
 using MySqlConnector;
 
 namespace DB_Lib.Tvmaze;
@@ -11,10 +9,7 @@ public class TvmCommonSql : IDisposable
     private readonly MariaDb          _db;
     private          MySqlDataReader? _rdr;
 
-    public TvmCommonSql(AppInfo appInfo)
-    {
-        _db = new MariaDb(appInfo);
-    }
+    public TvmCommonSql(AppInfo appInfo) { _db = new MariaDb(appInfo); }
 
     public void Dispose()
     {

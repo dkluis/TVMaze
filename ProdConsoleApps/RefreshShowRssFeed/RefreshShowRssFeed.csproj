@@ -13,7 +13,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj"/>
         <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj"/>
-        <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj" />
+        <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <None Remove="CodeHollow.FeedReader"/>

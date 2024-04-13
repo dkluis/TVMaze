@@ -2,20 +2,13 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-
 using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-
 using DB_Lib.Tvmaze;
-
 using Entities_Lib;
-
 using Web_Lib;
-
 using Show = Entities_Lib.Show;
 
 namespace UpdateShowEpochs;
@@ -37,7 +30,7 @@ internal static class UpdateShowEpochs
     private static void Main()
     {
         const string thisProgram = "Update Show Epochs";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         LogModel.Start(thisProgram);
 
         using TvmCommonSql ge                = new(appInfo);
@@ -67,7 +60,7 @@ internal static class UpdateShowEpochs
                          RecordedDate = DateTime.Now,
                          Program      = thisProgram,
                          Function     = "Main",
-                         Message      = $"Failed to retrieve updates from Tvmaze",
+                         Message      = "Failed to retrieve updates from Tvmaze",
                          Level        = 1,
                      };
             LogModel.Record(logRec);
@@ -142,10 +135,7 @@ internal static class UpdateShowEpochs
                     {
                         if (showId > highestShowId) highestShowId = showId;
 
-                        if (!tvmShow.IsForReview)
-                        {
-                            continue;
-                        }
+                        if (!tvmShow.IsForReview) continue;
                     } else
                     {
                         logRec = new Log
@@ -161,10 +151,7 @@ internal static class UpdateShowEpochs
                         continue;
                     }
 
-                    if (!IsEnglishText(tvmShow.ShowName))
-                    {
-                        LogModel.Record(thisProgram, "Main", $"Should possible be rejected {tvmShow.ShowName} contains non-English characters", 20);
-                    }
+                    if (!IsEnglishText(tvmShow.ShowName)) LogModel.Record(thisProgram, "Main", $"Should possible be rejected {tvmShow.ShowName} contains non-English characters", 20);
 
                     tvmShow.TvmStatus  = "New";
                     tvmShow.IsFollowed = false;

@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json.Serialization;
-
 using static Web_Lib.DTOs.TvmazeDto;
 
 namespace Web_Lib.DTOs;

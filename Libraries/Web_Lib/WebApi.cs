@@ -6,14 +6,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-
 using Common_Lib;
-
 using DB_Lib_EF.Entities;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using Log = DB_Lib_EF.Models.MariaDB.Log;
 
 namespace Web_Lib;
@@ -22,14 +18,14 @@ public class WebApi : IDisposable
 {
     private const    string              TvmazeUrl     = "https://api.tvmaze.com/";
     private const    string              TvmazeUserUrl = "https://api.tvmaze.com/v1/user/";
+    private const    string              ThisFunction  = "WebApi";
     private readonly HttpClient          _client       = new();
     private readonly string              _tvmazeSecurity;
     private          HttpResponseMessage _httpResponse = new();
+    private readonly string              _thisProgram;
     private          bool                _tvmazeUrlInitialized;
     private          bool                _tvmazeUserUrlInitialized;
     public           bool                IsTimedOut;
-    private          string              _thisProgram;
-    private const    string              ThisFunction = "WebApi";
 
     public WebApi(AppInfo appInfo)
     {
@@ -39,10 +35,7 @@ public class WebApi : IDisposable
         _tvmazeSecurity = appInfo.TvmazeToken;
     }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() { GC.SuppressFinalize(this); }
 
     public JObject ConvertHttpToJObject(HttpResponseMessage message)
     {
@@ -96,7 +89,7 @@ public class WebApi : IDisposable
 
         execTime.Stop();
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -108,7 +101,7 @@ public class WebApi : IDisposable
 
         if (IsTimedOut)
         {
-            logRec = new Log()
+            logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -120,9 +113,10 @@ public class WebApi : IDisposable
             _httpResponse = new HttpResponseMessage();
 
             return;
-        } else if (!_httpResponse.IsSuccessStatusCode)
+        }
+        if (!_httpResponse.IsSuccessStatusCode)
         {
-            logRec = new Log()
+            logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -134,7 +128,7 @@ public class WebApi : IDisposable
             _httpResponse = new HttpResponseMessage();
         }
 
-        logRec = new Log()
+        logRec = new Log
                  {
                      RecordedDate = DateTime.Now,
                      Program      = _thisProgram,
@@ -154,7 +148,7 @@ public class WebApi : IDisposable
         }
         catch (Exception e)
         {
-            var logRec = new Log()
+            var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
@@ -166,7 +160,7 @@ public class WebApi : IDisposable
 
             if (e.Message.Contains(" seconds elapsing") || e.Message.Contains("Operation timed out"))
             {
-                logRec = new Log()
+                logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
@@ -182,7 +176,7 @@ public class WebApi : IDisposable
                 }
                 catch (Exception ee)
                 {
-                    logRec = new Log()
+                    logRec = new Log
                              {
                                  RecordedDate = DateTime.Now,
                                  Program      = _thisProgram,
@@ -302,7 +296,7 @@ public class WebApi : IDisposable
         var api = $"shows/{showid}";
         PerformWaitTvmApi(api);
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -321,7 +315,7 @@ public class WebApi : IDisposable
         var api = $"shows/{showid}/episodes";
         PerformWaitTvmApi(api);
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -340,7 +334,7 @@ public class WebApi : IDisposable
         var api = "episodes";
         PerformWaitTvmApi(api);
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -360,7 +354,7 @@ public class WebApi : IDisposable
         var api = $"updates/shows?since={period}";
         PerformWaitTvmApi(api);
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -381,7 +375,7 @@ public class WebApi : IDisposable
         var api = "follows/shows";
         PerformWaitTvmApi(api);
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -401,7 +395,7 @@ public class WebApi : IDisposable
         var api = $"follows/shows/{showid}";
         PerformWaitTvmApi(api);
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -424,7 +418,7 @@ public class WebApi : IDisposable
         SetTvmaze();
         var api = $"episodes/{episodeId}?embed=show";
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -443,7 +437,7 @@ public class WebApi : IDisposable
         SetTvmazeUser();
         var api = $"episodes/{episodeId}";
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -467,7 +461,7 @@ public class WebApi : IDisposable
         var api                            = $"episodes/{episodeId}";
         if (watchedDate == "") watchedDate = DateTime.Now.ToString("yyyy-MM-dd");
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -487,7 +481,7 @@ public class WebApi : IDisposable
         var api                            = $"episodes/{episodeId}";
         if (acquireDate == "") acquireDate = DateTime.Now.ToString("yyyy-MM-dd");
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -506,7 +500,7 @@ public class WebApi : IDisposable
         var api                      = $"episodes/{episodeId}";
         if (skipDate == "") skipDate = DateTime.Now.ToString("yyyy-MM-dd");
 
-        var logRec = new Log()
+        var logRec = new Log
                      {
                          RecordedDate = DateTime.Now,
                          Program      = _thisProgram,
@@ -531,8 +525,7 @@ public class WebApi : IDisposable
     #endregion
 }
 
-[SuppressMessage("ReSharper", "NotAccessedField.Global")]
-public class EpisodeMarking
+[SuppressMessage("ReSharper", "NotAccessedField.Global")] public class EpisodeMarking
 {
     public int episode_id;
     public int marked_at;
@@ -567,8 +560,5 @@ public class EpisodeMarking
         }
     }
 
-    public string GetJson()
-    {
-        return JsonConvert.SerializeObject(this);
-    }
+    public string GetJson() { return JsonConvert.SerializeObject(this); }
 }

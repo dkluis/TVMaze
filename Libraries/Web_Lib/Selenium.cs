@@ -1,18 +1,23 @@
 using System;
-
 using HtmlAgilityPack;
-
 using OpenQA.Selenium.Chrome;
 
 namespace Web_Lib;
 
 public class Selenium : IDisposable
 {
+    public Selenium(string program)
+    {
+        Service.HideCommandPromptWindow              = true;
+        Service.SuppressInitialDiagnosticInformation = true;
+        ThisProgram                                  = program;
+    }
+
     private string              ThisProgram   { get; set; }
-    public  HtmlDocument?       HtmlDoc       { get; set; } = new HtmlDocument();
-    private ChromeDriverService Service       { get; set; } = ChromeDriverService.CreateDefaultService();
-    public  ChromeDriver?       ChromeDriver  { get; set; } = null;
-    private ChromeOptions       ChromeOptions { get; set; } = new ChromeOptions();
+    public  HtmlDocument?       HtmlDoc       { get; set; } = new();
+    private ChromeDriverService Service       { get; }      = ChromeDriverService.CreateDefaultService();
+    public  ChromeDriver?       ChromeDriver  { get; set; }
+    private ChromeOptions       ChromeOptions { get; } = new();
     private bool                Started       { get; set; }
 
     public void Dispose()
@@ -25,13 +30,6 @@ public class Selenium : IDisposable
         }
 
         GC.SuppressFinalize(this);
-    }
-
-    public Selenium(string program)
-    {
-        Service.HideCommandPromptWindow              = true;
-        Service.SuppressInitialDiagnosticInformation = true;
-        ThisProgram                                 = program;
     }
 
     public void Start()
@@ -51,7 +49,7 @@ public class Selenium : IDisposable
         {
             ChromeDriver!.Quit();
             ChromeDriver = null;
-            Started     = false;
+            Started      = false;
         }
     }
 

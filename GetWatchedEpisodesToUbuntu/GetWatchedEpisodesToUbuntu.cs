@@ -6,33 +6,23 @@ internal static class UpdatePlexWatchedMacOs
 {
     private static void Main()
     {
-        var    watchedEpisodes = SqlLiteMacOs.PlexWatched();
-        string json;
-        var    list = new List<string>();
+        var watchedEpisodes = SqlLiteMacOs.PlexWatched();
+        var list            = new List<string>();
 
         foreach (var episode in watchedEpisodes)
         {
             var info = new
                        {
-                           ShowName          = episode.ShowName,
-                           SeasonEpisode     = episode.SeasonEpisode,
-                           CleanedEpisode    = episode.CleanedShowName,
-                           UpdateDate        = episode.UpdateDate,
-                           WatchedDate       = episode.WatchedDate,
-                           TvmEpisodeId      = episode.TvmEpisodeId,
-                           TvmShowId         = episode.TvmShowId,
-                           ProcessedToTvmaze = episode.ProcessedToTvmaze,
+                           episode.ShowName, episode.SeasonEpisode,
+                           CleanedEpisode = episode.CleanedShowName, episode.UpdateDate, episode.WatchedDate, episode.TvmEpisodeId, episode.TvmShowId, episode.ProcessedToTvmaze,
                        };
-            json = JsonSerializer.Serialize(info);
+            var json = JsonSerializer.Serialize(info);
             list.Add(json);
         }
 
-        using StreamWriter file = new("/Users/dick/TVMazeLinux/Inputs/WatchedEpisodes.log", append: true);
+        using StreamWriter file = new("/Users/dick/TVMazeLinux/Inputs/WatchedEpisodes.log", true);
 
-        foreach (var entry in list)
-        {
-            file.WriteLine(entry);
-        }
+        foreach (var entry in list) file.WriteLine(entry);
 
         file.Close();
     }

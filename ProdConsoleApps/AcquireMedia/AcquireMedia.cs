@@ -1,14 +1,9 @@
 ﻿using System.Diagnostics;
-
 using Common_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-
 using OpenQA.Selenium.Chrome;
-
 using Web_Lib;
-
 using Episode = Entities_Lib.Episode;
 
 namespace AcquireMedia;
@@ -18,7 +13,7 @@ internal static class Program
     private static void Main()
     {
         const string thisProgram = "Acquire Media";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         LogModel.Start(thisProgram);
 
         try
@@ -36,7 +31,7 @@ internal static class Program
 
                 foreach (var rec in episodesToBeAcquired)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Processing: {rec.ShowName}, {rec.SeasonEpisode}", 1);
+                    LogModel.Record(thisProgram, "Main", $"Processing: {rec.ShowName}, {rec.SeasonEpisode}");
                     LogModel.Record(thisProgram, "Main", "Starting Chrome Selenium Driver", 5);
                     var options = new ChromeOptions();
                     options.AddArgument("--headless");
@@ -57,11 +52,11 @@ internal static class Program
 
                     if (magnet == "")
                     {
-                        LogModel.Record(thisProgram, "Main", $"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}", 1);
+                        LogModel.Record(thisProgram, "Main", $"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}");
 
                         if (isSeleniumStarted)
                         {
-                            LogModel.Record(thisProgram, "Main", $"Quiting Chrome Selenium Driver", 5);
+                            LogModel.Record(thisProgram, "Main", "Quiting Chrome Selenium Driver", 5);
                             browserDriver.Quit();
                         }
 
@@ -79,8 +74,8 @@ internal static class Program
                         acquireMediaScript.StartInfo.RedirectStandardOutput = false;
                         var result = acquireMediaScript.Start();
                         acquireMediaScript.WaitForExit();
-                        LogModel.Record(thisProgram, "Main", $"Transferred magnet to Transmission {magnet}",                    2);
-                        LogModel.Record(thisProgram, "Main", $"Transmission is loading {rec.SeasonEpisode} for {rec.ShowName}", 1);
+                        LogModel.Record(thisProgram, "Main", $"Transferred magnet to Transmission {magnet}", 2);
+                        LogModel.Record(thisProgram, "Main", $"Transmission is loading {rec.SeasonEpisode} for {rec.ShowName}");
                     }
 
                     if (!isSeason)
@@ -112,14 +107,14 @@ internal static class Program
 
                     if (isSeleniumStarted)
                     {
-                        LogModel.Record(thisProgram, "Main", $"Quiting Chrome Selenium Driver", 5);
+                        LogModel.Record(thisProgram, "Main", "Quiting Chrome Selenium Driver", 5);
                         isSeleniumStarted = false;
                         browserDriver.Quit();
                     }
                 }
             } else
             {
-                LogModel.Record(thisProgram, "Main", $"Nothing was returned from ViewItem.EpisodesToAcquire", 1);
+                LogModel.Record(thisProgram, "Main", "Nothing was returned from ViewItem.EpisodesToAcquire");
             }
         }
         catch (Exception e)

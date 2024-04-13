@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using Common_Lib;
-
 using DB_Lib_EF.Entities;
-
 using HtmlAgilityPack;
-
 using OpenQA.Selenium.Chrome;
 
 namespace Web_Lib;
@@ -18,15 +14,9 @@ public class WebScrape : IDisposable
     private readonly AppInfo      _appInfo;
     public           List<string> Magnets = new();
 
-    public WebScrape(AppInfo info)
-    {
-        _appInfo = info;
-    }
+    public WebScrape(AppInfo info) { _appInfo = info; }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() { GC.SuppressFinalize(this); }
 
     public List<string> GetShowRssInfo()
     {
@@ -68,10 +58,7 @@ public class WebScrape : IDisposable
             browserDriver.Navigate().GoToUrl(url);
             html = browserDriver.PageSource;
 
-            if (string.IsNullOrEmpty(html))
-            {
-                LogModel.Record(_appInfo.Program, "WebScrape - Eztv", "No HTML was returned", 5);
-            }
+            if (string.IsNullOrEmpty(html)) LogModel.Record(_appInfo.Program, "WebScrape - Eztv", "No HTML was returned", 5);
         }
         catch (Exception e)
         {
@@ -81,9 +68,7 @@ public class WebScrape : IDisposable
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
 
-        var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
-                                 .Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
-                                 .ToList();
+        var magnetLinks = htmlDoc.DocumentNode.Descendants("a").Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase)).ToList();
 
         foreach (var magnetInfo in magnetLinks)
         {
@@ -106,10 +91,7 @@ public class WebScrape : IDisposable
 
         LogModel.Record(_appInfo.Program, "WebScrape - Eztv", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
-        if (foundMagnets == 0)
-        {
-            return;
-        }
+        if (foundMagnets == 0) return;
 
         Magnets.Sort();
         Magnets.Reverse();
@@ -160,8 +142,7 @@ public class WebScrape : IDisposable
         }
 
         foreach (var node in table)
-            if (node.Attributes["href"].Value.ToLower().Contains("magnet:") &&
-                (node.Attributes["href"].Value.ToLower().Contains(compareWithMagnet) || node.Attributes["href"].Value.ToLower().Contains(compareWithMagnet2)))
+            if (node.Attributes["href"].Value.ToLower().Contains("magnet:") && (node.Attributes["href"].Value.ToLower().Contains(compareWithMagnet) || node.Attributes["href"].Value.ToLower().Contains(compareWithMagnet2)))
             {
                 var priority = PrioritizeMagnet(node.Attributes["href"].Value, "MagnetDL");
 
@@ -176,10 +157,7 @@ public class WebScrape : IDisposable
 
         LogModel.Record(_appInfo.Program, "WebScrape - MagnetDL", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
-        if (foundMagnets == 0)
-        {
-            return;
-        }
+        if (foundMagnets == 0) return;
 
         Magnets.Sort();
         Magnets.Reverse();
@@ -218,9 +196,7 @@ public class WebScrape : IDisposable
 
             //htmlDoc.Load(@"/Users/dick/Desktop/test.html");
 
-            var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
-                                     .Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
-                                     .ToList();
+            var magnetLinks = htmlDoc.DocumentNode.Descendants("a").Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase)).ToList();
 
             if (magnetLinks == null) return;
 
@@ -243,10 +219,7 @@ public class WebScrape : IDisposable
                 }
             }
 
-            if (foundMagnets == 0)
-            {
-                return;
-            }
+            if (foundMagnets == 0) return;
 
             Magnets.Sort();
             Magnets.Reverse();
@@ -284,10 +257,7 @@ public class WebScrape : IDisposable
             browserDriver.Navigate().GoToUrl(url);
             html = browserDriver.PageSource;
 
-            if (string.IsNullOrEmpty(html))
-            {
-                LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", "No HTML was returned", 6);
-            }
+            if (string.IsNullOrEmpty(html)) LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", "No HTML was returned", 6);
         }
         catch (Exception e)
         {
@@ -297,12 +267,9 @@ public class WebScrape : IDisposable
         var htmlDoc = new HtmlDocument();
         htmlDoc.LoadHtml(html);
 
-        if (_appInfo.IsDebugOn)
-            LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Debug {html}", 10);
+        if (_appInfo.IsDebugOn) LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Debug {html}", 10);
 
-        var magnetLinks = htmlDoc.DocumentNode.Descendants("a")
-                                 .Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase))
-                                 .ToList();
+        var magnetLinks = htmlDoc.DocumentNode.Descendants("a").Where(a => a.Attributes["href"] != null && a.Attributes["href"].Value.StartsWith("magnet", StringComparison.OrdinalIgnoreCase)).ToList();
 
         foreach (var magnetInfo in magnetLinks)
         {
@@ -325,10 +292,7 @@ public class WebScrape : IDisposable
 
         LogModel.Record(_appInfo.Program, "WebScrape - PirateBay", $"Number of magnets for {showName} {seasEpi} found: {foundMagnets}", 2);
 
-        if (foundMagnets == 0)
-        {
-            return;
-        }
+        if (foundMagnets == 0) return;
 
         Magnets.Sort();
         Magnets.Reverse();
@@ -357,42 +321,30 @@ public class WebScrape : IDisposable
                        };
 
         // Codex values
-        if (magnet.ToLower().Contains("x264") || magnet.ToLower().Contains("h264") || magnet.ToLower().Contains("x.264") || magnet.ToLower().Contains("h.264"))
-            priority += 60;
+        if (magnet.ToLower().Contains("x264") || magnet.ToLower().Contains("h264") || magnet.ToLower().Contains("x.264") || magnet.ToLower().Contains("h.264")) priority += 60;
 
         // else if (magnet.ToLower().Contains("xvid"))
         //     priority += 30;
-        else if ((magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265") || magnet.ToLower().Contains("x.265") || magnet.ToLower().Contains("h.265")) &&
-                 !magnet.ToLower().Contains("hvec"))
-            priority += 65;
-        else if (magnet.ToLower().Contains("hevc"))
-            priority += 55;
+        else if ((magnet.ToLower().Contains("x265") || magnet.ToLower().Contains("h265") || magnet.ToLower().Contains("x.265") || magnet.ToLower().Contains("h.265")) && !magnet.ToLower().Contains("hvec")) priority += 65;
+        else if (magnet.ToLower().Contains("hevc")) priority                                                                                                                                                          += 55;
 
         // Resolution values
-        if (magnet.ToLower().Contains("2160p.") || magnet.ToLower().Contains("4k.") || magnet.ToLower().Contains("2160p+") || magnet.ToLower().Contains("4k+"))
-            priority += 20;
-        else if (magnet.ToLower().Contains("1080p.") || magnet.ToLower().Contains("1080p+"))
-            priority += 18;
-        else if (magnet.ToLower().Contains("hdtv.") || magnet.ToLower().Contains("hdtv+"))
-            priority += 16;
-        else if (magnet.ToLower().Contains("720p.") || magnet.ToLower().Contains("720p+"))
-            priority += 2;
+        if (magnet.ToLower().Contains("2160p.")      || magnet.ToLower().Contains("4k.") || magnet.ToLower().Contains("2160p+") || magnet.ToLower().Contains("4k+")) priority += 20;
+        else if (magnet.ToLower().Contains("1080p.") || magnet.ToLower().Contains("1080p+")) priority                                                                         += 18;
+        else if (magnet.ToLower().Contains("hdtv.")  || magnet.ToLower().Contains("hdtv+")) priority                                                                          += 16;
+        else if (magnet.ToLower().Contains("720p.")  || magnet.ToLower().Contains("720p+")) priority                                                                          += 2;
 
         // Container values
-        if (magnet.ToLower().Contains(".mkv") || magnet.ToLower().Contains("+mka"))
-            priority += 10;
-        else if (magnet.ToLower().Contains(".mp4") || magnet.ToLower().Contains("+mp4"))
-            priority += 5;
+        if (magnet.ToLower().Contains(".mkv")      || magnet.ToLower().Contains("+mka")) priority += 10;
+        else if (magnet.ToLower().Contains(".mp4") || magnet.ToLower().Contains("+mp4")) priority += 5;
 
         // Wrong Languages
         if (magnet.ToLower().Contains(".italian.") || magnet.ToLower().Contains(".ita.") || magnet.ToLower().Contains("+italian+") || magnet.ToLower().Contains("+ita+")) priority -= 75;
 
         // Good Torrents
-        if (magnet.ToLower().Contains("-ethel"))
-            priority += 5;
+        if (magnet.ToLower().Contains("-ethel")) priority += 5;
 
-        if (magnet.ToLower().Contains("-minx"))
-            priority -= 75;
+        if (magnet.ToLower().Contains("-minx")) priority -= 75;
 
         return priority;
     }
@@ -402,10 +354,7 @@ public class Magnets
 {
     private readonly AppInfo _appInfo;
 
-    public Magnets(AppInfo info)
-    {
-        _appInfo = info;
-    }
+    public Magnets(AppInfo info) { _appInfo = info; }
 
     public Tuple<bool, string> PerformShowEpisodeMagnetsSearch(string showName, int seasNum, int epiNum, ChromeDriver browserDriver)
     {

@@ -1,12 +1,11 @@
 using Common_Lib;
-
 using DB_Lib_EF.Models.MariaDB;
 
 namespace DB_Lib_EF.Entities;
 
 public class LogEntity : IDisposable
 {
-    private bool _disposed = false;
+    private bool _disposed;
 
     public void Dispose()
     {
@@ -29,10 +28,7 @@ public class LogEntity : IDisposable
         }
     }
 
-    ~LogEntity()
-    {
-        Dispose(false);
-    }
+    ~LogEntity() { Dispose(false); }
 
     public bool RecordEntry(Log rec)
     {
@@ -88,7 +84,7 @@ public static class LogModel
                       Program      = program,
                       Function     = function,
                       Message      = message,
-                      Level        = level
+                      Level        = level,
                   };
 
         log.Program  = "CronLog";
@@ -113,7 +109,7 @@ public static class LogModel
                       Program      = program,
                       Function     = function,
                       Message      = message,
-                      Level        = level
+                      Level        = level,
                   };
 
         Record(log);

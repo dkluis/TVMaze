@@ -9,9 +9,7 @@ public static class SqlLiteMacOs
         var epochBase = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var epoch     = (DateTime.UtcNow.Date.AddDays(-1) - epochBase).TotalSeconds;
 
-        var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " +
-                              $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.`viewed_at` >= {epoch} "                      +
-                              "and miv.account_id = 1 order by miv.`viewed_at` ";
+        var plexPlayedItems = "select miv.grandparent_title, miv.parent_index, miv.`index`, miv.`viewed_at` from metadata_item_views miv " + $"where miv.parent_index > 0 and miv.metadata_type = 4 and miv.`viewed_at` >= {epoch} " + "and miv.account_id = 1 order by miv.`viewed_at` ";
 
         var watchedInfo = new List<WatchedInfo>();
 
@@ -55,23 +53,23 @@ public static class SqlLiteMacOs
 public class WatchedInfo
 {
     public string  CleanedShowName = "";
+    public int     Episode;
     public bool    ProcessedToTvmaze;
+    public int     Season;
     public string  SeasonEpisode = "";
     public string  ShowName      = "";
     public int     TvmEpisodeId;
     public int     TvmShowId;
     public string  UpdateDate  = " ";
     public string? WatchedDate = "";
-    public int     Episode;
-    public int     Season;
 }
 
 public class PlexWatchedInfo
 {
-    public int     Episode         = 999999;
-    public int     Season          = 999999;
     public string  CleanedShowName = "";
+    public int     Episode         = 999999;
     public bool    ProcessedToTvmaze;
+    public int     Season        = 999999;
     public string  SeasonEpisode = "";
     public string  ShowName      = "";
     public int     TvmEpisodeId;
@@ -102,39 +100,16 @@ public class Common
         return date;
     }
 
-    public static string BuildSeasonEpisodeString(int seasNum, int epiNum)
-    {
-        return "s" + seasNum.ToString().PadLeft(2, '0') + "e" + epiNum.ToString().PadLeft(2, '0');
-    }
+    public static string BuildSeasonEpisodeString(int seasNum, int epiNum) { return "s" + seasNum.ToString().PadLeft(2, '0') + "e" + epiNum.ToString().PadLeft(2, '0'); }
 
     public static string RemoveSpecialCharsInShowName(string showName)
     {
-        showName = showName.Replace("...", "")
-                           .Replace("..",     "")
-                           .Replace(".",      " ")
-                           .Replace(",",      "")
-                           .Replace("'",      "")
-                           .Replace("   ",    " ")
-                           .Replace("  ",     " ")
-                           .Replace("'",      "")
-                           .Replace("\"",     "")
-                           .Replace("/",      "")
-                           .Replace(":",      "")
-                           .Replace("?",      "")
-                           .Replace("|",      "")
-                           .Replace("&#039;", "")
-                           .Replace("&amp;",  "and")
-                           .Replace("&",      "and")
-                           .Replace("°",      "")
-                           .Replace("\u2026", "")
-                           .Trim()
-                           .ToLower();
+        showName = showName.Replace("...", "").Replace("..", "").Replace(".", " ").Replace(",", "").Replace("'", "").Replace("   ", " ").Replace("  ", " ").Replace("'", "").Replace("\"", "").Replace("/", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("&#039;", "").Replace("&amp;", "and").Replace("&", "and").Replace("°", "").Replace("\u2026", "").Trim().ToLower();
 
         // Was put in for the What If...? situation: showName = showName.Substring(0, showName.Length);
         if (showName.Length <= 7) return showName;
 
-        if (showName.ToLower()[..7] == "what if")
-            showName = "What If";
+        if (showName.ToLower()[..7] == "what if") showName = "What If";
 
         return showName;
     }

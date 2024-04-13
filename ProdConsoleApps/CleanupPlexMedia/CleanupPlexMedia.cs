@@ -1,7 +1,5 @@
 ﻿using Common_Lib;
-
 using DB_Lib_EF.Entities;
-
 using Entities_Lib;
 
 namespace CleanupPlexMedia;
@@ -11,8 +9,8 @@ internal static class CleanupPlexMedia
     private static void Main()
     {
         const string thisProgram = "Cleanup Plex Media";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        LogModel.Start(thisProgram, "Main");
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
+        LogModel.Start(thisProgram);
 
         MediaFileHandler mfh              = new(appInfo);
         List<string>     showDirsToDelete = new();
@@ -72,6 +70,6 @@ internal static class CleanupPlexMedia
             LogModel.Record(thisProgram, "Main", $"Deleted of {dir}");
         }
 
-        LogModel.Stop(thisProgram, "Main");
+        LogModel.Stop(thisProgram);
     }
 }

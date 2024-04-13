@@ -5,16 +5,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-
 using Common_Lib;
-
 using DB_Lib_EF.Models.MariaDB;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using Web_Lib.DTOs;
-
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Web_Lib;
@@ -26,16 +21,16 @@ public class TvmApi : IDisposable
     private readonly HttpClient          _client       = new();
     private readonly TextFileHandler     _log;
     private readonly string              _tvmazeSecurity;
+    private          bool                _disposed;
     private          HttpResponseMessage _httpResponse = new();
     private          bool                _isTimedOut;
+    private          string              _thisProgram;
     private          bool                _tvmazeUrlInitialized;
     private          bool                _tvmazeUserUrlInitialized;
-    private          bool                _disposed;
-    private          string              _thisProgram;
 
     public TvmApi(AppInfo appInfo)
     {
-        _log         = new AppInfo("","","").TxtFile;
+        _log         = new AppInfo("", "", "").TxtFile;
         _thisProgram = appInfo.Program;
         using var db = new TvMaze();
         _tvmazeSecurity = db.Configurations.Single(c => c.Key == "TvMazeToken").Value;
@@ -49,10 +44,7 @@ public class TvmApi : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposed)
-        {
-            return;
-        }
+        if (_disposed) return;
 
         if (disposing)
         {
@@ -63,27 +55,21 @@ public class TvmApi : IDisposable
         _disposed = true;
     }
 
-    ~TvmApi()
-    {
-        Dispose(false);
-    }
+    ~TvmApi() { Dispose(false); }
 
     public string EpisodeMarking(int epi, string date, string ty = "")
     {
         var epiMark = new EpisodeMarkDto {EpisodeId = epi, MarkedAt = Common.ConvertDateToEpoch(date)};
 
         epiMark.Type = ty switch
-               {
-                   "Watched" => 0, "Acquired" => 1, "Skipped" => 2, _ => 0,
-               };
+                       {
+                           "Watched" => 0, "Acquired" => 1, "Skipped" => 2, _ => 0,
+                       };
 
         return JsonSerializer.Serialize(epiMark);
     }
 
-    public string ShowToFollowed(int showId)
-    {
-        return JsonSerializer.Serialize(showId);
-    }
+    public string ShowToFollowed(int showId) { return JsonSerializer.Serialize(showId); }
 
     #region TVMaze Show APIs
 

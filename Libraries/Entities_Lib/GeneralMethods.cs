@@ -2,40 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using Common_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-
-using SQLitePCL;
 
 namespace Entities_Lib;
 
 public static class GeneralMethods
 {
-    public class FindShowEpisodeResult
-    {
-        public bool                              Found         { get; set; }
-        public string                            Message       { get; set; } = string.Empty;
-        public string                            ShowName      { get; set; } = string.Empty;
-        public string                            EpisodeString { get; set; } = string.Empty;
-        public bool                              IsSeason      { get; set; }
-        public int                               TvmShowId     { get; set; }
-        public int                               TvmEpisodeId  { get; set; }
-        public bool                              IsWatched     { get; set; }
-        public DB_Lib_EF.Models.MariaDB.Show?    Show          { get; set; }
-        public DB_Lib_EF.Models.MariaDB.Episode? Episode       { get; set; }
-    }
-
-    public class FindShowViaNameResult
-    {
-        public bool                           Found    { get; set; }
-        public string                         Message  { get; set; } = string.Empty;
-        public DB_Lib_EF.Models.MariaDB.Show? Show     { get; set; }
-        public string                         FoundVia { get; set; } = string.Empty;
-    }
-
     public static FindShowEpisodeResult FindShowEpisodeInfo(string program, string showEpisode)
     {
         var result = new FindShowEpisodeResult();
@@ -69,7 +43,7 @@ public static class GeneralMethods
             return result;
         }
 
-        var foundViaShowName    = FindShowViaName(program, result.ShowName);
+        var foundViaShowName = FindShowViaName(program, result.ShowName);
 
         var searchShowsViaNames = new SearchShowsViaNames();
         var foundShowIds        = searchShowsViaNames.Find(new AppInfo("TVMaze", program, "DbAlternate"), result.ShowName);
@@ -95,28 +69,26 @@ public static class GeneralMethods
             result.IsWatched    = episode.PlexStatus == "Watched";
 
             return result;
-        } else
+        }
+        if (result.IsSeason)
         {
-            if (result.IsSeason)
+            var seStr = result.EpisodeString + "e01";
+            var epi   = db.Episodes.SingleOrDefault(e => e.TvmShowId == result.TvmShowId && e.SeasonEpisode == seStr.ToLower());
+
+            if (epi != null)
             {
-                var seStr = result.EpisodeString + "e01";
-                var epi   = db.Episodes.SingleOrDefault(e => e.TvmShowId == result.TvmShowId && e.SeasonEpisode == seStr.ToLower());
+                //result.TvmShowId    = epi.TvmShowId;
+                result.TvmEpisodeId = epi.TvmEpisodeId;
+                result.Found        = true;
+                result.IsWatched    = epi.PlexStatus == "Watched";
+                result.Message      = "Found via Episode 1 of the season";
 
-                if (epi != null)
-                {
-                    //result.TvmShowId    = epi.TvmShowId;
-                    result.TvmEpisodeId = epi.TvmEpisodeId;
-                    result.Found        = true;
-                    result.IsWatched    = epi.PlexStatus == "Watched";
-                    result.Message      = "Found via Episode 1 of the season";
-
-                    return result;
-                }
+                return result;
             }
         }
 
         LogModel.Record(program, "FindShowEpisode", $"No episode found for Show Title: {showEpisode}", 20);
-        result.Message = $"No episode found";
+        result.Message = "No episode found";
 
         return result;
     }
@@ -127,8 +99,8 @@ public static class GeneralMethods
 
         try
         {
-            var found  = new List<int>();
-            showName    = showName.Replace(" ", " ");
+            var found = new List<int>();
+            showName = showName.Replace(" ", " ");
             var altShowName     = showName;
             var cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName)).Replace("ʻ", "");
 
@@ -139,10 +111,7 @@ public static class GeneralMethods
             var       premDate      = DateOnly.Parse(dateStr);
             using var db            = new TvMaze();
 
-            var shows = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) &&
-                                            !tvmStatusList.Contains(s.TvmStatus)                                                             &&
-                                            s.PremiereDate != premDate)
-                          .ToList();
+            var shows             = db.Shows.Where(s => (s.ShowName == showName || s.CleanedShowName == cleanedShowName || s.AltShowname == altShowName) && !tvmStatusList.Contains(s.TvmStatus) && s.PremiereDate != premDate).ToList();
             var inclSkipping      = shows.Count;
             var exclSkipping      = 0;
             var alternateShowName = 0;
@@ -181,7 +150,7 @@ public static class GeneralMethods
                         {
                             result.Found    = true;
                             result.FoundVia = "Alternate ShowName";
-                            result.Show = show;
+                            result.Show     = show;
                         }
                     } else
                     {
@@ -199,5 +168,27 @@ public static class GeneralMethods
 
             return result;
         }
+    }
+
+    public class FindShowEpisodeResult
+    {
+        public bool                              Found         { get; set; }
+        public string                            Message       { get; set; } = string.Empty;
+        public string                            ShowName      { get; set; } = string.Empty;
+        public string                            EpisodeString { get; set; } = string.Empty;
+        public bool                              IsSeason      { get; set; }
+        public int                               TvmShowId     { get; set; }
+        public int                               TvmEpisodeId  { get; set; }
+        public bool                              IsWatched     { get; set; }
+        public DB_Lib_EF.Models.MariaDB.Show?    Show          { get; set; }
+        public DB_Lib_EF.Models.MariaDB.Episode? Episode       { get; set; }
+    }
+
+    public class FindShowViaNameResult
+    {
+        public bool                           Found    { get; set; }
+        public string                         Message  { get; set; } = string.Empty;
+        public DB_Lib_EF.Models.MariaDB.Show? Show     { get; set; }
+        public string                         FoundVia { get; set; } = string.Empty;
     }
 }

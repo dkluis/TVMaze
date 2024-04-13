@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Common_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-
 using DB_Lib.Tvmaze;
-
 using Newtonsoft.Json.Linq;
-
 using Web_Lib;
 
 namespace Entities_Lib;
@@ -45,15 +40,9 @@ public class Show : IDisposable
     public           string  TvmUrl     = "";
     public           string  UpdateDate = "1900-01-01";
 
-    public Show(AppInfo appInfo)
-    {
-        _appInfo = appInfo;
-    }
+    public Show(AppInfo appInfo) { _appInfo = appInfo; }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() { GC.SuppressFinalize(this); }
 
     public void Reset()
     {
@@ -90,7 +79,7 @@ public class Show : IDisposable
         using TvmCommonSql ge                = new(_appInfo);
         var                lastEvaluatedShow = ge.GetLastEvaluatedShow();
         using WebApi       js                = new(_appInfo);
-        var jFill = FillViaJson(js.ConvertHttpToJObject(js.GetShow(showId)));
+        var                jFill             = FillViaJson(js.ConvertHttpToJObject(js.GetShow(showId)));
         FillViaDb(showId, jFill);
         if (!IsFollowed && !IsDbFilled) ValidateForReview(lastEvaluatedShow);
     }
@@ -118,10 +107,8 @@ public class Show : IDisposable
                 db.SaveChanges();
 
                 return true;
-            } else
-            {
-                return false;
             }
+            return false;
         }
         catch (Exception e)
         {
@@ -182,10 +169,7 @@ public class Show : IDisposable
             using var db           = new TvMaze();
             var       showToDelete = db.Shows.SingleOrDefault(s => s.TvmShowId == TvmShowId);
 
-            if (showToDelete == null)
-            {
-                return false;
-            }
+            if (showToDelete == null) return false;
 
             var episodesToClear = db.Episodes.Where(e => e.TvmShowId == TvmShowId && (e.PlexStatus != " " || e.PlexDate != null)).ToList();
 
@@ -194,10 +178,7 @@ public class Show : IDisposable
                 var wa     = new WebApi(_appInfo);
                 var result = wa.PutEpisodesToUnmarked(episode.TvmEpisodeId);
 
-                if (!result.IsSuccessStatusCode)
-                {
-                    LogModel.Record(_appInfo.Program, "Show Entity", $"Failed to Unmark Episode {episode.TvmEpisodeId} {episode.SeasonEpisode} for {episode.TvmShowId}", 20);
-                }
+                if (!result.IsSuccessStatusCode) LogModel.Record(_appInfo.Program, "Show Entity", $"Failed to Unmark Episode {episode.TvmEpisodeId} {episode.SeasonEpisode} for {episode.TvmShowId}", 20);
             }
 
             db.Remove(showToDelete);
@@ -257,14 +238,12 @@ public class Show : IDisposable
             {
                 if (showJson["network"]!["name"] is not null) TvmNetwork = showJson["network"]!["name"]!.ToString();
 
-                if (showJson["network"]!["country"]?["name"] != null)
-                    TvmCountry = showJson["network"]!["country"]!["name"]!.ToString();
+                if (showJson["network"]!["country"]?["name"] != null) TvmCountry = showJson["network"]!["country"]!["name"]!.ToString();
             }
 
             if (showJson["webChannel"]?.ToString() != "")
             {
-                if (showJson["webChannel"]!["name"] is not null)
-                    TvmNetwork = showJson["webChannel"]!["name"]!.ToString();
+                if (showJson["webChannel"]!["name"] is not null) TvmNetwork = showJson["webChannel"]!["name"]!.ToString();
 
                 if (showJson["webChannel"]!["country"]!.ToString() != "")
                     if (showJson["webChannel"]!["country"]!["name"] is not null)
@@ -295,13 +274,8 @@ public class Show : IDisposable
             using var db      = new TvMaze();
             var       showRec = db.Shows.SingleOrDefault(s => s.TvmShowId == showId);
 
-            if (showRec == null)
-            {
-                IsDbFilled = false;
-            } else
-            {
-                IsDbFilled = true;
-            }
+            if (showRec == null) IsDbFilled = false;
+            else IsDbFilled                 = true;
 
             if (jsonIsDone && IsDbFilled)
             {
@@ -326,7 +300,7 @@ public class Show : IDisposable
         }
         catch (Exception e)
         {
-            LogModel.Record(_appInfo.Program, $"Show Entity", $"Error: {e.Message} ::: {e.InnerException}", 20);
+            LogModel.Record(_appInfo.Program, "Show Entity", $"Error: {e.Message} ::: {e.InnerException}", 20);
         }
     }
 
@@ -439,8 +413,8 @@ public class SearchShowsViaNames
     {
         try
         {
-            _found      = new List<int>();
-            showName    = showName.Replace(" ", " ");
+            _found   = new List<int>();
+            showName = showName.Replace(" ", " ");
             if (altShowName == "") altShowName = showName;
             altShowName = altShowName.Replace(" ", " ").Replace(":", "").Replace("\u2019", "\u0027");
             if (cleanedShowName == "") cleanedShowName = Common.RemoveSuffixFromShowName(Common.RemoveSpecialCharsInShowName(showName));
@@ -450,46 +424,28 @@ public class SearchShowsViaNames
             var       premDate      = DateOnly.Parse(dateStr);
             using var db            = new TvMaze();
 
-            var shows = db.Shows
-                          .Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower()) &&
-                                      !tvmStatusList.Contains(s.TvmStatus)                                                                                                                         &&
-                                      s.PremiereDate != premDate)
-                          .ToList();
+            var shows = db.Shows.Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower()) && !tvmStatusList.Contains(s.TvmStatus) && s.PremiereDate != premDate).ToList();
 
             if (shows != null && shows.Count > 0)
             {
-                foreach (var show in shows)
-                {
-                    _found.Add(show.TvmShowId);
-                }
+                foreach (var show in shows) _found.Add(show.TvmShowId);
             } else
             {
-                shows = db.Shows.Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower()) &&
-                                            s.ShowStatus != "Skipping")
-                          .ToList();
+                shows = db.Shows.Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower()) && s.ShowStatus != "Skipping").ToList();
 
                 if (shows != null && shows.Count > 0)
                 {
-                    foreach (var show in shows)
-                    {
-                        _found.Add(show.TvmShowId);
-                    }
+                    foreach (var show in shows) _found.Add(show.TvmShowId);
                 } else
                 {
                     var splitShowName                         = altShowName.Split(" (");
                     if (splitShowName.Length > 0) altShowName = splitShowName[0];
 
-                    shows = db.Shows.Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower())
-                                             && s.ShowStatus != "Skipping")
-                              .ToList();
+                    shows = db.Shows.Where(s => (s.ShowName.ToLower() == showName.ToLower() || s.CleanedShowName.ToLower() == cleanedShowName.ToLower() || s.AltShowname.ToLower() == altShowName.ToLower()) && s.ShowStatus != "Skipping").ToList();
 
                     if (shows != null && shows.Count > 0)
-                    {
                         foreach (var show in shows)
-                        {
                             _found.Add(show.TvmShowId);
-                        }
-                    }
                 }
             }
 
@@ -546,10 +502,7 @@ public class UpdateFinder
 
 public class UpdateTvmStatus : IDisposable
 {
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() { GC.SuppressFinalize(this); }
 
     public void ToFollowed(AppInfo appInfo, int showId)
     {
@@ -563,10 +516,8 @@ public class UpdateTvmStatus : IDisposable
                 LogModel.Record(appInfo.Program, "Show Entity", $"To Followed: Could not find {showId}", 20);
 
                 return;
-            } else
-            {
-                if (show.TvmStatus == "Skipping") return;
             }
+            if (show.TvmStatus == "Skipping") return;
 
             show.TvmStatus = "Following";
             db.SaveChanges();

@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-
 using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
-
 using Entities_Lib;
-
 using Web_Lib;
 
 namespace UpdatePlexAcquired;
@@ -20,7 +15,7 @@ internal static class UpdatePlexAcquired
     private static void Main()
     {
         const string thisProgram = "Update Plex Acquired";
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
         LogModel.Start(thisProgram);
 
         try
@@ -103,10 +98,7 @@ internal static class UpdatePlexAcquired
                             ActionItemModel.RecordActionItem(thisProgram, $"Could not determine ShowId for: {show}, found {showId.Count} records");
                             var showIds = "";
 
-                            foreach (var shw in showId)
-                            {
-                                showIds = showIds + shw.ToString() + ": ";
-                            }
+                            foreach (var shw in showId) showIds = showIds + shw + ": ";
 
                             LogModel.Record(thisProgram, "Main", $"Multiple Shows found for: {show}, found {showId.Count}: {showIds}", 4);
 
@@ -135,7 +127,7 @@ internal static class UpdatePlexAcquired
                         ActionItemModel.RecordActionItem(thisProgram, $"Could not find episode for Show {show} and Episode String {episodeString}");
                         foundShow.FillViaTvmaze(showId[0]);
                         using MediaFileHandler mfh = new(appInfo);
-                        mfh.MoveMediaToPlex(mediainfo: acq, episode: null, show: foundShow, season: seasonNum);
+                        mfh.MoveMediaToPlex(acq, null, foundShow, seasonNum);
                         foundShow.Reset();
 
                         continue;
@@ -167,11 +159,10 @@ internal static class UpdatePlexAcquired
                         epiToUpdate.PlexDate   = DateTime.Now.ToString("yyyy-MM-dd");
                     }
 
-                    if (!epiToUpdate.DbUpdate())
-                        LogModel.Record(thisProgram, "Main", $"Error Updating Episode {epiToUpdate.TvmEpisodeId}", 2);
+                    if (!epiToUpdate.DbUpdate()) LogModel.Record(thisProgram, "Main", $"Error Updating Episode {epiToUpdate.TvmEpisodeId}", 2);
 
                     using MediaFileHandler mfh = new(appInfo);
-                    mfh.MoveMediaToPlex(mediainfo: acq, episode: epiToUpdate, show: foundShow, season: seasonNum);
+                    mfh.MoveMediaToPlex(acq, epiToUpdate, foundShow, seasonNum);
                 } else
                 {
                     Episode firstEpi = new(appInfo);
@@ -181,10 +172,8 @@ internal static class UpdatePlexAcquired
                     {
                         Episode epiToUpdate = new(appInfo);
 
-                        if (firstEpi.TvmEpisodeId != epi)
-                            epiToUpdate.FillViaTvmaze(epi);
-                        else
-                            epiToUpdate = firstEpi;
+                        if (firstEpi.TvmEpisodeId != epi) epiToUpdate.FillViaTvmaze(epi);
+                        else epiToUpdate = firstEpi;
 
                         if (epiToUpdate.PlexStatus != " ")
                         {
@@ -197,12 +186,11 @@ internal static class UpdatePlexAcquired
                             epiToUpdate.PlexDate   = DateTime.Now.ToString("yyyy-MM-dd");
                         }
 
-                        if (!epiToUpdate.DbUpdate())
-                            LogModel.Record(thisProgram, "Main", $"Error Updating Episode {epiToUpdate.TvmEpisodeId}", 2);
+                        if (!epiToUpdate.DbUpdate()) LogModel.Record(thisProgram, "Main", $"Error Updating Episode {epiToUpdate.TvmEpisodeId}", 2);
                     }
 
                     using MediaFileHandler mfh = new(appInfo);
-                    mfh.MoveMediaToPlex(mediainfo: acq, episode: firstEpi, show: foundShow, season: seasonNum);
+                    mfh.MoveMediaToPlex(acq, firstEpi, foundShow, seasonNum);
                 }
             }
 

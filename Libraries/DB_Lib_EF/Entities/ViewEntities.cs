@@ -1,13 +1,11 @@
 using DB_Lib_EF.Models.MariaDB;
-
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DB_Lib_EF.Entities;
 
 public class ViewEntities : IDisposable
 {
-    private bool _disposed = false;
+    private bool _disposed;
 
     public void Dispose()
     {
@@ -30,10 +28,7 @@ public class ViewEntities : IDisposable
         }
     }
 
-    ~ViewEntities()
-    {
-        Dispose(false);
-    }
+    ~ViewEntities() { Dispose(false); }
 
     #region GetEpisodesToAcquire
 
@@ -46,28 +41,29 @@ public class ViewEntities : IDisposable
             using var db    = new TvMaze();
             var       today = DateOnly.FromDateTime(DateTime.Now);
 
-            var query = from e in db.Episodes
-                        join s in db.Shows on e.TvmShowId equals s.TvmShowId
-                        where e.BroadcastDate.HasValue && e.BroadcastDate.Value <= today && e.PlexStatus == " " && s.TvmStatus == "Following" && s.Finder != "Skip"
-                        orderby e.TvmShowId, e.SeasonEpisode
-                        select new ShowEpisode
-                               {
-                                   TvmShowId       = e.TvmShowId,
-                                   ShowName        = s.ShowName,
-                                   CleanedShowName = s.CleanedShowName.Replace("ʻ", ""),
-                                   AltShowName     = s.AltShowname,
-                                   ShowStatus      = s.TvmStatus,
-                                   TvmEpisodeId    = e.TvmEpisodeId,
-                                   TvmUrl          = e.TvmUrl,
-                                   SeasonEpisode   = e.SeasonEpisode,
-                                   Season          = e.Season,
-                                   Episode         = e.Episode1,
-                                   BroadcastDate   = e.BroadcastDate,
-                                   PlexStatus      = e.PlexStatus,
-                                   PlexDate        = e.PlexDate,
-                                   UpdateDate      = e.UpdateDate,
-                                   Finder          = s.Finder,
-                               };
+            var query =
+                from e in db.Episodes
+                join s in db.Shows on e.TvmShowId equals s.TvmShowId
+                where e.BroadcastDate.HasValue && e.BroadcastDate.Value <= today && e.PlexStatus == " " && s.TvmStatus == "Following" && s.Finder != "Skip"
+                orderby e.TvmShowId, e.SeasonEpisode
+                select new ShowEpisode
+                       {
+                           TvmShowId       = e.TvmShowId,
+                           ShowName        = s.ShowName,
+                           CleanedShowName = s.CleanedShowName.Replace("ʻ", ""),
+                           AltShowName     = s.AltShowname,
+                           ShowStatus      = s.TvmStatus,
+                           TvmEpisodeId    = e.TvmEpisodeId,
+                           TvmUrl          = e.TvmUrl,
+                           SeasonEpisode   = e.SeasonEpisode,
+                           Season          = e.Season,
+                           Episode         = e.Episode1,
+                           BroadcastDate   = e.BroadcastDate,
+                           PlexStatus      = e.PlexStatus,
+                           PlexDate        = e.PlexDate,
+                           UpdateDate      = e.UpdateDate,
+                           Finder          = s.Finder,
+                       };
             var episodeToAcquire = query.ToList();
             resp.ResponseObject = episodeToAcquire;
             resp.WasSuccess     = true;
@@ -115,13 +111,9 @@ public class ViewEntities : IDisposable
         {
             using var db = new TvMaze();
 
-            var query = db.Shows
-                          .Where(s => ((s.TvmStatus  != "Ended"   && s.TvmStatus    != "Skipping" && s.UpdateDate < sevenDaysAgo) ||
-                                       (s.ShowStatus == "Ended"   && s.PremiereDate == oldDate    && s.UpdateDate < sevenDaysAgo) ||
-                                       (s.ShowStatus == "Running" && s.UpdateDate   < sevenDaysAgo)                               ||
-                                       s.UpdateDate <= thirtyOneDaysAgo))
+            var query = db.Shows.Where(s => (s.TvmStatus != "Ended" && s.TvmStatus != "Skipping" && s.UpdateDate < sevenDaysAgo) || (s.ShowStatus == "Ended" && s.PremiereDate == oldDate && s.UpdateDate < sevenDaysAgo) || (s.ShowStatus == "Running" && s.UpdateDate < sevenDaysAgo) || s.UpdateDate <= thirtyOneDaysAgo)
                           .OrderBy(s => s.TvmShowId)
-                          .Select(s => new ShowToRefresh()
+                          .Select(s => new ShowToRefresh
                                        {
                                            TvmShowId    = s.TvmShowId,
                                            TvmStatus    = s.TvmStatus,
@@ -129,7 +121,7 @@ public class ViewEntities : IDisposable
                                            UpdateDate   = s.UpdateDate,
                                            ShowName     = s.ShowName,
                                            TvmUrl       = s.TvmUrl,
-                                           ShowStatus   = s.ShowStatus
+                                           ShowStatus   = s.ShowStatus,
                                        });
             var showsToRefresh = query.ToList();
 
@@ -176,11 +168,7 @@ public class ViewEntities : IDisposable
         {
             using var db = new TvMaze();
 
-            var query = db.Episodes.Join(db.Shows, e => e.TvmShowId, s => s.TvmShowId, (e,      s) => new {Episode     = e, Show       = s})
-                          .Join(db.MediaTypes, es => es.Show.MediaType, m => m.MediaType1, (es, m) => new {EpisodeShow = es, MediaType = m})
-                          .OrderBy(esm => esm.EpisodeShow.Episode.TvmShowId)
-                          .ThenBy(esm => esm.EpisodeShow.Episode.SeasonEpisode)
-                          .Select(set => new {Epi = set.EpisodeShow.Episode, Show = set.EpisodeShow.Show, MediaType = set.MediaType});
+            var query = db.Episodes.Join(db.Shows, e => e.TvmShowId, s => s.TvmShowId, (e, s) => new {Episode = e, Show = s}).Join(db.MediaTypes, es => es.Show.MediaType, m => m.MediaType1, (es, m) => new {EpisodeShow = es, MediaType = m}).OrderBy(esm => esm.EpisodeShow.Episode.TvmShowId).ThenBy(esm => esm.EpisodeShow.Episode.SeasonEpisode).Select(set => new {Epi = set.EpisodeShow.Episode, set.EpisodeShow.Show, set.MediaType});
 
             if (applyOrphanedFilter)
             {
@@ -190,35 +178,33 @@ public class ViewEntities : IDisposable
                 resp.WasSuccess     = true;
 
                 return resp;
-            } else
-            {
-                var episodeFullInfo = query.Select(esm => new EpisodeShowInfo
-                                                          {
-                                                              Id              = esm.Epi.Id,
-                                                              TvmShowId       = esm.Epi.TvmShowId,
-                                                              ShowName        = esm.Show.ShowName,
-                                                              CleanedShowName = esm.Show.CleanedShowName.Replace("ʻ", ""),
-                                                              TvmStatus       = esm.Show.TvmStatus,
-                                                              AltShowName     = esm.Show.AltShowname,
-                                                              TvmEpisodeId    = esm.Epi.TvmEpisodeId,
-                                                              TvmUrl          = esm.Epi.TvmUrl,
-                                                              SeasonEpisode   = esm.Epi.SeasonEpisode,
-                                                              Season          = esm.Epi.Season,
-                                                              Episode         = esm.Epi.Episode1,
-                                                              BroadcastDate   = esm.Epi.BroadcastDate,
-                                                              PlexStatus      = esm.Epi.PlexStatus,
-                                                              PlexDate        = esm.Epi.PlexDate,
-                                                              UpdateDate      = esm.Epi.UpdateDate,
-                                                              Finder          = esm.Show.Finder,
-                                                              MediaType       = esm.MediaType.MediaType1,
-                                                              ShowUpdateDate  = esm.Show.UpdateDate,
-                                                              AutoDelete      = esm.MediaType.AutoDelete == "Yes",
-                                                          })
-                                           .ToList();
-
-                resp.ResponseObject = episodeFullInfo;
-                resp.WasSuccess     = true;
             }
+            var episodeFullInfo = query.Select(esm => new EpisodeShowInfo
+                                                      {
+                                                          Id              = esm.Epi.Id,
+                                                          TvmShowId       = esm.Epi.TvmShowId,
+                                                          ShowName        = esm.Show.ShowName,
+                                                          CleanedShowName = esm.Show.CleanedShowName.Replace("ʻ", ""),
+                                                          TvmStatus       = esm.Show.TvmStatus,
+                                                          AltShowName     = esm.Show.AltShowname,
+                                                          TvmEpisodeId    = esm.Epi.TvmEpisodeId,
+                                                          TvmUrl          = esm.Epi.TvmUrl,
+                                                          SeasonEpisode   = esm.Epi.SeasonEpisode,
+                                                          Season          = esm.Epi.Season,
+                                                          Episode         = esm.Epi.Episode1,
+                                                          BroadcastDate   = esm.Epi.BroadcastDate,
+                                                          PlexStatus      = esm.Epi.PlexStatus,
+                                                          PlexDate        = esm.Epi.PlexDate,
+                                                          UpdateDate      = esm.Epi.UpdateDate,
+                                                          Finder          = esm.Show.Finder,
+                                                          MediaType       = esm.MediaType.MediaType1,
+                                                          ShowUpdateDate  = esm.Show.UpdateDate,
+                                                          AutoDelete      = esm.MediaType.AutoDelete == "Yes",
+                                                      })
+                                       .ToList();
+
+            resp.ResponseObject = episodeFullInfo;
+            resp.WasSuccess     = true;
         }
         catch (DbUpdateException e) // catch specific exception
         {

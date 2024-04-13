@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-
 using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
 
 namespace Entities_Lib;
 
 public class MediaFileHandler : IDisposable
 {
-    private readonly AppInfo         _appInfo;
-    private readonly MariaDb         _mdb;
+    private readonly AppInfo _appInfo;
+    private readonly MariaDb _mdb;
 
     public MediaFileHandler(AppInfo appInfo)
     {
@@ -31,10 +28,7 @@ public class MediaFileHandler : IDisposable
     public  string PlexMediaDickTvShows  { get; private set; } = null!;
     private string PlexMediaTvShowSeries { get; set; }         = null!;
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() { GC.SuppressFinalize(this); }
 
     private void GetSetMediaInfo()
     {
@@ -59,8 +53,7 @@ public class MediaFileHandler : IDisposable
         var path = "";
         var rdr  = _mdb.ExecQuery($"select `PlexLocation` from `MediaTypes` where `MediaType` = '{mt}'");
 
-        while (rdr.Read())
-            path = rdr[0].ToString();
+        while (rdr.Read()) path = rdr[0].ToString();
         _mdb.Close();
 
         return path!.Replace("/Volumes/HD-Data-CA-Server", "/media/psf");
@@ -104,8 +97,7 @@ public class MediaFileHandler : IDisposable
             {
                 LogModel.Record(_appInfo.Program, "Media File Handler", $"Error on getting Files for {Path.Combine(directory, showName, seas)}: {e.Message}", 20);
             }
-        else
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Directory {findIn} does not exist", 20);
+        else LogModel.Record(_appInfo.Program, "Media File Handler", $"Directory {findIn} does not exist", 20);
 
         return false;
     }
@@ -179,26 +171,15 @@ public class MediaFileHandler : IDisposable
         {
             destDirectory = GetMediaDirectory(show!.MediaType);
 
-            if (!string.IsNullOrEmpty(show.AltShowName) || !string.IsNullOrEmpty(show.CleanedShowName))
-            {
-                shown = !string.IsNullOrEmpty(show.AltShowName) ? show.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
-            } else
-            {
-                shown = show.ShowName;
-            }
+            if (!string.IsNullOrEmpty(show.AltShowName) || !string.IsNullOrEmpty(show.CleanedShowName)) shown = !string.IsNullOrEmpty(show.AltShowName) ? show.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(show.CleanedShowName);
+            else shown                                                                                        = show.ShowName;
         } else
         {
             destDirectory = GetMediaDirectory(episode!.MediaType);
 
-            if (!string.IsNullOrEmpty(episode.AltShowName) || !string.IsNullOrEmpty(episode.CleanedShowName))
-            {
-                shown = !string.IsNullOrEmpty(episode.AltShowName) ? episode.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
-            } else
-            {
-                shown = episode.ShowName;
-            }
+            if (!string.IsNullOrEmpty(episode.AltShowName) || !string.IsNullOrEmpty(episode.CleanedShowName)) shown = !string.IsNullOrEmpty(episode.AltShowName) ? episode.AltShowName : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(episode.CleanedShowName);
+            else shown                                                                                              = episode.ShowName;
         }
-
 
         var          fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo);
         var          isDirectory   = false;
@@ -255,18 +236,15 @@ public class MediaFileHandler : IDisposable
             }
         }
 
-        if (media.Count == 0)
-        {
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 20);
-        }
+        if (media.Count == 0) LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 20);
 
         if (string.IsNullOrEmpty(shown) || string.IsNullOrWhiteSpace(shown))
         {
-            if (show         != null && show.ShowName != "") shown = show.ShowName;
-            else if (episode != null) shown = episode.ShowName;
+            if (show != null && show.ShowName != "") shown = show.ShowName;
+            else if (episode != null) shown                = episode.ShowName;
         }
 
-        var toDir       = Path.Combine(destDirectory, shown, episode != null && episode.SeasonNum != 0 ? $"Season {episode.SeasonNum}" : $"Season {season}");
+        var toDir = Path.Combine(destDirectory, shown, episode != null && episode.SeasonNum != 0 ? $"Season {episode.SeasonNum}" : $"Season {season}");
         if (!Directory.Exists(toDir)) Directory.CreateDirectory(toDir);
 
         foreach (var file in media)

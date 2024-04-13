@@ -218,7 +218,7 @@
             {
                 using ShowAndEpisodes sae = new(appInfo);
                 _message = $"Working on Show {rdr[0]} {rdr[1]}";
-                LogModel.Record("Web UI", "Refresh One Show", _message, 1);
+                LogModel.Record("Web UI", "Refresh One Show", _message);
                 sae.Refresh(int.Parse(rdr[0].ToString()!));
             }
 
@@ -266,20 +266,16 @@
             {
                 if (program == "CronLog")
                 {
-                    return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || (l.Level == 20)).ToList().OrderByDescending(l => l.RecordedDate).ToList();
+                    return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || l.Level == 20).ToList().OrderByDescending(l => l.RecordedDate).ToList();
                 }
 
                 return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).ToList().OrderByDescending(l => l.RecordedDate).ToList();
-            } else
-            {
-                if (program == "CronLog")
-                {
-                    return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || (l.Level == 20)).OrderByDescending(l => l.RecordedDate).ToList();
-                } else
-                {
-                    return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).OrderByDescending(l => l.RecordedDate).ToList();
-                }
             }
+            if (program == "CronLog")
+            {
+                return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || l.Level == 20).OrderByDescending(l => l.RecordedDate).ToList();
+            }
+            return db.Logs.Where(l => (l.Program == program && l.Level >= fromLevel && l.Level <= toLevel && l.RecordedDate > DateTime.Now.Date && !l.Message.Contains("Stopped")) || (l.Level == 20 && l.Program == program)).OrderByDescending(l => l.RecordedDate).ToList();
         }
         catch (Exception e)
         {
@@ -291,7 +287,7 @@
 
     private void ShowCronlogTable()
     {
-        _logTable          = GetLogInfo("CronLog", 0, 0, true);
+        _logTable          = GetLogInfo("CronLog", 0, 0);
         _logTableRequested = true;
         _logTableName      = "CronLog";
         ClearLog();
@@ -299,7 +295,7 @@
 
     private void ShowNamedTable(string logName)
     {
-        _logTable          = GetLogInfo(logName, 0, _upToLevel, true);
+        _logTable          = GetLogInfo(logName, 0, _upToLevel);
         _logTableRequested = true;
         _logTableName      = logName;
         ClearLog();
@@ -370,7 +366,7 @@
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Refresh ShowRss Feed")'><i class="bi bi-binoculars"></i>&nbsp;Feed</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Compare ShowRss")'><i class="bi bi-binoculars"></i>&nbsp;ShowRss</button>
             <button class="btn btn-info" @onclick='() => ShowNamedTable("Web UI")'><i class="bi bi-binoculars"></i>&nbsp;Web UI</button>
-            <button class="btn btn-info" @onclick='() => ShowCronlogTable()'><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
+            <button class="btn btn-info" @onclick="() => ShowCronlogTable()"><i class="bi bi-binoculars"></i>&nbsp;Cronlog</button>
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">

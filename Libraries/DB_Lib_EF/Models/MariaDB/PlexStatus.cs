@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace DB_Lib_EF.Models.MariaDB;
 
-namespace DB_Lib_EF.Models.MariaDB;
-
-public partial class PlexStatus
+public class PlexStatus
 {
     public string PlexStatus1 { get; set; } = null!;
 

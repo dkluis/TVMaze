@@ -1,10 +1,7 @@
 using System;
-
 using Common_Lib;
-
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-
 using MySqlConnector;
 
 namespace DB_Lib;
@@ -13,11 +10,11 @@ public class MariaDb : IDisposable
 {
     private const    string           Function = "MariaDb";
     private readonly MySqlConnection  _conn    = new();
-    private          MySqlCommand     _cmd = new();
+    private          MySqlCommand     _cmd     = new();
     private          bool             _connOpen;
     private          MySqlDataReader? _rdr;
-    private          string           _thisProgram;
     private          int              _rows;
+    private readonly string           _thisProgram;
     public           bool             Success;
 
     public MariaDb(AppInfo appInfo)
@@ -139,7 +136,7 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-           var logRec = new Log
+            var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
@@ -168,7 +165,7 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-           var logRec = new Log
+            var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,
@@ -197,7 +194,7 @@ public class MariaDb : IDisposable
         }
         catch (Exception e)
         {
-           var logRec = new Log
+            var logRec = new Log
                          {
                              RecordedDate = DateTime.Now,
                              Program      = _thisProgram,

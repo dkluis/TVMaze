@@ -1,15 +1,6 @@
-﻿using System.IO;
-
-using HtmlAgilityPack;
-
+﻿using Common_Lib;
 using DB_Lib_EF.Entities;
-
-using System.Collections.Generic;
-
-using Common_Lib;
-
 using DB_Lib_EF.Models.MariaDB;
-
 using Web_Lib;
 
 namespace CompareShowsWithShowRss;
@@ -24,7 +15,7 @@ internal static class CompareShowsWithShowRss
         // Get the latest from the website
         var sel = new Selenium(thisProgram);
         sel.Start();
-        var htmlDoc =sel.GetPage(@"https://showrss.info/browse");
+        var htmlDoc = sel.GetPage(@"https://showrss.info/browse");
         sel.Stop();
 
         var dates        = htmlDoc.DocumentNode.SelectNodes("//strong");
@@ -36,7 +27,7 @@ internal static class CompareShowsWithShowRss
 
             if (showRssDate.Contains("/"))
             {
-                var dateStr                  = DateTime.ParseExact(showRssDate, "MM/dd/yyyy", null);
+                var dateStr               = DateTime.ParseExact(showRssDate, "MM/dd/yyyy", null);
                 var reformattedDateString = dateStr.ToString("yyyy/MM/dd");
                 showRssDates.Add(reformattedDateString);
             }
@@ -44,7 +35,7 @@ internal static class CompareShowsWithShowRss
 
         if (showRssDates.Count < 0)
         {
-            LogModel.Record(thisProgram, "Main", "No Updates found at ShowRss Browse", 1);
+            LogModel.Record(thisProgram, "Main", "No Updates found at ShowRss Browse");
             LogModel.Stop(thisProgram);
             Environment.Exit(9);
         }
@@ -58,29 +49,27 @@ internal static class CompareShowsWithShowRss
         {
             db.Configurations.Single(c => c.Key == "LastShowRssDate").Value = lastDateFound;
             db.SaveChanges();
-            LogModel.Record(thisProgram, "Main", $"Updated LastShowRssDate to {lastDateFound}", 1);
+            LogModel.Record(thisProgram, "Main", $"Updated LastShowRssDate to {lastDateFound}");
         } else
         {
-            LogModel.Record(thisProgram, "Main", $"Last Update Date {lastDateFound} and {lastShowRssDate} is already processed", 1);
+            LogModel.Record(thisProgram, "Main", $"Last Update Date {lastDateFound} and {lastShowRssDate} is already processed");
             LogModel.Stop(thisProgram);
             Environment.Exit(9);
         }
 
         // Get all option elements
-        var options = htmlDoc.DocumentNode.SelectNodes("//option");
+        var options        = htmlDoc.DocumentNode.SelectNodes("//option");
         var showNamesFound = new List<string>();
 
         // Process each option
         if (options != null)
-        {
             foreach (var option in options)
             {
                 var showName = option.InnerText;
                 showNamesFound.Add(showName);
             }
-        }
 
-        LogModel.Record(thisProgram, "Main", $"Found {showNamesFound.Count} records at ShowRss.info", 1);
+        LogModel.Record(thisProgram, "Main", $"Found {showNamesFound.Count} records at ShowRss.info");
 
         var foundCount = 0;
         var multiCount = 0;
@@ -92,11 +81,7 @@ internal static class CompareShowsWithShowRss
             var compareShowName        = rssShowName.Replace("&amp;", "&").Replace("&#039;", "'");
             var compareCleanedShowName = Common.RemoveSpecialCharsInShowName(rssShowName).Replace("ʻ", "");
 
-            var showRec = db.Shows.Where(s => (s.ShowName        == compareShowName         ||
-                                               s.CleanedShowName == compareCleanedShowName  ||
-                                               s.AltShowname     == compareShowName         ||
-                                               s.AltShowname     == compareCleanedShowName) &&
-                                               s.Finder          != "Skip");
+            var showRec = db.Shows.Where(s => (s.ShowName == compareShowName || s.CleanedShowName == compareCleanedShowName || s.AltShowname == compareShowName || s.AltShowname == compareCleanedShowName) && s.Finder != "Skip");
 
             if (showRec == null) continue;
 
@@ -104,10 +89,7 @@ internal static class CompareShowsWithShowRss
             {
                 multiCount++;
 
-                foreach (var show in showRec)
-                {
-                    LogModel.Record(thisProgram, "Main", $"Multiple records found for show: {compareShowName}, ShowId: {show.TvmShowId}, ShowName: {show.ShowName}", 3);
-                }
+                foreach (var show in showRec) LogModel.Record(thisProgram, "Main", $"Multiple records found for show: {compareShowName}, ShowId: {show.TvmShowId}, ShowName: {show.ShowName}", 3);
             } else
             {
                 if (showRec.Count() == 0)
@@ -131,7 +113,7 @@ internal static class CompareShowsWithShowRss
             }
         }
 
-        LogModel.Record(thisProgram, "Main", $"Processed: Found {foundCount} and Multiple {multiCount} and Not Found {notCount} records", 1);
+        LogModel.Record(thisProgram, "Main", $"Processed: Found {foundCount} and Multiple {multiCount} and Not Found {notCount} records");
         LogModel.Stop(thisProgram);
     }
 }

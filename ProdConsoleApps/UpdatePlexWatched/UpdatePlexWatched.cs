@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-
 using Common_Lib;
-
 using DB_Lib;
-
 using DB_Lib_EF.Entities;
-
 using Entities_Lib;
-
 using Web_Lib;
-
 using Episode = Entities_Lib.Episode;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -23,7 +17,7 @@ namespace UpdatePlexWatched;
 ///     2. Figures out from the Plex ShowName, season and episode numbers what TvmShowId and TvmEpisodeId it is in Tvmaze
 ///     Local
 ///     3. Updates Tvmaze Local and Tvmaze Web with the Watched status and the date
-///         a. Adds a record in Tvmaze Local to track if an episode is already updated
+///     a. Adds a record in Tvmaze Local to track if an episode is already updated
 ///     4. Delete media from Plex if Auto Delete is set for that Show
 /// </summary>
 internal static class UpdatePlexWatched
@@ -81,7 +75,6 @@ internal static class UpdatePlexWatched
         }
 
         if (watchedEpisodes.Count > 0)
-        {
             foreach (var pwi in watchedEpisodes)
             {
                 SearchShowsViaNames searchShowViaNames = new();
@@ -97,7 +90,7 @@ internal static class UpdatePlexWatched
 
                         if (pwi.TvmEpisodeId == 0)
                         {
-                            LogModel.Record(thisProgram, "Main", $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File", 1);
+                            LogModel.Record(thisProgram, "Main", $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File");
                             ActionItemModel.RecordActionItem(thisProgram, $"Found Show: {pwi.ShowName} but not the Episode.  No update of TVMaze and No Delete of File");
 
                             continue;
@@ -128,11 +121,11 @@ internal static class UpdatePlexWatched
                     }
                 }
 
-                LogModel.Record(thisProgram, "Main", $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}", 1);
+                LogModel.Record(thisProgram, "Main", $"ShowId found for {pwi.ShowName}: ShowId: {pwi.TvmShowId}, EpisodeId: {pwi.TvmEpisodeId}");
 
                 if (!pwi.DbInsert(appInfo))
                 {
-                    LogModel.Record(thisProgram, "Main", $"Show and Episode already updated", 1);
+                    LogModel.Record(thisProgram, "Main", "Show and Episode already updated");
 
                     continue;
                 }
@@ -152,23 +145,20 @@ internal static class UpdatePlexWatched
                 epi.PlexDate   = pwi.WatchedDate;
                 epi.PlexStatus = "Watched";
                 epi.DbUpdate();
-                LogModel.Record(thisProgram, "Main", $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}", 1);
+                LogModel.Record(thisProgram, "Main", $"Update Episode Record for Show {pwi.ShowName} {epi.TvmEpisodeId}, {epi.PlexDate}, {epi.PlexStatus}");
                 pwi.ProcessedToTvmaze = true;
                 pwi.DbUpdate(appInfo);
 
                 if (epi.IsAutoDelete)
                 {
-                    LogModel.Record(thisProgram, "Main", $"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file", 1);
+                    LogModel.Record(thisProgram, "Main", $"Deleting this episode {pwi.ShowName} - {pwi.SeasonEpisode} file");
                     using MediaFileHandler mfh = new(appInfo);
                     _ = mfh.DeleteEpisodeFiles(epi);
                 }
 
                 pwi.Reset();
             }
-        } else
-        {
-            LogModel.Record(thisProgram, "Main", "No Watched Episodes Found", 1);
-        }
+        else LogModel.Record(thisProgram, "Main", "No Watched Episodes Found");
 
         LogModel.Stop(thisProgram);
     }
