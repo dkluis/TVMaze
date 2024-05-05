@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using HtmlAgilityPack;
 using OpenQA.Selenium.Chrome;
 
@@ -8,17 +9,17 @@ public class Selenium : IDisposable
 {
     public Selenium(string program)
     {
-        Service.HideCommandPromptWindow              = true;
+        Service.HideCommandPromptWindow = true;
         Service.SuppressInitialDiagnosticInformation = true;
-        ThisProgram                                  = program;
+        ThisProgram = program;
     }
 
-    private string              ThisProgram   { get; set; }
-    public  HtmlDocument?       HtmlDoc       { get; set; } = new();
-    private ChromeDriverService Service       { get; }      = ChromeDriverService.CreateDefaultService();
-    public  ChromeDriver?       ChromeDriver  { get; set; }
-    private ChromeOptions       ChromeOptions { get; } = new();
-    private bool                Started       { get; set; }
+    private string ThisProgram { get; set; }
+    private HtmlDocument? HtmlDoc { get; set; } = new();
+    private ChromeDriverService Service { get; } = ChromeDriverService.CreateDefaultService();
+    private ChromeDriver? ChromeDriver { get; set; }
+    private ChromeOptions ChromeOptions { get; } = new();
+    private bool Started { get; set; }
 
     public void Dispose()
     {
@@ -26,7 +27,7 @@ public class Selenium : IDisposable
         {
             ChromeDriver!.Quit();
             ChromeDriver = null;
-            Started      = false;
+            Started = false;
         }
 
         GC.SuppressFinalize(this);
@@ -39,31 +40,33 @@ public class Selenium : IDisposable
         ChromeOptions.AddArgument("--disable-dev-shm-usage");
         ChromeOptions.AddArgument("--disable-popup-blocking");
         ChromeOptions.AcceptInsecureCertificates = true;
-        ChromeDriver                             = new ChromeDriver(ChromeOptions);
-        Started                                  = true;
+        ChromeDriver = new ChromeDriver(ChromeOptions);
+        Started = true;
     }
 
     public void Stop()
     {
-        if (Started)
+        if (!Started)
         {
-            ChromeDriver!.Quit();
-            ChromeDriver = null;
-            Started      = false;
+            return;
         }
+        ChromeDriver!.Quit();
+        Thread.Sleep(3000);
+        ChromeDriver = null;
+        Started = false;
+        Dispose();
     }
 
     public HtmlDocument GetPage(string url)
     {
-        if (Started)
+        if (!Started)
         {
-            ChromeDriver!.Navigate().GoToUrl(url);
-            var htmlString = ChromeDriver.PageSource;
-            HtmlDoc!.LoadHtml(htmlString);
-
-            return HtmlDoc;
+            return HtmlDoc!;
         }
+        ChromeDriver!.Navigate().GoToUrl(url);
+        var htmlString = ChromeDriver.PageSource;
+        HtmlDoc!.LoadHtml(htmlString);
 
-        return HtmlDoc!;
+        return HtmlDoc;
     }
 }
