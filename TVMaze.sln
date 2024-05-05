@@ -40,7 +40,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{D2F4BAD7-12FD-4D6B-998A-388F466F4E31}"
 	ProjectSection(SolutionItems) = preProject
 		Resources\tvmaze-icon.png = Resources\tvmaze-icon.png
-		..\..\..\..\media\psf\TVMazeLinux\Tvmaze.cnf = ..\..\..\..\media\psf\TVMazeLinux\Tvmaze.cnf
+		..\..\..\..\..\Users\dick\TVMazeLinux\Tvmaze.cnf = ..\..\..\..\..\Users\dick\TVMazeLinux\Tvmaze.cnf
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdatePlexWatched", "ProdConsoleApps\UpdatePlexWatched\UpdatePlexWatched.csproj", "{0A7AE4E1-83FC-4455-9A59-1BF9B1F5893D}"

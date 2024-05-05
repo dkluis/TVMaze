@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Common_Lib;
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
@@ -8,35 +9,34 @@ namespace DB_Lib;
 
 public class MariaDb : IDisposable
 {
-    private const    string           Function = "MariaDb";
-    private readonly MySqlConnection  _conn    = new();
-    private          MySqlCommand     _cmd     = new();
-    private          bool             _connOpen;
-    private          MySqlDataReader? _rdr;
-    private          int              _rows;
-    private readonly string           _thisProgram;
-    public           bool             Success;
+    private const string Function = "MariaDb";
+    private readonly MySqlConnection _conn = new();
+    private MySqlCommand _cmd = new();
+    private bool _connOpen;
+    private MySqlDataReader? _rdr;
+    private int _rows;
+    private readonly string _thisProgram;
+    public bool Success;
 
     public MariaDb(AppInfo appInfo)
     {
         _thisProgram = appInfo.Program;
-        Success      = false;
-
+        Success = false;
         try
         {
-            _conn   = new MySqlConnection(appInfo.ActiveDbConn);
+            _conn = new MySqlConnection(appInfo.ActiveDbConn);
             Success = true;
         }
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Connecting To DB",
-                             Message      = $"Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Connecting To DB",
+                Message = $"Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
         }
     }
@@ -59,13 +59,13 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Opening To DB",
-                             Message      = $"Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Opening To DB",
+                Message = $"Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
             Success = false;
         }
@@ -83,13 +83,13 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Closing DB",
-                             Message      = $"MariaDB Class Connection Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Closing DB",
+                Message = $"MariaDB Class Connection Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
             Success = false;
         }
@@ -109,13 +109,13 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Execute Command",
-                             Message      = $"Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Execute Command",
+                Message = $"Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
             Success = false;
 
@@ -137,13 +137,13 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Execute Query Cmd",
-                             Message      = $"Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Execute Query Cmd",
+                Message = $"Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
             Success = false;
 
@@ -153,7 +153,7 @@ public class MariaDb : IDisposable
 
     public MySqlDataReader ExecQuery(string sql)
     {
-        _cmd    = Command(sql);
+        _cmd = Command(sql);
         Success = true;
 
         try
@@ -166,13 +166,13 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Execute Query String",
-                             Message      = $"Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Execute Query String",
+                Message = $"Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
             Success = false;
 
@@ -195,13 +195,13 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Execute NonQuery Cmd",
-                             Message      = $"Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Execute NonQuery Cmd",
+                Message = $"Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
             Success = false;
 
@@ -211,7 +211,7 @@ public class MariaDb : IDisposable
 
     public int ExecNonQuery(string sql, bool ignore = false)
     {
-        _cmd    = Command(sql);
+        _cmd = Command(sql);
         Success = true;
 
         try
@@ -225,13 +225,13 @@ public class MariaDb : IDisposable
         catch (Exception e)
         {
             var logRec = new Log
-                         {
-                             RecordedDate = DateTime.Now,
-                             Program      = _thisProgram,
-                             Function     = "Execute NonQuery String",
-                             Message      = $"Error: {e.Message} ::: {e.InnerException}",
-                             Level        = 20,
-                         };
+            {
+                RecordedDate = DateTime.Now,
+                Program = _thisProgram,
+                Function = "Execute NonQuery String",
+                Message = $"Error: {e.Message} ::: {e.InnerException}",
+                Level = 20,
+            };
             LogModel.Record(logRec);
             Success = false;
 
