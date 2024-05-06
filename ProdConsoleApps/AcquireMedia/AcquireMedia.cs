@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Common_Lib;
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
@@ -47,8 +48,7 @@ internal static class Program
                         continue;
                     }
 
-                    var temp = magnet.Split("tr=");
-                    LogModel.Record(thisProgram, "Main", $"Found Magnet for {rec.ShowName}, {rec.SeasonEpisode} " + $"Processing Whole Season is {isSeason}: {temp[0]}", 4);
+                    LogModel.Record(thisProgram, "Main", $"Found Magnet for {rec.ShowName}, {rec.SeasonEpisode}", 4);
 
                     using (Process acquireMediaScript = new())
                     {
@@ -73,6 +73,7 @@ internal static class Program
                         wai.PutEpisodeToAcquired(episodeId);
                     } else
                     {
+                        LogModel.Record(thisProgram, "Main", $"Processing whole season from {rec.ShowName}");
                         using var db = new TvMaze();
                         var episodes = db.Episodes.Where(e => e.TvmShowId == rec.TvmShowId && e.Season == rec.Season).Select(e => e.TvmEpisodeId).ToList();
                         foreach (var seasEpiId in episodes)
@@ -86,7 +87,6 @@ internal static class Program
                             wai.PutEpisodeToAcquired(seasEpiId);
                         }
                     }
-                    break;
                 }
             } else
             {

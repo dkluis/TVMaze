@@ -246,7 +246,7 @@ public class WebScrape : IDisposable
         {
             //"Eztv" or "EztvAPI" => 110,
             "PirateBay" => 110, // Does not have container info so +10 by default
-            "MagnetDL" => 110,  // Does not have container info so +10 by default
+            "MagnetDL" => 115,  // Does not have container info so +10 by default and MagnetDl is preferred
             "TorrentZ" => 100,
             _ => 0,
         };
@@ -358,8 +358,7 @@ public class Magnets
         seasonScrape.Magnets = new List<string>();
         seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
         seasonScrape.GetPirateBayMagnets(showName, seasEpi);
-        seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
-        //seasonScrape.GetEztvMagnets(showName, seasEpi, browserDriver);
+        //seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
 
         switch (seasonScrape.Magnets.Count)
         {
