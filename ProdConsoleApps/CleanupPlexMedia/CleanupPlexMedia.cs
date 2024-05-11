@@ -9,15 +9,20 @@ internal static class CleanupPlexMedia
     private static void Main()
     {
         const string thisProgram = "Cleanup Plex Media";
-        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
+        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
+        if (!LogModel.IsSystemActive())
+        {
+            LogModel.InActive(thisProgram);
+            Environment.Exit(99);
+        }
         LogModel.Start(thisProgram);
 
-        MediaFileHandler mfh              = new(appInfo);
-        List<string>     showDirsToDelete = new();
-        var              tvShowDirs       = Directory.GetDirectories(mfh.PlexMediaTvShows);
-        var              tvKimShowDirs    = Directory.GetDirectories(mfh.PlexMediaKimTvShows);
-        var              tvDickShowDirs   = Directory.GetDirectories(mfh.PlexMediaDickTvShows);
-        var              allTvShowDirs    = new string[tvShowDirs.Length + tvKimShowDirs.Length + tvDickShowDirs.Length];
+        MediaFileHandler mfh = new(appInfo);
+        List<string> showDirsToDelete = new();
+        var tvShowDirs = Directory.GetDirectories(mfh.PlexMediaTvShows);
+        var tvKimShowDirs = Directory.GetDirectories(mfh.PlexMediaKimTvShows);
+        var tvDickShowDirs = Directory.GetDirectories(mfh.PlexMediaDickTvShows);
+        var allTvShowDirs = new string[tvShowDirs.Length + tvKimShowDirs.Length + tvDickShowDirs.Length];
         tvShowDirs.CopyTo(allTvShowDirs, 0);
         tvKimShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
         tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length + tvKimShowDirs.Length);
@@ -27,20 +32,16 @@ internal static class CleanupPlexMedia
         foreach (var dir in allTvShowDirs)
         {
             var seasonDirs = Directory.GetDirectories(dir);
-
             foreach (var seasonDir in seasonDirs)
             {
                 var files = Directory.GetFiles(seasonDir);
-
                 if (files.Length != 0)
                 {
                     LogModel.Record(thisProgram, "Main", $"{seasonDir} has files {files.Length}", 5);
-
                     continue;
                 }
 
                 const bool deleteDir = true;
-
                 try
                 {
                     Directory.Delete(seasonDir);
