@@ -85,8 +85,7 @@ internal static class UpdatePlexWatched
                     case 1:
                     {
                         pwi.TvmShowId = foundInDb[0];
-                        using EpisodeSearch es = new();
-                        pwi.TvmEpisodeId = es.Find(appInfo, pwi.TvmShowId, pwi.SeasonEpisode);
+                        pwi.TvmEpisodeId = EpisodeSearch.Find(pwi.TvmShowId, pwi.SeasonEpisode);
 
                         if (pwi.TvmEpisodeId == 0)
                         {

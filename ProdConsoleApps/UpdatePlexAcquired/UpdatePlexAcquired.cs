@@ -111,8 +111,7 @@ internal static class UpdatePlexAcquired
 
                 if (!isSeason)
                 {
-                    EpisodeSearch episodeToUpdate = new();
-                    epiId = episodeToUpdate.Find(appInfo, int.Parse(showId[0].ToString()), episodeString);
+                    epiId = EpisodeSearch.Find(int.Parse(showId[0].ToString()), episodeString);
                     epsToUpdate.Add(epiId);
                     LogModel.Record(thisProgram, "Main", $"Working on ShowId {showId[0]} and EpisodeId {epiId}");
                 }
