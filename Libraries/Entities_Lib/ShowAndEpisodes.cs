@@ -32,18 +32,10 @@ public class ShowAndEpisodes : IDisposable
         _show.FillViaTvmaze(showId);
         _epsByShowOnTvmaze = new List<int>();
 
-        if (_show is
-            {
-                IsDbFilled: true, IsFollowed: true,
-            }                          &&
-            _show.Finder     != "Skip" &&
-            _show.UpdateDate != "2200-01-01") _show.TvmStatus = "Following";
+        if (_show is {IsDbFilled: true, IsFollowed: true,} && _show.Finder != "Skip" && _show.UpdateDate != "2200-01-01")
+            _show.TvmStatus = "Following";
 
-        if (_show is
-            {
-                IsDbFilled: true, Finder: "Skip",
-            } ||
-            _show.UpdateDate == "2200-01-01") _show.TvmStatus = "Skipping";
+        if (_show is {IsDbFilled: true, Finder: "Skip",} || _show.UpdateDate == "2200-01-01") _show.TvmStatus = "Skipping";
 
         if (_show.IsDbFilled) _show.DbUpdate();
         else _show.DbInsert();

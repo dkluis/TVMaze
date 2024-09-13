@@ -5,7 +5,6 @@ using Common_Lib;
 using DB_Lib;
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
-using MySqlConnector;
 using Newtonsoft.Json.Linq;
 using Web_Lib;
 

@@ -23,17 +23,18 @@ internal static class RefreshShows
                 var skippingShows = db.Shows.Where(s => s.TvmStatus == "Skipping" && s.ShowStatus != "Ended") // && s.ShowStatus != "To Be Determined")
                                       .OrderByDescending(s => s.TvmShowId)
                                       .ToList();
-
                 LogModel.Record(thisProgram, "Main", $"Starting Skipping Shows: {skippingShows.Count}");
-
                 foreach (var rec in skippingShows)
                 {
                     using ShowAndEpisodes sae = new(appInfo);
                     sae.Refresh(rec.TvmShowId);
                     LogModel.Record(thisProgram, "Main", $"Refreshing 'Skipping' show {rec.ShowName}, {rec.TvmShowId}", 4);
                 }
-
                 LogModel.Record(thisProgram, "Main", $"Finished Skipping Shows: {skippingShows.Count}");
+
+                // Doing the Review shows as well
+                var reviewShows = db.Shows.Where(r => r.TvmStatus == "Reviweing").OrderByDescending(r => r.TvmShowId).ToList();
+
             }
 
             // Get all Shows to refresh today
