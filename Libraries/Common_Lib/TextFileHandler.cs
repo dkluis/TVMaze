@@ -19,8 +19,6 @@ public class TextFileHandler
         _app          = application;
         _level        = loglevel;
         _fullFilePath = Path.Combine(inFilePath, filename);
-
-        //if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
     }
 
     public void Start()

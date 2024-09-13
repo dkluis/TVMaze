@@ -32,8 +32,8 @@ public class AppInfo
         var logLevel = int.Parse(ReadKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
         var fileName = Program + ".log";
         var filePath = Path.Combine(HomeDir, "Logs");
-        TxtFile = new TextFileHandler(fileName, Program, filePath, logLevel);
         IsDebugOn = ReadKeyFromFile.FindInArray(ConfigFullPath, "Debug") == "Yes";
+        TxtFile = new TextFileHandler(fileName, Program, filePath, logLevel);
 
         var dbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
         var dbTestConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");

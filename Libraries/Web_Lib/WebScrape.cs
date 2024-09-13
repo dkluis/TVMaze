@@ -17,7 +17,8 @@ public class WebScrape : IDisposable
     public void GetMagnetDlMagnets(string showName, string seasEpi)
     {
         var foundMagnets = 0;
-        var html = BuildMagnetDownloadUrl($"{showName}-{seasEpi}");
+        //var html = BuildMagnetDownloadUrl($"{showName}-{seasEpi}");
+        var html = BuildMagnetDownloadUrl($"{showName}+{seasEpi}");
 
         var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
         var compareWithMagnet2 = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") + "+" + seasEpi + "+";
@@ -79,10 +80,13 @@ public class WebScrape : IDisposable
 
     private static string BuildMagnetDownloadUrl(string showName)
     {
-        var url = "https://www.magnetdl.com/";
+        //var url = "https://www.magnetdl.com/";
+        var url = "https://magnetdl.ninjaproxy1.com/search/?q=";
         showName = Common.RemoveSpecialCharsInShowName(showName);
-        showName = showName.Replace(" ", "-");
-        url = url + "/" + showName[0].ToString().ToLower() + "/" + showName + "/";
+        //showName = showName.Replace(" ", "-");
+        showName = showName.Replace(" ", "+");
+        //url = url + "/" + showName[0].ToString().ToLower() + "/" + showName + "/";
+        url += showName + "&m=1&x=0&y-0";
 
         return url;
     }
@@ -92,7 +96,7 @@ public class WebScrape : IDisposable
         var foundMagnets = 0;
         var url = BuildPirateBayUrl(showName, seasEpi);
         var compareWithMagnet = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "+") + "+" + seasEpi + "+";
-        var compareWithMagnet2 = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", ".") + "." + seasEpi + ".";
+        var compareWithMagnet2 = "dn=" + Common.RemoveSpecialCharsInShowName(showName).Replace(" ", "%20") + "%20" + seasEpi + "%20";
         LogModel.Record(_thisProgram, "WebScrape - PirateBay", $"Compare string = {compareWithMagnet} and {compareWithMagnet2}", 5);
         var htmlDoc = new HtmlDocument();
         try
@@ -118,7 +122,7 @@ public class WebScrape : IDisposable
         foreach (var prioritizedMagnet in from magnetInfo in magnetLinks
                                           select magnetInfo.Attributes["href"].Value.ToLower()
                                           into mgi
-                                          where (mgi.Contains(compareWithMagnet) || mgi.Contains(compareWithMagnet2)) && mgi != ""
+                                          where (mgi.ToLower().Contains(compareWithMagnet) || mgi.ToLower().Contains(compareWithMagnet2)) && mgi != ""
                                           select mgi.Replace("<a href=\"", "")
                                           into magnetReplace
                                           select magnetReplace.Split("><img src=")
@@ -148,10 +152,10 @@ public class WebScrape : IDisposable
     private static string BuildPirateBayUrl(string showName, string seasEpi)
     {
         //var url = "https://bayofpirates.xyz/search.php/?q=";
-        var url = "https://prbay.top/search/";
+        var url = "https://thepiratebay.org/search.php?q=";
         showName = Common.RemoveSpecialCharsInShowName(showName);
-        showName = showName.Replace(" ", "%20");
-        url = url + showName + "%20" + seasEpi + "/1/99/0";
+        showName = showName.Replace(" ", "+");
+        url = url + showName + "+" + seasEpi + "&cat=0";
 
         return url;
     }
@@ -242,6 +246,7 @@ public class WebScrape : IDisposable
 
     private static int PrioritizeMagnet(string magnet, string provider)
     {
+        magnet = magnet.Replace("%20", ".");
         var priority = provider switch
         {
             //"Eztv" or "EztvAPI" => 110,
@@ -356,7 +361,7 @@ public class Magnets
     {
         using WebScrape seasonScrape = new(_thisProgram);
         seasonScrape.Magnets = new List<string>();
-        seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
+        //seasonScrape.GetMagnetDlMagnets(showName, seasEpi);
         seasonScrape.GetPirateBayMagnets(showName, seasEpi);
         //seasonScrape.GetTorrentz2Magnets(showName, seasEpi);
 
