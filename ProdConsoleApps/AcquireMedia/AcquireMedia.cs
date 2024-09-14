@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Common_Lib;
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
@@ -31,9 +30,8 @@ internal static class Program
                 var isSeason = false;
                 var showId = -99;
 
-                foreach (var rec in episodesToBeAcquired)
+                foreach (var rec in episodesToBeAcquired.Where(rec => !isSeason || showId != rec.TvmShowId))
                 {
-                    if (isSeason && showId == rec.TvmShowId) { continue; }
                     showId = rec.TvmShowId;
                     LogModel.Record(thisProgram, "Main", $"Processing: {rec.ShowName}, {rec.SeasonEpisode}");
                     LogModel.Record(thisProgram, "Main", "Stopping & Starting Chrome Selenium Driver", 3);
@@ -52,7 +50,7 @@ internal static class Program
 
                     using (Process acquireMediaScript = new())
                     {
-                        acquireMediaScript.StartInfo.FileName = "/media/psf/TVMazeLinux/Scripts/TorrentToTransmission.sh";
+                        acquireMediaScript.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/Transmission.sh";
                         acquireMediaScript.StartInfo.Arguments = magnet;
                         acquireMediaScript.StartInfo.UseShellExecute = true;
                         acquireMediaScript.StartInfo.RedirectStandardOutput = false;
