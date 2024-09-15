@@ -18,7 +18,7 @@ public class AppInfo
     {
         Application = application;
         Program = program;
-        HomeDir = _os switch {"Linux" => "/media/psf/TVMazeLinux", "macOS" => "/Users/dick/TVMazeLinux", _ => ""};
+        HomeDir = _os switch {"Linux" => "/media/psf/TVMazeLinux", "macOS" => "/Users/dick/TVMaze", _ => ""};
 
         ConfigFileName = Application + ".cnf";
         ConfigPath = HomeDir;

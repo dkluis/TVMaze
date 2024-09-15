@@ -81,7 +81,7 @@ internal static class RefreshShowRssFeed
             LogModel.Record(thisProgram, "Main", $"Adding torrent to Transmission for {foundInfo.TvmShowId} with epi {foundInfo.TvmEpisodeId}", 3);
             using (Process acquireMediaScript = new())
             {
-                acquireMediaScript.StartInfo.FileName = "/media/psf/TVMazeLinux/Scripts/TorrentToTransmission.sh";
+                acquireMediaScript.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/Transmission.sh";
                 acquireMediaScript.StartInfo.Arguments = feedRec.Link;
                 acquireMediaScript.StartInfo.UseShellExecute = true;
                 acquireMediaScript.StartInfo.RedirectStandardOutput = false;

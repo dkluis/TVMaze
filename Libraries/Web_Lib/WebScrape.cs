@@ -319,10 +319,12 @@ public class WebScrape : IDisposable
         }
 
         // Bad Torrents
-        if (magnet.ToLower().Contains("-minx") || magnet.ToLower().Contains("torrenting.com"))
+        if (!magnet.ToLower().Contains("-minx") && !magnet.ToLower().Contains("torrenting") && !magnet.ToLower().Contains("scenetime"))
         {
-            priority -= 75;
+            return priority;
         }
+        LogModel.Record("PrioritizeMagnet", "WebScrape - PirateBay", $"Magnet: {magnet} contains one of -minx, torrenting or scenetime", 5);
+        priority -= 75;
 
         return priority;
     }
