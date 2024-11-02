@@ -13,11 +13,11 @@ internal static class RefreshShowRssFeed
     private static void Main()
     {
         const string thisProgram = "Refresh ShowRss Feed";
-        if (!LogModel.IsSystemActive())
-        {
-            LogModel.InActive(thisProgram);
-            Environment.Exit(99);
-        }
+        // if (!LogModel.IsSystemActive())
+        // {
+        //     LogModel.InActive(thisProgram);
+        //     Environment.Exit(99);
+        // }
         LogModel.Start(thisProgram);
         Feed result = new();
 

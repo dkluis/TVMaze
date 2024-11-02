@@ -34,7 +34,7 @@ public class MediaFileHandler : IDisposable
         PlexMediaTvShows = GetDirectoryViaMediaType("TS");
         PlexMediaTvShowSeries = GetDirectoryViaMediaType("TSS");
         PlexMediaKidsTvShows = GetDirectoryViaMediaType("KTS");
-        PlexMediaAcquire = GetDirectoryViaMediaType("ACQ").Replace("TVMaze/", "/");
+        PlexMediaAcquire = GetDirectoryViaMediaType("ACQ"); //.Replace("TVMaze/", "/");
         PlexMediaKimTvShows = GetDirectoryViaMediaType("KIMTS");
         PlexMediaDickTvShows = GetDirectoryViaMediaType("DICKTS");
     }
@@ -63,7 +63,8 @@ public class MediaFileHandler : IDisposable
         }
         _mdb.Close();
 
-        return path!.Replace("/Volumes/HD-Data-CA-Server", "/media/psf");
+        //return path!.Replace("/Volumes/HD-Data-CA-Server", "/media/psf");
+        return path!;
     }
 
     public bool DeleteEpisodeFiles(Episode epi)
@@ -214,7 +215,7 @@ public class MediaFileHandler : IDisposable
             }
         }
 
-        var fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo);
+        var fullMediaPath = Path.Combine(PlexMediaAcquire, mediainfo).Replace("//", "/");
         var isDirectory = false;
         List<string> media = new();
         var foundDir = false;
@@ -284,50 +285,59 @@ public class MediaFileHandler : IDisposable
         if (media.Count == 0)
         {
             LogModel.Record(_appInfo.Program, "Media File Handler", $"There was nothing to move {mediainfo}", 20);
-        }
-
-        if (string.IsNullOrEmpty(shown) || string.IsNullOrWhiteSpace(shown))
+        } else
         {
-            if (show != null && show.ShowName != "")
+            if (string.IsNullOrEmpty(shown) || string.IsNullOrWhiteSpace(shown))
             {
-                shown = show.ShowName;
-            } else
-            {
-                if (episode != null)
+                if (show != null && show.ShowName != "")
                 {
-                    shown = episode.ShowName;
+                    shown = show.ShowName;
+                } else
+                {
+                    if (episode != null)
+                    {
+                        shown = episode.ShowName;
+                    }
                 }
             }
-        }
 
-        var toDir = Path.Combine(destDirectory, shown, episode != null && episode.SeasonNum != 0 ? $"Season {episode.SeasonNum}" : $"Season {season}");
-        if (!Directory.Exists(toDir))
-        {
-            Directory.CreateDirectory(toDir);
-        }
-
-        foreach (var file in media)
-        {
-            var fromFile = !isDirectory ? file.Replace(PlexMediaAcquire, "").Replace("/", "") : file.Replace(fullMediaPath, "").Replace("/", "");
-            var toPath = Path.Combine(toDir, fromFile);
-
-            try
+            var toDir = Path.Combine(destDirectory, shown, episode != null && episode.SeasonNum != 0 ? $"Season {episode.SeasonNum}" : $"Season {season}");
+            if (!Directory.Exists(toDir))
             {
-                File.Move(file, toPath);
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved To: {toPath}", 2);
+                Directory.CreateDirectory(toDir);
             }
-            catch (Exception ex)
-            {
-                LogModel.Record(_appInfo.Program, "Media File Handler", $"Error Moving File {file} to {toPath} ::: {ex.Message}", 20);
 
-                return false;
+            foreach (var file in media)
+            {
+                var fromFile = !isDirectory ? file.Replace(PlexMediaAcquire, "").Replace("/", "") : file.Replace(fullMediaPath, "").Replace("/", "");
+                var toPath = Path.Combine(toDir, fromFile);
+
+                try
+                {
+                    File.Move(file, toPath);
+                    LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved To: {toPath}", 2);
+                }
+                catch (Exception ex)
+                {
+                    LogModel.Record(_appInfo.Program, "Media File Handler", $"Error Moving File {file} to {toPath} ::: {ex.Message}", 20);
+
+                    return false;
+                }
             }
         }
 
         if (isDirectory)
         {
-            Directory.Move(fullMediaPath, $"{PlexMediaAcquire}/Processed/{mediainfo}");
-            LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved {fullMediaPath} to {PlexMediaAcquire}/Processed/{mediainfo}", 3);
+            var processedPath = Path.Combine(PlexMediaAcquire, "Processed", mediainfo);
+            var directoryName = Path.GetDirectoryName(processedPath);
+
+            if (!Directory.Exists(directoryName))
+            {
+                Directory.CreateDirectory(directoryName!);
+            }
+            Directory.Move(fullMediaPath, processedPath);
+
+            LogModel.Record(_appInfo.Program, "Media File Handler", $"Moved {fullMediaPath} to {processedPath}", 3);
         }
 
         return false;

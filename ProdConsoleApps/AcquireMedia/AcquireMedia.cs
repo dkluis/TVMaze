@@ -13,11 +13,11 @@ internal static class Program
     {
         const string thisProgram = "Acquire Media";
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        if (!LogModel.IsSystemActive())
-        {
-            LogModel.InActive(thisProgram);
-            Environment.Exit(99);
-        }
+        // if (!LogModel.IsSystemActive())
+        // {
+        //     LogModel.InActive(thisProgram);
+        //     Environment.Exit(99);
+        // }
         LogModel.Start(thisProgram);
 
         try

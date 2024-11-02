@@ -110,6 +110,7 @@ public static class LogModel
 
     public static bool IsSystemActive()
     {
+        return true;
         var db = new TvMaze();
         return  db.Configurations.Single(c => c.Key == "IsSystemActive").Value == "true";
     }

@@ -30,13 +30,32 @@ internal static class CleanupPlexMedia
 
             foreach (var seasonDir in seasonDirs)
             {
-                var files = Directory.GetFiles(seasonDir);
+                var options = new EnumerationOptions
+                {
+                    IgnoreInaccessible = true,
+                    AttributesToSkip = 0 // Don't skip any files based on attributes
+                };
+                var files = Directory.GetFiles(seasonDir, "*", options);
 
                 if (files.Length != 0)
                 {
-                    LogModel.Record(thisProgram, "Main", $"{seasonDir} has files {files.Length}", 5);
+                    LogModel.Record(thisProgram, "Main", $"{seasonDir} has files {files.Length}", 4);
 
-                    continue;
+                    var numOfFiles = files.Length;
+                    if (files.Length != 0)
+                    {
+                        foreach (var file in files)
+                        {
+                            if (!file.Contains(".DS_Store"))
+                            {
+                                continue;
+                            }
+                            LogModel.Record(thisProgram, "Main", $"Deleting a .DS_Store in {file}", 3);
+                            File.Delete(file);
+                            numOfFiles--;
+                        }
+                    }
+                    if (numOfFiles != 0) continue;
                 }
 
                 const bool deleteDir = true;
