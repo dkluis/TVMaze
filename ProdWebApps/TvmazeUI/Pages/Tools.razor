@@ -167,14 +167,14 @@
 
     private void RunApp(string appName)
     {
-        var basePath = "/media/psf/TVMazeLinux/Apps/";
+        var basePath = "/Users/Dick/TVMaze/AllApps";
 
         var processInfo = new ProcessStartInfo
                           {
-                              FileName               = $"{basePath}{appName}/{appName}",
+                              FileName               = $"{basePath}/{appName}",
                               Arguments              = "",
                               UseShellExecute        = false,
-                              WorkingDirectory       = basePath + appName,
+                              WorkingDirectory       = basePath,
                               RedirectStandardError  = true,
                               RedirectStandardOutput = true,
                           };
@@ -182,12 +182,12 @@
 
         process.ErrorDataReceived += (sender, data) =>
         {
-            if (data.Data != null) File.AppendAllText($"/media/psf/TVMazeLinux/Logs/{appName}.log", data.Data + "\n");
+            if (data.Data != null) File.AppendAllText($"/Users/Dick/TVMaze/Logs/Errors.log", data.Data + "\n");
         };
 
         process.OutputDataReceived += (sender, data) =>
         {
-            if (data.Data != null) File.AppendAllText($"/media/psf/TVMazeLinux/Logs/{appName}.log", data.Data + "\n");
+            if (data.Data != null) File.AppendAllText($"/Users/Dick/TVMaze/Logs/Console.log", data.Data + "\n");
         };
 
         process.Start();

@@ -33,8 +33,8 @@ internal static class UpdatePlexWatched
 
         try
         {
-            var filePath   = "/media/psf/TVMazeLinux/Inputs/WatchedEpisodes.log";
-            var toFilePath = $"/media/psf/TVMazeLinux/Inputs/WatchedEpisodes{DateTime.Now.ToString("-yyyy-M-d-hh-mm-ss")}.log";
+            const string filePath = "/users/dick/TVMaze/Inputs/WatchedEpisodes.log";
+            var toFilePath = $"/users/dick/TVMaze/Inputs/WatchedEpisodes{DateTime.Now.ToString("-yyyy-M-d-hh-mm-ss")}.log";
             var lines      = File.ReadAllLines(filePath);
 
             foreach (var line in lines)
