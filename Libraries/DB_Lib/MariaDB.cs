@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Common_Lib;
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
@@ -9,8 +8,7 @@ namespace DB_Lib;
 
 public class MariaDb : IDisposable
 {
-    private const string Function = "MariaDb";
-    private readonly MySqlConnection _conn = new();
+    private readonly MySqlConnection _conn;
     private MySqlCommand _cmd = new();
     private bool _connOpen;
     private MySqlDataReader? _rdr;
@@ -27,17 +25,19 @@ public class MariaDb : IDisposable
             _conn = new MySqlConnection(appInfo.ActiveDbConn);
             Success = true;
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            var logRec = new Log
-            {
-                RecordedDate = DateTime.Now,
-                Program = _thisProgram,
-                Function = "Connecting To DB",
-                Message = $"Error: {e.Message} ::: {e.InnerException}",
-                Level = 20,
-            };
-            LogModel.Record(logRec);
+            Console.WriteLine($"MariaDB Connect Exception (ErrorCode: {e.Number}): {e.Message}");
+            throw new ArgumentException("MariaDB Connect Exception occured {e.Number} - {e.Message}");
+            // var logRec = new Log
+            // {
+            //     RecordedDate = DateTime.Now,
+            //     Program = _thisProgram,
+            //     Function = "Connecting To DB",
+            //     Message = $"Error: {e.Message} ::: {e.InnerException}",
+            //     Level = 20,
+            // };
+            // LogModel.Record(logRec);
         }
     }
 
@@ -49,25 +49,28 @@ public class MariaDb : IDisposable
 
     private void Open()
     {
-        Success = true;
+        Success = false;
 
         try
         {
             _conn.Open();
             _connOpen = true;
+            Success = true;
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            var logRec = new Log
-            {
-                RecordedDate = DateTime.Now,
-                Program = _thisProgram,
-                Function = "Opening To DB",
-                Message = $"Error: {e.Message} ::: {e.InnerException}",
-                Level = 20,
-            };
-            LogModel.Record(logRec);
-            Success = false;
+            Console.WriteLine($"MariaDB Open Exception (ErrorCode: {e.Number}): {e.Message}");
+            throw new ArgumentException("MariaDB Open Exception occured {e.Number} - {e.Message}");
+            // var logRec = new Log
+            // {
+            //     RecordedDate = DateTime.Now,
+            //     Program = _thisProgram,
+            //     Function = "Opening To DB",
+            //     Message = $"Error: {e.Number} ::: {e.Message} ::: {e.InnerException}",
+            //     Level = 20,
+            // };
+            // LogModel.Record(logRec);
+            // Success = false;
         }
     }
 
@@ -80,18 +83,20 @@ public class MariaDb : IDisposable
             _conn.Close();
             _connOpen = false;
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            var logRec = new Log
-            {
-                RecordedDate = DateTime.Now,
-                Program = _thisProgram,
-                Function = "Closing DB",
-                Message = $"MariaDB Class Connection Error: {e.Message} ::: {e.InnerException}",
-                Level = 20,
-            };
-            LogModel.Record(logRec);
-            Success = false;
+            Console.WriteLine($"MariaDB Close Exception (ErrorCode: {e.Number}): {e.Message}");
+            throw new ArgumentException("MariaDB Close Exception occured {e.Number} - {e.Message}");
+            // var logRec = new Log
+            // {
+            //     RecordedDate = DateTime.Now,
+            //     Program = _thisProgram,
+            //     Function = "Closing DB",
+            //     Message = $"MariaDB Class Connection Error: {e.Message} ::: {e.InnerException}",
+            //     Level = 20,
+            // };
+            // LogModel.Record(logRec);
+            // Success = false;
         }
     }
 
@@ -106,9 +111,11 @@ public class MariaDb : IDisposable
 
             return _cmd;
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            var logRec = new Log
+            Console.WriteLine($"MariaDB Command Exception (ErrorCode: {e.Number}): {e.Message}");
+            throw new ArgumentException("MariaDB Command Exception occured {e.Number} - {e.Message}");
+            /*var logRec = new Log
             {
                 RecordedDate = DateTime.Now,
                 Program = _thisProgram,
@@ -119,11 +126,11 @@ public class MariaDb : IDisposable
             LogModel.Record(logRec);
             Success = false;
 
-            return _cmd;
+            return _cmd;*/
         }
     }
 
-    public MySqlDataReader ExecQuery()
+    /*public MySqlDataReader ExecQuery()
     {
         Success = true;
 
@@ -149,7 +156,7 @@ public class MariaDb : IDisposable
 
             return _rdr!;
         }
-    }
+    }*/
 
     public MySqlDataReader ExecQuery(string sql)
     {
@@ -163,9 +170,11 @@ public class MariaDb : IDisposable
 
             return _rdr;
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            var logRec = new Log
+            Console.WriteLine($"MariaDB ExecQuery Exception (ErrorCode: {e.Number}): {e.Message}");
+            throw new ArgumentException("MariaDB ExecQuery Exception occured {e.Number} - {e.Message}");
+            /*var logRec = new Log
             {
                 RecordedDate = DateTime.Now,
                 Program = _thisProgram,
@@ -176,11 +185,11 @@ public class MariaDb : IDisposable
             LogModel.Record(logRec);
             Success = false;
 
-            return _rdr!;
+            return _rdr!;*/
         }
     }
 
-    public int ExecNonQuery(bool ignore = false)
+    /*public int ExecNonQuery(bool ignore = false)
     {
         Success = true;
 
@@ -207,7 +216,7 @@ public class MariaDb : IDisposable
 
             return _rows;
         }
-    }
+    }*/
 
     public int ExecNonQuery(string sql, bool ignore = false)
     {
@@ -222,9 +231,11 @@ public class MariaDb : IDisposable
 
             return _rows;
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            var logRec = new Log
+            Console.WriteLine($"MariaDB ExecQuery Exception (ErrorCode: {e.Number}): {e.Message}");
+            throw new ArgumentException("MariaDB ExecQuery Exception occured {e.Number} - {e.Message}");
+            /*var logRec = new Log
             {
                 RecordedDate = DateTime.Now,
                 Program = _thisProgram,
@@ -235,7 +246,7 @@ public class MariaDb : IDisposable
             LogModel.Record(logRec);
             Success = false;
 
-            return _rows;
+            return _rows;*/
         }
     }
 }
