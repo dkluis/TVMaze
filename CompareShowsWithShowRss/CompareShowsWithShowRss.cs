@@ -1,6 +1,7 @@
 ﻿using Common_Lib;
 using DB_Lib_EF.Entities;
 using DB_Lib_EF.Models.MariaDB;
+using HtmlAgilityPack;
 using Web_Lib;
 
 namespace CompareShowsWithShowRss;
@@ -12,11 +13,15 @@ internal static class CompareShowsWithShowRss
         const string thisProgram = "Compare ShowRss";
         LogModel.Start(thisProgram);
 
-        // Get the latest from the website
-        var sel = new Selenium(thisProgram);
-        sel.Start();
-        var htmlDoc = sel.GetPage(@"https://showrss.info/browse");
-        sel.Stop();
+        var htmlData = GetHtmlAsync("https://showrss.info/browse");
+        var htmlDoc = new HtmlDocument();
+        if (htmlData.Result == "")
+        {
+            LogModel.Record(thisProgram, "Main", $"Could not find HTML data for", 1);
+            LogModel.Stop(thisProgram);
+            Environment.Exit(99);
+        }
+        htmlDoc.LoadHtml(htmlData.Result);
 
         var dates        = htmlDoc.DocumentNode.SelectNodes("//strong");
         var showRssDates = new List<string>();
@@ -115,5 +120,24 @@ internal static class CompareShowsWithShowRss
 
         LogModel.Record(thisProgram, "Main", $"Processed: Found {foundCount} and Multiple {multiCount} and Not Found {notCount} records");
         LogModel.Stop(thisProgram);
+    }
+
+    private static async Task<string> GetHtmlAsync(string url)
+    {
+        using var client = new HttpClient();
+        try
+        {
+            var response = await client.GetAsync(url);
+
+            response.EnsureSuccessStatusCode();
+
+            var htmlContent = await response.Content.ReadAsStringAsync();
+            return htmlContent;
+        }
+        catch (HttpRequestException e)
+        {
+            LogModel.Record("Compare ShowRss", "GetHtml", $"HTML Exception {e.Message} ::: {e.InnerException}", 20);
+            return "";
+        }
     }
 }

@@ -1,7 +1,5 @@
 using System;
 using Common_Lib;
-using DB_Lib_EF.Entities;
-using DB_Lib_EF.Models.MariaDB;
 using MySqlConnector;
 
 namespace DB_Lib;
