@@ -1,99 +1,60 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Common_Lib;
 
 public class AppInfo
 {
-    //public readonly string DbConnection;
-    public readonly string          Drive;
-    public readonly string          FullPath;
-    public readonly string         HomeDir;
-    public readonly string[]        MediaExtensions;
-    public readonly string          Program;
-    public readonly string          Torrentz2Token;
-    public readonly string          TvmazeToken;
+    private readonly string _os = GetOperatingSystem();
+    public readonly string HomeDir;
+    public readonly bool IsDebugOn;
+    public readonly string[] MediaExtensions;
+    public readonly string Program;
+    public readonly string TvmazeToken;
     public readonly TextFileHandler TxtFile;
 
     public AppInfo(string application, string program, string dbConnection)
     {
         Application = application;
-        Program     = program;
-
-        Common.EnvInfo envInfo = new();
-        Drive   = envInfo.Drive;
-
-        // HomeDir = envInfo.Os == "Windows" ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%") : Environment.GetEnvironmentVariable("HOME");
-        //
-        // if (HomeDir is not null)
-        // {
-        //     HomeDir = Path.Combine(HomeDir, Application);
-        // } else
-        // {
-        //     Console.WriteLine("Could not determine HomeDir");
-        //     Environment.Exit(666);
-        // }
-
-        HomeDir = "/media/psf/TVMazeLinux";
+        Program = program;
+        HomeDir = _os switch {"Linux" => "/media/psf/TVMazeLinux", "macOS" => "/Users/dick/TVMaze", _ => ""};
 
         ConfigFileName = Application + ".cnf";
-        ConfigPath     = HomeDir;
+        ConfigPath = HomeDir;
         ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
-
         if (!File.Exists(ConfigFullPath))
         {
-            Console.WriteLine($"Log File Does not Exist {ConfigFullPath}");
+            Console.WriteLine($"Config File Does not Exist {ConfigFullPath}");
             Environment.Exit(666);
         }
 
-        ReadKeyFromFile readKeyFromFile = new();
-        var             logLevel        = int.Parse(ReadKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
-
-        var    fileName = Program + ".log";
+        var logLevel = int.Parse(ReadKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
+        var fileName = Program + ".log";
         var filePath = Path.Combine(HomeDir, "Logs");
-        FullPath = Path.Combine(filePath, fileName);
-
+        IsDebugOn = ReadKeyFromFile.FindInArray(ConfigFullPath, "Debug") == "Yes";
         TxtFile = new TextFileHandler(fileName, Program, filePath, logLevel);
 
-        //CnfFile = new TextFileHandler(ConfigFileName, Program, ConfigPath, LogLevel);
-        var    dbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
+        var dbProdConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
         var dbTestConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
-        DbAltConn  = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
-
-        TvmazeToken    = ReadKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");
-        Torrentz2Token = ReadKeyFromFile.FindInArray(ConfigFullPath, "Torrentz2Token");
-
+        DbAltConn = ReadKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
+        TvmazeToken = ReadKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");
         var me = ReadKeyFromFile.FindInArray(ConfigFullPath, "MediaExtensions");
+
         MediaExtensions = me.Split(", ");
-
-        switch (dbConnection)
-        {
-            case "DbProduction":
-                ActiveDbConn = dbProdConn;
-
-                break;
-
-            case "DbTesting":
-                ActiveDbConn = dbTestConn;
-
-                break;
-
-            case "DbAlternate":
-                ActiveDbConn = DbAltConn;
-
-                break;
-
-            default:
-                ActiveDbConn = "";
-
-                break;
-        }
+        ActiveDbConn = dbConnection switch {"DbProduction" => dbProdConn, "DbTesting" => dbTestConn, "DbAlternate" => DbAltConn, _ => ""};
     }
 
-    public  string  ActiveDbConn   { get; }
-    private string  Application    { get; }
-    private string  ConfigFileName { get; }
-    private string  ConfigFullPath { get; }
-    public  string? ConfigPath     { get; }
-    private string  DbAltConn      { get; }
+    public string ActiveDbConn { get; }
+    private string Application { get; }
+    private string ConfigFileName { get; }
+    private string ConfigFullPath { get; }
+    public string? ConfigPath { get; }
+    private string DbAltConn { get; }
+
+    private static string GetOperatingSystem()
+    {
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" :
+                RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" : "Unknown";
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Common_Lib;
+using DB_Lib_EF.Entities;
 using Entities_Lib;
 
 namespace CleanupPlexMedia;
@@ -8,10 +9,8 @@ internal static class CleanupPlexMedia
     private static void Main()
     {
         const string thisProgram = "Cleanup Plex Media";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
-        AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
-        log.Start();
+        AppInfo      appInfo     = new("TVMaze", thisProgram, "DbAlternate");
+        LogModel.Start(thisProgram);
 
         MediaFileHandler mfh              = new(appInfo);
         List<string>     showDirsToDelete = new();
@@ -22,25 +21,56 @@ internal static class CleanupPlexMedia
         tvShowDirs.CopyTo(allTvShowDirs, 0);
         tvKimShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length);
         tvDickShowDirs.CopyTo(allTvShowDirs, tvShowDirs.Length + tvKimShowDirs.Length);
+
+        LogModel.Record(thisProgram, "Main", $"Directory Counts:  TV Shows: {tvShowDirs.Length}, Kim's TV Shows {tvKimShowDirs.Length}, Dick's TvShows {tvDickShowDirs.Length}");
+
         foreach (var dir in allTvShowDirs)
         {
             var seasonDirs = Directory.GetDirectories(dir);
+
             foreach (var seasonDir in seasonDirs)
             {
-                var files = Directory.GetFiles(seasonDir);
-                if (files.Length != 0) continue;
+                var options = new EnumerationOptions
+                {
+                    IgnoreInaccessible = true,
+                    AttributesToSkip = 0 // Don't skip any files based on attributes
+                };
+                var files = Directory.GetFiles(seasonDir, "*", options);
+
+                if (files.Length != 0)
+                {
+                    LogModel.Record(thisProgram, "Main", $"{seasonDir} has files {files.Length}", 4);
+
+                    var numOfFiles = files.Length;
+                    if (files.Length != 0)
+                    {
+                        foreach (var file in files)
+                        {
+                            if (!file.Contains(".DS_Store"))
+                            {
+                                continue;
+                            }
+                            LogModel.Record(thisProgram, "Main", $"Deleting a .DS_Store in {file}", 3);
+                            File.Delete(file);
+                            numOfFiles--;
+                        }
+                    }
+                    if (numOfFiles != 0) continue;
+                }
+
                 const bool deleteDir = true;
+
                 try
                 {
                     Directory.Delete(seasonDir);
                 }
                 catch (Exception ex)
                 {
-                    log.Write($"Delete of {seasonDir} went wrong {ex}");
+                    LogModel.Record(thisProgram, "Main", $"Exception on Delete of {seasonDir}: {ex.Message}  ::: {ex.InnerException}", 20);
                 }
 
                 if (deleteDir) showDirsToDelete.Add(dir);
-                log.Write($"Deleted directory: {seasonDir}");
+                LogModel.Record(thisProgram, "Main", $"Deleted of {seasonDir}");
             }
         }
 
@@ -53,12 +83,12 @@ internal static class CleanupPlexMedia
                 }
                 catch (Exception ex)
                 {
-                    log.Write($"Delete of {dir} went wrong {ex}");
+                    LogModel.Record(thisProgram, "Main", $"Exception on Delete of {dir}: {ex.Message}  ::: {ex.InnerException}", 20);
                 }
 
-            log.Write($"Deleted directory: {dir}");
+            LogModel.Record(thisProgram, "Main", $"Deleted of {dir}");
         }
 
-        log.Stop();
+        LogModel.Stop(thisProgram);
     }
 }

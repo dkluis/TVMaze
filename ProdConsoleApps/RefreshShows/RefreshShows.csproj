@@ -16,12 +16,13 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <IntermediateOutputPath>obj\Debug\net5.0\net5.0\net6.0\net6.0</IntermediateOutputPath>
-        <LangVersion>11</LangVersion>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Libraries\Common_Lib\Common_Lib.csproj"/>
         <ProjectReference Include="..\..\Libraries\Web_Lib\Web_Lib.csproj"/>
         <ProjectReference Include="..\..\Libraries\DB_Lib\DB_Lib.csproj"/>
         <ProjectReference Include="..\..\Libraries\Entities_Lib\Entities_Lib.csproj"/>
+        <ProjectReference Include="..\..\ProdWebApps\TvmazeUI\TvmazeUI.csproj"/>
     </ItemGroup>
 </Project>

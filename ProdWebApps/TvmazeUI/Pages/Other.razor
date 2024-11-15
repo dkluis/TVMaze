@@ -1,0 +1,145 @@
+@namespace TvmazeUI.Pages
+@page "/other"
+
+@inject DataExchange DataExchangeService
+
+@code {
+    private static readonly AppInfo                            AppInfo      = new("Tvmaze", "Web UI", "DbAlternate");
+    private                 List<ActionItem>                   _actionItems = new();
+    private                 List<ViewEntities.EpisodeShowInfo> _episodes    = new();
+    private                 bool                               _displayActionItems;
+    private                 bool                               _displayEpisodes;
+
+    private void DeleteActionItem(ActionItem rec)
+    {
+        LogModel.Record("Web UI", "Misc: Tables", $"Deleting ActionItem {rec.Id}: {rec.Program}: {rec.Message}");
+        ActionItemModel.DeleteActionItem(rec, AppInfo.Program);
+        GetActionItems();
+    }
+
+    void GetActionItems()
+    {
+        var result = ActionItemModel.GetAllActionItems();
+
+        if (result != null && result.ResponseObject != null)
+        {
+            _actionItems        = (List<ActionItem>) result.ResponseObject!;
+            _displayActionItems = true;
+            _displayEpisodes    = false;
+        }
+    }
+
+    void GetEpisodes()
+    {
+        var result = ViewEntities.GetEpisodesFullInfo();
+
+        if (result != null && result.ResponseObject != null)
+        {
+            _episodes           = (List<ViewEntities.EpisodeShowInfo>) result.ResponseObject!;
+            _episodes           = _episodes.OrderByDescending(e => e.PlexDate).ToList();
+            _displayActionItems = false;
+            _displayEpisodes    = true;
+        }
+    }
+
+}
+
+@{
+    DataExchangeService.LastPage = "Other";
+}
+
+<h1>Misc: Tables</h1>
+
+<div>
+    <button class="btn btn-info" @onclick="GetActionItems">Action Items</button>
+    <button class="btn btn-info" @onclick="GetEpisodes">Episodes</button>
+    <p></p>
+</div>
+
+@{
+    if (_displayActionItems)
+    {
+        <div>
+            <p></p>
+            <h6>Action Item - Table - @_actionItems.Count</h6>
+            <p></p>
+            <table class="table table-striped" style="font-size: 85%; line-height: 85%">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Program</th>
+                    <th>Message</th>
+                    <th>DateTime</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    if (_actionItems != null && _actionItems.Count > 0)
+                    {
+                        foreach (var rec in _actionItems)
+                        {
+                            <tr>
+                                <td>@rec.Id</td>
+                                <td>@rec.Program</td>
+                                <td>@rec.Message</td>
+                                <td>@rec.UpdateDateTime</td>
+                                <button class="btn btn-danger" @onclick="@(() => DeleteActionItem(rec))">Delete</button>
+                            </tr>
+                        }
+                    } else
+                    {
+                        <tr>
+                            <td>No Records Found</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@{
+    if (_displayEpisodes)
+    {
+        <div>
+            <p></p>
+            <h6>Episodes - Table - @_episodes.Count</h6>
+            <p></p>
+            <table class="table table-striped" style="font-size: 85%; line-height: 85%">
+                <thead>
+                <tr>
+                    <th>Show Name</th>
+                    <th>Season Episode</th>
+                    <th>Broadcasted</th>
+                    <th>Plex</th>
+                    <th>Plex Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    if (_episodes != null && _episodes.Count > 0)
+                    {
+                        foreach (var rec in _episodes)
+                        {
+                            <tr>
+                                <td>@rec.ShowName</td>
+                                <td>@rec.SeasonEpisode</td>
+                                <td>@rec.BroadcastDate</td>
+                                <td>@rec.PlexDate</td>
+                                <td>@rec.PlexStatus</td>
+                            </tr>
+                        }
+                    } else
+                    {
+                        <tr>
+                            <td>No Records Found</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+}

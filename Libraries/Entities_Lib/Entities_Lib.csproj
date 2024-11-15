@@ -5,7 +5,7 @@
         <ReleaseVersion>1.5</ReleaseVersion>
         <Configurations>Debug;Release</Configurations>
         <Platforms>AnyCPU</Platforms>
-        <LangVersion>11</LangVersion>
+        <LangVersion>latest</LangVersion>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -13,11 +13,12 @@
     <ItemGroup>
         <ProjectReference Include="..\DB_Lib\DB_Lib.csproj"/>
         <ProjectReference Include="..\Common_Lib\Common_Lib.csproj"/>
+        <ProjectReference Include="..\DB_Lib_EF\DB_Lib_EF.csproj"/>
         <ProjectReference Include="..\Web_Lib\Web_Lib.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MySqlConnector" Version="2.3.1"/>
+        <PackageReference Include="MySqlConnector" Version="2.4.0" />
     </ItemGroup>
 
 </Project>

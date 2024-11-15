@@ -1,14 +1,9 @@
 ﻿using System.Diagnostics;
-
 using Common_Lib;
-
-using DB_Lib;
-
-using Entities_Lib;
-
-using OpenQA.Selenium.Chrome;
-
+using DB_Lib_EF.Entities;
+using DB_Lib_EF.Models.MariaDB;
 using Web_Lib;
+using Episode = Entities_Lib.Episode;
 
 namespace AcquireMedia;
 
@@ -17,85 +12,90 @@ internal static class Program
     private static void Main()
     {
         const string thisProgram = "Acquire Media";
-        Console.WriteLine($"{DateTime.Now}: {thisProgram}");
         AppInfo appInfo = new("TVMaze", thisProgram, "DbAlternate");
-        var     log     = appInfo.TxtFile;
-        log.Start();
+        // if (!LogModel.IsSystemActive())
+        // {
+        //     LogModel.InActive(thisProgram);
+        //     Environment.Exit(99);
+        // }
+        LogModel.Start(thisProgram);
 
-        Magnets                       media = new(appInfo);
-        using GetEpisodesToBeAcquired gea   = new();
-        var                           rdr   = gea.Find(appInfo);
-
-        // log.Write("Starting Chrome Selenium Driver", thisProgram, 4);
-        // var options = new ChromeOptions();
-        // options.AddArgument("--headless");
-        // options.AddArgument("--whitelisted-ips=''");
-        // var browserDriver = new ChromeDriver(options);
-
-        var isSeason = false;
-        var showId   = 0;
-
-        while (rdr.Read())
+        try
         {
-            if (isSeason && showId == int.Parse(rdr["TvmShowId"].ToString()!)) continue;
-            showId = 0;
-            var showName  = rdr["AltShowName"].ToString() != "" ? rdr["AltShowName"].ToString()!.Replace("(", "").Replace(")", "") : rdr["ShowName"].ToString()!;
-            var episodeId = int.Parse(rdr["TvmEpisodeId"].ToString()!);
-            var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName, int.Parse(rdr["Season"].ToString()!), int.Parse(rdr["Episode"].ToString()!), log);
-            isSeason                = seasonInd;
-
-            if (magnet == "")
+            Magnets media = new(thisProgram);
+            var response = ViewEntities.GetEpisodesToAcquire();
+            if (response is {WasSuccess: true, ResponseObject: not null})
             {
-                log.Write($"Magnet Not Found for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]}");
+                var episodesToBeAcquired = (List<ViewEntities.ShowEpisode>) response.ResponseObject;
+                var isSeason = false;
+                var showId = -99;
 
-                continue;
-            }
+                foreach (var rec in episodesToBeAcquired.Where(rec => !isSeason || showId != rec.TvmShowId))
+                {
+                    showId = rec.TvmShowId;
+                    LogModel.Record(thisProgram, "Main", $"Processing: {rec.ShowName}, {rec.SeasonEpisode}");
+                    LogModel.Record(thisProgram, "Main", "Stopping & Starting Chrome Selenium Driver", 3);
+                    var showName = rec.AltShowName != "" ? rec.AltShowName!.Replace("(", "").Replace(")", "") : rec.ShowName;
+                    var episodeId = rec.TvmEpisodeId;
+                    var (seasonInd, magnet) = media.PerformShowEpisodeMagnetsSearch(showName!, rec.Season, rec.Episode);
+                    isSeason = seasonInd;
 
-            var temp = magnet.Split("tr=");
-            log.Write($"Found Magnet for {rdr["ShowName"]}, {rdr["Season"]}-{rdr["Episode"]} " + $"Processing Whole Season is {isSeason}: {temp[0]}");
+                    if (magnet == "")
+                    {
+                        LogModel.Record(thisProgram, "Main", $"Magnet Not Found for {rec.ShowName}, {rec.SeasonEpisode}");
+                        continue;
+                    }
 
-            using (Process acquireMediaScript = new())
-            {
-                acquireMediaScript.StartInfo.FileName               = "/media/psf/TVMazeLinux/Scripts/TorrentToTransmission.sh";
-                acquireMediaScript.StartInfo.Arguments              = magnet;
-                acquireMediaScript.StartInfo.UseShellExecute        = true;
-                acquireMediaScript.StartInfo.RedirectStandardOutput = false;
-                var result = acquireMediaScript.Start();
-                acquireMediaScript.WaitForExit();
-            }
+                    LogModel.Record(thisProgram, "Main", $"Found Magnet for {rec.ShowName}, {rec.SeasonEpisode}", 4);
 
-            if (!isSeason)
-            {
-                using Episode episode = new(appInfo);
-                episode.FillViaTvmaze(episodeId);
-                episode.PlexStatus = "Acquired";
-                episode.PlexDate   = DateTime.Now.ToString("yyyy-MM-dd");
-                episode.DbUpdate();
-                using WebApi wai = new(appInfo);
-                wai.PutEpisodeToAcquired(episodeId);
+                    using (Process acquireMediaScript = new())
+                    {
+                        acquireMediaScript.StartInfo.FileName = "/Users/dick/TVMaze/Scripts/Transmission.sh";
+                        acquireMediaScript.StartInfo.Arguments = magnet;
+                        acquireMediaScript.StartInfo.UseShellExecute = true;
+                        acquireMediaScript.StartInfo.RedirectStandardOutput = false;
+                        acquireMediaScript.Start();
+                        acquireMediaScript.WaitForExit();
+                        LogModel.Record(thisProgram, "Main", $"Transferred magnet to Transmission {magnet}", 2);
+                        LogModel.Record(thisProgram, "Main", $"Transmission is loading {rec.SeasonEpisode} for {rec.ShowName}");
+                    }
+
+                    if (!isSeason)
+                    {
+                        using Episode episode = new(appInfo);
+                        episode.FillViaTvmaze(episodeId);
+                        episode.PlexStatus = "Acquired";
+                        episode.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                        episode.DbUpdate();
+                        using WebApi wai = new(appInfo);
+                        wai.PutEpisodeToAcquired(episodeId);
+                    } else
+                    {
+                        LogModel.Record(thisProgram, "Main", $"Processing whole season from {rec.ShowName}");
+                        using var db = new TvMaze();
+                        var episodes = db.Episodes.Where(e => e.TvmShowId == rec.TvmShowId && e.Season == rec.Season).Select(e => e.TvmEpisodeId).ToList();
+                        foreach (var seasEpiId in episodes)
+                        {
+                            using Episode seasEpi = new(appInfo);
+                            seasEpi.FillViaTvmaze(seasEpiId);
+                            seasEpi.PlexStatus = "Acquired";
+                            seasEpi.PlexDate = DateTime.Now.ToString("yyyy-MM-dd");
+                            seasEpi.DbUpdate();
+                            using WebApi wai = new(appInfo);
+                            wai.PutEpisodeToAcquired(seasEpiId);
+                        }
+                    }
+                }
             } else
             {
-                showId = int.Parse(rdr["TvmShowId"].ToString()!);
-                var           season  = int.Parse(rdr["Season"].ToString()!);
-                using MariaDb mdb     = new(appInfo);
-                var           seasRdr = mdb.ExecQuery($"select * from Episodes where `TvmShowId` = {showId} and `Season` = {season}");
-
-                while (seasRdr.Read())
-                {
-                    var           seasEpiId = int.Parse(seasRdr["TvmEpisodeId"].ToString()!);
-                    using Episode seasEpi   = new(appInfo);
-                    seasEpi.FillViaTvmaze(seasEpiId);
-                    seasEpi.PlexStatus = "Acquired";
-                    seasEpi.PlexDate   = DateTime.Now.ToString("yyyy-MM-dd");
-                    seasEpi.DbUpdate();
-                    using WebApi wai = new(appInfo);
-                    wai.PutEpisodeToAcquired(seasEpiId);
-                }
+                LogModel.Record(thisProgram, "Main", "Nothing was returned from ViewItem.EpisodesToAcquire");
             }
         }
+        catch (Exception e)
+        {
+            LogModel.Record(thisProgram, "Main", $"Exception Occurred {e.Message}  ::: {e.InnerException}", 20);
+        }
 
-        // log.Write("Quiting Chrome Selenium Driver", thisProgram, 4);
-        // browserDriver.Quit();
-        log.Stop();
+        LogModel.Stop(thisProgram);
     }
 }

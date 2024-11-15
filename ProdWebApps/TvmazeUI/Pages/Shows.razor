@@ -10,42 +10,45 @@
     private List<ShowsInfo> _showsInfoList = new();
     string?                 _searchString;
     int                     _idx;
+
     private void ReviewNewShows()
     {
         _showsInfoList = _webShowsService.GetShowsByTvmStatus("New");
         _searchString  = "";
     }
+
     private void ReviewReviewShows()
     {
         _showsInfoList = _webShowsService.GetShowsByTvmStatus("Reviewing");
         _searchString  = "";
     }
-    private void FindShows()
-    {
-        _showsInfoList = _webShowsService.FindShows(_searchString);
-    }
+
+    private void FindShows() { _showsInfoList = _webShowsService.FindShows(_searchString); }
+
     private void EditShow(ShowsInfo si)
     {
         if (si.TvmStatus == "New")
         {
-            _webShowsService.AppInfo.TxtFile.Write($"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
+            LogModel.Record("Web UI", "Shows Page", $"Editing Show to Reviewing {si.TvmShowId}: {si.ShowName}");
             _webShowsService.SetTvmStatusShow(si.TvmShowId, "Reviewing");
             _searchString = si.ShowName;
             FindShows();
             _searchString = "";
         } else if (si.TvmStatus == "Following")
         {
-            _webShowsService.AppInfo.TxtFile.Write($"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
+            LogModel.Record("Web UI", "Shows Page", $"Editing Show {si.TvmShowId}: {si.ShowName} setting MediaType to {si.MediaType} and AltShowName to {si.AltShowName}");
             _webShowsService.SetMtAndAsnShow(si.TvmShowId, si.MediaType!, si.AltShowName!);
             _searchString = si.ShowName;
             FindShows();
             _searchString = "";
         }
     }
+
     private void DeleteShow(ShowsInfo si)
     {
-        _webShowsService.AppInfo.TxtFile.Write($"Deleting Show {si.TvmShowId}: {si.ShowName}");
+        LogModel.Record("Web UI", "Shows Page", $"Deleting Show {si.TvmShowId}: {si.ShowName}");
         _webShowsService.DeleteShow(si.TvmShowId);
+
         if (si.TvmStatus == "New")
         {
             ReviewNewShows();
@@ -56,14 +59,17 @@
 
         _searchString = "";
     }
+
     private void SkipShow(ShowsInfo si)
     {
-        _webShowsService.AppInfo.TxtFile.Write($"Setting Show to Skipping {si.TvmShowId}: {si.ShowName}");
+        LogModel.Record("Web UI", "Episodes Page", $"Setting Show to Skipping {si.TvmShowId}: {si.ShowName}");
+
         _webShowsService.SkipShow(si.TvmShowId);
         _searchString = si.ShowName;
         FindShows();
         _searchString = "";
     }
+
     private void FindEpisodes(ShowsInfo si)
     {
         _dataExchangeService.ShowName     = si.AltShowName == "" ? si.ShowName : si.AltShowName;
@@ -71,6 +77,7 @@
         _dataExchangeService.IntendedPage = "Episodes";
         _navigationManagerService.NavigateTo("/episodes");
     }
+
 }
 
 @{ _dataExchangeService.LastPage = "Shows"; }
@@ -94,7 +101,7 @@
 
 <div>
     <h6>Shows - Table</h6>
-    <table class="table table-striped">
+    <table class="table table-striped" style="font-size: 85%; line-height: 85%">
         <thead>
         <tr>
             <th>Show Id</th>
@@ -144,26 +151,27 @@
                     var splitDate = si.UpdateDate!.Split(' ');
                     <td>@splitDate[0]</td>
                 }
-                <td>
+                <td class="p-0">
                     @if (si.TvmStatus != "Reviewing")
                     {
                         if (si.TvmStatus == "New")
                         {
-                            <button class="btn btn-primary" @onclick="@(() => EditShow(si))">Set Reviewing</button>
+                            <button class="btn btn-primary" style="font-size: 85%; line-height: 85%" @onclick="@(() => EditShow(si))">Set Reviewing</button>
                         } else
                         {
-                            <button class="btn btn-warning" @onclick="@(() => EditShow(si))">Submit Edit</button>
+                            <button class="btn btn-warning" style="font-size: 85%; line-height: 85%" @onclick="@(() => EditShow(si))">Submit Edit</button>
+
                             if (si.TvmStatus != "Skipping")
                             {
-                                <button class="btn btn-danger" @onclick="@(() => SkipShow(si))">Skip</button>
+                                <button class="btn btn-danger" style="font-size: 85%; line-height: 85%" @onclick="@(() => SkipShow(si))">Skip</button>
                             }
                         }
                     }
                     @if (si.TvmStatus != "Following")
                     {
-                        <button class="btn btn-danger" @onclick="@(() => DeleteShow(si))">Delete</button>
+                        <button class="btn btn-danger mt-0 mb-0" style="font-size: 85%; line-height: 85%" @onclick="@(() => DeleteShow(si))">Delete</button>
                     }
-                    <button class="btn btn-info" @onclick="@(() => FindEpisodes(si))">Episodes</button>
+                    <button class="btn btn-info mt-0 mb-0" style="font-size: 85%; line-height: 85%" @onclick="@(() => FindEpisodes(si))">Episodes</button>
                 </td>
             </tr>
             _idx++;
