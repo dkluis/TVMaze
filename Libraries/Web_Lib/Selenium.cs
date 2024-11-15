@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using HtmlAgilityPack;
 using OpenQA.Selenium.Chrome;
@@ -35,13 +36,16 @@ public class Selenium : IDisposable
 
     public void Start()
     {
-        //ChromeOptions.AddArgument("--headless");
+        ChromeOptions.AddArgument("--headless");
+        Service.SuppressInitialDiagnosticInformation = true;
+        Service.HideCommandPromptWindow = true;
+        //Service.LogPath = Path.GetTempFileName();
         ChromeOptions.AddArgument("--whitelisted-ips=''");
         ChromeOptions.AddArgument("--disable-dev-shm-usage");
         ChromeOptions.AddArgument("--disable-popup-blocking");
         ChromeOptions.AcceptInsecureCertificates = true;
         ChromeOptions.BinaryLocation = @"/Applications/Google Chrome.app";
-        ChromeDriver = new ChromeDriver(ChromeOptions);
+        ChromeDriver = new ChromeDriver(Service, ChromeOptions);
         Started = true;
     }
 
@@ -52,7 +56,7 @@ public class Selenium : IDisposable
             return;
         }
         ChromeDriver!.Quit();
-        Thread.Sleep(3000);
+        Thread.Sleep(6000);
         ChromeDriver = null;
         Started = false;
         Dispose();
