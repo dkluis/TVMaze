@@ -1,6 +1,8 @@
 using System;
 using Common_Lib;
 using MySqlConnector;
+using Polly;
+using Polly.Retry;
 
 namespace DB_Lib;
 
@@ -13,6 +15,7 @@ public class MariaDb : IDisposable
     private int _rows;
     private readonly string _thisProgram;
     public bool Success;
+    private static readonly RetryPolicy RetryPolicy = Policy.Handle<MySqlException>().WaitAndRetry(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
     public MariaDb(AppInfo appInfo)
     {
@@ -51,8 +54,13 @@ public class MariaDb : IDisposable
 
         try
         {
-            _conn.Open();
-            _connOpen = true;
+            RetryPolicy.Execute(
+                    () =>
+                    {
+                        _conn.Open();
+                        _connOpen = true;
+                    }
+            );
             Success = true;
         }
         catch (MySqlException e)
@@ -104,7 +112,10 @@ public class MariaDb : IDisposable
 
         try
         {
-            if (!_connOpen) Open();
+            if (!_connOpen)
+            {
+                Open();
+            }
             _cmd = new MySqlCommand(sql, _conn);
 
             return _cmd;
@@ -163,8 +174,11 @@ public class MariaDb : IDisposable
 
         try
         {
-            if (!_connOpen) Open();
-            _rdr = _cmd.ExecuteReader();
+            if (!_connOpen)
+            {
+                Open();
+            }
+            _rdr = RetryPolicy.Execute(() => _cmd.ExecuteReader());
 
             return _rdr;
         }
@@ -223,9 +237,15 @@ public class MariaDb : IDisposable
 
         try
         {
-            if (!_connOpen) Open();
-            _rows = _cmd.ExecuteNonQuery();
-            if (_rows > 0) Success = false;
+            if (!_connOpen)
+            {
+                Open();
+            }
+            _rows = RetryPolicy.Execute(() => _cmd.ExecuteNonQuery());
+            if (_rows > 0)
+            {
+                Success = false;
+            }
 
             return _rows;
         }

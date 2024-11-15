@@ -35,11 +35,12 @@ public class Selenium : IDisposable
 
     public void Start()
     {
-        ChromeOptions.AddArgument("--headless");
+        //ChromeOptions.AddArgument("--headless");
         ChromeOptions.AddArgument("--whitelisted-ips=''");
         ChromeOptions.AddArgument("--disable-dev-shm-usage");
         ChromeOptions.AddArgument("--disable-popup-blocking");
         ChromeOptions.AcceptInsecureCertificates = true;
+        ChromeOptions.BinaryLocation = @"/Applications/Google Chrome.app";
         ChromeDriver = new ChromeDriver(ChromeOptions);
         Started = true;
     }
